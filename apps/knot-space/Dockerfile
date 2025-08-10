@@ -17,6 +17,9 @@ COPY Cargo.toml Cargo.lock ./
 # Create dummy source file to cache dependencies
 RUN mkdir src &&     echo "fn main() {}" > src/main.rs &&     cargo build --release &&     rm -rf src
 
+ARG DATABASE_URL
+ENV DATABASE_URL=${DATABASE_URL}
+
 # Copy source code
 COPY src/ src/
 COPY migrations/ migrations/
