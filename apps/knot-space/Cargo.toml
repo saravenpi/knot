@@ -2,6 +2,7 @@
 name = "knot-space"
 version = "0.1.0"
 edition = "2021"
+rust-version = "1.80"
 description = "Online repository server for Knot packages"
 
 [dependencies]
