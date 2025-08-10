@@ -18,8 +18,6 @@ COPY Cargo.toml Cargo.lock ./
 ENV SQLX_OFFLINE=true
 RUN mkdir src &&     echo "fn main() {}" > src/main.rs &&     cargo build --release &&     rm -rf src
 
-ARG DATABASE_URL
-ENV DATABASE_URL=${DATABASE_URL}
 
 # Copy source code
 COPY src/ src/
@@ -28,6 +26,8 @@ COPY sqlx-data.json sqlx-data.json
 
 # Build application
 ENV SQLX_OFFLINE=true
+ARG DATABASE_URL
+ENV DATABASE_URL=${DATABASE_URL}
 RUN touch src/main.rs && \
     cargo build --release
 
