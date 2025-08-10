@@ -1,5 +1,5 @@
 # Build stage
-FROM rust:nightly-slim as builder
+FROM rust:1.80-slim as builder
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \

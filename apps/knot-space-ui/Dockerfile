@@ -28,6 +28,7 @@ WORKDIR /app
 
 # Copy built application
 COPY --from=builder --chown=nextjs:nodejs /app/build ./build
+COPY --from=builder /app/package.json ./package.json
 
 # Switch to non-root user
 USER nextjs
