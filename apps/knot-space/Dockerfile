@@ -24,6 +24,7 @@ ENV DATABASE_URL=${DATABASE_URL}
 # Copy source code
 COPY src/ src/
 COPY migrations/ migrations/
+COPY sqlx-data.json sqlx-data.json
 
 # Build application
 RUN touch src/main.rs && \
