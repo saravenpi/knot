@@ -25,7 +25,7 @@ COPY src/ src/
 COPY migrations/ migrations/
 
 # Build application
-RUN touch src/main.rs && 
+RUN touch src/main.rs && \
     cargo build --release
 
 # Runtime stage
