@@ -1,5 +1,5 @@
 # Build stage
-FROM rust:1.81-slim as builder
+FROM rust:1.82-slim as builder
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -15,11 +15,7 @@ WORKDIR /app
 COPY Cargo.toml Cargo.lock ./
 
 # Create dummy source file to cache dependencies
-RUN mkdir src && \
-    echo "fn main() {}" > src/main.rs && \
-    cargo update && \
-    cargo build --release && \
-    rm -rf src
+RUN mkdir src &&     echo "fn main() {}" > src/main.rs &&     cargo build --release &&     rm -rf src
 
 # Copy source code
 COPY src/ src/
