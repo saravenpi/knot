@@ -4,20 +4,17 @@ FROM node:18-alpine as builder
 # Set working directory
 WORKDIR /app
 
-# Install pnpm
-RUN npm install -g pnpm
-
 # Copy package files
-COPY package.json ./
+COPY package.json package-lock.json ./
 
 # Install dependencies
-RUN pnpm install --frozen-lockfile
+RUN npm ci
 
 # Copy source code
 COPY . .
 
 # Build application
-RUN pnpm run build
+RUN npm run build
 
 # Runtime stage
 FROM node:18-alpine
