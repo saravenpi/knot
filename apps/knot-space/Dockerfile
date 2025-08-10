@@ -15,6 +15,7 @@ WORKDIR /app
 COPY Cargo.toml Cargo.lock ./
 
 # Create dummy source file to cache dependencies
+ENV SQLX_OFFLINE=true
 RUN mkdir src &&     echo "fn main() {}" > src/main.rs &&     cargo build --release &&     rm -rf src
 
 ARG DATABASE_URL
@@ -25,6 +26,7 @@ COPY src/ src/
 COPY migrations/ migrations/
 
 # Build application
+ENV SQLX_OFFLINE=true
 RUN touch src/main.rs && \
     cargo build --release
 
