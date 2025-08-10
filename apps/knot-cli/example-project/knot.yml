@@ -1,0 +1,24 @@
+name: CasaEats
+description: A food delivery platform built with Knot
+
+# Global scripts that can be run from anywhere in the project
+scripts:
+  setup: "echo 'Setting up development environment...' && npm install && echo 'Setup complete!'"
+  test-all: "echo 'Running all tests...' && knot run test-backend && knot run test-frontend"
+  clean: "echo 'Cleaning build artifacts...' && rm -rf */dist */build"
+  deploy: "echo 'Deploying to production...' && knot build && echo 'Deployed!'"
+
+apps:
+  backend:
+    tsAlias: "#"
+    packages:
+      - types
+      - validators
+      - "@jwt"
+      - "@klysium/logger"
+  frontend:
+    tsAlias: "@"
+    packages:
+      - types
+      - validators
+      - ui-components

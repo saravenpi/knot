@@ -1,0 +1,11 @@
+[default]
+port = 8000
+address = "0.0.0.0"
+keep_alive = 5
+log_level = "normal"
+secret_key = "your-secret-key-here-change-in-production"
+
+[default.databases.knot_db]
+url = "postgresql://username:password@localhost/knot_space"
+max_connections = 20
+connect_timeout = 5

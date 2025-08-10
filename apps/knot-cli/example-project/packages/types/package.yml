@@ -1,0 +1,11 @@
+name: types
+description: Shared TypeScript type definitions for CasaEats
+team: platform-team
+version: 1.0.3
+
+scripts:
+  build: "tsc --declaration --outDir dist"
+  test: "vitest run"
+  lint: "eslint src/ --ext .ts"
+  format: "prettier --write src/"
+  validate: "tsc --noEmit"
