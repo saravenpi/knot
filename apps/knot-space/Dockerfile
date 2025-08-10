@@ -26,7 +26,6 @@ COPY src/ src/
 COPY migrations/ migrations/
 
 # Build application
-ENV SQLX_OFFLINE=true
 RUN touch src/main.rs && \
     cargo build --release
 
