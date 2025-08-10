@@ -1,6 +1,5 @@
 # Rust
 target/
-Cargo.lock
 **/*.rs.bk
 
 # IDE
@@ -23,10 +22,11 @@ pnpm-debug.log*
 lerna-debug.log*
 .pnpm-store/
 
-# Package managers
-bun.lock
-package-lock.json
-yarn.lock
+# Package managers - keep lock files for reproducible builds
+# bun.lock
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
 
 # Build outputs
 dist/
