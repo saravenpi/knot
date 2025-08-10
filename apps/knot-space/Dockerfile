@@ -14,6 +14,9 @@ WORKDIR /app
 # Copy Cargo files
 COPY Cargo.toml Cargo.lock ./
 
+# Update dependencies to compatible versions
+RUN cargo update
+
 # Create dummy source file to cache dependencies
 RUN mkdir src && \
     echo "fn main() {}" > src/main.rs && \
