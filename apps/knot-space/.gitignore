@@ -1,11 +1,2 @@
-# Rust
-/target
-**/*.rs.bk
-
-# Environment files
-.env
-.env.local
-
-# Logs
-*.log
-*.out
+node_modules
+dist
