@@ -7,16 +7,18 @@ This guide explains how to deploy the Knot Space backend to Railway.
 The Dockerfile has been updated to work properly with Railway's build environment:
 
 ### Key Updates:
-1. **Hybrid build approach** - Tries online compilation with DATABASE_URL, falls back to offline mode
-2. **Application-level migrations** - Migrations handled directly in Rust code at startup
-3. **No sqlx-cli dependency** - Avoids Rust edition 2024 compatibility issues
-4. **Fallback sqlx-data.json** - Includes offline compilation data as backup
-5. **Production-ready configuration** - Includes health checks and proper error handling
+1. **Smart build approach** - Tests database connectivity during build, uses optimal compilation mode
+2. **Railway build compatibility** - Handles Railway's build-time database access limitations
+3. **Application-level migrations** - Migrations handled directly in Rust code at startup
+4. **No sqlx-cli dependency** - Avoids Rust edition 2024 compatibility issues
+5. **Fallback sqlx-data.json** - Reliable offline compilation when database unreachable
+6. **Production-ready configuration** - Includes health checks and proper error handling
 
 ### Build Process:
-- If Railway provides `DATABASE_URL`: SQLx queries verified against database during build
-- If no `DATABASE_URL`: Uses offline mode with pre-generated `sqlx-data.json`
-- Migrations are run by the application itself on startup using `sqlx::migrate!()`
+- **Database connectivity test**: Tests if DATABASE_URL is accessible during build
+- **Online mode**: If database is reachable, SQLx queries verified against database
+- **Offline mode fallback**: If no DATABASE_URL or database unreachable, uses `sqlx-data.json`
+- **Runtime migrations**: Migrations run by application at startup using `sqlx::migrate!()`
 
 ## 🚀 Railway Deployment Steps
 
@@ -134,11 +136,14 @@ Returns:
 ✅ **Fixed** - Removed sqlx-cli dependency entirely, migrations now handled by application code
 
 ### Build Fails: "error communicating with database: Name or service not known"
-✅ **Fixed** - Dockerfile now uses hybrid approach: online compilation when DATABASE_URL available, offline compilation otherwise
+✅ **Fixed** - Dockerfile tests database connectivity before compilation, falls back to offline mode if unreachable
+
+**Note**: Railway provides DATABASE_URL during build but the database may not be accessible from the build container due to networking limitations. The Dockerfile now handles this gracefully.
 
 ### Build Fails: "failed to connect to database"
 - Ensure PostgreSQL service is running in Railway
 - Check DATABASE_URL is properly set as build arg
+- This may be normal behavior - the build will automatically fall back to offline mode
 
 ### Runtime: "Migration failed"
 - Check database permissions

@@ -30,11 +30,21 @@ COPY sqlx-data.json .
 ARG DATABASE_URL
 ENV DATABASE_URL=${DATABASE_URL}
 
-# Try building with database connection, fall back to offline mode
+# Test database connectivity and build accordingly
 RUN if [ -n "$DATABASE_URL" ]; then \
-        echo "Building with database connection..." && \
-        touch src/main.rs && \
-        cargo build --release; \
+        echo "DATABASE_URL provided: Testing database connectivity..." && \
+        DB_HOST=$(echo "$DATABASE_URL" | sed 's|.*@\([^:]*\):.*|\1|') && \
+        echo "Extracted DB host: $DB_HOST" && \
+        if timeout 10 bash -c "exec 3<>/dev/tcp/$DB_HOST/5432" 2>/dev/null; then \
+            echo "✅ Database is accessible, building with online mode..." && \
+            touch src/main.rs && \
+            cargo build --release; \
+        else \
+            echo "❌ Database not accessible during build, using offline mode..." && \
+            export SQLX_OFFLINE=true && \
+            touch src/main.rs && \
+            cargo build --release; \
+        fi \
     else \
         echo "No DATABASE_URL provided, using offline mode..." && \
         export SQLX_OFFLINE=true && \
