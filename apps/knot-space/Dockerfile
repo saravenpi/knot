@@ -8,8 +8,8 @@ RUN apt-get update && apt-get install -y \
     libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Install sqlx-cli for runtime migrations
-RUN cargo install sqlx-cli --no-default-features --features postgres
+# Install sqlx-cli for runtime migrations (pinned to compatible version)
+RUN cargo install sqlx-cli --version "=0.7.4" --no-default-features --features postgres
 
 # Set working directory
 WORKDIR /app

@@ -129,6 +129,9 @@ Returns:
 ### Build Fails: "sqlx-data.json not found"
 ✅ **Fixed** - Dockerfile no longer requires this file
 
+### Build Fails: "feature `edition2024` is required" (sqlx-cli)
+✅ **Fixed** - sqlx-cli pinned to compatible version 0.7.4
+
 ### Build Fails: "failed to connect to database"
 - Ensure PostgreSQL service is running in Railway
 - Check DATABASE_URL is properly set as build arg
