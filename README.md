@@ -320,7 +320,7 @@ my-monorepo/
 
 ```bash
 git clone https://github.com/saravenpi/knot.git
-cd knot
+cd knot/apps/knot-cli
 cargo build --release
 sudo cp target/release/knot /usr/local/bin/
 ```

@@ -103,10 +103,14 @@ clone_repository() {
     
     REPO_URL="${KNOT_REPO_URL:-https://github.com/saravenpi/knot.git}"
     
-    # If running locally for testing, use the current directory
-    if [[ -f "$(dirname "$0")/Cargo.toml" ]]; then
+    # If running locally for testing, check for monorepo structure
+    if [[ -f "$(dirname "$0")/apps/knot-cli/Cargo.toml" ]]; then
         print_warning "Using local development version"
         cp -r "$(dirname "$0")" "$TEMP_DIR/knot"
+    elif [[ -f "$(dirname "$0")/Cargo.toml" ]] && [[ -d "$(dirname "$0")/../.." ]]; then
+        # Running from within the CLI directory
+        print_warning "Using local development version"
+        cp -r "$(dirname "$0")/../.." "$TEMP_DIR/knot"
     else
         if ! git clone "$REPO_URL" "$TEMP_DIR/knot"; then
             print_error "Failed to clone repository from $REPO_URL"
@@ -122,7 +126,7 @@ clone_repository() {
 build_project() {
     print_step "Building Knot..."
     
-    cd "$TEMP_DIR/knot"
+    cd "$TEMP_DIR/knot/apps/knot-cli"
     
     # Build in release mode for optimal performance
     if ! cargo build --release; then
@@ -175,7 +179,7 @@ determine_install_dir() {
 install_binary() {
     print_step "Installing Knot binary..."
     
-    BINARY_PATH="$TEMP_DIR/knot/target/release/knot"
+    BINARY_PATH="$TEMP_DIR/knot/apps/knot-cli/target/release/knot"
     
     if [[ ! -f "$BINARY_PATH" ]]; then
         print_error "Binary not found at $BINARY_PATH"
