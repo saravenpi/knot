@@ -6,10 +6,11 @@ RUN apt-get update && apt-get install -y \
     pkg-config \
     libssl-dev \
     libpq-dev \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Install sqlx-cli for runtime migrations (pinned to compatible version)
-RUN cargo install sqlx-cli --version "=0.7.4" --no-default-features --features postgres
+# Use a simpler approach - we'll handle migrations in the application code or use Railway's capabilities
+# For now, let's focus on getting the build working without sqlx-cli installation
 
 # Set working directory
 WORKDIR /app
@@ -51,9 +52,6 @@ WORKDIR /app
 
 # Copy binary from build stage
 COPY --from=builder /app/target/release/knot-space /usr/local/bin/knot-space
-
-# Copy sqlx-cli from build stage
-COPY --from=builder /usr/local/cargo/bin/sqlx /usr/local/bin/sqlx
 
 # Copy migrations
 COPY --from=builder /app/migrations /app/migrations

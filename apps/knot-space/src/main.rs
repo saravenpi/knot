@@ -9,7 +9,8 @@ mod validation;
 use auth::KnotDb;
 use handlers::{packages, teams, users};
 use rocket::serde::json::Json;
-use rocket_db_pools::Database;
+use rocket_db_pools::{Database, Connection};
+use sqlx::migrate::MigrateDatabase;
 
 #[get("/")]
 fn index() -> &'static str {
@@ -25,9 +26,30 @@ fn health() -> Json<serde_json::Value> {
     }))
 }
 
-#[launch]
-fn rocket() -> _ {
-    rocket::build()
+async fn run_migrations(database_url: &str) -> Result<(), Box<dyn std::error::Error>> {
+    println!("🔄 Running database migrations...");
+    
+    let pool = sqlx::PgPool::connect(database_url).await?;
+    sqlx::migrate!("./migrations").run(&pool).await?;
+    
+    println!("✅ Migrations completed successfully");
+    Ok(())
+}
+
+#[rocket::main]
+async fn main() -> Result<(), rocket::Error> {
+    // Get database URL from environment
+    let database_url = std::env::var("DATABASE_URL")
+        .expect("DATABASE_URL environment variable must be set");
+
+    // Run migrations before starting the server
+    if let Err(e) = run_migrations(&database_url).await {
+        eprintln!("❌ Failed to run migrations: {}", e);
+        std::process::exit(1);
+    }
+
+    // Build and launch the rocket
+    let _rocket = rocket::build()
         .attach(KnotDb::init())
         .mount("/", routes![index, health])
         .mount(
@@ -63,4 +85,8 @@ fn rocket() -> _ {
                 packages::delete_package
             ],
         )
+        .launch()
+        .await?;
+
+    Ok(())
 }

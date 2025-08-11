@@ -9,13 +9,14 @@ The Dockerfile has been updated to work properly with Railway's build environmen
 ### Key Updates:
 1. **Removed `sqlx-data.json` dependency** - No longer requires offline compilation data
 2. **Database connection at build time** - Uses Railway's DATABASE_URL during build
-3. **Robust startup script** - Handles database connectivity and migrations at runtime
-4. **Production-ready configuration** - Includes health checks and proper error handling
+3. **Application-level migrations** - Migrations handled directly in Rust code at startup
+4. **No sqlx-cli dependency** - Avoids Rust edition 2024 compatibility issues
+5. **Production-ready configuration** - Includes health checks and proper error handling
 
 ### Build Process:
 - Railway provides `DATABASE_URL` as a build argument
 - SQLx queries are verified against the actual database during compilation
-- Migrations are run at container startup, not during build
+- Migrations are run by the application itself on startup using `sqlx::migrate!()`
 
 ## 🚀 Railway Deployment Steps
 
@@ -130,7 +131,7 @@ Returns:
 ✅ **Fixed** - Dockerfile no longer requires this file
 
 ### Build Fails: "feature `edition2024` is required" (sqlx-cli)
-✅ **Fixed** - sqlx-cli pinned to compatible version 0.7.4
+✅ **Fixed** - Removed sqlx-cli dependency entirely, migrations now handled by application code
 
 ### Build Fails: "failed to connect to database"
 - Ensure PostgreSQL service is running in Railway
