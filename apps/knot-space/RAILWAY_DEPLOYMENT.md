@@ -136,9 +136,24 @@ Returns:
 ✅ **Fixed** - Removed sqlx-cli dependency entirely, migrations now handled by application code
 
 ### Build Fails: "error communicating with database: Name or service not known"
-✅ **Fixed** - Dockerfile tests database connectivity before compilation, falls back to offline mode if unreachable
+⚠️ **Railway Limitation** - Railway's build containers cannot access internal database during build phase
 
-**Note**: Railway provides DATABASE_URL during build but the database may not be accessible from the build container due to networking limitations. The Dockerfile now handles this gracefully.
+**Root Cause**: SQLx `query!` macros require database connectivity for compile-time verification, but Railway's `postgres-zimf.railway.internal` hostname is not accessible during Docker build.
+
+**Solution**: Generate `sqlx-data.json` locally and commit to repository:
+```bash
+# Set up local database
+createdb knot_dev && psql knot_dev -f migrations/001_init.sql
+
+# Generate query cache
+export DATABASE_URL="postgresql://$(whoami)@localhost/knot_dev"
+cargo sqlx prepare
+
+# Commit to repository
+git add sqlx-data.json && git commit -m "Add SQLx cache for Railway"
+```
+
+📖 **Detailed Guide**: See `RAILWAY_BUILD_ISSUE.md` for complete solution
 
 ### Build Fails: "failed to connect to database"
 - Ensure PostgreSQL service is running in Railway
