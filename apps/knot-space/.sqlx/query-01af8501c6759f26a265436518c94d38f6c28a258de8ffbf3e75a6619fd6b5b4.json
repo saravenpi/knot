@@ -1,0 +1,110 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n        SELECT \n            p.id, p.name, p.version, p.description, p.file_size, p.published_at,\n            u.id as owner_id, u.username as owner_username, u.email as owner_email, u.created_at as owner_created_at,\n            t.id as team_id, t.name as team_name, t.description as team_description, t.owner_id as team_owner_id, t.created_at as team_created_at, t.updated_at as team_updated_at\n        FROM packages p\n        JOIN users u ON p.owner_id = u.id\n        LEFT JOIN teams t ON p.team_id = t.id\n        ORDER BY p.published_at DESC\n        LIMIT 100\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 2,
+        "name": "version",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 3,
+        "name": "description",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "file_size",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 5,
+        "name": "published_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 6,
+        "name": "owner_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 7,
+        "name": "owner_username",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 8,
+        "name": "owner_email",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 9,
+        "name": "owner_created_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 10,
+        "name": "team_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 11,
+        "name": "team_name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 12,
+        "name": "team_description",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 13,
+        "name": "team_owner_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 14,
+        "name": "team_created_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 15,
+        "name": "team_updated_at",
+        "type_info": "Timestamptz"
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      true,
+      false,
+      true,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      true,
+      false,
+      true,
+      true
+    ]
+  },
+  "hash": "01af8501c6759f26a265436518c94d38f6c28a258de8ffbf3e75a6619fd6b5b4"
+}

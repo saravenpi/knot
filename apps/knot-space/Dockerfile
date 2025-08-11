@@ -6,11 +6,8 @@ RUN apt-get update && apt-get install -y \
     pkg-config \
     libssl-dev \
     libpq-dev \
-    curl \
+    postgresql-client \
     && rm -rf /var/lib/apt/lists/*
-
-# Use a simpler approach - we'll handle migrations in the application code or use Railway's capabilities
-# For now, let's focus on getting the build working without sqlx-cli installation
 
 # Set working directory
 WORKDIR /app
@@ -18,20 +15,32 @@ WORKDIR /app
 # Copy Cargo files
 COPY Cargo.toml Cargo.lock ./
 
-# Create dummy source file to cache dependencies
-RUN mkdir src &&     echo "fn main() {}" > src/main.rs &&     cargo build --release &&     rm -rf src
+# Create dummy source file to cache dependencies - build without SQLx queries
+RUN mkdir src && \
+    echo 'fn main() { println!("Hello, world!"); }' > src/main.rs && \
+    cargo build --release && \
+    rm -rf src target/release/knot-space
 
-# Copy source code and migrations
+# Copy all source files
 COPY src/ src/
 COPY migrations/ migrations/
+COPY sqlx-data.json .
 
-# Build application - Railway provides DATABASE_URL at build time
+# Build with either online or offline mode based on DATABASE_URL availability
 ARG DATABASE_URL
 ENV DATABASE_URL=${DATABASE_URL}
 
-# Build the application (SQLx will use the database connection)
-RUN touch src/main.rs && \
-    cargo build --release
+# Try building with database connection, fall back to offline mode
+RUN if [ -n "$DATABASE_URL" ]; then \
+        echo "Building with database connection..." && \
+        touch src/main.rs && \
+        cargo build --release; \
+    else \
+        echo "No DATABASE_URL provided, using offline mode..." && \
+        export SQLX_OFFLINE=true && \
+        touch src/main.rs && \
+        cargo build --release; \
+    fi
 
 # Runtime stage
 FROM debian:bookworm-slim

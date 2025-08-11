@@ -9,8 +9,7 @@ mod validation;
 use auth::KnotDb;
 use handlers::{packages, teams, users};
 use rocket::serde::json::Json;
-use rocket_db_pools::{Database, Connection};
-use sqlx::migrate::MigrateDatabase;
+use rocket_db_pools::Database;
 
 #[get("/")]
 fn index() -> &'static str {

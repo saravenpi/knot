@@ -1,5 +1,5 @@
 use crate::auth::{AuthenticatedUser, DbPool};
-use crate::models::{PackageResponse, PublishPackageRequest};
+use crate::models::{Package, PackageResponse, PublishPackageRequest, Team, UserProfile};
 use crate::validation::{
     validate_package_name, validate_package_team_consistency, validate_version,
 };
@@ -356,7 +356,7 @@ pub async fn get_package(
     let package_result = sqlx::query!(
         r#"
         SELECT 
-            p.id, p.name, p.version, p.description, p.download_url, p.file_size, p.checksum, p.published_at,
+            p.id, p.name, p.version, p.description, p.download_url, p.file_size, p.checksum_sha256, p.published_at,
             u.id as owner_id, u.username as owner_username, u.email as owner_email, u.created_at as owner_created_at,
             t.id as team_id, t.name as team_name, t.description as team_description, t.owner_id as team_owner_id, t.created_at as team_created_at, t.updated_at as team_updated_at
         FROM packages p
@@ -392,7 +392,7 @@ pub async fn get_package(
                 "description": row.description,
                 "download_url": row.download_url,
                 "file_size": row.file_size,
-                "checksum": row.checksum,
+                "checksum": row.checksum_sha256,
                 "published_at": row.published_at,
                 "owner": {
                     "id": row.owner_id,

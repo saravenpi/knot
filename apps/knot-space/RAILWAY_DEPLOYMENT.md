@@ -7,15 +7,15 @@ This guide explains how to deploy the Knot Space backend to Railway.
 The Dockerfile has been updated to work properly with Railway's build environment:
 
 ### Key Updates:
-1. **Removed `sqlx-data.json` dependency** - No longer requires offline compilation data
-2. **Database connection at build time** - Uses Railway's DATABASE_URL during build
-3. **Application-level migrations** - Migrations handled directly in Rust code at startup
-4. **No sqlx-cli dependency** - Avoids Rust edition 2024 compatibility issues
+1. **Hybrid build approach** - Tries online compilation with DATABASE_URL, falls back to offline mode
+2. **Application-level migrations** - Migrations handled directly in Rust code at startup
+3. **No sqlx-cli dependency** - Avoids Rust edition 2024 compatibility issues
+4. **Fallback sqlx-data.json** - Includes offline compilation data as backup
 5. **Production-ready configuration** - Includes health checks and proper error handling
 
 ### Build Process:
-- Railway provides `DATABASE_URL` as a build argument
-- SQLx queries are verified against the actual database during compilation
+- If Railway provides `DATABASE_URL`: SQLx queries verified against database during build
+- If no `DATABASE_URL`: Uses offline mode with pre-generated `sqlx-data.json`
 - Migrations are run by the application itself on startup using `sqlx::migrate!()`
 
 ## 🚀 Railway Deployment Steps
@@ -132,6 +132,9 @@ Returns:
 
 ### Build Fails: "feature `edition2024` is required" (sqlx-cli)
 ✅ **Fixed** - Removed sqlx-cli dependency entirely, migrations now handled by application code
+
+### Build Fails: "error communicating with database: Name or service not known"
+✅ **Fixed** - Dockerfile now uses hybrid approach: online compilation when DATABASE_URL available, offline compilation otherwise
 
 ### Build Fails: "failed to connect to database"
 - Ensure PostgreSQL service is running in Railway

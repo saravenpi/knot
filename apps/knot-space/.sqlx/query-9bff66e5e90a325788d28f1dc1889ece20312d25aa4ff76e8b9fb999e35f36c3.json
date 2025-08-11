@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n        DELETE FROM team_members\n        WHERE team_id = (SELECT id FROM teams WHERE name = $1)\n        AND user_id = (SELECT id FROM users WHERE username = $2)\n        AND role != 'owner'\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Text"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "9bff66e5e90a325788d28f1dc1889ece20312d25aa4ff76e8b9fb999e35f36c3"
+}
