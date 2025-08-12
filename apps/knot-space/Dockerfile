@@ -40,6 +40,9 @@ RUN echo "=== Validating schema ===" && bunx prisma validate
 # Generate Prisma client
 RUN bunx prisma generate
 
+# Debug: Check if bunfig.toml exists and show its contents
+RUN ls -la bunfig.toml && cat bunfig.toml
+
 # Build the project using bun build with bundling
 RUN bun build src/index.ts --outdir ./dist --target node --external '@prisma/client'
 
