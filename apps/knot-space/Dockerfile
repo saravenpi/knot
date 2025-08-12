@@ -1,92 +1,19 @@
-# Use Bun's official image with specific version for reproducibility
-FROM oven/bun:1.1.29 AS base
-WORKDIR /usr/src/app
+FROM oven/bun AS builder
+WORKDIR /app
 
-# Install system dependencies and security updates
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl \
-    ca-certificates \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt-get update -y && apt-get install -y openssl
 
-# Install dependencies into temp directory
-# This will cache them and speed up future builds
-FROM base AS install
-RUN mkdir -p /temp/dev
-COPY package.json bun.lockb* /temp/dev/
-RUN cd /temp/dev && bun install --frozen-lockfile
+COPY package.json bun.lock ./
+RUN bun install
 
-# Install with --production (exclude devDependencies)
-RUN mkdir -p /temp/prod
-COPY package.json bun.lockb* /temp/prod/
-RUN cd /temp/prod && bun install --frozen-lockfile --production
 
-# Copy node_modules from temp directory
-# Then copy all (non-ignored) project files into the image
-FROM base AS prerelease
-COPY --from=install /temp/dev/node_modules node_modules
+ARG NODE_ENV
+ENV NODE_ENV=$NODE_ENV
+
 COPY . .
-# Explicitly ensure tsconfig files are present
-COPY tsconfig*.json ./
+RUN bun run build
 
-# Accept DATABASE_URL as build argument
-ARG DATABASE_URL
-ENV DATABASE_URL=${DATABASE_URL}
 
-# Debug Prisma setup
-RUN echo "=== Prisma version ===" && bunx prisma --version
-RUN echo "=== DATABASE_URL ===" && echo $DATABASE_URL
+EXPOSE 8080
 
-RUN echo "=== Validating schema ===" && bunx prisma validate
-
-# Generate Prisma client (non-interactive)
-ENV PRISMA_GENERATE_SKIP_AUTOINSTALL=true
-ENV CI=true
-ENV NODE_ENV=production
-RUN bunx prisma generate --no-hints
-
-# Build the project using bun build (now uses relative imports)
-RUN bun build src/index.ts --outdir ./dist --target node --external '@prisma/client'
-
-# Copy production dependencies and source files into final image
-FROM base AS release
-
-# Copy production dependencies and built application
-COPY --from=install /temp/prod/node_modules node_modules
-COPY --from=prerelease /usr/src/app/dist dist
-COPY --from=prerelease /usr/src/app/prisma prisma
-COPY --from=prerelease /usr/src/app/package.json .
-
-# Create uploads directory with secure permissions
-RUN mkdir -p uploads && chmod 700 uploads
-
-# Use existing bun user from base image and set ownership
-RUN chown -R bun:bun /usr/src/app
-
-# Switch to non-root user
-USER bun
-
-# Expose port (non-privileged)
-EXPOSE 3001/tcp
-
-# Set secure environment variables
-ENV NODE_ENV=production
-ENV PORT=3001
-ENV LOG_LEVEL=INFO
-
-# Set security-related environment variables
-ENV NODE_OPTIONS="--max-old-space-size=512 --enable-source-maps"
-
-# Health check with more robust check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
-  CMD curl -f http://localhost:3001/health || exit 1
-
-# Use exec form for proper signal handling
-ENTRYPOINT ["bun", "run", "start:prod"]
-
-# Labels for container metadata
-LABEL org.opencontainers.image.title="Knot Space"
-LABEL org.opencontainers.image.description="Online Package Repository Server"
-LABEL org.opencontainers.image.version="0.1.0"
-LABEL org.opencontainers.image.source="https://github.com/saravenpi/knot"
-LABEL maintainer="Knot Team"
+CMD ["sh", "-c", "./server"]

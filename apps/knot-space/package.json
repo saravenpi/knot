@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "bun --hot src/index.ts",
-    "build": "bun build src/index.ts --outdir ./dist --target node --external '@prisma/client'",
+    "build": "bun build src/index.ts --compile --outfile server",
     "build:tsc": "tsc --noEmit",
     "start": "bun src/index.ts",
     "start:prod": "bun dist/index.js",
@@ -59,3 +59,4 @@
   "author": "Knot Team",
   "license": "MIT"
 }
+
