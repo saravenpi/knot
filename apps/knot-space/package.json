@@ -5,8 +5,8 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "bun --hot src/index.ts",
-    "build": "tsc --project .",
-    "build:tsc": "tsc",
+    "build": "bun build src/index.ts --outdir ./dist --target node --format cjs --external '@prisma/client'",
+    "build:tsc": "tsc --noEmit",
     "start": "bun src/index.ts",
     "start:prod": "bun dist/index.js",
     "db:generate": "bun prisma generate",

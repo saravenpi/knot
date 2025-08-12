@@ -40,13 +40,8 @@ RUN echo "=== Validating schema ===" && bunx prisma validate
 # Generate Prisma client
 RUN bunx prisma generate
 
-# Debug: List files to see what's available
-RUN echo "=== Files in working directory ===" && ls -la
-RUN echo "=== Contents of src directory ===" && ls -la src/
-RUN echo "=== TypeScript version ===" && bunx tsc --version
-
-# Build the project (use bunx to run tsc directly)
-RUN bunx tsc --project .
+# Build the project using bun build with bundling
+RUN bun build src/index.ts --outdir ./dist --target node --format cjs --external '@prisma/client'
 
 # Copy production dependencies and source files into final image
 FROM base AS release
@@ -56,7 +51,6 @@ COPY --from=install /temp/prod/node_modules node_modules
 COPY --from=prerelease /usr/src/app/dist dist
 COPY --from=prerelease /usr/src/app/prisma prisma
 COPY --from=prerelease /usr/src/app/package.json .
-COPY --from=prerelease /usr/src/app/tsconfig.json .
 
 # Create uploads directory with secure permissions
 RUN mkdir -p uploads && chmod 700 uploads
