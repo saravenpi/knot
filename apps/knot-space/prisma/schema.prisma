@@ -86,8 +86,8 @@ model Package {
   @@index([name])
   @@index([ownerId])
   @@index([teamId])
-  @@index([publishedAt(sort: Desc)])
-  @@index([downloadsCount(sort: Desc)])
+  @@index([publishedAt])
+  @@index([downloadsCount])
   @@map("packages")
 }
 
