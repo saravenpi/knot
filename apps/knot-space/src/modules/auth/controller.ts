@@ -1,12 +1,12 @@
 import { Context } from 'hono';
-import { authService } from './service';
+import { authModuleService } from './service';
 import { CreateUserRequest, LoginRequest } from '@/types';
 
 export class AuthController {
   static async register(c: Context) {
     try {
       const body = await c.req.json() as CreateUserRequest;
-      const result = await authService.register(body);
+      const result = await authModuleService.register(body);
       
       return c.json({
         success: true,
@@ -25,7 +25,7 @@ export class AuthController {
   static async login(c: Context) {
     try {
       const body = await c.req.json() as LoginRequest;
-      const result = await authService.login(body);
+      const result = await authModuleService.login(body);
       
       return c.json({
         success: true,
@@ -51,7 +51,7 @@ export class AuthController {
         }, 401);
       }
 
-      const profile = await authService.getProfile(user.id);
+      const profile = await authModuleService.getProfile(user.id);
       
       return c.json({
         success: true,
@@ -76,7 +76,7 @@ export class AuthController {
         }, 401);
       }
 
-      await authService.deleteAccount(user.id);
+      await authModuleService.deleteAccount(user.id);
       
       return c.json({
         success: true,
@@ -101,7 +101,7 @@ export class AuthController {
         }, 400);
       }
 
-      const user = await authService.getUserByUsername(username);
+      const user = await authModuleService.getUserByUsername(username);
       
       return c.json({
         success: true,

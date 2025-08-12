@@ -1,6 +1,5 @@
 import { Context, Next } from 'hono';
-import { authService } from '@/modules/auth/service';
-import { prisma } from './prisma';
+import { authModuleService } from '@/modules/auth/service';
 
 export async function authMiddleware(c: Context, next: Next) {
   try {
@@ -14,24 +13,14 @@ export async function authMiddleware(c: Context, next: Next) {
     }
 
     const token = authHeader.substring(7);
-    const decoded = authService.verifyToken(token);
+    const sessionData = await authModuleService.verifySession(token);
     
-    const user = await prisma.user.findUnique({
-      where: { id: decoded.userId },
-      select: {
-        id: true,
-        username: true,
-        email: true,
-        createdAt: true,
-      }
-    });
-
-    if (!user) {
-      return c.json({
-        success: false,
-        error: 'User not found'
-      }, 401);
-    }
+    const user = {
+      id: sessionData.userId,
+      username: sessionData.username,
+      email: '', // We'll get this from the session if needed
+      createdAt: new Date(), // Placeholder
+    };
 
     c.set('user', user);
     await next();
@@ -49,21 +38,16 @@ export async function optionalAuthMiddleware(c: Context, next: Next) {
     
     if (authHeader && authHeader.startsWith('Bearer ')) {
       const token = authHeader.substring(7);
-      const decoded = authService.verifyToken(token);
+      const sessionData = await authModuleService.verifySession(token);
       
-      const user = await prisma.user.findUnique({
-        where: { id: decoded.userId },
-        select: {
-          id: true,
-          username: true,
-          email: true,
-          createdAt: true,
-        }
-      });
+      const user = {
+        id: sessionData.userId,
+        username: sessionData.username,
+        email: '', // We'll get this from the session if needed
+        createdAt: new Date(), // Placeholder
+      };
 
-      if (user) {
-        c.set('user', user);
-      }
+      c.set('user', user);
     }
     
     await next();

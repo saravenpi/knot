@@ -8,8 +8,8 @@ const envSchema = z.object({
   DATABASE_URL: z.string().url('DATABASE_URL must be a valid PostgreSQL connection string'),
   
   // Auth
-  BETTER_AUTH_SECRET: z.string().min(32, 'BETTER_AUTH_SECRET must be at least 32 characters'),
-  BETTER_AUTH_URL: z.string().url('BETTER_AUTH_URL must be a valid URL'),
+  AUTH_SECRET: z.string().min(32, 'AUTH_SECRET must be at least 32 characters'),
+  API_URL: z.string().url('API_URL must be a valid URL').default('http://localhost:3001'),
   
   // File Upload
   UPLOAD_DIR: z.string().default('./uploads'),
@@ -48,7 +48,7 @@ export { env };
 export function validateRequiredEnv() {
   const required = [
     'DATABASE_URL',
-    'BETTER_AUTH_SECRET',
+    'AUTH_SECRET',
   ];
   
   const missing = required.filter(key => !process.env[key]);

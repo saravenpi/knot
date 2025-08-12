@@ -5,6 +5,7 @@ import { loadModules } from '@/lib/loadModules';
 import { securityHeaders, requestLogger, rateLimit } from '@/lib/security';
 import { errorHandler } from '@/lib/errorHandler';
 import { env } from '@/lib/env';
+import { auth } from '@/lib/auth';
 
 const app = new Hono();
 
@@ -57,6 +58,11 @@ export async function setupRoutes() {
   const { logger } = await import('@/lib/logger');
   
   try {
+    // Mount better-auth routes
+    app.on(["POST", "GET"], "/api/auth/*", (c) => {
+      return auth.handler(c.req.raw);
+    });
+    
     const modules = await loadModules();
     
     if (modules.length === 0) {
