@@ -4,7 +4,9 @@ WORKDIR /app
 
 # Install system dependencies
 FROM base AS deps
-RUN apt-get update -y && apt-get install -y \
+RUN apt-get clean && rm -rf /var/lib/apt/lists/* && \
+    apt-get update --fix-missing -y && \
+    apt-get install -y \
     openssl \
     ca-certificates \
     && rm -rf /var/lib/apt/lists/*
@@ -19,7 +21,10 @@ RUN bunx prisma generate
 
 # Build stage
 FROM base AS builder
-RUN apt-get update -y && apt-get install -y openssl ca-certificates
+RUN apt-get clean && rm -rf /var/lib/apt/lists/* && \
+    apt-get update --fix-missing -y && \
+    apt-get install -y openssl ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
 
 # Copy dependencies from deps stage
 COPY --from=deps /app/node_modules ./node_modules
@@ -36,7 +41,9 @@ FROM oven/bun:1-slim AS production
 WORKDIR /app
 
 # Install runtime dependencies
-RUN apt-get update -y && apt-get install -y \
+RUN apt-get clean && rm -rf /var/lib/apt/lists/* && \
+    apt-get update --fix-missing -y && \
+    apt-get install -y \
     openssl \
     ca-certificates \
     curl \
