@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/prisma';
 import { PublishPackageRequest } from '@/types';
 import * as crypto from 'crypto';
 

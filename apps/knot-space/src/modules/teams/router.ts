@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { TeamsController } from './controller';
 import { validateCreateTeam, validateAddTeamMember } from './validator';
-import { authMiddleware, optionalAuthMiddleware } from '@/lib/middleware';
+import { authMiddleware, optionalAuthMiddleware } from '@/middleware';
 
 const teams = new Hono();
 

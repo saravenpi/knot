@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { PackagesController } from './controller';
 import { validatePublishPackage, validatePackageQuery } from './validator';
-import { authMiddleware, optionalAuthMiddleware } from '@/lib/middleware';
+import { authMiddleware, optionalAuthMiddleware } from '@/middleware';
 
 const packages = new Hono();
 

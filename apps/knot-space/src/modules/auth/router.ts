@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { AuthController } from './controller';
 import { validateCreateUser, validateLogin } from './validator';
-import { authMiddleware } from '@/lib/middleware';
+import { authMiddleware } from '@/middleware';
 
 const auth = new Hono();
 
