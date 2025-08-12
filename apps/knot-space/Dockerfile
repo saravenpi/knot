@@ -1,92 +1,79 @@
-# Build stage
-FROM rust:1.82-slim as builder
+# Use Bun's official image with specific version for reproducibility
+FROM oven/bun:1.1.29 AS base
+WORKDIR /usr/src/app
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    pkg-config \
-    libssl-dev \
-    libpq-dev \
-    postgresql-client \
-    && rm -rf /var/lib/apt/lists/*
-
-# Set working directory
-WORKDIR /app
-
-# Copy Cargo files
-COPY Cargo.toml Cargo.lock ./
-
-# Create dummy source file to cache dependencies - build without SQLx queries
-RUN mkdir src && \
-    echo 'fn main() { println!("Hello, world!"); }' > src/main.rs && \
-    cargo build --release && \
-    rm -rf src target/release/knot-space
-
-# Copy all source files
-COPY src/ src/
-COPY migrations/ migrations/
-COPY sqlx-data.json .
-
-# Build with either online or offline mode based on DATABASE_URL availability
-ARG DATABASE_URL
-ENV DATABASE_URL=${DATABASE_URL}
-
-# SQLx configuration for Railway deployment
-RUN echo "🔨 Configuring SQLx for Railway build environment..." && \
-    echo "Railway provides DATABASE_URL but database is not accessible during build" && \
-    if [ -n "$DATABASE_URL" ]; then \
-        echo "✅ DATABASE_URL provided: Using runtime verification" && \
-        unset SQLX_OFFLINE && \
-        touch src/main.rs && \
-        cargo build --release; \
-    else \
-        echo "❌ No DATABASE_URL: Cannot build with SQLx query macros" && \
-        false; \
-    fi
-
-# Runtime stage
-FROM debian:bookworm-slim
-
-# Install runtime dependencies
-RUN apt-get update && apt-get install -y \
-    ca-certificates \
-    libpq5 \
-    postgresql-client \
+# Install system dependencies and security updates
+RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
+    ca-certificates \
+    && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Create app user
-RUN useradd -r -s /bin/false -m -d /app knot
+# Install dependencies into temp directory
+# This will cache them and speed up future builds
+FROM base AS install
+RUN mkdir -p /temp/dev
+COPY package.json bun.lockb* /temp/dev/
+RUN cd /temp/dev && bun install --frozen-lockfile
 
-# Set working directory
-WORKDIR /app
+# Install with --production (exclude devDependencies)
+RUN mkdir -p /temp/prod
+COPY package.json bun.lockb* /temp/prod/
+RUN cd /temp/prod && bun install --frozen-lockfile --production
 
-# Copy binary from build stage
-COPY --from=builder /app/target/release/knot-space /usr/local/bin/knot-space
+# Copy node_modules from temp directory
+# Then copy all (non-ignored) project files into the image
+FROM base AS prerelease
+COPY --from=install /temp/dev/node_modules node_modules
+COPY . .
 
-# Copy migrations
-COPY --from=builder /app/migrations /app/migrations
+# Generate Prisma client
+RUN bun prisma generate
 
-# Copy startup script
-COPY start.sh /app/start.sh
-RUN chmod +x /app/start.sh
+# Build the project
+RUN bun run build
 
-# Create storage directory
-RUN mkdir -p /app/storage/packages && \
-    chown -R knot:knot /app
+# Copy production dependencies and source files into final image
+FROM base AS release
+
+# Copy production dependencies and built application
+COPY --from=install /temp/prod/node_modules node_modules
+COPY --from=prerelease /usr/src/app/dist dist
+COPY --from=prerelease /usr/src/app/prisma prisma
+COPY --from=prerelease /usr/src/app/package.json .
+
+# Create uploads directory with secure permissions
+RUN mkdir -p uploads && chmod 700 uploads
+
+# Create non-root user with minimal privileges
+RUN groupadd -g 1001 -r bun && \
+    useradd -u 1001 -r -g bun -d /usr/src/app -s /bin/false bun && \
+    chown -R bun:bun /usr/src/app
 
 # Switch to non-root user
-USER knot
+USER bun
 
-# Expose port
-EXPOSE 8000
+# Expose port (non-privileged)
+EXPOSE 3001/tcp
 
+# Set secure environment variables
+ENV NODE_ENV=production
+ENV PORT=3001
+ENV LOG_LEVEL=INFO
 
-ARG DATABASE_URL
-ENV DATABASE_URL=${DATABASE_URL}
+# Set security-related environment variables
+ENV NODE_OPTIONS="--max-old-space-size=512 --enable-source-maps"
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:8000/health || exit 1
+# Health check with more robust check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+  CMD curl -f http://localhost:3001/health || exit 1
 
-# Run application
-CMD ["/app/start.sh"]
+# Use exec form for proper signal handling
+ENTRYPOINT ["bun", "run", "start:prod"]
+
+# Labels for container metadata
+LABEL org.opencontainers.image.title="Knot Space"
+LABEL org.opencontainers.image.description="Online Package Repository Server"
+LABEL org.opencontainers.image.version="0.1.0"
+LABEL org.opencontainers.image.source="https://github.com/saravenpi/knot"
+LABEL maintainer="Knot Team"

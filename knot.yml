@@ -20,3 +20,4 @@ apps:
     description: "Online repository server for Knot packages"
   knot-space-ui:
     description: "Frontend UI for Knot Space package registry"
+
