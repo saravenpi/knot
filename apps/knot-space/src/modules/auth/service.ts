@@ -85,7 +85,9 @@ class AuthServiceModule {
       throw new Error('User not found');
     }
 
-    return user;
+    const token = authService.generateToken(user.id, user.username);
+
+    return { ...user, token };
   }
 
   async deleteAccount(userId: string): Promise<void> {

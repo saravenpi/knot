@@ -12,19 +12,18 @@
 	let copied = false;
 
 	onMount(() => {
-		// Wait for auth to initialize before checking
 		const unsubscribe = authStore.subscribe(({ initialized, isAuthenticated }) => {
 			if (initialized && !isAuthenticated) {
 				goto('/login?redirectTo=/settings');
-				return;
 			}
-			
-			if (initialized && isAuthenticated && browser) {
-				// Get token from localStorage
+		});
+
+		authStore.getProfile().then(() => {
+			if (browser) {
 				token = localStorage.getItem('knot_token') || '';
 			}
 		});
-		
+
 		return unsubscribe;
 	});
 
