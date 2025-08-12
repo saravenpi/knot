@@ -45,8 +45,8 @@ ENV CI=true
 ENV NODE_ENV=production
 RUN bunx prisma generate --no-hints
 
-# Debug: Check if tsconfig files exist and show their contents
-RUN ls -la tsconfig*.json && echo "=== tsconfig.json ===" && cat tsconfig.json && echo "=== tsconfig.build.json ===" && cat tsconfig.build.json
+# Debug: List all files in working directory and check tsconfig files
+RUN echo "=== Working directory contents ===" && ls -la && echo "=== Looking for tsconfig files ===" && find . -name "tsconfig*.json" -type f && echo "=== tsconfig.build.json ===" && cat tsconfig.build.json
 
 # Debug: Check src/lib directory structure
 RUN ls -la src/lib/
