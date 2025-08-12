@@ -1,9 +1,11 @@
 # Bun configuration file
 
-# Path aliases configuration matching tsconfig.json
+# Path aliases configuration - comprehensive mapping
 [alias]
+"@" = "./src/lib"
 "@/*" = "./src/lib/*"
-"@/modules/*" = "./src/modules/*"
+"@/modules" = "./src/modules"
+"@/modules/*" = "./src/modules/*"  
 "@/types" = "./src/types"
 "@/types/*" = "./src/types/*"
 

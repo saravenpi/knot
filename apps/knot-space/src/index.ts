@@ -2,7 +2,6 @@
 import 'tsconfig-paths/register';
 import { serve } from '@hono/node-server';
 import { setupRoutes } from './router';
-import { swagger } from '@/swagger';
 import { validateRequiredEnv, env } from '@/env';
 import { logger } from '@/logger';
 import { checkDatabaseConnection, disconnectDatabase } from '@/prisma';
@@ -28,13 +27,9 @@ async function startServer() {
     // Setup all routes
     const app = await setupRoutes();
     
-    // Add Swagger documentation routes
-    app.route('/', swagger);
     
     logger.info('Server configuration', {
       port: env.PORT,
-      apiDocs: `http://localhost:${env.PORT}/ui`,
-      openApiSpec: `http://localhost:${env.PORT}/doc`,
       corsOrigins: env.CORS_ORIGINS,
       uploadDir: env.UPLOAD_DIR,
       maxFileSize: env.MAX_FILE_SIZE,
