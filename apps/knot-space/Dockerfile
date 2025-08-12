@@ -60,10 +60,8 @@ COPY --from=prerelease /usr/src/app/package.json .
 # Create uploads directory with secure permissions
 RUN mkdir -p uploads && chmod 700 uploads
 
-# Create non-root user with minimal privileges
-RUN groupadd -g 1001 -r bun && \
-    useradd -u 1001 -r -g bun -d /usr/src/app -s /bin/false bun && \
-    chown -R bun:bun /usr/src/app
+# Use existing bun user from base image and set ownership
+RUN chown -R bun:bun /usr/src/app
 
 # Switch to non-root user
 USER bun
