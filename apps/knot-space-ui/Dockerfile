@@ -35,11 +35,11 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 # Copy project configuration and packages
-COPY ../../knot.yml ../knot.yml
-COPY ../../packages ../packages
+COPY knot.yml ./knot.yml
+COPY packages ./packages
 
-# Copy source code
-COPY . .
+# Copy app source code
+COPY apps/knot-space-ui ./
 
 # knot_packages are now included directly in the build context
 

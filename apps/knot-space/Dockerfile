@@ -50,11 +50,11 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /app/prisma ./prisma
 
 # Copy project configuration and packages
-COPY ../../knot.yml ../knot.yml
-COPY ../../packages ../packages
+COPY knot.yml ./knot.yml
+COPY packages ./packages
 
-# Copy source code
-COPY . .
+# Copy app source code
+COPY apps/knot-space ./
 
 # knot_packages are now included directly in the build context
 
