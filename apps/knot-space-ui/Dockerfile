@@ -13,6 +13,10 @@ RUN npm ci
 # Copy app source code (knot_packages already included via pre-commit hook)
 COPY . ./
 
+# Set build-time environment variables for SvelteKit
+ARG PUBLIC_BACKEND_URL
+ENV PUBLIC_BACKEND_URL=${PUBLIC_BACKEND_URL}
+
 # Build application
 RUN npm run build
 
