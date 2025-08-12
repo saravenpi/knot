@@ -2,10 +2,10 @@
 import 'tsconfig-paths/register';
 import { serve } from '@hono/node-server';
 import { setupRoutes } from './router';
-import { validateRequiredEnv, env } from '@/env';
-import { logger } from '@/logger';
-import { checkDatabaseConnection, disconnectDatabase } from '@/prisma';
-import { fileUploadService } from '@/fileUpload';
+import { validateRequiredEnv, env } from './lib/env';
+import { logger } from './lib/logger';
+import { checkDatabaseConnection, disconnectDatabase } from './lib/prisma';
+import { fileUploadService } from './lib/fileUpload';
 
 async function startServer() {
   try {

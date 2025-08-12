@@ -1,5 +1,5 @@
-import { prisma } from '@/prisma';
-import { authService } from '@/auth';
+import { prisma } from '../../lib/prisma';
+import { authService } from '../../lib/auth';
 import { CreateUserRequest, LoginRequest, UserProfile, AuthResponse } from '../../types';
 import * as bcrypt from 'bcryptjs';
 

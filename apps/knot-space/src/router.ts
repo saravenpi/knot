@@ -1,10 +1,10 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { prettyJSON } from 'hono/pretty-json';
-import { loadModules } from '@/loadModules';
-import { securityHeaders, requestLogger, rateLimit } from '@/security';
-import { errorHandler } from '@/errorHandler';
-import { env } from '@/env';
+import { loadModules } from './lib/loadModules';
+import { securityHeaders, requestLogger, rateLimit } from './lib/security';
+import { errorHandler } from './lib/errorHandler';
+import { env } from './lib/env';
 
 const app = new Hono();
 
@@ -54,7 +54,7 @@ app.get('/health', (c) => {
 
 // Load and mount all modules
 export async function setupRoutes() {
-  const { logger } = await import('@/logger');
+  const { logger } = await import('./lib/logger');
   
   try {
     const modules = await loadModules();
