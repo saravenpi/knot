@@ -2,22 +2,25 @@
 FROM oven/bun:1 AS base
 WORKDIR /app
 
-# Knot CLI stage - build the knot binary
-FROM rust:1.82-slim AS knot-builder
-WORKDIR /usr/src/knot
+# Knot CLI stage - install knot using install script
+FROM debian:bookworm-slim AS knot-installer
 
-# Install build dependencies for Knot CLI
+# Install dependencies for knot install script
 RUN apt-get update && apt-get install -y \
+    ca-certificates \
+    git \
+    curl \
+    build-essential \
     pkg-config \
     libssl-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy Knot CLI source from the project root
-COPY ../../knot-cli/Cargo.toml ../../knot-cli/Cargo.lock ./
-COPY ../../knot-cli/src ./src
+# Install Rust for the install script
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
 
-# Build Knot CLI
-RUN cargo build --release && strip target/release/knot
+# Install knot using the install script from GitHub
+RUN curl -fsSL https://raw.githubusercontent.com/saravenpi/knot/main/install.sh | bash
 
 # Install system dependencies
 FROM base AS deps
@@ -39,7 +42,7 @@ FROM base AS builder
 RUN apt-get update -y && apt-get install -y openssl ca-certificates
 
 # Copy Knot CLI binary
-COPY --from=knot-builder /usr/src/knot/target/release/knot /usr/local/bin/knot
+COPY --from=knot-installer /usr/local/bin/knot /usr/local/bin/knot
 RUN chmod +x /usr/local/bin/knot
 
 # Copy dependencies from deps stage

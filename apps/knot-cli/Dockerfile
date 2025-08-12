@@ -1,49 +1,25 @@
 # Knot Docker Image
-# Multi-stage build for optimal image size
+# Using install script from GitHub
 
-# Build stage
-FROM rust:1.82-slim as builder
-
-WORKDIR /usr/src/knot
-
-# Install build dependencies
-RUN apt-get update && apt-get install -y \
-    pkg-config \
-    libssl-dev \
-    && rm -rf /var/lib/apt/lists/*
-
-# Copy manifests
-COPY Cargo.toml Cargo.lock ./
-
-# Create dummy source to cache dependencies
-RUN mkdir src && \
-    echo "fn main() {}" > src/main.rs && \
-    cargo build --release && \
-    rm -rf src
-
-# Copy real source code
-COPY src ./src
-
-# Build the application
-RUN touch src/main.rs && \
-    cargo build --release && \
-    strip target/release/knot
-
-# Runtime stage
 FROM debian:bookworm-slim
 
-# Install runtime dependencies
+# Install runtime dependencies including Rust toolchain
 RUN apt-get update && apt-get install -y \
     ca-certificates \
     git \
+    curl \
+    build-essential \
+    pkg-config \
+    libssl-dev \
     && rm -rf /var/lib/apt/lists/* \
-    && useradd -r -s /bin/false knot
+    && useradd -r -s /bin/bash knot
 
-# Copy the binary from builder stage
-COPY --from=builder /usr/src/knot/target/release/knot /usr/local/bin/knot
+# Install Rust for the install script
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
 
-# Set ownership and permissions
-RUN chmod +x /usr/local/bin/knot
+# Install knot using the install script from GitHub
+RUN curl -fsSL https://raw.githubusercontent.com/saravenpi/knot/main/install.sh | bash
 
 # Create working directory
 WORKDIR /workspace
