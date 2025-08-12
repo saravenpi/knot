@@ -45,7 +45,13 @@ RUN apt-get update -y && apt-get install -y \
 # Create non-root user
 RUN groupadd -r appuser && useradd -r -g appuser appuser
 
-# Copy built application
+# --- Fix uploads permissions ---
+# Create uploads folder and give ownership to appuser
+RUN mkdir -p /app/uploads && chown -R appuser:appuser /app/uploads
+# (Optionnel) Rendez-le visible comme volume pour la persistance
+VOLUME ["/app/uploads"]
+
+# Copy built application (already owned by appuser)
 COPY --from=builder --chown=appuser:appuser /app/server ./server
 COPY --from=builder --chown=appuser:appuser /app/prisma ./prisma
 COPY --from=builder --chown=appuser:appuser /app/node_modules ./node_modules
@@ -59,8 +65,9 @@ RUN chmod +x ./server ./start.sh
 # Switch to non-root user
 USER appuser
 
-# Expose port
-EXPOSE 8080
+# Expose the port your server uses (logs show 3001)
+EXPOSE 3001
 
 # Use startup script
 CMD ["./start.sh"]
+
