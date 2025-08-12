@@ -1,11 +1,17 @@
 #!/bin/bash
-
-# OffOn Backend Startup Script
-# This script handles database setup and server startup
-
 set -e
 
 echo "🚀 Starting OffOn Backend..."
+
+# Fix permissions for uploads directory if it exists
+if [ -d "./uploads" ]; then
+    echo "🔧 Fixing uploads directory permissions..."
+    chown -R appuser:appuser ./uploads || true
+else
+    echo "📂 Creating uploads directory..."
+    mkdir -p ./uploads
+    chown -R appuser:appuser ./uploads
+fi
 
 # Check if we're in production or development
 if [ "$NODE_ENV" = "production" ]; then
@@ -20,7 +26,9 @@ if [ "$NODE_ENV" = "production" ]; then
 
     echo "✅ Database is ready"
     echo "🏃 Starting production server..."
-    exec ./server
+
+    # Switch to appuser to run the server
+    exec su appuser -c "./server"
 
 else
     echo "🔧 Running in DEVELOPMENT mode"
@@ -35,5 +43,6 @@ else
 
     echo "✅ Database setup complete"
     echo "🏃 Starting development server with hot reload..."
-    exec bun run --hot src/index.ts
+    exec su appuser -c "bun run --hot src/index.ts"
 fi
+

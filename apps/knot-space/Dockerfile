@@ -45,26 +45,19 @@ RUN apt-get update -y && apt-get install -y \
 # Create non-root user
 RUN groupadd -r appuser && useradd -r -g appuser appuser
 
-# Create uploads folder and give ownership to appuser
-RUN mkdir -p /app/uploads && chown -R appuser:appuser /app/uploads
-
 # Copy built application with correct ownership
-COPY --from=builder --chown=appuser:appuser /app/server ./server
-COPY --from=builder --chown=appuser:appuser /app/prisma ./prisma
-COPY --from=builder --chown=appuser:appuser /app/node_modules ./node_modules
-COPY --from=builder --chown=appuser:appuser /app/start.sh ./start.sh
-COPY --from=builder --chown=appuser:appuser /app/src ./src
-COPY --from=builder --chown=appuser:appuser /app/tsconfig.json ./tsconfig.json
+COPY --from=builder /app/server ./server
+COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/start.sh ./start.sh
+COPY --from=builder /app/src ./src
+COPY --from=builder /app/tsconfig.json ./tsconfig.json
 
 # Make scripts executable
 RUN chmod +x ./server ./start.sh
 
-# Switch to non-root user
-USER appuser
-
 # Expose the port your server uses
 EXPOSE 3001
 
-# Start the application
+# Start as root so we can fix permissions, then switch to appuser inside start.sh
 CMD ["./start.sh"]
-
