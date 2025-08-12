@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "bun --hot src/index.ts",
-    "build": "tsc",
+    "build": "tsc --project .",
     "build:tsc": "tsc",
     "start": "bun src/index.ts",
     "start:prod": "bun dist/index.js",

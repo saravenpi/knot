@@ -30,8 +30,13 @@ COPY . .
 # Generate Prisma client
 RUN bun prisma generate
 
-# Build the project
-RUN bun run build
+# Debug: List files to see what's available
+RUN echo "=== Files in working directory ===" && ls -la
+RUN echo "=== Contents of src directory ===" && ls -la src/
+RUN echo "=== TypeScript version ===" && bunx tsc --version
+
+# Build the project (use bunx to run tsc directly)
+RUN bunx tsc --project .
 
 # Copy production dependencies and source files into final image
 FROM base AS release
