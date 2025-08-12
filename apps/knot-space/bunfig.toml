@@ -1,8 +1,11 @@
 # Bun configuration file
 
-[build]
-# Enable TypeScript path mapping support
-tsconfig = "./tsconfig.json"
+# Path aliases configuration matching tsconfig.json
+[alias]
+"@/*" = "./src/*"
+"@/lib/*" = "./src/lib/*"
+"@/modules/*" = "./src/modules/*"
+"@/types/*" = "./src/types/*"
 
 [install]
 # Install configuration
