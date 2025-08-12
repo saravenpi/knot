@@ -37,8 +37,8 @@ RUN echo "=== DATABASE_URL ===" && echo $DATABASE_URL
 
 RUN echo "=== Validating schema ===" && bunx prisma validate
 
-# Generate Prisma client (non-interactive)
-RUN bunx prisma generate --no-engine
+# Generate Prisma client
+RUN bunx prisma generate
 
 # Debug: Check if bunfig.toml exists and show its contents
 RUN ls -la bunfig.toml && cat bunfig.toml
