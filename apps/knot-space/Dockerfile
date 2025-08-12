@@ -43,8 +43,8 @@ RUN bunx prisma generate --no-engine
 # Debug: Check if bunfig.toml exists and show its contents
 RUN ls -la bunfig.toml && cat bunfig.toml
 
-# Build the project using bun build with tsconfig for path resolution
-RUN bun build src/index.ts --outdir ./dist --target node --external '@prisma/client' --tsconfig ./tsconfig.json
+# Build the project using bun build (will automatically use tsconfig.json and bunfig.toml)
+RUN bun build src/index.ts --outdir ./dist --target node --external '@prisma/client'
 
 # Copy production dependencies and source files into final image
 FROM base AS release
