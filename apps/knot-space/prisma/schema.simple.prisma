@@ -103,4 +103,3 @@ model PackageTag {
   @@index([packageId])
   @@map("package_tags")
 }
-

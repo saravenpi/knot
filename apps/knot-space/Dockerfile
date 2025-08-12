@@ -27,8 +27,13 @@ FROM base AS prerelease
 COPY --from=install /temp/dev/node_modules node_modules
 COPY . .
 
+# Debug Prisma setup
+RUN echo "=== Prisma version ===" && bunx prisma --version
+RUN echo "=== Validating schema ===" && bunx prisma validate
+RUN echo "=== DATABASE_URL ===" && echo $DATABASE_URL
+
 # Generate Prisma client
-RUN bun prisma generate
+RUN bunx prisma generate
 
 # Debug: List files to see what's available
 RUN echo "=== Files in working directory ===" && ls -la

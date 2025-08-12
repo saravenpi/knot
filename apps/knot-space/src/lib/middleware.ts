@@ -13,14 +13,9 @@ export async function authMiddleware(c: Context, next: Next) {
     }
 
     const token = authHeader.substring(7);
-    const sessionData = await authModuleService.verifySession(token);
+    const decoded = authModuleService.verifyToken(token);
     
-    const user = {
-      id: sessionData.userId,
-      username: sessionData.username,
-      email: '', // We'll get this from the session if needed
-      createdAt: new Date(), // Placeholder
-    };
+    const user = await authModuleService.getProfile(decoded.userId);
 
     c.set('user', user);
     await next();
@@ -38,15 +33,8 @@ export async function optionalAuthMiddleware(c: Context, next: Next) {
     
     if (authHeader && authHeader.startsWith('Bearer ')) {
       const token = authHeader.substring(7);
-      const sessionData = await authModuleService.verifySession(token);
-      
-      const user = {
-        id: sessionData.userId,
-        username: sessionData.username,
-        email: '', // We'll get this from the session if needed
-        createdAt: new Date(), // Placeholder
-      };
-
+      const decoded = authModuleService.verifyToken(token);
+      const user = await authModuleService.getProfile(decoded.userId);
       c.set('user', user);
     }
     
