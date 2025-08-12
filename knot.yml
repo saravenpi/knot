@@ -1,6 +1,5 @@
 name: Knot
 description: A modern monorepo package manager for TypeScript/JavaScript projects
-
 # Global project scripts
 scripts:
   setup: "echo 'Setting up Knot development environment...' && echo 'Run cargo build in each app directory to build'"
@@ -28,4 +27,3 @@ apps:
 packages:
   types:
     description: "Shared TypeScript types for all Knot applications"
-

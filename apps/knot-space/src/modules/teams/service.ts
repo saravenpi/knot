@@ -1,0 +1,294 @@
+import { prisma } from '../../lib/prisma';
+import { CreateTeamRequest, AddTeamMemberRequest } from '../../types';
+
+class TeamsService {
+  async createTeam(data: CreateTeamRequest, ownerId: string) {
+    const existingTeam = await prisma.team.findUnique({
+      where: { name: data.name }
+    });
+
+    if (existingTeam) {
+      throw new Error('Team name already exists');
+    }
+
+    const team = await prisma.team.create({
+      data: {
+        name: data.name,
+        description: data.description,
+        ownerId,
+      },
+      include: {
+        owner: {
+          select: {
+            id: true,
+            username: true,
+            email: true,
+            createdAt: true,
+          }
+        }
+      }
+    });
+
+    // Add owner as team member
+    await prisma.teamMember.create({
+      data: {
+        teamId: team.id,
+        userId: ownerId,
+        role: 'owner',
+      }
+    });
+
+    return team;
+  }
+
+  async listTeams(userId?: string) {
+    if (userId) {
+      // Get teams where user is a member
+      const teamMembers = await prisma.teamMember.findMany({
+        where: { userId },
+        include: {
+          team: {
+            include: {
+              owner: {
+                select: {
+                  id: true,
+                  username: true,
+                  email: true,
+                  createdAt: true,
+                }
+              },
+              _count: {
+                select: {
+                  members: true,
+                  packages: true,
+                }
+              }
+            }
+          }
+        }
+      });
+
+      return teamMembers.map(tm => ({
+        ...tm.team,
+        memberRole: tm.role,
+      }));
+    } else {
+      // Public teams list
+      return await prisma.team.findMany({
+        include: {
+          owner: {
+            select: {
+              id: true,
+              username: true,
+              email: true,
+              createdAt: true,
+            }
+          },
+          _count: {
+            select: {
+              members: true,
+              packages: true,
+            }
+          }
+        },
+        orderBy: { createdAt: 'desc' }
+      });
+    }
+  }
+
+  async getTeam(teamId: string, userId?: string) {
+    const team = await prisma.team.findUnique({
+      where: { id: teamId },
+      include: {
+        owner: {
+          select: {
+            id: true,
+            username: true,
+            email: true,
+            createdAt: true,
+          }
+        },
+        _count: {
+          select: {
+            members: true,
+            packages: true,
+          }
+        }
+      }
+    });
+
+    if (!team) {
+      throw new Error('Team not found');
+    }
+
+    let memberRole = null;
+    if (userId) {
+      const member = await prisma.teamMember.findUnique({
+        where: {
+          teamId_userId: {
+            teamId,
+            userId,
+          }
+        }
+      });
+      memberRole = member?.role || null;
+    }
+
+    return {
+      ...team,
+      memberRole,
+    };
+  }
+
+  async getTeamMembers(teamId: string) {
+    const team = await prisma.team.findUnique({
+      where: { id: teamId }
+    });
+
+    if (!team) {
+      throw new Error('Team not found');
+    }
+
+    const members = await prisma.teamMember.findMany({
+      where: { teamId },
+      include: {
+        user: {
+          select: {
+            id: true,
+            username: true,
+            email: true,
+            createdAt: true,
+          }
+        }
+      },
+      orderBy: [
+        { role: 'asc' }, // owners first, then admins, then members
+        { joinedAt: 'asc' }
+      ]
+    });
+
+    return members;
+  }
+
+  async addTeamMember(teamId: string, data: AddTeamMemberRequest, currentUserId: string) {
+    // Check if current user has permission to add members
+    const currentMember = await prisma.teamMember.findUnique({
+      where: {
+        teamId_userId: {
+          teamId,
+          userId: currentUserId,
+        }
+      }
+    });
+
+    if (!currentMember || (currentMember.role !== 'owner' && currentMember.role !== 'admin')) {
+      throw new Error('Insufficient permissions to add team members');
+    }
+
+    // Find user by username
+    const user = await prisma.user.findUnique({
+      where: { username: data.username }
+    });
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    // Check if user is already a member
+    const existingMember = await prisma.teamMember.findUnique({
+      where: {
+        teamId_userId: {
+          teamId,
+          userId: user.id,
+        }
+      }
+    });
+
+    if (existingMember) {
+      throw new Error('User is already a team member');
+    }
+
+    const newMember = await prisma.teamMember.create({
+      data: {
+        teamId,
+        userId: user.id,
+        role: data.role,
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            username: true,
+            email: true,
+            createdAt: true,
+          }
+        }
+      }
+    });
+
+    return newMember;
+  }
+
+  async removeTeamMember(teamId: string, userId: string, currentUserId: string) {
+    // Check if current user has permission to remove members
+    const currentMember = await prisma.teamMember.findUnique({
+      where: {
+        teamId_userId: {
+          teamId,
+          userId: currentUserId,
+        }
+      }
+    });
+
+    if (!currentMember || (currentMember.role !== 'owner' && currentMember.role !== 'admin')) {
+      throw new Error('Insufficient permissions to remove team members');
+    }
+
+    const memberToRemove = await prisma.teamMember.findUnique({
+      where: {
+        teamId_userId: {
+          teamId,
+          userId,
+        }
+      }
+    });
+
+    if (!memberToRemove) {
+      throw new Error('User is not a team member');
+    }
+
+    // Cannot remove team owner
+    if (memberToRemove.role === 'owner') {
+      throw new Error('Cannot remove team owner');
+    }
+
+    await prisma.teamMember.delete({
+      where: {
+        teamId_userId: {
+          teamId,
+          userId,
+        }
+      }
+    });
+  }
+
+  async deleteTeam(teamId: string, currentUserId: string) {
+    const team = await prisma.team.findUnique({
+      where: { id: teamId }
+    });
+
+    if (!team) {
+      throw new Error('Team not found');
+    }
+
+    if (team.ownerId !== currentUserId) {
+      throw new Error('Only team owner can delete the team');
+    }
+
+    await prisma.team.delete({
+      where: { id: teamId }
+    });
+  }
+}
+
+export const teamsService = new TeamsService();
