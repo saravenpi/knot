@@ -12,7 +12,9 @@
     "declaration": false,
     "baseUrl": ".",
     "paths": {
+      "@": ["./src/lib"],
       "@/*": ["./src/lib/*"],
+      "@/modules": ["./src/modules"],
       "@/modules/*": ["./src/modules/*"],
       "@/types": ["./src/types"],
       "@/types/*": ["./src/types/*"]
