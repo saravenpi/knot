@@ -1,3 +1,5 @@
+// Register path mapping for TypeScript aliases
+import 'tsconfig-paths/register';
 import { serve } from '@hono/node-server';
 import { setupRoutes } from './router';
 import { swagger } from '@/lib/swagger';
