@@ -70,7 +70,7 @@ class AuthServiceModule {
     };
   }
 
-  async getProfile(userId: string): Promise<UserProfile> {
+  async getProfile(userId: string): Promise<AuthResponse> {
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: {
@@ -87,7 +87,10 @@ class AuthServiceModule {
 
     const token = authService.generateToken(user.id, user.username);
 
-    return { ...user, token };
+    return { 
+      token,
+      user: user as UserProfile
+    };
   }
 
   async deleteAccount(userId: string): Promise<void> {

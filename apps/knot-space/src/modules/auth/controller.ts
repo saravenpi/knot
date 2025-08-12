@@ -55,7 +55,7 @@ export class AuthController {
       
       return c.json({
         success: true,
-        data: profile
+        ...profile
       });
     } catch (error) {
       console.error('Get profile error:', error);

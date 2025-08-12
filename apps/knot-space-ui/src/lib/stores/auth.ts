@@ -117,11 +117,12 @@ const createAuthStore = () => {
       
       try {
         const response = await authApi.getProfile();
-        const user = response.user || response.data || response as any;
-
-        if (user.token) {
-          setStoredToken(user.token);
+        
+        if (response.token) {
+          setStoredToken(response.token);
         }
+        
+        const user = response.user || response.data || response as any;
         
         update(state => ({
           ...state,
