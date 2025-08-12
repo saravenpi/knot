@@ -2,10 +2,8 @@
 
 # Path aliases configuration matching tsconfig.json
 [alias]
+"@" = "./src"
 "@/*" = "./src/*"
-"@/lib/*" = "./src/lib/*"
-"@/modules/*" = "./src/modules/*"
-"@/types/*" = "./src/types/*"
 
 [install]
 # Install configuration
