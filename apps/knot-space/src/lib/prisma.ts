@@ -26,10 +26,6 @@ export const prisma =
         url: env.DATABASE_URL,
       },
     },
-    // Connection pool settings for production
-    ...(env.NODE_ENV === 'production' && {
-      datasourceUrl: env.DATABASE_URL,
-    }),
   });
 
 // Set up logging
