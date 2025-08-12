@@ -41,7 +41,7 @@ RUN echo "=== Validating schema ===" && bunx prisma validate
 RUN bunx prisma generate
 
 # Build the project using bun build with bundling
-RUN bun build src/index.ts --outdir ./dist --target node --format cjs --external '@prisma/client'
+RUN bun build src/index.ts --outdir ./dist --target node --external '@prisma/client'
 
 # Copy production dependencies and source files into final image
 FROM base AS release
