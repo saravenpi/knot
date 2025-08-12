@@ -27,10 +27,15 @@ FROM base AS prerelease
 COPY --from=install /temp/dev/node_modules node_modules
 COPY . .
 
+# Accept DATABASE_URL as build argument
+ARG DATABASE_URL
+ENV DATABASE_URL=${DATABASE_URL}
+
 # Debug Prisma setup
 RUN echo "=== Prisma version ===" && bunx prisma --version
-RUN echo "=== Validating schema ===" && bunx prisma validate
 RUN echo "=== DATABASE_URL ===" && echo $DATABASE_URL
+
+RUN echo "=== Validating schema ===" && bunx prisma validate
 
 # Generate Prisma client
 RUN bunx prisma generate
