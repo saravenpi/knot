@@ -43,11 +43,14 @@ ENV CI=true
 ENV NODE_ENV=production
 RUN bunx prisma generate --no-hints
 
-# Debug: Check if bunfig.toml exists and show its contents
-RUN ls -la bunfig.toml && cat bunfig.toml
+# Debug: Check if tsconfig.json exists and show its contents
+RUN ls -la tsconfig.json && echo "=== tsconfig.json ===" && cat tsconfig.json
 
-# Build the project using bun build (will automatically use tsconfig.json and bunfig.toml)
-RUN bun build src/index.ts --outdir ./dist --target node --external '@prisma/client'
+# Debug: Check src/lib directory structure
+RUN ls -la src/lib/
+
+# Build the project using bun build with build-specific tsconfig
+RUN bun build src/index.ts --outdir ./dist --target node --external '@prisma/client' --tsconfig ./tsconfig.build.json
 
 # Copy production dependencies and source files into final image
 FROM base AS release
