@@ -1,7 +1,6 @@
 <script lang="ts">
 	import '../app.css';
 	import { onMount } from 'svelte';
-	import { goto } from '$app/navigation';
 	import { authStore } from '../lib/stores';
 
 	$: user = $authStore.user;
@@ -10,11 +9,6 @@
 	onMount(() => {
 		authStore.initialize();
 	});
-
-	async function logout() {
-		await authStore.logout();
-		goto('/');
-	}
 </script>
 
 <div class="min-h-screen bg-background">
@@ -40,14 +34,11 @@
 					</a>
 
 					{#if isLoggedIn && user}
-						<div class="flex items-center space-x-2">
+						<div class="flex items-center space-x-4">
 							<span class="text-sm text-muted-foreground">Welcome, {user.username}</span>
-							<button
-								on:click={logout}
-								class="text-sm font-medium hover:text-primary transition-colors"
-							>
-								Logout
-							</button>
+							<a href="/settings" class="text-sm font-medium hover:text-primary transition-colors">
+								Settings
+							</a>
 						</div>
 					{:else}
 						<div class="flex items-center space-x-2">
