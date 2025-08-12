@@ -62,7 +62,6 @@ docker-compose.override.yml
 
 # Knot-specific
 **/knot_packages/
-**/tsconfig.json
 
 # Development artifacts
 test-*
