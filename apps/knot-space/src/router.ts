@@ -15,9 +15,22 @@ app.use('*', requestLogger());
 // Rate limiting
 app.use('*', rateLimit(env.RATE_LIMIT_WINDOW_MS, env.RATE_LIMIT_MAX_REQUESTS));
 
-// CORS
+// CORS - Debug logging
+console.log('🔧 CORS Origins configured:', env.CORS_ORIGINS);
+
 app.use('*', cors({
-  origin: env.CORS_ORIGINS,
+  origin: (origin, c) => {
+    console.log('🌐 CORS check - Origin:', origin, 'Allowed:', env.CORS_ORIGINS);
+    
+    // Allow requests with no origin (e.g., mobile apps, Postman)
+    if (!origin) return true;
+    
+    // Check if origin is in allowed list
+    const isAllowed = env.CORS_ORIGINS.includes('*') || env.CORS_ORIGINS.includes(origin);
+    console.log('✅ CORS decision:', isAllowed ? 'ALLOWED' : 'BLOCKED');
+    
+    return isAllowed ? origin : false;
+  },
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowHeaders: ['Content-Type', 'Authorization', 'X-Request-ID'],
   credentials: true,
