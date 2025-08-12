@@ -16,11 +16,7 @@ Thumbs.db
 # Test directories
 test-*
 tmp-*
-example-project/apps/*/knot_packages/
-example-project/apps/*/tsconfig.json
 
-# Development artifacts
-**/knot_packages/
 **/tsconfig.json
 
 # Logs

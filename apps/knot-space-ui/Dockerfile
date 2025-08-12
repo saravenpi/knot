@@ -1,32 +1,8 @@
-# Knot CLI stage - install knot using install script
-FROM debian:bookworm-slim AS knot-installer
-
-# Install dependencies for knot install script
-RUN apt-get update && apt-get install -y \
-    ca-certificates \
-    git \
-    curl \
-    build-essential \
-    pkg-config \
-    libssl-dev \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install Rust for the install script
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-ENV PATH="/root/.cargo/bin:${PATH}"
-
-# Install knot using the install script from GitHub
-RUN curl -fsSL https://raw.githubusercontent.com/saravenpi/knot/main/install.sh | bash
-
 # Build stage
 FROM node:18-alpine as builder
 
 # Set working directory
 WORKDIR /app
-
-# Install knot CLI
-COPY --from=knot-installer /usr/local/bin/knot /usr/local/bin/knot
-RUN chmod +x /usr/local/bin/knot
 
 # Copy package files
 COPY package.json package-lock.json ./
@@ -34,14 +10,8 @@ COPY package.json package-lock.json ./
 # Install dependencies
 RUN npm ci
 
-# Copy project configuration and packages
-COPY ../../knot.yml ./knot.yml
-COPY ../../packages ./packages
-
-# Copy app source code
+# Copy app source code (knot_packages already included via pre-commit hook)
 COPY . ./
-
-# knot_packages are now included directly in the build context
 
 # Build application
 RUN npm run build

@@ -20,9 +20,11 @@ Knot is a modern monorepo package manager for TypeScript/JavaScript projects wri
 ## Key Features
 
 ### 🔗 Smart Package Linking
-- Automatic symlinking of local packages to `knot_packages/` in apps
+- **Copy-first approach**: Local packages are copied to `knot_packages/` in apps by default
+- **Optional symlinks**: Use `--symlink` flag for traditional symlink behavior
 - Supports both local and remote package dependencies
 - No manual `node_modules` management needed
+- Better Docker and deployment compatibility with copied packages
 
 ### ⚡ TypeScript Integration
 - Per-app TypeScript alias configuration (`tsAlias`)
@@ -53,7 +55,8 @@ Knot is a modern monorepo package manager for TypeScript/JavaScript projects wri
 - `knot init:app <name>` - Create new application
 
 ### Linking & Building
-- `knot link` - Link packages to apps and setup TypeScript aliases
+- `knot link` - Copy packages to apps and setup TypeScript aliases (default)
+- `knot link --symlink` - Use symlinks instead of copying for development
 - `knot build` - Build apps using configured build commands
 - `knot run <script>` - Execute scripts from configuration files
 
@@ -117,7 +120,7 @@ scripts:
 1. **Initialize** project with `knot init`
 2. **Create** packages and apps with `init:package` and `init:app`
 3. **Configure** dependencies and tags in YAML files
-4. **Link** packages with `knot link`
+4. **Link** packages with `knot link` (copies by default, use `--symlink` for development)
 5. **Build** with `knot build`
 6. **Run** development scripts with `knot run <script>`
 7. **Publish** packages with `knot publish` (requires authentication)
@@ -145,6 +148,21 @@ scripts:
 - Nginx reverse proxy with SSL support
 - PostgreSQL database with migrations
 - Health checks and monitoring
+
+## Package Linking Behavior
+
+**Default (Copy Mode)**:
+- Packages are copied to `knot_packages/` directories
+- Better for Docker builds and deployment
+- No symlink compatibility issues
+- Files can be committed to git
+- Pre-commit hook automatically updates copied packages
+
+**Development (Symlink Mode)**:
+- Use `knot link --symlink` for development with live updates
+- Changes to packages are immediately reflected in apps
+- Not suitable for Docker or production deployments
+- Symlinks may not work across all platforms/environments
 
 ## Testing Commands
 

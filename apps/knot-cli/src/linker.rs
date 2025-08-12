@@ -13,17 +13,17 @@ impl<'a> Linker<'a> {
         Self { project }
     }
 
-    pub async fn link_all_apps(&self) -> Result<()> {
+    pub async fn link_all_apps(&self, use_symlinks: bool) -> Result<()> {
         let app_names = self.project.get_app_names();
 
         for app_name in app_names {
-            self.link_app(&app_name).await?;
+            self.link_app(&app_name, use_symlinks).await?;
         }
 
         Ok(())
     }
 
-    pub async fn link_app(&self, app_name: &str) -> Result<()> {
+    pub async fn link_app(&self, app_name: &str, use_symlinks: bool) -> Result<()> {
         let app_dir = self.project.root.join("apps").join(app_name);
         if !app_dir.exists() {
             anyhow::bail!("App directory does not exist: {}", app_name);
@@ -50,7 +50,7 @@ impl<'a> Linker<'a> {
         let dependencies = self.project.get_app_dependencies(app_name);
 
         for dep in dependencies {
-            self.link_dependency(app_name, &dep, &knot_packages_dir)
+            self.link_dependency(app_name, &dep, &knot_packages_dir, use_symlinks)
                 .await?;
         }
 
@@ -68,6 +68,7 @@ impl<'a> Linker<'a> {
         app_name: &str,
         dependency: &str,
         knot_packages_dir: &Path,
+        use_symlinks: bool,
     ) -> Result<()> {
         if dependency.starts_with('@') {
             let link_target = knot_packages_dir.join(dependency);
@@ -92,13 +93,23 @@ impl<'a> Linker<'a> {
 
         let link_target = knot_packages_dir.join(dependency);
 
-        self.create_symlink(&package_source, &link_target)
-            .with_context(|| {
-                format!(
-                    "Failed to create symlink for package '{}' in app '{}'",
-                    dependency, app_name
-                )
-            })?;
+        if use_symlinks {
+            self.create_symlink(&package_source, &link_target)
+                .with_context(|| {
+                    format!(
+                        "Failed to create symlink for package '{}' in app '{}'",
+                        dependency, app_name
+                    )
+                })?;
+        } else {
+            self.copy_package(&package_source, &link_target)
+                .with_context(|| {
+                    format!(
+                        "Failed to copy package '{}' to app '{}'",
+                        dependency, app_name
+                    )
+                })?;
+        }
 
         Ok(())
     }
@@ -116,6 +127,41 @@ impl<'a> Linker<'a> {
         } else {
             std::os::windows::fs::symlink_file(source, target)?;
         }
+        Ok(())
+    }
+
+    fn copy_package(&self, source: &Path, target: &Path) -> Result<()> {
+        self.copy_dir_recursively(source, target)?;
+        Ok(())
+    }
+
+    fn copy_dir_recursively(&self, source: &Path, target: &Path) -> Result<()> {
+        if !source.exists() {
+            anyhow::bail!("Source directory does not exist: {}", source.display());
+        }
+
+        if source.is_file() {
+            if let Some(parent) = target.parent() {
+                fs::create_dir_all(parent)?;
+            }
+            fs::copy(source, target)?;
+            return Ok(());
+        }
+
+        fs::create_dir_all(target)?;
+
+        for entry in fs::read_dir(source)? {
+            let entry = entry?;
+            let source_path = entry.path();
+            let target_path = target.join(entry.file_name());
+
+            if source_path.is_dir() {
+                self.copy_dir_recursively(&source_path, &target_path)?;
+            } else {
+                fs::copy(&source_path, &target_path)?;
+            }
+        }
+
         Ok(())
     }
 

@@ -69,7 +69,14 @@ async fn main() -> Result<()> {
                 ),
         )
         .subcommand(
-            Command::new("link").about("Link packages to apps and setup TypeScript aliases"),
+            Command::new("link")
+                .about("Link packages to apps and setup TypeScript aliases")
+                .arg(
+                    Arg::new("symlink")
+                        .help("Use symlinks instead of copying (default: false)")
+                        .long("symlink")
+                        .action(clap::ArgAction::SetTrue),
+                ),
         )
         .subcommand(
             Command::new("build").about("Build app(s) using their configured build commands"),
@@ -225,8 +232,9 @@ async fn main() -> Result<()> {
                 .map(|s| s.as_str());
             commands::init_app(name, description)?;
         }
-        Some(("link", _)) => {
-            commands::link_packages().await?;
+        Some(("link", sub_matches)) => {
+            let use_symlinks = sub_matches.get_flag("symlink");
+            commands::link_packages(use_symlinks).await?;
         }
         Some(("build", _)) => {
             commands::build_apps().await?;

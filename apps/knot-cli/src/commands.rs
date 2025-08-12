@@ -93,7 +93,7 @@ pub fn init_app(name: &str, description: Option<&str>) -> Result<()> {
     Ok(())
 }
 
-pub async fn link_packages() -> Result<()> {
+pub async fn link_packages(use_symlinks: bool) -> Result<()> {
     let current_dir = std::env::current_dir()?;
     let project = match Project::find_and_load(&current_dir) {
         Ok(project) => project,
@@ -106,7 +106,7 @@ pub async fn link_packages() -> Result<()> {
 
     let linker = Linker::new(&project);
     linker
-        .link_all_apps()
+        .link_all_apps(use_symlinks)
         .await
         .context("Failed to link packages to apps")?;
 
@@ -115,7 +115,8 @@ pub async fn link_packages() -> Result<()> {
         .setup_aliases_for_all_apps()
         .context("Failed to setup TypeScript aliases")?;
 
-    println!("🔗 Successfully linked all packages and updated TypeScript configurations");
+    let mode = if use_symlinks { "symlinked" } else { "copied" };
+    println!("🔗 Successfully {} all packages and updated TypeScript configurations", mode);
     Ok(())
 }
 
@@ -174,7 +175,7 @@ pub fn show_info() -> Result<()> {
     println!("  🆕 init <name>              Initialize a new project");
     println!("  📦 init:package <name>      Initialize a new package");
     println!("  🚀 init:app <name>          Initialize a new app");
-    println!("  🔗 link                     Link packages to apps");
+    println!("  🔗 link [--symlink]         Copy packages to apps (use --symlink for symlinks)");
     println!("  🔨 build                    Build app(s) using configured build commands");
     println!("  ▶️  run <script>            Run a script from config files");
     println!("  📊 status                   Show project status");
@@ -185,7 +186,8 @@ pub fn show_info() -> Result<()> {
     println!("  knot init MyProject");
     println!("  knot init:package utils --team myteam");
     println!("  knot init:app frontend --description 'Frontend app'");
-    println!("  knot link");
+    println!("  knot link                         # Copy packages (default)");
+    println!("  knot link --symlink              # Use symlinks instead");
     println!("  knot build                        # Build all apps from project root");
     println!("  knot run test                     # Run test script");
     println!("  knot run dev                      # Run development script");
