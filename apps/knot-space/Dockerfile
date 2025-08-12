@@ -26,6 +26,8 @@ RUN cd /temp/prod && bun install --frozen-lockfile --production
 FROM base AS prerelease
 COPY --from=install /temp/dev/node_modules node_modules
 COPY . .
+# Explicitly ensure tsconfig files are present
+COPY tsconfig*.json ./
 
 # Accept DATABASE_URL as build argument
 ARG DATABASE_URL
@@ -43,8 +45,8 @@ ENV CI=true
 ENV NODE_ENV=production
 RUN bunx prisma generate --no-hints
 
-# Debug: Check if tsconfig.json exists and show its contents
-RUN ls -la tsconfig.json && echo "=== tsconfig.json ===" && cat tsconfig.json
+# Debug: Check if tsconfig files exist and show their contents
+RUN ls -la tsconfig*.json && echo "=== tsconfig.json ===" && cat tsconfig.json && echo "=== tsconfig.build.json ===" && cat tsconfig.build.json
 
 # Debug: Check src/lib directory structure
 RUN ls -la src/lib/
