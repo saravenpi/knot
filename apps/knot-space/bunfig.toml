@@ -1,0 +1,9 @@
+# Bun configuration file
+
+[build]
+# Enable TypeScript path mapping support
+tsconfig = "./tsconfig.json"
+
+[install]
+# Install configuration
+peer = true
