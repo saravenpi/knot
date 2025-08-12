@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
+	import { browser } from '$app/environment';
 	import { authStore } from '../../lib/stores';
 
 	$: user = $authStore.user;
@@ -11,14 +12,20 @@
 	let copied = false;
 
 	onMount(() => {
-		// Redirect if not authenticated
-		if (!$authStore.isAuthenticated) {
-			goto('/login');
-			return;
-		}
+		// Wait for auth to initialize before checking
+		const unsubscribe = authStore.subscribe(({ initialized, isAuthenticated }) => {
+			if (initialized && !isAuthenticated) {
+				goto('/login?redirectTo=/settings');
+				return;
+			}
+			
+			if (initialized && isAuthenticated && browser) {
+				// Get token from localStorage
+				token = localStorage.getItem('knot_token') || '';
+			}
+		});
 		
-		// Get token from localStorage
-		token = localStorage.getItem('knot_token') || '';
+		return unsubscribe;
 	});
 
 	async function logout() {

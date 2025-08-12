@@ -43,7 +43,8 @@
 
 		try {
 			await authStore.register(username.trim(), email.trim().toLowerCase(), password);
-			goto('/');
+			// Redirect to packages page after successful registration
+			goto('/packages');
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Registration failed';
 		}

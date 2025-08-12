@@ -44,6 +44,10 @@ export const requestApi = async <T>(
     if (typeof localStorage !== 'undefined') {
       localStorage.removeItem('knot_token');
     }
+    // Import authStore dynamically to avoid circular imports
+    import('./stores/auth').then(({ authStore }) => {
+      authStore.logout();
+    });
     throw new Error("Session expired");
   }
 

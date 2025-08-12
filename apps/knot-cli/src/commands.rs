@@ -178,6 +178,10 @@ pub fn show_info() -> Result<()> {
     println!("  🔗 link [--symlink]         Copy packages to apps (use --symlink for symlinks)");
     println!("  🔨 build                    Build app(s) using configured build commands");
     println!("  ▶️  run <script>            Run a script from config files");
+    println!("  📦 publish [--team <name>]  Publish package to Knot Space");
+    println!("  🗑️  delete <name> <version> Delete package from Knot Space");
+    println!("  👥 team <subcommand>        Team management");
+    println!("  🔑 login                    Login to Knot Space");
     println!("  📊 status                   Show project status");
     println!("  ℹ️  info                     Show this information");
     println!("  ❓ help                     Show help for commands");
@@ -817,6 +821,30 @@ pub async fn publish_package(team: Option<&str>, description: Option<&str>) -> R
         let status = response.status();
         let text = response.text().await.unwrap_or_default();
         anyhow::bail!("Publish failed ({}): {}", status, text);
+    }
+
+    Ok(())
+}
+
+pub async fn delete_package(name: &str, version: &str) -> Result<()> {
+    let token = require_auth_token()?;
+
+    let base_url = get_knot_space_url();
+    let url = format!("{}/api/packages/{}/{}", base_url, name, version);
+
+    let client = reqwest::Client::new();
+    let response = client
+        .delete(&url)
+        .header("Authorization", format!("Bearer {}", token))
+        .send()
+        .await?;
+
+    if response.status().is_success() {
+        println!("🗑️  Successfully deleted {} v{}", name, version);
+    } else {
+        let status = response.status();
+        let text = response.text().await.unwrap_or_default();
+        anyhow::bail!("Delete failed ({}): {}", status, text);
     }
 
     Ok(())

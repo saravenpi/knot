@@ -157,6 +157,22 @@ async fn main() -> Result<()> {
                 ),
         )
         .subcommand(
+            Command::new("delete")
+                .about("Delete a package from Knot Space")
+                .arg(
+                    Arg::new("name")
+                        .help("Package name")
+                        .required(true)
+                        .index(1),
+                )
+                .arg(
+                    Arg::new("version")
+                        .help("Package version")
+                        .required(true)
+                        .index(2),
+                ),
+        )
+        .subcommand(
             Command::new("team")
                 .about("Team management commands")
                 .subcommand_required(true)
@@ -272,6 +288,11 @@ async fn main() -> Result<()> {
                 .get_one::<String>("description")
                 .map(|s| s.as_str());
             commands::publish_package(team, description).await?;
+        }
+        Some(("delete", sub_matches)) => {
+            let name = sub_matches.get_one::<String>("name").unwrap();
+            let version = sub_matches.get_one::<String>("version").unwrap();
+            commands::delete_package(name, version).await?;
         }
         Some(("team", sub_matches)) => match sub_matches.subcommand() {
             Some(("create", team_sub)) => {

@@ -5,15 +5,40 @@
 
 	$: user = $authStore.user;
 	$: isLoggedIn = $authStore.isAuthenticated;
+	$: initialized = $authStore.initialized;
+	$: loading = $authStore.loading;
 
-	onMount(() => {
-		authStore.initialize();
+	onMount(async () => {
+		await authStore.initialize();
+		
+		// Set up periodic token validation (every 5 minutes)
+		const interval = setInterval(async () => {
+			if ($authStore.isAuthenticated) {
+				try {
+					await authStore.refresh();
+				} catch (error) {
+					console.warn('Token validation failed:', error);
+				}
+			}
+		}, 5 * 60 * 1000); // 5 minutes
+		
+		// Cleanup interval on unmount
+		return () => clearInterval(interval);
 	});
 </script>
 
 <div class="min-h-screen bg-background">
-	<!-- Navigation -->
-	<nav class="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+	{#if !initialized}
+		<!-- Loading screen during authentication initialization -->
+		<div class="flex items-center justify-center min-h-screen">
+			<div class="text-center">
+				<div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+				<p class="text-muted-foreground">Loading...</p>
+			</div>
+		</div>
+	{:else}
+		<!-- Navigation -->
+		<nav class="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
 		<div class="container mx-auto px-4 sm:px-6 lg:px-8">
 			<div class="flex justify-between h-16">
 				<div class="flex items-center">
@@ -63,12 +88,13 @@
 		<slot />
 	</main>
 
-	<!-- Footer -->
-	<footer class="border-t mt-auto">
-		<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-			<div class="text-center text-muted-foreground">
-				<p>&copy; 2024 Knot Space. Built with SvelteKit and ❤️</p>
+		<!-- Footer -->
+		<footer class="border-t mt-auto">
+			<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+				<div class="text-center text-muted-foreground">
+					<p>&copy; 2024 Knot Space. Built with SvelteKit and ❤️</p>
+				</div>
 			</div>
-		</div>
-	</footer>
+		</footer>
+	{/if}
 </div>
