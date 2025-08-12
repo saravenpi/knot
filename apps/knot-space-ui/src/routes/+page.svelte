@@ -1,27 +1,20 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { packagesStore } from '../lib/stores';
 
-	let packages: any[] = [];
-	let loading = true;
-	let stats = {
-		totalPackages: 0,
-		totalDownloads: 0,
+	$: packages = $packagesStore.packages;
+	$: loading = $packagesStore.loading;
+	$: stats = {
+		totalPackages: packages.length,
+		totalDownloads: packages.reduce((sum, pkg) => sum + (pkg.downloads_count || 0), 0),
 		totalUsers: 0
 	};
 
 	onMount(async () => {
 		try {
-			// Fetch recent packages
-			const packagesResponse = await fetch('/api/packages');
-			if (packagesResponse.ok) {
-				packages = await packagesResponse.json();
-				stats.totalPackages = packages.length;
-				stats.totalDownloads = packages.reduce((sum, pkg) => sum + (pkg.downloads_count || 0), 0);
-			}
+			await packagesStore.fetchAll();
 		} catch (error) {
 			console.error('Failed to fetch packages:', error);
-		} finally {
-			loading = false;
 		}
 	});
 </script>

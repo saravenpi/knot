@@ -18,6 +18,14 @@ apps:
     description: "The Knot CLI tool for monorepo package management"
   knot-space:
     description: "Online repository server for Knot packages"
+    tsAlias: "@"
+    packages: [types]
   knot-space-ui:
     description: "Frontend UI for Knot Space package registry"
+    tsAlias: "@"
+    packages: [types]
+
+packages:
+  types:
+    description: "Shared TypeScript types for all Knot applications"
 

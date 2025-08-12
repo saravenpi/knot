@@ -1,22 +1,18 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { packagesStore } from '../../lib/stores';
 
-	let packages: any[] = [];
-	let loading = true;
+	$: packages = $packagesStore.packages;
+	$: loading = $packagesStore.loading;
+	$: searchResults = $packagesStore.searchResults;
 	let searchTerm = '';
 	let filteredPackages: any[] = [];
 
 	onMount(async () => {
 		try {
-			const response = await fetch('/api/packages');
-			if (response.ok) {
-				packages = await response.json();
-				filteredPackages = packages;
-			}
+			await packagesStore.fetchAll();
 		} catch (error) {
 			console.error('Failed to fetch packages:', error);
-		} finally {
-			loading = false;
 		}
 	});
 
@@ -24,6 +20,7 @@
 	$: {
 		if (searchTerm.trim() === '') {
 			filteredPackages = packages;
+			packagesStore.clearSearch();
 		} else {
 			const term = searchTerm.toLowerCase();
 			filteredPackages = packages.filter(pkg => 

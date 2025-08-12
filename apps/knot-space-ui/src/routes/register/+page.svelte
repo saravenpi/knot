@@ -1,12 +1,14 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { authStore } from '../../lib/stores';
 
 	let username = '';
 	let email = '';
 	let password = '';
 	let confirmPassword = '';
-	let loading = false;
 	let error = '';
+
+	$: loading = $authStore.loading;
 
 	async function handleRegister() {
 		// Validation
@@ -37,37 +39,13 @@
 			return;
 		}
 
-		loading = true;
 		error = '';
 
 		try {
-			const response = await fetch('/api/auth/register', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({
-					username: username.trim(),
-					email: email.trim().toLowerCase(),
-					password
-				})
-			});
-
-			const data = await response.json();
-
-			if (response.ok) {
-				// Store token
-				localStorage.setItem('knot_token', data.token);
-				// Redirect to home
-				goto('/');
-			} else {
-				error = data.message || 'Registration failed';
-			}
+			await authStore.register(username.trim(), email.trim().toLowerCase(), password);
+			goto('/');
 		} catch (err) {
-			error = 'Network error. Please try again.';
-			console.error('Registration error:', err);
-		} finally {
-			loading = false;
+			error = err instanceof Error ? err.message : 'Registration failed';
 		}
 	}
 

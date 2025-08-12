@@ -1,5 +1,9 @@
 import { z } from 'zod';
 
+// Re-export shared types
+export * from '@knot/types';
+
+// Keep the zod schemas for validation
 export const CreateUserSchema = z.object({
   username: z
     .string()
@@ -103,26 +107,3 @@ export type LoginRequest = z.infer<typeof LoginSchema>;
 export type CreateTeamRequest = z.infer<typeof CreateTeamSchema>;
 export type AddTeamMemberRequest = z.infer<typeof AddTeamMemberSchema>;
 export type PublishPackageRequest = z.infer<typeof PublishPackageSchema>;
-
-export interface AuthResponse {
-  token: string;
-  user: UserProfile;
-}
-
-export interface UserProfile {
-  id: string;
-  username: string;
-  email: string;
-  createdAt: Date;
-}
-
-export interface ApiError {
-  error: string;
-  details?: string;
-}
-
-export interface SuccessResponse<T = any> {
-  success: boolean;
-  data?: T;
-  message?: string;
-}

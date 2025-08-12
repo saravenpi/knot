@@ -2,54 +2,17 @@
 	import '../app.css';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { page } from '$app/stores';
-	
-	// Simple auth store
-	let isLoggedIn = false;
-	let user: any = null;
-	let token = '';
+	import { authStore } from '../lib/stores';
+
+	$: user = $authStore.user;
+	$: isLoggedIn = $authStore.isAuthenticated;
 
 	onMount(() => {
-		// Check for stored token
-		token = localStorage.getItem('knot_token') || '';
-		if (token) {
-			// Validate token and get user info
-			validateToken();
-		}
+		authStore.initialize();
 	});
 
-	async function validateToken() {
-		try {
-			const response = await fetch('/api/auth/profile', {
-				headers: {
-					'Authorization': `Bearer ${token}`
-				}
-			});
-			
-			if (response.ok) {
-				user = await response.json();
-				isLoggedIn = true;
-			} else {
-				// Token invalid, clear it
-				localStorage.removeItem('knot_token');
-				token = '';
-				isLoggedIn = false;
-				user = null;
-			}
-		} catch (error) {
-			console.error('Token validation failed:', error);
-			localStorage.removeItem('knot_token');
-			token = '';
-			isLoggedIn = false;
-			user = null;
-		}
-	}
-
 	async function logout() {
-		localStorage.removeItem('knot_token');
-		token = '';
-		isLoggedIn = false;
-		user = null;
+		await authStore.logout();
 		goto('/');
 	}
 </script>
@@ -67,7 +30,7 @@
 						<span class="font-semibold text-xl">Knot Space</span>
 					</a>
 				</div>
-				
+
 				<div class="flex items-center space-x-4">
 					<a href="/packages" class="text-sm font-medium hover:text-primary transition-colors">
 						Packages
@@ -75,11 +38,11 @@
 					<a href="/teams" class="text-sm font-medium hover:text-primary transition-colors">
 						Teams
 					</a>
-					
+
 					{#if isLoggedIn && user}
 						<div class="flex items-center space-x-2">
 							<span class="text-sm text-muted-foreground">Welcome, {user.username}</span>
-							<button 
+							<button
 								on:click={logout}
 								class="text-sm font-medium hover:text-primary transition-colors"
 							>
@@ -91,8 +54,8 @@
 							<a href="/login" class="text-sm font-medium hover:text-primary transition-colors">
 								Login
 							</a>
-							<a 
-								href="/register" 
+							<a
+								href="/register"
 								class="bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-md text-sm font-medium transition-colors"
 							>
 								Sign Up

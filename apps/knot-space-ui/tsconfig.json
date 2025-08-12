@@ -9,6 +9,12 @@
     "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
-    "moduleResolution": "bundler"
+    "moduleResolution": "bundler",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/lib/*"],
+      "@knot/types": ["./knot_packages/types/src/index.ts"],
+      "@knot/types/*": ["./knot_packages/types/src/*"]
+    }
   }
 }

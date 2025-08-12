@@ -1,10 +1,12 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { authStore } from '../../lib/stores';
 
 	let username = '';
 	let password = '';
-	let loading = false;
 	let error = '';
+
+	$: loading = $authStore.loading;
 
 	async function handleLogin() {
 		if (!username || !password) {
@@ -12,36 +14,13 @@
 			return;
 		}
 
-		loading = true;
 		error = '';
 
 		try {
-			const response = await fetch('/api/auth/login', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({
-					username: username.trim(),
-					password
-				})
-			});
-
-			const data = await response.json();
-
-			if (response.ok) {
-				// Store token
-				localStorage.setItem('knot_token', data.token);
-				// Redirect to dashboard or home
-				goto('/');
-			} else {
-				error = data.message || 'Login failed';
-			}
+			await authStore.login(username.trim(), password);
+			goto('/');
 		} catch (err) {
-			error = 'Network error. Please try again.';
-			console.error('Login error:', err);
-		} finally {
-			loading = false;
+			error = err instanceof Error ? err.message : 'Login failed';
 		}
 	}
 
