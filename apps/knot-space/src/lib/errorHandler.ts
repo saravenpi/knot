@@ -75,7 +75,7 @@ export class RateLimitError extends Error implements AppError {
 
 export function errorHandler(error: Error, c: Context) {
   const requestId = c.req.header('x-request-id') || 'unknown';
-  
+
   // Log error details
   logger.error('Request error', {
     requestId,
@@ -89,48 +89,60 @@ export function errorHandler(error: Error, c: Context) {
 
   // Handle known application errors
   if (isAppError(error)) {
-    return c.json({
-      success: false,
-      error: error.message,
-      code: error.code,
-      requestId,
-    }, error.statusCode);
+    return c.json(
+      {
+        success: false,
+        error: error.message,
+        code: error.code,
+        requestId,
+      },
+      error.statusCode
+    );
   }
 
   // Handle Prisma errors
   if (error.name === 'PrismaClientKnownRequestError') {
     const prismaError = error as any;
     if (prismaError.code === 'P2002') {
-      return c.json({
-        success: false,
-        error: 'Resource already exists',
-        code: 'DUPLICATE_ERROR',
-        requestId,
-      }, 409);
+      return c.json(
+        {
+          success: false,
+          error: 'Resource already exists',
+          code: 'DUPLICATE_ERROR',
+          requestId,
+        },
+        409
+      );
     }
   }
 
   // Handle validation errors from Zod
   if (error.name === 'ZodError') {
-    return c.json({
-      success: false,
-      error: 'Validation failed',
-      code: 'VALIDATION_ERROR',
-      details: (error as any).errors,
-      requestId,
-    }, 400);
+    return c.json(
+      {
+        success: false,
+        error: 'Validation failed',
+        code: 'VALIDATION_ERROR',
+        details: (error as any).errors,
+        requestId,
+      },
+      400
+    );
   }
 
   // Handle unexpected errors
   const isDevelopment = process.env.NODE_ENV === 'development';
-  
-  return c.json({
-    success: false,
-    error: isDevelopment ? error.message : 'Internal server error',
-    code: 'INTERNAL_ERROR',
-    requestId,
-    ...(isDevelopment && { stack: error.stack }),
-  }, 500);
+
+  return c.json(
+    {
+      success: false,
+      error: isDevelopment ? error.message : 'Internal server error',
+      code: 'INTERNAL_ERROR',
+      requestId,
+      ...(isDevelopment && { stack: error.stack }),
+    },
+    500
+  );
 }
 
 function isAppError(error: Error): error is AppError {

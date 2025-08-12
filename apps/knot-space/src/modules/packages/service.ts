@@ -1,5 +1,5 @@
 import { prisma } from '../../lib/prisma';
-import { PublishPackageRequest } from '@/types';
+import { PublishPackageRequest } from '../../types';
 import * as crypto from 'crypto';
 
 export interface PackageFilters {

@@ -1,6 +1,6 @@
 import { Context } from 'hono';
 import { teamsService } from './service';
-import { CreateTeamRequest, AddTeamMemberRequest } from '@/types';
+import { CreateTeamRequest, AddTeamMemberRequest } from '../../types';
 
 export class TeamsController {
   static async createTeam(c: Context) {

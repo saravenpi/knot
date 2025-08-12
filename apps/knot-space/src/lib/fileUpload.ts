@@ -114,8 +114,8 @@ export class FileUploadService {
   }
 
   async saveFile(
-    buffer: Buffer, 
-    originalName: string, 
+    buffer: Buffer,
+    originalName: string,
     mimeType: string,
     packageName: string,
     version: string

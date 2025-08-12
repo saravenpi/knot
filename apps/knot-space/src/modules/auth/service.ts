@@ -1,6 +1,6 @@
 import { prisma } from '@/prisma';
 import { authService } from '@/auth';
-import { CreateUserRequest, LoginRequest, UserProfile, AuthResponse } from '@/types';
+import { CreateUserRequest, LoginRequest, UserProfile, AuthResponse } from '../../types';
 import * as bcrypt from 'bcryptjs';
 
 class AuthServiceModule {

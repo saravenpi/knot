@@ -36,11 +36,11 @@ export class AuthService {
         algorithms: ['HS256'],
         maxAge: this.JWT_EXPIRES_IN,
       }) as any;
-      
+
       if (!decoded.sub || !decoded.username) {
         throw new Error('Invalid token payload');
       }
-      
+
       return {
         userId: decoded.sub,
         username: decoded.username,

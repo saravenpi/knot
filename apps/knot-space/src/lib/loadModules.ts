@@ -24,11 +24,11 @@ export async function loadModules(): Promise<Module[]> {
 
   try {
     logger.info('Loading modules from', { path: modulesPath });
-    
+
     const moduleDirectories = readdirSync(modulesPath, { withFileTypes: true })
-      .filter(dirent => dirent.isDirectory())
-      .map(dirent => dirent.name)
-      .filter(name => isValidModuleName(name)); // Security: filter allowed modules
+      .filter((dirent) => dirent.isDirectory())
+      .map((dirent) => dirent.name)
+      .filter((name) => isValidModuleName(name)); // Security: filter allowed modules
 
     logger.info('Found module directories', { modules: moduleDirectories });
 
@@ -37,7 +37,7 @@ export async function loadModules(): Promise<Module[]> {
         // Security: normalize and validate path
         const routerFileName = 'router.ts';
         const modulePath = resolve(join(modulesPath, moduleName, routerFileName));
-        
+
         // Security: ensure the resolved path is still within modules directory
         if (!modulePath.startsWith(modulesPath)) {
           logger.error('Security violation: Path traversal attempt', { moduleName, modulePath });
@@ -45,9 +45,9 @@ export async function loadModules(): Promise<Module[]> {
         }
 
         logger.debug('Attempting to load module', { moduleName, modulePath });
-        
+
         const moduleExports = await import(modulePath);
-        
+
         // Security: validate module exports
         if (!moduleExports.default || typeof moduleExports.default !== 'object') {
           logger.warn('Invalid module export: missing or invalid router', { moduleName });
@@ -71,44 +71,44 @@ export async function loadModules(): Promise<Module[]> {
         // Security: sanitize prefix to prevent injection
         const sanitizedPrefix = normalize(prefix).replace(/\.\./g, '');
         if (sanitizedPrefix !== prefix) {
-          logger.error('Security violation: Invalid prefix detected', { 
-            moduleName, 
-            originalPrefix: prefix, 
-            sanitizedPrefix 
+          logger.error('Security violation: Invalid prefix detected', {
+            moduleName,
+            originalPrefix: prefix,
+            sanitizedPrefix,
           });
           continue;
         }
-        
+
         modules.push({
           router,
           name: moduleName,
-          prefix: sanitizedPrefix
-        });
-        
-        logger.info('Module loaded successfully', { 
-          moduleName, 
           prefix: sanitizedPrefix,
-          routesCount: router.routes?.length || 'unknown'
+        });
+
+        logger.info('Module loaded successfully', {
+          moduleName,
+          prefix: sanitizedPrefix,
+          routesCount: router.routes?.length || 'unknown',
         });
       } catch (error) {
-        logger.error('Failed to load module', { 
-          moduleName, 
+        logger.error('Failed to load module', {
+          moduleName,
           error: error instanceof Error ? error.message : 'Unknown error',
-          stack: error instanceof Error ? error.stack : undefined
+          stack: error instanceof Error ? error.stack : undefined,
         });
       }
     }
   } catch (error) {
-    logger.error('Failed to read modules directory', { 
+    logger.error('Failed to read modules directory', {
       error: error instanceof Error ? error.message : 'Unknown error',
-      modulesPath 
+      modulesPath,
     });
     throw error;
   }
 
-  logger.info('Module loading completed', { 
+  logger.info('Module loading completed', {
     totalModules: modules.length,
-    loadedModules: modules.map(m => ({ name: m.name, prefix: m.prefix }))
+    loadedModules: modules.map((m) => ({ name: m.name, prefix: m.prefix })),
   });
 
   return modules;

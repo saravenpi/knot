@@ -38,14 +38,14 @@ class Logger {
       // Pretty logging for development
       const colorMap = {
         ERROR: '\x1b[31m', // Red
-        WARN: '\x1b[33m',  // Yellow
-        INFO: '\x1b[36m',  // Cyan
+        WARN: '\x1b[33m', // Yellow
+        INFO: '\x1b[36m', // Cyan
         DEBUG: '\x1b[37m', // White
       };
-      
+
       const resetColor = '\x1b[0m';
       const color = colorMap[level];
-      
+
       console.log(
         `${color}[${timestamp}] ${level}:${resetColor} ${message}`,
         meta ? JSON.stringify(meta, null, 2) : ''

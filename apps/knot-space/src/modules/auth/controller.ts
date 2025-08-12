@@ -1,6 +1,6 @@
 import { Context } from 'hono';
 import { authModuleService } from './service';
-import { CreateUserRequest, LoginRequest } from '@/types';
+import { CreateUserRequest, LoginRequest } from '../../types';
 
 export class AuthController {
   static async register(c: Context) {

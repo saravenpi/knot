@@ -1,5 +1,5 @@
 import { zValidator } from '@hono/zod-validator';
-import { PublishPackageSchema } from '@/types';
+import { PublishPackageSchema } from '../../types';
 import { z } from 'zod';
 
 export const validatePublishPackage = zValidator('json', PublishPackageSchema);

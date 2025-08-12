@@ -1,6 +1,6 @@
 import { Context } from 'hono';
 import { packagesService } from './service';
-import { PublishPackageRequest } from '@/types';
+import { PublishPackageRequest } from '../../types';
 
 export class PackagesController {
   static async publishPackage(c: Context) {

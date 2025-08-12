@@ -1,5 +1,5 @@
 import { prisma } from '../../lib/prisma';
-import { CreateTeamRequest, AddTeamMemberRequest } from '@/types';
+import { CreateTeamRequest, AddTeamMemberRequest } from '../../types';
 
 class TeamsService {
   async createTeam(data: CreateTeamRequest, ownerId: string) {
@@ -140,7 +140,7 @@ class TeamsService {
     };
   }
 
-  async getTeamMembers(teamId: string, userId?: string) {
+  async getTeamMembers(teamId: string) {
     const team = await prisma.team.findUnique({
       where: { id: teamId }
     });
