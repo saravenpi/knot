@@ -775,7 +775,7 @@ pub async fn publish_package(team: Option<&str>, description: Option<&str>) -> R
     // Clean up tarball
     let _ = std::fs::remove_file(&tarball_path);
 
-    if response.status().is_success() {
+    if upload_response.status().is_success() {
         println!(
             "📦 Successfully published {} v{}",
             metadata.name, metadata.version
@@ -784,8 +784,8 @@ pub async fn publish_package(team: Option<&str>, description: Option<&str>) -> R
             println!("   Team: {}", team_name);
         }
     } else {
-        let status = response.status();
-        let text = response.text().await.unwrap_or_default();
+        let status = upload_response.status();
+        let text = upload_response.text().await.unwrap_or_default();
         anyhow::bail!("Publish failed ({}): {}", status, text);
     }
 
