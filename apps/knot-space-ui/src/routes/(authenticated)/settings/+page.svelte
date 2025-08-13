@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
-	import { authStore } from '../../lib/stores';
+	import { authStore } from '../../../lib/stores';
 
 	$: user = $authStore.user;
 	$: loading = $authStore.loading;
@@ -15,9 +15,6 @@
 
 	onMount(async () => {
 		try {
-			// Ensure auth is initialized first
-			await authStore.initialize();
-			
 			// Refresh the profile to get latest data
 			await authStore.getProfile();
 			
@@ -27,8 +24,6 @@
 			}
 		} catch (error) {
 			console.error('Failed to load profile:', error);
-			// If profile loading fails, redirect to login
-			goto('/login?redirectTo=/settings');
 		} finally {
 			pageLoading = false;
 		}

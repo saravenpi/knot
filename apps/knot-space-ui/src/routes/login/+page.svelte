@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 	import { authStore } from '../../lib/stores';
 
@@ -30,9 +29,7 @@
 
 		try {
 			await authStore.login(username.trim(), password);
-			// Check for redirect URL in query params, otherwise go to packages
-			const redirectTo = $page.url.searchParams.get('redirectTo') || '/packages';
-			goto(redirectTo);
+			goto('/packages');
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Login failed';
 		}

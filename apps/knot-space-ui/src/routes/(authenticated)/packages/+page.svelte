@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { packagesStore } from '../../lib/stores';
+	import { packagesStore } from '../../../lib/stores';
 
 	$: packages = $packagesStore.packages;
 	$: loading = $packagesStore.loading;
