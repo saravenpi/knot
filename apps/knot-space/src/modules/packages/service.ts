@@ -60,8 +60,6 @@ class PackagesService {
       teamId,
       downloadUrl: `https://example.com/packages/${data.name}/${data.version}`, // Placeholder
       filePath: `/uploads/${data.name}-${data.version}.tgz`, // Placeholder
-      fileSize: BigInt(1024), // Placeholder
-      checksumSha256: crypto.createHash('sha256').update(data.name + data.version).digest('hex'), // Placeholder
     };
 
     const pkg = await prisma.package.create({
