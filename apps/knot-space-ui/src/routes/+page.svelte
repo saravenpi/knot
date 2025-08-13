@@ -1,9 +1,12 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { packagesStore } from '../lib/stores';
+	import { goto } from '$app/navigation';
+	import { packagesStore, authStore } from '../lib/stores';
 
 	$: packages = $packagesStore.packages;
 	$: loading = $packagesStore.loading;
+	$: isAuthenticated = $authStore.isAuthenticated;
+	$: initialized = $authStore.initialized;
 	$: stats = {
 		totalPackages: packages.length,
 		totalDownloads: packages.reduce((sum, pkg) => sum + (pkg.downloads_count || 0), 0),
@@ -11,6 +14,16 @@
 	};
 
 	onMount(async () => {
+		// Initialize auth first to check if user is logged in
+		await authStore.initialize();
+		
+		// If user is authenticated, redirect to packages
+		if ($authStore.isAuthenticated) {
+			goto('/packages');
+			return;
+		}
+
+		// Load packages for public home page
 		try {
 			await packagesStore.fetchAll();
 		} catch (error) {
@@ -24,10 +37,21 @@
 	<meta name="description" content="A modern package registry for Knot monorepo packages" />
 </svelte:head>
 
+{#if !initialized}
+	<!-- Loading state while checking authentication -->
+	<div class="flex items-center justify-center min-h-[50vh]">
+		<div class="text-center">
+			<div class="animate-spin rounded-full h-8 w-8 border-b-2 border-black mx-auto mb-4"></div>
+			<p class="text-muted-foreground">Loading...</p>
+		</div>
+	</div>
+{:else if !isAuthenticated}
+	<!-- Show home page only for unauthenticated users -->
+	
 <!-- Hero Section -->
 <div class="text-center py-12 md:py-20">
 	<h1 class="text-4xl md:text-6xl font-bold tracking-tight mb-6">
-		Welcome to <span class="text-primary">Knot Space</span>
+		Welcome to <span class="text-black">Knot Space</span>
 	</h1>
 	<p class="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
 		The modern package registry for Knot monorepo packages. Publish, share, and manage your TypeScript/JavaScript packages with teams.
@@ -35,7 +59,7 @@
 	<div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
 		<a 
 			href="/packages" 
-			class="bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-3 rounded-lg font-medium transition-colors"
+			class="bg-black text-white hover:bg-black/90 px-8 py-3 rounded-lg font-medium transition-colors"
 		>
 			Browse Packages
 		</a>
@@ -51,15 +75,15 @@
 <!-- Stats -->
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 py-12 border-t border-b">
 	<div class="text-center">
-		<div class="text-3xl font-bold text-primary mb-2">{stats.totalPackages.toLocaleString()}</div>
+		<div class="text-3xl font-bold text-black mb-2">{stats.totalPackages.toLocaleString()}</div>
 		<div class="text-muted-foreground">Total Packages</div>
 	</div>
 	<div class="text-center">
-		<div class="text-3xl font-bold text-primary mb-2">{stats.totalDownloads.toLocaleString()}</div>
+		<div class="text-3xl font-bold text-black mb-2">{stats.totalDownloads.toLocaleString()}</div>
 		<div class="text-muted-foreground">Total Downloads</div>
 	</div>
 	<div class="text-center">
-		<div class="text-3xl font-bold text-primary mb-2">∞</div>
+		<div class="text-3xl font-bold text-black mb-2">∞</div>
 		<div class="text-muted-foreground">Possibilities</div>
 	</div>
 </div>
@@ -70,7 +94,7 @@
 		<h2 class="text-3xl font-bold">Recent Packages</h2>
 		<a 
 			href="/packages" 
-			class="text-primary hover:text-primary/80 font-medium"
+			class="text-black hover:text-black/80 font-medium"
 		>
 			View All →
 		</a>
@@ -93,7 +117,7 @@
 			<p class="text-muted-foreground mb-4">Be the first to publish a package to Knot Space!</p>
 			<a 
 				href="/login" 
-				class="bg-primary text-primary-foreground hover:bg-primary/90 px-6 py-2 rounded-md font-medium transition-colors inline-block"
+				class="bg-black text-white hover:bg-black/90 px-6 py-2 rounded-md font-medium transition-colors inline-block"
 			>
 				Get Started
 			</a>
@@ -105,7 +129,7 @@
 					<div class="flex items-start justify-between mb-3">
 						<div>
 							<h3 class="font-semibold text-lg leading-none mb-1">
-								<a href="/packages/{pkg.name}" class="hover:text-primary transition-colors">
+								<a href="/packages/{pkg.name}" class="hover:text-black transition-colors">
 									{pkg.name}
 								</a>
 							</h3>
@@ -139,7 +163,7 @@
 	<h2 class="text-3xl font-bold text-center mb-12">Why Knot Space?</h2>
 	<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
 		<div class="text-center">
-			<div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
+			<div class="w-12 h-12 bg-black/10 rounded-lg flex items-center justify-center mx-auto mb-4">
 				<span class="text-2xl">🚀</span>
 			</div>
 			<h3 class="font-semibold text-lg mb-2">Fast Publishing</h3>
@@ -148,7 +172,7 @@
 			</p>
 		</div>
 		<div class="text-center">
-			<div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
+			<div class="w-12 h-12 bg-black/10 rounded-lg flex items-center justify-center mx-auto mb-4">
 				<span class="text-2xl">👥</span>
 			</div>
 			<h3 class="font-semibold text-lg mb-2">Team Collaboration</h3>
@@ -157,7 +181,7 @@
 			</p>
 		</div>
 		<div class="text-center">
-			<div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
+			<div class="w-12 h-12 bg-black/10 rounded-lg flex items-center justify-center mx-auto mb-4">
 				<span class="text-2xl">🔒</span>
 			</div>
 			<h3 class="font-semibold text-lg mb-2">Secure & Reliable</h3>
@@ -167,3 +191,5 @@
 		</div>
 	</div>
 </div>
+
+{/if}
