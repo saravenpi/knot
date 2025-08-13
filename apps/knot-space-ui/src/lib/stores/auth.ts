@@ -42,11 +42,14 @@ const createAuthStore = () => {
       try {
         const response = await authApi.login({ username, password });
         
-        if (response.token) {
-          setStoredToken(response.token);
-        }
+        // Handle both direct token and nested data structure
+        const authData = response.data || response;
+        const token = authData.token || response.token;
+        const user = authData.user || response.user;
         
-        const user = response.user || response.data || response as any;
+        if (token) {
+          setStoredToken(token);
+        }
         
         update(state => ({
           ...state,
@@ -74,11 +77,14 @@ const createAuthStore = () => {
       try {
         const response = await authApi.register({ username, email, password });
         
-        if (response.token) {
-          setStoredToken(response.token);
-        }
+        // Handle both direct token and nested data structure
+        const authData = response.data || response;
+        const token = authData.token || response.token;
+        const user = authData.user || response.user;
         
-        const user = response.user || response.data || response as any;
+        if (token) {
+          setStoredToken(token);
+        }
         
         update(state => ({
           ...state,
@@ -118,11 +124,14 @@ const createAuthStore = () => {
       try {
         const response = await authApi.getProfile();
         
-        if (response.token) {
-          setStoredToken(response.token);
-        }
+        // Handle both direct token and nested data structure
+        const authData = response.data || response;
+        const newToken = authData.token || response.token;
+        const user = authData.user || response.user;
         
-        const user = response.user || response.data || response as any;
+        if (newToken) {
+          setStoredToken(newToken);
+        }
         
         update(state => ({
           ...state,

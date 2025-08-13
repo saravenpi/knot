@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
 	import { authStore } from '../../lib/stores';
 
 	let username = '';
@@ -9,6 +10,16 @@
 	let error = '';
 
 	$: loading = $authStore.loading;
+
+	onMount(async () => {
+		// Wait for auth to initialize before checking authentication status
+		await authStore.initialize();
+		
+		// Redirect if already logged in
+		if ($authStore.isAuthenticated) {
+			goto('/packages');
+		}
+	});
 
 	async function handleRegister() {
 		// Validation

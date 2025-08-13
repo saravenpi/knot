@@ -13,11 +13,12 @@
 		
 		// Set up periodic token validation (every 5 minutes)
 		const interval = setInterval(async () => {
-			if ($authStore.isAuthenticated) {
+			if ($authStore.isAuthenticated && !$authStore.loading) {
 				try {
 					await authStore.refresh();
 				} catch (error) {
 					console.warn('Token validation failed:', error);
+					// Don't show error to user, just silently log out
 				}
 			}
 		}, 5 * 60 * 1000); // 5 minutes

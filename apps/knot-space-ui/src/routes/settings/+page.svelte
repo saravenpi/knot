@@ -5,17 +5,33 @@
 	import { authStore } from '../../lib/stores';
 
 	$: user = $authStore.user;
+	$: loading = $authStore.loading;
+	$: initialized = $authStore.initialized;
 
 	let token = '';
 	let showToken = false;
 	let copied = false;
+	let pageLoading = true;
 
-	onMount(() => {
-		authStore.getProfile().then(() => {
+	onMount(async () => {
+		try {
+			// Ensure auth is initialized first
+			await authStore.initialize();
+			
+			// Refresh the profile to get latest data
+			await authStore.getProfile();
+			
+			// Get the token from localStorage
 			if (browser) {
 				token = localStorage.getItem('knot_token') || '';
 			}
-		});
+		} catch (error) {
+			console.error('Failed to load profile:', error);
+			// If profile loading fails, redirect to login
+			goto('/login?redirectTo=/settings');
+		} finally {
+			pageLoading = false;
+		}
 	});
 
 	async function logout() {
@@ -55,6 +71,15 @@
 		<p class="text-muted-foreground mt-2">Manage your account and CLI authentication</p>
 	</div>
 
+	{#if pageLoading}
+		<!-- Loading state -->
+		<div class="flex items-center justify-center py-16">
+			<div class="text-center">
+				<div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+				<p class="text-muted-foreground">Loading your settings...</p>
+			</div>
+		</div>
+	{:else}
 	<div class="space-y-6">
 		<!-- Profile Section -->
 		<div class="bg-card text-card-foreground rounded-lg border p-6">
@@ -71,7 +96,7 @@
 				<div class="flex justify-between items-center py-2">
 					<span class="font-medium">Member since:</span>
 					<span class="text-muted-foreground">
-						{user?.created_at ? new Date(user.created_at).toLocaleDateString() : 'N/A'}
+						{user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}
 					</span>
 				</div>
 			</div>
@@ -100,6 +125,7 @@
 							on:click={toggleTokenVisibility}
 							class="px-3 py-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground rounded-md text-sm"
 							title={showToken ? 'Hide token' : 'Show token'}
+							aria-label={showToken ? 'Hide token' : 'Show token'}
 						>
 							<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L8.464 8.464M9.878 9.878l1.414-1.414" />
@@ -110,6 +136,8 @@
 							on:click={copyToken}
 							class="px-3 py-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded-md text-sm"
 							disabled={!token}
+							aria-label="Copy token to clipboard"
+							title={copied ? 'Copied!' : 'Copy token'}
 						>
 							<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
@@ -170,6 +198,7 @@
 			</div>
 		</div>
 	</div>
+	{/if}
 </div>
 
 <style>

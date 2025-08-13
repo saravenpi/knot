@@ -10,7 +10,10 @@
 
 	$: loading = $authStore.loading;
 
-	onMount(() => {
+	onMount(async () => {
+		// Wait for auth to initialize before checking authentication status
+		await authStore.initialize();
+		
 		// Redirect if already logged in
 		if ($authStore.isAuthenticated) {
 			goto('/packages');

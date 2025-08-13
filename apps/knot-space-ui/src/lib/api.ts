@@ -41,14 +41,15 @@ export const requestApi = async <T>(
   });
 
   if (response.status === 401) {
+    // Clear token immediately
     if (typeof localStorage !== 'undefined') {
       localStorage.removeItem('knot_token');
     }
     // Import authStore dynamically to avoid circular imports
     import('./stores/auth').then(({ authStore }) => {
       authStore.logout();
-    });
-    throw new Error("Session expired");
+    }).catch(console.error);
+    throw new Error("Session expired. Please log in again.");
   }
 
   if (!response.ok) {
