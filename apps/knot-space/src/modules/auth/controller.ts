@@ -44,18 +44,19 @@ export class AuthController {
   static async getProfile(c: Context) {
     try {
       const user = c.get('user');
-      if (!user) {
+      if (!user || !user.id) {
         return c.json({
           success: false,
           error: 'User not authenticated'
         }, 401);
       }
 
+      // Now we need to do the database lookup here since middleware doesn't do it anymore
       const profile = await authModuleService.getProfile(user.id);
       
       return c.json({
         success: true,
-        ...profile
+        data: profile
       });
     } catch (error) {
       console.error('Get profile error:', error);
@@ -69,7 +70,7 @@ export class AuthController {
   static async deleteAccount(c: Context) {
     try {
       const user = c.get('user');
-      if (!user) {
+      if (!user || !user.id) {
         return c.json({
           success: false,
           error: 'User not authenticated'

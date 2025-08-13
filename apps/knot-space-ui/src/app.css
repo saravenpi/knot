@@ -1,5 +1,16 @@
 @import url('https://fonts.googleapis.com/css2?family=Satoshi:wght@300;400;500;600;700;900&display=swap');
 
+/* Gambarino Font */
+@font-face {
+  font-family: 'Gambarino';
+  src: url('/fonts/Gambarino-Regular.woff2') format('woff2'),
+       url('/fonts/Gambarino-Regular.woff') format('woff'),
+       url('/fonts/Gambarino-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-display: swap;
+  font-style: normal;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { teamsStore } from '../../../lib/stores';
+	import Icon from '@iconify/svelte';
 
 	$: teams = $teamsStore.teams;
 	$: loading = $teamsStore.loading;
@@ -56,9 +57,10 @@
 		
 		<button
 			on:click={() => showCreateForm = !showCreateForm}
-			class="bg-black text-white hover:bg-black/90 px-4 py-2 rounded-md text-sm font-medium transition-colors"
+			class="bg-black text-white hover:bg-black/90 px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-2"
 		>
-			{showCreateForm ? 'Cancel' : 'Create Team'}
+			<Icon icon={showCreateForm ? "solar:close-circle-bold" : "solar:add-circle-bold"} class="w-4 h-4" />
+			<span>{showCreateForm ? 'Cancel' : 'Create Team'}</span>
 		</button>
 	</div>
 
@@ -106,16 +108,18 @@
 				<div class="flex space-x-3">
 					<button
 						type="submit"
-						class="bg-black text-white hover:bg-black/90 px-4 py-2 rounded-md text-sm font-medium transition-colors"
+						class="bg-black text-white hover:bg-black/90 px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-2"
 					>
-						Create Team
+						<Icon icon="solar:check-circle-bold" class="w-4 h-4" />
+						<span>Create Team</span>
 					</button>
 					<button
 						type="button"
 						on:click={() => showCreateForm = false}
-						class="border border-input bg-background hover:bg-accent hover:text-accent-foreground px-4 py-2 rounded-md text-sm font-medium transition-colors"
+						class="border border-input bg-background hover:bg-accent hover:text-accent-foreground px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-2"
 					>
-						Cancel
+						<Icon icon="solar:close-circle-bold" class="w-4 h-4" />
+						<span>Cancel</span>
 					</button>
 				</div>
 			</form>
@@ -132,17 +136,16 @@
 	{:else if teams.length === 0}
 		<div class="text-center py-16">
 			<div class="mb-4">
-				<svg class="w-16 h-16 text-muted-foreground mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-				</svg>
+				<Icon icon="solar:users-group-two-rounded-bold" class="w-16 h-16 text-muted-foreground mx-auto" />
 			</div>
 			<h3 class="text-lg font-semibold mb-2">No teams yet</h3>
 			<p class="text-muted-foreground mb-6">Create your first team to start collaborating with others.</p>
 			<button
 				on:click={() => showCreateForm = true}
-				class="bg-black text-white hover:bg-black/90 px-4 py-2 rounded-md text-sm font-medium transition-colors"
+				class="bg-black text-white hover:bg-black/90 px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-2 mx-auto"
 			>
-				Create Your First Team
+				<Icon icon="solar:add-circle-bold" class="w-4 h-4" />
+				<span>Create Your First Team</span>
 			</button>
 		</div>
 	{:else}

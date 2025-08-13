@@ -3,6 +3,7 @@
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
 	import { authStore } from '../../../lib/stores';
+	import Icon from '@iconify/svelte';
 
 	$: user = $authStore.user;
 	$: loading = $authStore.loading;
@@ -14,19 +15,12 @@
 	let pageLoading = true;
 
 	onMount(async () => {
-		try {
-			// Refresh the profile to get latest data
-			await authStore.getProfile();
-			
-			// Get the token from localStorage
-			if (browser) {
-				token = localStorage.getItem('knot_token') || '';
-			}
-		} catch (error) {
-			console.error('Failed to load profile:', error);
-		} finally {
-			pageLoading = false;
+		// Get the token from localStorage - no need to call getProfile() again
+		// since we're already in an authenticated layout
+		if (browser) {
+			token = localStorage.getItem('knot_token') || '';
 		}
+		pageLoading = false;
 	});
 
 	async function logout() {
@@ -122,10 +116,7 @@
 							title={showToken ? 'Hide token' : 'Show token'}
 							aria-label={showToken ? 'Hide token' : 'Show token'}
 						>
-							<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L8.464 8.464M9.878 9.878l1.414-1.414" />
-								</svg>
-							
+							<Icon icon={showToken ? "solar:eye-closed-bold" : "solar:eye-bold"} class="w-4 h-4" />
 						</button>
 						<button
 							on:click={copyToken}
@@ -134,10 +125,7 @@
 							aria-label="Copy token to clipboard"
 							title={copied ? 'Copied!' : 'Copy token'}
 						>
-							<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-								</svg>
-							
+							<Icon icon={copied ? "solar:check-circle-bold" : "solar:copy-bold"} class="w-4 h-4" />
 						</button>
 					</div>
 				</div>
@@ -166,9 +154,10 @@
 				<div class="flex space-x-2 pt-2">
 					<button
 						on:click={regenerateToken}
-						class="px-4 py-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground rounded-md text-sm"
+						class="px-4 py-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground rounded-md text-sm flex items-center space-x-2"
 					>
-						Regenerate Token
+						<Icon icon="solar:refresh-bold" class="w-4 h-4" />
+						<span>Regenerate Token</span>
 					</button>
 				</div>
 			</div>
@@ -185,9 +174,10 @@
 					</div>
 					<button
 						on:click={logout}
-						class="px-4 py-2 bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-md text-sm"
+						class="px-4 py-2 bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-md text-sm flex items-center space-x-2"
 					>
-						Sign Out
+						<Icon icon="solar:logout-3-bold" class="w-4 h-4" />
+						<span>Sign Out</span>
 					</button>
 				</div>
 			</div>

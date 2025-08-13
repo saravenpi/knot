@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { packagesStore, authStore } from '../lib/stores';
+	import Icon from '@iconify/svelte';
 
 	$: packages = $packagesStore.packages;
 	$: loading = $packagesStore.loading;
@@ -50,7 +51,7 @@
 	
 <!-- Hero Section -->
 <div class="text-center py-12 md:py-20">
-	<h1 class="text-4xl md:text-6xl font-bold tracking-tight mb-6">
+	<h1 class="text-4xl md:text-6xl font-bold tracking-tight mb-6" style="font-family: 'Gambarino', serif;">
 		Welcome to <span class="text-black">Knot Space</span>
 	</h1>
 	<p class="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
@@ -59,15 +60,17 @@
 	<div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
 		<a 
 			href="/packages" 
-			class="bg-black text-white hover:bg-black/90 px-8 py-3 rounded-lg font-medium transition-colors"
+			class="bg-black text-white hover:bg-black/90 px-8 py-3 rounded-lg font-medium transition-colors flex items-center space-x-2"
 		>
-			Browse Packages
+			<Icon icon="solar:box-bold" class="w-5 h-5" />
+			<span>Browse Packages</span>
 		</a>
 		<a 
 			href="/register" 
-			class="border border-border hover:bg-accent hover:text-accent-foreground px-8 py-3 rounded-lg font-medium transition-colors"
+			class="border border-border hover:bg-accent hover:text-accent-foreground px-8 py-3 rounded-lg font-medium transition-colors flex items-center space-x-2"
 		>
-			Get Started
+			<Icon icon="solar:rocket-2-bold" class="w-5 h-5" />
+			<span>Get Started</span>
 		</a>
 	</div>
 </div>
@@ -112,14 +115,17 @@
 		</div>
 	{:else if packages.length === 0}
 		<div class="text-center py-12">
-			<div class="text-6xl mb-4">📦</div>
+			<div class="mb-4">
+				<Icon icon="solar:box-bold" class="w-16 h-16 text-muted-foreground mx-auto" />
+			</div>
 			<h3 class="text-xl font-semibold mb-2">No packages yet</h3>
 			<p class="text-muted-foreground mb-4">Be the first to publish a package to Knot Space!</p>
 			<a 
 				href="/login" 
-				class="bg-black text-white hover:bg-black/90 px-6 py-2 rounded-md font-medium transition-colors inline-block"
+				class="bg-black text-white hover:bg-black/90 px-6 py-2 rounded-md font-medium transition-colors inline-flex items-center space-x-2"
 			>
-				Get Started
+				<Icon icon="solar:rocket-2-bold" class="w-4 h-4" />
+				<span>Get Started</span>
 			</a>
 		</div>
 	{:else}
@@ -164,7 +170,7 @@
 	<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
 		<div class="text-center">
 			<div class="w-12 h-12 bg-black/10 rounded-lg flex items-center justify-center mx-auto mb-4">
-				<span class="text-2xl">🚀</span>
+				<Icon icon="solar:rocket-2-bold" class="w-6 h-6 text-black" />
 			</div>
 			<h3 class="font-semibold text-lg mb-2">Fast Publishing</h3>
 			<p class="text-muted-foreground">
@@ -173,7 +179,7 @@
 		</div>
 		<div class="text-center">
 			<div class="w-12 h-12 bg-black/10 rounded-lg flex items-center justify-center mx-auto mb-4">
-				<span class="text-2xl">👥</span>
+				<Icon icon="solar:users-group-two-rounded-bold" class="w-6 h-6 text-black" />
 			</div>
 			<h3 class="font-semibold text-lg mb-2">Team Collaboration</h3>
 			<p class="text-muted-foreground">
@@ -182,7 +188,7 @@
 		</div>
 		<div class="text-center">
 			<div class="w-12 h-12 bg-black/10 rounded-lg flex items-center justify-center mx-auto mb-4">
-				<span class="text-2xl">🔒</span>
+				<Icon icon="solar:shield-check-bold" class="w-6 h-6 text-black" />
 			</div>
 			<h3 class="font-semibold text-lg mb-2">Secure & Reliable</h3>
 			<p class="text-muted-foreground">

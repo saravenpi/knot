@@ -18,11 +18,11 @@ export async function authMiddleware(c: Context, next: Next) {
     const token = authHeader.substring(7);
     const decoded = authModuleService.verifyToken(token);
 
-    const user = await authModuleService.getProfile(decoded.userId);
-
-    c.set('user', user);
+    // Just set the decoded user info instead of doing a database lookup
+    c.set('user', { id: decoded.userId, username: decoded.username });
     await next();
-  } catch {
+  } catch (error) {
+    console.error('Auth middleware error:', error);
     return c.json(
       {
         success: false,
@@ -40,8 +40,7 @@ export async function optionalAuthMiddleware(c: Context, next: Next) {
     if (authHeader && authHeader.startsWith('Bearer ')) {
       const token = authHeader.substring(7);
       const decoded = authModuleService.verifyToken(token);
-      const user = await authModuleService.getProfile(decoded.userId);
-      c.set('user', user);
+      c.set('user', { id: decoded.userId, username: decoded.username });
     }
 
     await next();
