@@ -737,24 +737,36 @@ pub async fn publish_package(team: Option<&str>, description: Option<&str>) -> R
         tags: package_config.tags.clone(),
     };
 
-    let metadata_json = serde_json::to_string(&metadata)?;
+    let base_url = get_knot_space_url();
+    let client = reqwest::Client::new();
 
-    // Create multipart form
+    // 1. Send metadata
+    let metadata_url = format!("{}/api/packages", base_url);
+    let metadata_response = client
+        .post(&metadata_url)
+        .header("Authorization", format!("Bearer {}", token))
+        .json(&metadata)
+        .send()
+        .await?;
+
+    if !metadata_response.status().is_success() {
+        let status = metadata_response.status();
+        let text = metadata_response.text().await.unwrap_or_default();
+        anyhow::bail!("Publish metadata failed ({}): {}", status, text);
+    }
+
+    // 2. Upload tarball
+    let upload_url = format!("{}/api/packages/upload", base_url);
     let file_content = std::fs::read(&tarball_path)?;
     let file_part = multipart::Part::bytes(file_content)
         .file_name(tarball_path.clone())
         .mime_str("application/gzip")?;
 
     let form = multipart::Form::new()
-        .text("metadata", metadata_json)
         .part("file", file_part);
 
-    let base_url = get_knot_space_url();
-    let url = format!("{}/api/packages/publish", base_url);
-
-    let client = reqwest::Client::new();
-    let response = client
-        .post(&url)
+    let upload_response = client
+        .post(&upload_url)
         .header("Authorization", format!("Bearer {}", token))
         .multipart(form)
         .send()
