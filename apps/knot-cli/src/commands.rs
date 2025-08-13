@@ -7,7 +7,6 @@ use reqwest::multipart;
 use serde::{Deserialize, Serialize};
 use std::env;
 use std::fs;
-use std::io::{self, Write};
 use std::path::Path;
 
 pub fn init_project(name: &str, description: Option<&str>) -> Result<()> {
@@ -600,7 +599,15 @@ struct UserProfile {
     id: String,
     username: String,
     email: String,
+    #[serde(rename = "createdAt")]
     created_at: String,
+}
+
+#[derive(Serialize, Deserialize)]
+struct ApiResponse<T> {
+    success: bool,
+    data: Option<T>,
+    error: Option<String>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -636,7 +643,7 @@ struct PublishPackageRequest {
 
 // Helper functions
 fn get_knot_space_url() -> String {
-    env::var("KNOT_SPACE_URL").unwrap_or_else(|_| "http://localhost:8000".to_string())
+    env::var("KNOT_SPACE_URL").unwrap_or_else(|_| "https://knot-space-production.up.railway.app".to_string())
 }
 
 fn get_auth_token() -> Option<String> {
@@ -655,7 +662,7 @@ pub async fn auth_status() -> Result<()> {
         Some(token) => {
             // Verify token by making a request to the profile endpoint
             let base_url = get_knot_space_url();
-            let url = format!("{}/api/auth/me", base_url);
+            let url = format!("{}/api/auth/profile", base_url);
             
             let client = reqwest::Client::new();
             let response = client
@@ -665,15 +672,19 @@ pub async fn auth_status() -> Result<()> {
                 .await?;
 
             if response.status().is_success() {
-                let user: UserProfile = response.json().await?;
-                println!("✅ Authenticated as: {}", user.username);
-                println!("📧 Email: {}", user.email);
-                println!("🔑 Token: {}", if token.len() > 20 { 
-                    format!("{}...{}", &token[..8], &token[token.len()-8..]) 
-                } else { 
-                    token 
-                });
-                println!("🌐 Server: {}", base_url);
+                let api_response: ApiResponse<UserProfile> = response.json().await?;
+                if let Some(user) = api_response.data {
+                    println!("✅ Authenticated as: {}", user.username);
+                    println!("📧 Email: {}", user.email);
+                    println!("🔑 Token: {}", if token.len() > 20 { 
+                        format!("{}...{}", &token[..8], &token[token.len()-8..]) 
+                    } else { 
+                        token 
+                    });
+                    println!("🌐 Server: {}", base_url);
+                } else {
+                    println!("❌ Invalid response from server");
+                }
             } else {
                 println!("❌ Authentication token is invalid or expired");
                 println!("💡 Get a new token from the Knot Space web interface at {}", base_url);
