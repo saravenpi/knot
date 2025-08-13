@@ -734,7 +734,7 @@ pub async fn publish_package(team: Option<&str>, description: Option<&str>) -> R
             .map(|s| s.to_string())
             .or(package_config.description.clone()),
         team_name: team.map(|s| s.to_string()).or(package_config.team),
-        tags: package_config.tags.clone(),
+        tags: Some(package_config.tags.unwrap_or_default()),
     };
 
     let base_url = get_knot_space_url();
