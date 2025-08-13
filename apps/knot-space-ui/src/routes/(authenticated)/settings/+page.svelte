@@ -13,6 +13,9 @@
 	let showToken = false;
 	let copied = false;
 	let pageLoading = true;
+	let showDeleteConfirm = false;
+	let deleteConfirmText = '';
+	let isDeleting = false;
 
 	onMount(async () => {
 		// Get the token from localStorage - no need to call getProfile() again
@@ -47,6 +50,49 @@
 	function regenerateToken() {
 		// This would typically call an API to regenerate the token
 		alert('Token regeneration not implemented yet. Please log out and log in again to get a new token.');
+	}
+
+	function showDeleteDialog() {
+		showDeleteConfirm = true;
+		deleteConfirmText = '';
+	}
+
+	function cancelDelete() {
+		showDeleteConfirm = false;
+		deleteConfirmText = '';
+		isDeleting = false;
+	}
+
+	async function deleteAccount() {
+		if (deleteConfirmText.toLowerCase() !== 'delete my account') {
+			return;
+		}
+
+		isDeleting = true;
+
+		try {
+			const response = await fetch('/api/auth/account', {
+				method: 'DELETE',
+				headers: {
+					'Authorization': `Bearer ${token}`,
+					'Content-Type': 'application/json'
+				}
+			});
+
+			if (response.ok) {
+				// Account deleted successfully
+				await authStore.logout();
+				goto('/', { replaceState: true });
+			} else {
+				const error = await response.text();
+				alert(`Failed to delete account: ${error}`);
+				isDeleting = false;
+			}
+		} catch (error) {
+			console.error('Error deleting account:', error);
+			alert('An error occurred while deleting your account. Please try again.');
+			isDeleting = false;
+		}
 	}
 </script>
 
@@ -107,7 +153,7 @@
 							type={showToken ? 'text' : 'password'}
 							value={token}
 							readonly
-							class="flex-1 px-3 py-2 border border-input bg-background rounded-md font-mono text-sm"
+							class="flex-1 px-3 py-2 border border-input bg-background rounded-md font-mono text-sm overflow-hidden"
 							placeholder="Token will appear here after login"
 						/>
 						<button
@@ -140,7 +186,7 @@
 						</code>
 						
 						<p class="pt-2"><strong>2. Set your authentication token:</strong></p>
-						<code class="block bg-background px-3 py-1 rounded font-mono text-xs">
+						<code class="block bg-background px-3 py-1 rounded font-mono text-xs overflow-x-auto whitespace-nowrap">
 							export KNOT_TOKEN={token || 'your-token-here'}
 						</code>
 						
@@ -180,11 +226,90 @@
 						<span>Sign Out</span>
 					</button>
 				</div>
+
+				<div class="border-t border-destructive/20 pt-4">
+					<div class="flex justify-between items-center">
+						<div>
+							<h3 class="font-medium text-destructive">Delete Account</h3>
+							<p class="text-sm text-muted-foreground">Permanently delete your account and all associated data</p>
+						</div>
+						<button
+							on:click={showDeleteDialog}
+							class="px-4 py-2 bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-md text-sm flex items-center space-x-2"
+						>
+							<Icon icon="solar:trash-bin-trash-bold" class="w-4 h-4" />
+							<span>Delete Account</span>
+						</button>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
 	{/if}
 </div>
+
+<!-- Delete Account Confirmation Modal -->
+{#if showDeleteConfirm}
+	<div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+		<div class="bg-card text-card-foreground rounded-lg border max-w-md w-full mx-4 p-6">
+			<div class="flex items-center space-x-3 mb-4">
+				<Icon icon="solar:danger-bold" class="w-8 h-8 text-destructive" />
+				<h3 class="text-lg font-semibold text-destructive">Delete Account</h3>
+			</div>
+			
+			<p class="text-sm text-muted-foreground mb-4">
+				This action will permanently delete your account and all associated data including:
+			</p>
+			
+			<ul class="text-sm text-muted-foreground mb-6 pl-4 space-y-1">
+				<li>• All your published packages</li>
+				<li>• Team memberships and owned teams</li>
+				<li>• Download statistics</li>
+				<li>• Account information</li>
+			</ul>
+			
+			<div class="bg-destructive/10 border border-destructive/20 rounded-md p-3 mb-4">
+				<p class="text-sm text-destructive font-medium mb-2">
+					This action cannot be undone!
+				</p>
+				<p class="text-sm text-muted-foreground">
+					To confirm, please type "<strong>delete my account</strong>" below:
+				</p>
+			</div>
+			
+			<input
+				bind:value={deleteConfirmText}
+				type="text"
+				placeholder="Type 'delete my account' to confirm"
+				class="w-full px-3 py-2 border border-input bg-background rounded-md text-sm mb-4"
+				disabled={isDeleting}
+			/>
+			
+			<div class="flex justify-end space-x-2">
+				<button
+					on:click={cancelDelete}
+					class="px-4 py-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground rounded-md text-sm"
+					disabled={isDeleting}
+				>
+					Cancel
+				</button>
+				<button
+					on:click={deleteAccount}
+					class="px-4 py-2 bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-md text-sm flex items-center space-x-2"
+					disabled={isDeleting || deleteConfirmText.toLowerCase() !== 'delete my account'}
+				>
+					{#if isDeleting}
+						<Icon icon="solar:refresh-bold" class="animate-spin w-4 h-4" />
+						<span>Deleting...</span>
+					{:else}
+						<Icon icon="solar:trash-bin-trash-bold" class="w-4 h-4" />
+						<span>Delete Account</span>
+					{/if}
+				</button>
+			</div>
+		</div>
+	</div>
+{/if}
 
 <style>
 	/* Custom styles for better token visibility */

@@ -94,49 +94,8 @@ async fn main() -> Result<()> {
         .subcommand(Command::new("status").about("Show project status"))
         .subcommand(Command::new("info").about("Show information about Knot"))
         .subcommand(
-            Command::new("login")
-                .about("Login to Knot Space")
-                .arg(
-                    Arg::new("username")
-                        .help("Username")
-                        .short('u')
-                        .long("username")
-                        .value_name("USERNAME"),
-                )
-                .arg(
-                    Arg::new("password")
-                        .help("Password")
-                        .short('p')
-                        .long("password")
-                        .value_name("PASSWORD"),
-                ),
-        )
-        .subcommand(
-            Command::new("register")
-                .about("Register a new Knot Space account")
-                .arg(
-                    Arg::new("username")
-                        .help("Username")
-                        .required(true)
-                        .short('u')
-                        .long("username")
-                        .value_name("USERNAME"),
-                )
-                .arg(
-                    Arg::new("email")
-                        .help("Email")
-                        .required(true)
-                        .short('e')
-                        .long("email")
-                        .value_name("EMAIL"),
-                )
-                .arg(
-                    Arg::new("password")
-                        .help("Password")
-                        .short('p')
-                        .long("password")
-                        .value_name("PASSWORD"),
-                ),
+            Command::new("auth")
+                .about("Check authentication status")
         )
         .subcommand(
             Command::new("publish")
@@ -265,22 +224,8 @@ async fn main() -> Result<()> {
         Some(("info", _)) => {
             commands::show_info()?;
         }
-        Some(("login", sub_matches)) => {
-            let username = sub_matches
-                .get_one::<String>("username")
-                .map(|s| s.as_str());
-            let password = sub_matches
-                .get_one::<String>("password")
-                .map(|s| s.as_str());
-            commands::login(username, password).await?;
-        }
-        Some(("register", sub_matches)) => {
-            let username = sub_matches.get_one::<String>("username").unwrap();
-            let email = sub_matches.get_one::<String>("email").unwrap();
-            let password = sub_matches
-                .get_one::<String>("password")
-                .map(|s| s.as_str());
-            commands::register(username, email, password).await?;
+        Some(("auth", _)) => {
+            commands::auth_status().await?;
         }
         Some(("publish", sub_matches)) => {
             let team = sub_matches.get_one::<String>("team").map(|s| s.as_str());

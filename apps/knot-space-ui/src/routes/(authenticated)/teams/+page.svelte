@@ -12,7 +12,7 @@
 	let createError = '';
 
 	onMount(async () => {
-		await teamsStore.loadTeams();
+		await teamsStore.fetchAll();
 	});
 
 	async function handleCreateTeam() {
@@ -24,7 +24,7 @@
 		createError = '';
 
 		try {
-			await teamsStore.createTeam({
+			await teamsStore.create({
 				name: teamName.trim(),
 				description: teamDescription.trim() || undefined
 			});

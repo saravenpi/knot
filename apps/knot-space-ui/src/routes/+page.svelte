@@ -51,7 +51,7 @@
 	
 <!-- Hero Section -->
 <div class="text-center py-12 md:py-20">
-	<h1 class="text-4xl md:text-6xl font-bold tracking-tight mb-6" style="font-family: 'Gambarino', serif;">
+	<h1 class="text-4xl md:text-6xl font-bold tracking-tight mb-6" style="font-family: 'Gambarino', 'Satoshi', sans-serif;">
 		Welcome to <span class="text-black">Knot Space</span>
 	</h1>
 	<p class="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">

@@ -181,7 +181,7 @@ pub fn show_info() -> Result<()> {
     println!("  📦 publish [--team <name>]  Publish package to Knot Space");
     println!("  🗑️  delete <name> <version> Delete package from Knot Space");
     println!("  👥 team <subcommand>        Team management");
-    println!("  🔑 login                    Login to Knot Space");
+    println!("  🔑 auth                     Check authentication status");
     println!("  📊 status                   Show project status");
     println!("  ℹ️  info                     Show this information");
     println!("  ❓ help                     Show help for commands");
@@ -594,24 +594,6 @@ async fn show_available_scripts(current_dir: &Path, project: &Project) -> Result
 }
 
 // API Models
-#[derive(Serialize, Deserialize)]
-struct LoginRequest {
-    username: String,
-    password: String,
-}
-
-#[derive(Serialize, Deserialize)]
-struct RegisterRequest {
-    username: String,
-    email: String,
-    password: String,
-}
-
-#[derive(Serialize, Deserialize)]
-struct AuthResponse {
-    token: String,
-    user: UserProfile,
-}
 
 #[derive(Serialize, Deserialize)]
 struct UserProfile {
@@ -661,100 +643,55 @@ fn get_auth_token() -> Option<String> {
     env::var("KNOT_TOKEN").ok()
 }
 
-fn save_auth_token(token: &str) -> Result<()> {
-    // Save token to environment or config file
-    // For now, just print instructions
-    println!("🔑 Authentication successful!");
-    println!("💡 Set the KNOT_TOKEN environment variable to use this token:");
-    println!("   export KNOT_TOKEN={}", token);
-    Ok(())
-}
-
-fn get_password_input(prompt: &str) -> Result<String> {
-    print!("{}", prompt);
-    io::stdout().flush()?;
-
-    // For security, we should use a library like rpassword for hidden input
-    // For now, using regular input
-    let mut password = String::new();
-    io::stdin().read_line(&mut password)?;
-    Ok(password.trim().to_string())
-}
 
 fn require_auth_token() -> Result<String> {
     get_auth_token()
-        .ok_or_else(|| anyhow::anyhow!("Authentication required. Please run 'knot login' first."))
+        .ok_or_else(|| anyhow::anyhow!("Authentication required. Set KNOT_TOKEN environment variable or run 'knot auth' for instructions."))
 }
 
 // API Commands
-pub async fn login(username: Option<&str>, password: Option<&str>) -> Result<()> {
-    let username = if let Some(u) = username {
-        u.to_string()
-    } else {
-        print!("Username: ");
-        io::stdout().flush()?;
-        let mut input = String::new();
-        io::stdin().read_line(&mut input)?;
-        input.trim().to_string()
-    };
+pub async fn auth_status() -> Result<()> {
+    match get_auth_token() {
+        Some(token) => {
+            // Verify token by making a request to the profile endpoint
+            let base_url = get_knot_space_url();
+            let url = format!("{}/api/auth/me", base_url);
+            
+            let client = reqwest::Client::new();
+            let response = client
+                .get(&url)
+                .header("Authorization", format!("Bearer {}", token))
+                .send()
+                .await?;
 
-    let password = if let Some(p) = password {
-        p.to_string()
-    } else {
-        get_password_input("Password: ")?
-    };
-
-    let request = LoginRequest { username, password };
-    let base_url = get_knot_space_url();
-    let url = format!("{}/api/auth/login", base_url);
-
-    let client = reqwest::Client::new();
-    let response = client.post(&url).json(&request).send().await?;
-
-    if response.status().is_success() {
-        let auth_response: AuthResponse = response.json().await?;
-        save_auth_token(&auth_response.token)?;
-        println!("👋 Welcome back, {}!", auth_response.user.username);
-    } else {
-        let status = response.status();
-        let text = response.text().await.unwrap_or_default();
-        anyhow::bail!("Login failed ({}): {}", status, text);
+            if response.status().is_success() {
+                let user: UserProfile = response.json().await?;
+                println!("✅ Authenticated as: {}", user.username);
+                println!("📧 Email: {}", user.email);
+                println!("🔑 Token: {}", if token.len() > 20 { 
+                    format!("{}...{}", &token[..8], &token[token.len()-8..]) 
+                } else { 
+                    token 
+                });
+                println!("🌐 Server: {}", base_url);
+            } else {
+                println!("❌ Authentication token is invalid or expired");
+                println!("💡 Get a new token from the Knot Space web interface at {}", base_url);
+                println!("   Then set it with: export KNOT_TOKEN=<your-token>");
+            }
+        }
+        None => {
+            println!("❌ Not authenticated");
+            println!("💡 Set your KNOT_TOKEN environment variable:");
+            println!("   1. Visit {} and go to Settings", get_knot_space_url());
+            println!("   2. Copy your API token");
+            println!("   3. Set the token: export KNOT_TOKEN=<your-token>");
+        }
     }
-
+    
     Ok(())
 }
 
-pub async fn register(username: &str, email: &str, password: Option<&str>) -> Result<()> {
-    let password = if let Some(p) = password {
-        p.to_string()
-    } else {
-        get_password_input("Password: ")?
-    };
-
-    let request = RegisterRequest {
-        username: username.to_string(),
-        email: email.to_string(),
-        password,
-    };
-
-    let base_url = get_knot_space_url();
-    let url = format!("{}/api/auth/register", base_url);
-
-    let client = reqwest::Client::new();
-    let response = client.post(&url).json(&request).send().await?;
-
-    if response.status().is_success() {
-        let auth_response: AuthResponse = response.json().await?;
-        save_auth_token(&auth_response.token)?;
-        println!("🎉 Welcome to Knot Space, {}!", auth_response.user.username);
-    } else {
-        let status = response.status();
-        let text = response.text().await.unwrap_or_default();
-        anyhow::bail!("Registration failed ({}): {}", status, text);
-    }
-
-    Ok(())
-}
 
 pub async fn publish_package(team: Option<&str>, description: Option<&str>) -> Result<()> {
     let token = require_auth_token()?;

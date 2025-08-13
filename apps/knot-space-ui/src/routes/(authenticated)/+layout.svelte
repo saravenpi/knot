@@ -35,7 +35,7 @@
 
 <div class="flex min-h-screen bg-background">
   <!-- Sidebar -->
-  <aside class="w-64 bg-card border-r border-border flex-shrink-0">
+  <aside class="w-64 bg-card border-r border-border flex-shrink-0 relative">
     <div class="p-6">
       <!-- Logo -->
       <div class="flex items-center space-x-2 mb-8">
