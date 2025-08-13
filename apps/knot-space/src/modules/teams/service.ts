@@ -62,6 +62,18 @@ class TeamsService {
                   members: true,
                   packages: true,
                 }
+              },
+              members: {
+                include: {
+                  user: {
+                    select: {
+                      id: true,
+                      username: true,
+                      email: true,
+                      createdAt: true,
+                    }
+                  }
+                }
               }
             }
           }
@@ -88,6 +100,18 @@ class TeamsService {
             select: {
               members: true,
               packages: true,
+            }
+          },
+          members: {
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  username: true,
+                  email: true,
+                  createdAt: true,
+                }
+              }
             }
           }
         },

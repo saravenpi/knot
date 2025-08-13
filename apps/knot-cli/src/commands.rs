@@ -611,6 +611,12 @@ struct ApiResponse<T> {
 }
 
 #[derive(Serialize, Deserialize)]
+struct AuthResponse {
+    token: String,
+    user: UserProfile,
+}
+
+#[derive(Serialize, Deserialize)]
 struct CreateTeamRequest {
     name: String,
     description: Option<String>,
@@ -672,10 +678,10 @@ pub async fn auth_status() -> Result<()> {
                 .await?;
 
             if response.status().is_success() {
-                let api_response: ApiResponse<UserProfile> = response.json().await?;
-                if let Some(user) = api_response.data {
-                    println!("✅ Authenticated as: {}", user.username);
-                    println!("📧 Email: {}", user.email);
+                let api_response: ApiResponse<AuthResponse> = response.json().await?;
+                if let Some(auth_data) = api_response.data {
+                    println!("✅ Authenticated as: {}", auth_data.user.username);
+                    println!("📧 Email: {}", auth_data.user.email);
                     println!("🔑 Token: {}", if token.len() > 20 { 
                         format!("{}...{}", &token[..8], &token[token.len()-8..]) 
                     } else { 

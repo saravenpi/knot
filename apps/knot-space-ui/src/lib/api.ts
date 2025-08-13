@@ -124,19 +124,23 @@ export const packagesApi = {
 // Teams API
 export const teamsApi = {
   async getAll(): Promise<Team[]> {
-    return requestApi<Team[]>('GET', '/api/teams');
+    const response = await requestApi<ApiResponse<Team[]>>('GET', '/api/teams');
+    return response.data || [];
   },
 
   async getById(id: string): Promise<Team> {
-    return requestApi<Team>('GET', `/api/teams/${id}`);
+    const response = await requestApi<ApiResponse<Team>>('GET', `/api/teams/${id}`);
+    return response.data!;
   },
 
   async create(teamData: Partial<Team>): Promise<Team> {
-    return requestApi<Team>('POST', '/api/teams', teamData);
+    const response = await requestApi<ApiResponse<Team>>('POST', '/api/teams', teamData);
+    return response.data!;
   },
 
   async update(id: string, teamData: Partial<Team>): Promise<Team> {
-    return requestApi<Team>('PUT', `/api/teams/${id}`, teamData);
+    const response = await requestApi<ApiResponse<Team>>('PUT', `/api/teams/${id}`, teamData);
+    return response.data!;
   },
 
   async delete(id: string): Promise<void> {
