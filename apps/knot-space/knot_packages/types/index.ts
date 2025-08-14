@@ -18,17 +18,17 @@ export interface Package {
   name: string;
   version: string;
   description?: string;
-  downloads_count: number;
+  downloadsCount: number;
   owner: User;
   team?: { 
     id: string;
     name: string; 
   };
   tags?: string[];
-  created_at: string;
-  updated_at: string;
-  published_at?: string;
-  file_size?: number;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt?: string;
+  fileSize?: number;
 }
 
 export interface Team {

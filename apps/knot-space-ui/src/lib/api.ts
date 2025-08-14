@@ -93,8 +93,8 @@ export const authApi = {
 // Packages API
 export const packagesApi = {
   async getAll(): Promise<Package[]> {
-    const response = await requestApi<{ success: boolean; data: Package[] }>('GET', '/api/packages');
-    return response.data;
+    const response = await requestApi<{ success: boolean; data: { packages: Package[] } }>('GET', '/api/packages');
+    return response.data.packages;
   },
 
   async getById(id: string): Promise<Package> {
@@ -133,8 +133,8 @@ export const packagesApi = {
 
   async search(query: string): Promise<Package[]> {
     // Backend doesn't have search endpoint, use list with search parameter
-    const response = await requestApi<{ success: boolean; data: Package[] }>('GET', `/api/packages?search=${encodeURIComponent(query)}`);
-    return response.data;
+    const response = await requestApi<{ success: boolean; data: { packages: Package[] } }>('GET', `/api/packages?search=${encodeURIComponent(query)}`);
+    return response.data.packages;
   }
 };
 

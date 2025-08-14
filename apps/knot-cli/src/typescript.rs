@@ -42,15 +42,20 @@ impl<'a> TypeScriptManager<'a> {
         let content = fs::read_to_string(tsconfig_path)
             .with_context(|| format!("Failed to read {:?}", tsconfig_path))?;
 
-        // Remove JSON comments to handle tsconfig.json files with comments
-        let clean_content = self.remove_json_comments(&content)?;
-
-        let mut tsconfig: Value = serde_json::from_str(&clean_content).with_context(|| {
-            format!(
-                "Failed to parse JSON in {:?}. Content may be malformed.",
-                tsconfig_path
-            )
-        })?;
+        // Try to parse JSON directly first, only remove comments if parsing fails
+        let mut tsconfig: Value = match serde_json::from_str(&content) {
+            Ok(config) => config,
+            Err(_) => {
+                // If direct parsing fails, try removing comments and parsing again
+                let clean_content = self.remove_json_comments(&content)?;
+                serde_json::from_str(&clean_content).with_context(|| {
+                    format!(
+                        "Failed to parse JSON in {:?}. Content may be malformed.",
+                        tsconfig_path
+                    )
+                })?
+            }
+        };
 
         // Ensure we have a proper object structure
         if !tsconfig.is_object() {
@@ -110,24 +115,63 @@ impl<'a> TypeScriptManager<'a> {
     }
 
     fn remove_json_comments(&self, content: &str) -> Result<String> {
-        // Remove single-line comments (// comment)
-        let single_line_comment = Regex::new(r"//.*$").unwrap();
+        // For tsconfig.json parsing, we need to be very careful with comment removal
+        // Let's use a more robust approach that properly handles JSON with potential comments
+        
         let mut clean = String::new();
+        let mut in_string = false;
+        let mut escaped = false;
+        let chars: Vec<char> = content.chars().collect();
+        let mut i = 0;
 
-        for line in content.lines() {
-            // Check if this line is inside a string literal to avoid removing // inside strings
-            let cleaned_line = if self.line_has_unquoted_comment(line) {
-                single_line_comment.replace(line, "").to_string()
-            } else {
-                line.to_string()
-            };
-            clean.push_str(&cleaned_line);
-            clean.push('\n');
+        while i < chars.len() {
+            let ch = chars[i];
+            
+            match ch {
+                '"' if !escaped => {
+                    in_string = !in_string;
+                    clean.push(ch);
+                }
+                '\\' if in_string => {
+                    escaped = !escaped;
+                    clean.push(ch);
+                }
+                '/' if !in_string && !escaped => {
+                    // Check for single-line comment
+                    if i + 1 < chars.len() && chars[i + 1] == '/' {
+                        // Skip to end of line
+                        while i < chars.len() && chars[i] != '\n' {
+                            i += 1;
+                        }
+                        if i < chars.len() {
+                            clean.push('\n'); // Keep the newline
+                        }
+                    }
+                    // Check for multi-line comment
+                    else if i + 1 < chars.len() && chars[i + 1] == '*' {
+                        i += 2; // Skip /*
+                        // Skip until */
+                        while i + 1 < chars.len() {
+                            if chars[i] == '*' && chars[i + 1] == '/' {
+                                i += 2; // Skip */
+                                break;
+                            }
+                            i += 1;
+                        }
+                        continue; // Don't increment i again
+                    } else {
+                        clean.push(ch);
+                    }
+                }
+                _ => {
+                    if ch != '\\' {
+                        escaped = false;
+                    }
+                    clean.push(ch);
+                }
+            }
+            i += 1;
         }
-
-        // Remove multi-line comments (/* comment */)
-        let multi_line_comment = Regex::new(r"/\*[\s\S]*?\*/").unwrap();
-        clean = multi_line_comment.replace_all(&clean, "").to_string();
 
         // Remove trailing commas before closing braces/brackets
         let trailing_comma = Regex::new(r",(\s*[}\]])").unwrap();

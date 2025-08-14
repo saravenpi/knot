@@ -76,7 +76,7 @@ export class TeamsController {
       }
 
       const user = c.get('user');
-      const members = await teamsService.getTeamMembers(teamId, user?.id);
+      const members = await teamsService.getTeamMembers(teamId);
       
       return c.json({
         success: true,

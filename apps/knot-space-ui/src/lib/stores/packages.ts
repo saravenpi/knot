@@ -85,7 +85,7 @@ const createPackagesStore = () => {
             throw new Error('Package not found');
           }
           // Sort versions by publish date (newest first) and pick the first one
-          versions.sort((a, b) => new Date(b.published_at || b.created_at).getTime() - new Date(a.published_at || a.created_at).getTime());
+          versions.sort((a, b) => new Date(b.publishedAt || b.createdAt).getTime() - new Date(a.publishedAt || a.createdAt).getTime());
           pkg = versions[0];
         }
         

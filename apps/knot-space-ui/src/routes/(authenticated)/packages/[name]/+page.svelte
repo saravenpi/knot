@@ -144,7 +144,7 @@
 					{/if}
 					<span class="flex items-center gap-1">
 						<Icon icon="solar:calendar-bold" class="w-4 h-4" />
-						{formatDate(selectedPackage.published_at)}
+						{formatDate(selectedPackage.publishedAt)}
 					</span>
 				</div>
 			</div>
@@ -169,7 +169,7 @@
 					<Icon icon="solar:download-minimalistic-bold" class="w-5 h-5 text-muted-foreground" />
 					<span class="font-medium">Downloads</span>
 				</div>
-				<div class="text-2xl font-bold">{(selectedPackage.downloads_count || 0).toLocaleString()}</div>
+				<div class="text-2xl font-bold">{(selectedPackage.downloadsCount || 0).toLocaleString()}</div>
 			</div>
 			
 			<div class="border rounded-lg p-4">
@@ -177,7 +177,7 @@
 					<Icon icon="solar:document-bold" class="w-5 h-5 text-muted-foreground" />
 					<span class="font-medium">File Size</span>
 				</div>
-				<div class="text-2xl font-bold">{formatFileSize(selectedPackage.file_size)}</div>
+				<div class="text-2xl font-bold">{formatFileSize(selectedPackage.fileSize)}</div>
 			</div>
 
 			<div class="border rounded-lg p-4">

@@ -60,6 +60,8 @@ class PackagesService {
       teamId,
       downloadUrl: `https://example.com/packages/${data.name}/${data.version}`, // Placeholder
       filePath: `/uploads/${data.name}-${data.version}.tgz`, // Placeholder
+      fileSize: BigInt(0), // Placeholder - should be set when file is uploaded
+      checksumSha256: '0000000000000000000000000000000000000000000000000000000000000000', // Placeholder
     };
 
     const pkg = await prisma.package.create({
@@ -363,6 +365,28 @@ class PackagesService {
         name_version: { name, version }
       }
     });
+  }
+
+  async handleFileUpload(file: File, userId: string) {
+    // Extract file information
+    const arrayBuffer = await file.arrayBuffer();
+    const fileContent = new Uint8Array(arrayBuffer);
+    const fileSize = BigInt(fileContent.length);
+    
+    // Calculate SHA256 checksum
+    const hashBuffer = await crypto.subtle.digest('SHA-256', fileContent);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const checksum = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+    // For now, just return the file metadata
+    // In production, you would save the file to storage and return the path/URL
+    return {
+      fileSize: fileSize.toString(),
+      checksum,
+      originalName: file.name,
+      // In production, you would update the package record with actual file info
+      message: 'File processed successfully (not permanently stored in demo)'
+    };
   }
 }
 

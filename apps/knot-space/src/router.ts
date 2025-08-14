@@ -23,13 +23,13 @@ app.use('*', cors({
     console.log('🌐 CORS check - Origin:', origin, 'Allowed:', env.CORS_ORIGINS);
     
     // Allow requests with no origin (e.g., mobile apps, Postman)
-    if (!origin) return true;
+    if (!origin) return '*';
     
     // Check if origin is in allowed list
     const isAllowed = env.CORS_ORIGINS.includes('*') || env.CORS_ORIGINS.includes(origin);
     console.log('✅ CORS decision:', isAllowed ? 'ALLOWED' : 'BLOCKED');
     
-    return isAllowed ? origin : false;
+    return isAllowed ? origin : null;
   },
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowHeaders: ['Content-Type', 'Authorization', 'X-Request-ID'],

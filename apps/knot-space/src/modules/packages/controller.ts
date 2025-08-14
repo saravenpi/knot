@@ -206,12 +206,22 @@ export class PackagesController {
         return c.json({ success: false, error: 'Authentication required' }, 401);
       }
 
-      // This would handle multipart file upload
-      // For now, return a placeholder response
+      const body = await c.req.parseBody();
+      const file = body['file'] as File;
+      
+      if (!file) {
+        return c.json({ success: false, error: 'No file provided' }, 400);
+      }
+
+      // For now, we'll just return success without actually storing the file
+      // In production, you would save to filesystem or cloud storage
+      const result = await packagesService.handleFileUpload(file, user.id);
+      
       return c.json({
-        success: false,
-        error: 'File upload not implemented yet'
-      }, 501);
+        success: true,
+        data: result,
+        message: 'File uploaded successfully'
+      });
     } catch (error) {
       console.error('Upload package file error:', error);
       return c.json({

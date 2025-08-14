@@ -158,7 +158,7 @@
 											{pkg.team.name}
 										</span>
 									{/if}
-									<span>{formatDate(pkg.published_at)}</span>
+									<span>{formatDate(pkg.publishedAt)}</span>
 								</div>
 							</div>
 							
@@ -167,10 +167,10 @@
 									<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
 									</svg>
-									{(pkg.downloads_count || 0).toLocaleString()}
+									{(pkg.downloadsCount || 0).toLocaleString()}
 								</div>
 								<div class="text-xs">
-									{(pkg.file_size / 1024).toFixed(1)} KB
+									{(pkg.fileSize / 1024).toFixed(1)} KB
 								</div>
 							</div>
 						</div>
