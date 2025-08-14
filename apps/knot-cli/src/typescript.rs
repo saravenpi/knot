@@ -180,23 +180,6 @@ impl<'a> TypeScriptManager<'a> {
         Ok(clean)
     }
 
-    fn line_has_unquoted_comment(&self, line: &str) -> bool {
-        let mut in_string = false;
-        let mut escaped = false;
-        let chars: Vec<char> = line.chars().collect();
-
-        for i in 0..chars.len() {
-            match chars[i] {
-                '"' if !escaped => in_string = !in_string,
-                '\\' if !escaped => escaped = true,
-                '/' if !in_string && !escaped && i + 1 < chars.len() && chars[i + 1] == '/' => {
-                    return true
-                }
-                _ => escaped = false,
-            }
-        }
-        false
-    }
 
     fn create_default_tsconfig(&self, tsconfig_path: &Path, alias: &str) -> Result<()> {
         let knot_packages_path = format!("{}/*", alias);

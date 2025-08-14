@@ -131,11 +131,11 @@ impl<'a> Linker<'a> {
     }
 
     fn copy_package(&self, source: &Path, target: &Path) -> Result<()> {
-        self.copy_dir_recursively(source, target)?;
+        Self::copy_dir_recursively(source, target)?;
         Ok(())
     }
 
-    fn copy_dir_recursively(&self, source: &Path, target: &Path) -> Result<()> {
+    fn copy_dir_recursively(source: &Path, target: &Path) -> Result<()> {
         if !source.exists() {
             anyhow::bail!("Source directory does not exist: {}", source.display());
         }
@@ -156,7 +156,7 @@ impl<'a> Linker<'a> {
             let target_path = target.join(entry.file_name());
 
             if source_path.is_dir() {
-                self.copy_dir_recursively(&source_path, &target_path)?;
+                Self::copy_dir_recursively(&source_path, &target_path)?;
             } else {
                 fs::copy(&source_path, &target_path)?;
             }

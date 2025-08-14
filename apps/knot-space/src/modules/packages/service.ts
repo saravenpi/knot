@@ -13,84 +13,91 @@ export interface PackageFilters {
 
 class PackagesService {
   async publishPackage(data: PublishPackageRequest, ownerId: string) {
-    // If team name is provided, find the team and check permissions
-    let teamId: string | null = null;
-    if (data.teamName) {
-      const team = await prisma.team.findUnique({
-        where: { name: data.teamName },
+    return await prisma.$transaction(async (tx) => {
+      // If team name is provided, find the team and check permissions
+      let teamId: string | null = null;
+      if (data.teamName) {
+        const team = await tx.team.findUnique({
+          where: { name: data.teamName },
+          include: {
+            members: {
+              where: { userId: ownerId }
+            }
+          }
+        });
+
+        if (!team) {
+          throw new Error('Team not found');
+        }
+
+        const member = team.members[0];
+        if (!member || (member.role !== 'owner' && member.role !== 'admin')) {
+          throw new Error('Insufficient permissions to publish to this team');
+        }
+
+        teamId = team.id;
+      }
+
+      // Check if package version already exists
+      const existingPackage = await tx.package.findUnique({
+        where: {
+          name_version: {
+            name: data.name,
+            version: data.version,
+          }
+        }
+      });
+
+      if (existingPackage) {
+        throw new Error('Package version already exists');
+      }
+
+      // For now, we'll create a placeholder package without file handling
+      const packageData = {
+        name: data.name,
+        version: data.version,
+        description: data.description,
+        ownerId,
+        teamId,
+        downloadUrl: `https://example.com/packages/${data.name}/${data.version}`, // Placeholder
+        filePath: `/uploads/${data.name}-${data.version}.tgz`, // Placeholder
+        fileSize: BigInt(0), // Placeholder - should be set when file is uploaded
+        checksumSha256: '0000000000000000000000000000000000000000000000000000000000000000', // Placeholder
+      };
+
+      const pkg = await tx.package.create({
+        data: packageData,
         include: {
-          members: {
-            where: { userId: ownerId }
-          }
+          owner: {
+            select: {
+              id: true,
+              username: true,
+              email: true,
+              createdAt: true,
+            }
+          },
+          team: true,
+          tags: true,
         }
       });
 
-      if (!team) {
-        throw new Error('Team not found');
+      // Add tags if provided
+      if (data.tags && data.tags.length > 0) {
+        await tx.packageTag.createMany({
+          data: data.tags.map(tag => ({
+            packageId: pkg.id,
+            tag: tag.toLowerCase(),
+          }))
+        });
       }
 
-      const member = team.members[0];
-      if (!member || (member.role !== 'owner' && member.role !== 'admin')) {
-        throw new Error('Insufficient permissions to publish to this team');
-      }
-
-      teamId = team.id;
-    }
-
-    // Check if package version already exists
-    const existingPackage = await prisma.package.findUnique({
-      where: {
-        name_version: {
-          name: data.name,
-          version: data.version,
-        }
-      }
+      // Convert BigInt fields to strings for JSON serialization
+      return {
+        ...pkg,
+        fileSize: pkg.fileSize.toString(),
+        downloadsCount: pkg.downloadsCount.toString(),
+      };
     });
-
-    if (existingPackage) {
-      throw new Error('Package version already exists');
-    }
-
-    // For now, we'll create a placeholder package without file handling
-    const packageData = {
-      name: data.name,
-      version: data.version,
-      description: data.description,
-      ownerId,
-      teamId,
-      downloadUrl: `https://example.com/packages/${data.name}/${data.version}`, // Placeholder
-      filePath: `/uploads/${data.name}-${data.version}.tgz`, // Placeholder
-      fileSize: BigInt(0), // Placeholder - should be set when file is uploaded
-      checksumSha256: '0000000000000000000000000000000000000000000000000000000000000000', // Placeholder
-    };
-
-    const pkg = await prisma.package.create({
-      data: packageData,
-      include: {
-        owner: {
-          select: {
-            id: true,
-            username: true,
-            email: true,
-            createdAt: true,
-          }
-        },
-        team: true,
-        tags: true,
-      }
-    });
-
-    // Add tags if provided
-    if (data.tags && data.tags.length > 0) {
-      await prisma.packageTag.createMany({
-        data: data.tags.map(tag => ({
-          packageId: pkg.id,
-          tag: tag.toLowerCase(),
-        }))
-      });
-    }
-
-    return pkg;
   }
 
   async listPackages(filters: PackageFilters) {
@@ -153,8 +160,15 @@ class PackagesService {
 
     const total = await prisma.package.count({ where: whereClause });
 
+    // Convert BigInt fields to strings for JSON serialization
+    const serializedPackages = packages.map(pkg => ({
+      ...pkg,
+      fileSize: pkg.fileSize.toString(),
+      downloadsCount: pkg.downloadsCount.toString(),
+    }));
+
     return {
-      packages,
+      packages: serializedPackages,
       pagination: {
         total,
         limit: filters.limit,
@@ -181,7 +195,11 @@ class PackagesService {
       throw new Error('Package not found');
     }
 
-    return versions;
+    // Convert BigInt fields to strings for JSON serialization
+    return versions.map(version => ({
+      ...version,
+      downloadsCount: version.downloadsCount.toString(),
+    }));
   }
 
   async getPackage(name: string, version: string) {
@@ -207,7 +225,12 @@ class PackagesService {
       throw new Error('Package not found');
     }
 
-    return pkg;
+    // Convert BigInt fields to strings for JSON serialization
+    return {
+      ...pkg,
+      fileSize: pkg.fileSize.toString(),
+      downloadsCount: pkg.downloadsCount.toString(),
+    };
   }
 
   async downloadPackage(name: string, version: string) {
