@@ -38,13 +38,27 @@ pub fn init_project(name: &str, description: Option<&str>) -> Result<()> {
 }
 
 pub fn init_package(name: &str, team: Option<&str>, version: Option<&str>) -> Result<()> {
-    let package_dir = Path::new(name);
+    let current_dir = std::env::current_dir()?;
+    let knot_yml_path = current_dir.join("knot.yml");
+    
+    // Determine where to create the package
+    let package_dir = if knot_yml_path.exists() {
+        // We're in project root, create package in packages/ directory
+        let packages_dir = current_dir.join("packages");
+        if !packages_dir.exists() {
+            fs::create_dir_all(&packages_dir)?;
+        }
+        packages_dir.join(name)
+    } else {
+        // Not in project root, create in current directory
+        current_dir.join(name)
+    };
 
     if package_dir.exists() {
         anyhow::bail!("Package directory '{}' already exists", name);
     }
 
-    fs::create_dir_all(package_dir)?;
+    fs::create_dir_all(&package_dir)?;
 
     let package_yml_path = package_dir.join("package.yml");
     let config = PackageConfig {
@@ -57,20 +71,35 @@ pub fn init_package(name: &str, team: Option<&str>, version: Option<&str>) -> Re
     };
 
     let yaml_content = serde_yaml::to_string(&config)?;
-    fs::write(package_yml_path, yaml_content).context("Failed to create package.yml")?;
+    fs::write(&package_yml_path, yaml_content).context("Failed to create package.yml")?;
 
     println!("📦 Initialized new package: {}", name);
+    println!("📁 Created at: {}", package_dir.display());
     Ok(())
 }
 
 pub fn init_app(name: &str, description: Option<&str>) -> Result<()> {
-    let app_dir = Path::new(name);
+    let current_dir = std::env::current_dir()?;
+    let knot_yml_path = current_dir.join("knot.yml");
+    
+    // Determine where to create the app
+    let app_dir = if knot_yml_path.exists() {
+        // We're in project root, create app in apps/ directory
+        let apps_dir = current_dir.join("apps");
+        if !apps_dir.exists() {
+            fs::create_dir_all(&apps_dir)?;
+        }
+        apps_dir.join(name)
+    } else {
+        // Not in project root, create in current directory
+        current_dir.join(name)
+    };
 
     if app_dir.exists() {
         anyhow::bail!("App directory '{}' already exists", name);
     }
 
-    fs::create_dir_all(app_dir)?;
+    fs::create_dir_all(&app_dir)?;
 
     let app_yml_path = app_dir.join("app.yml");
     let config = AppConfig {
@@ -89,6 +118,7 @@ pub fn init_app(name: &str, description: Option<&str>) -> Result<()> {
     fs::create_dir_all(src_dir)?;
 
     println!("🚀 Initialized new app: {}", name);
+    println!("📁 Created at: {}", app_dir.display());
     Ok(())
 }
 

@@ -130,14 +130,15 @@
 			<!-- Package list -->
 			<div class="grid grid-cols-1 gap-4">
 				{#each filteredPackages as pkg}
-					<div class="border rounded-lg p-6 hover:shadow-md transition-all duration-200">
+					<a 
+						href="/packages/{encodeURIComponent(pkg.name)}"
+						class="block border rounded-lg p-6 hover:shadow-md transition-all duration-200 hover:border-primary/50 cursor-pointer"
+					>
 						<div class="flex items-start justify-between mb-4">
 							<div class="flex-1 min-w-0">
 								<div class="flex items-center gap-2 mb-2">
-									<h3 class="font-semibold text-lg truncate">
-										<a href="/packages/{encodeURIComponent(pkg.name)}" class="hover:text-primary transition-colors">
-											{pkg.name}
-										</a>
+									<h3 class="font-semibold text-lg truncate hover:text-primary transition-colors">
+										{pkg.name}
 									</h3>
 									<span class="text-sm text-muted-foreground bg-secondary px-2 py-1 rounded flex-shrink-0">
 										v{pkg.version}
@@ -151,7 +152,11 @@
 								{/if}
 								
 								<div class="flex items-center gap-4 text-sm text-muted-foreground">
-									<span>by <a href="/users/{encodeURIComponent(pkg.owner.username)}" class="hover:text-primary transition-colors font-medium">{pkg.owner.username}</a></span>
+									<span>by <a 
+										href="/users/{encodeURIComponent(pkg.owner.username)}" 
+										class="hover:text-primary transition-colors font-medium"
+										on:click={(e) => e.stopPropagation()}
+									>{pkg.owner.username}</a></span>
 									{#if pkg.team}
 										<span class="flex items-center gap-1">
 											<span class="w-2 h-2 bg-primary rounded-full"></span>
@@ -174,7 +179,7 @@
 								</div>
 							</div>
 						</div>
-					</div>
+					</a>
 				{/each}
 			</div>
 		</div>
