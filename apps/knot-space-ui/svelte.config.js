@@ -6,6 +6,10 @@ const config = {
   preprocess: vitePreprocess(),
   kit: {
     adapter: adapter(),
+    alias: {
+      '#': './knot_packages',
+      '#/*': './knot_packages/*'
+    }
   },
 };
 
