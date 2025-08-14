@@ -84,11 +84,15 @@ export const PublishPackageSchema = z.object({
     .optional()
     .transform((val) => val?.trim()),
   teamName: z
-    .string()
-    .max(50, 'Team name too long')
-    .regex(/^[a-z0-9][a-z0-9-]*$/, 'Invalid team name format')
-    .optional()
-    .transform((val) => val?.trim().toLowerCase()),
+    .union([
+      z.string()
+        .max(50, 'Team name too long')
+        .regex(/^[a-z0-9][a-z0-9-]*$/, 'Invalid team name format')
+        .transform((val) => val.trim().toLowerCase()),
+      z.null(),
+      z.undefined()
+    ])
+    .optional(),
   tags: z
     .array(
       z
