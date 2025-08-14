@@ -47,8 +47,17 @@
 		<div class="space-y-6">
 			<div>
 				<h3 class="text-lg font-semibold mb-3">Installation</h3>
-				<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded overflow-x-auto">
+				<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded overflow-x-auto relative">
 					<code>curl -fsSL https://raw.githubusercontent.com/saravenpi/knot/main/install.sh | bash</code>
+					<button 
+						class="absolute top-2 right-2 p-1.5 rounded bg-white/10 hover:bg-white/20 transition-colors"
+						onclick="navigator.clipboard.writeText('curl -fsSL https://raw.githubusercontent.com/saravenpi/knot/main/install.sh | bash')"
+						title="Copy to clipboard"
+					>
+						<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+						</svg>
+					</button>
 				</div>
 			</div>
 
@@ -144,7 +153,7 @@
 <span class="text-blue-400">description:</span> <span class="text-green-400">A modern TypeScript monorepo</span>
 <span class="text-blue-400">apps:</span>
   <span class="text-blue-400">frontend:</span>
-    <span class="text-blue-400">tsAlias:</span> <span class="text-green-400">"@"</span>
+    <span class="text-blue-400">tsAlias:</span> <span class="text-green-400">"#"</span>
     <span class="text-blue-400">packages:</span> <span class="text-yellow-400">[types, utils, "@jwt"]</span>
 <span class="text-blue-400">scripts:</span>
   <span class="text-blue-400">setup:</span> <span class="text-green-400">"npm install"</span>
@@ -303,7 +312,7 @@
 						<div class="text-sm font-medium text-blue-900 mb-1">TypeScript Integration</div>
 						<div class="text-sm text-blue-700">
 							Knot automatically updates <code>tsconfig.json</code> with path mappings for your packages, 
-							enabling clean imports like <code>import { utils } from '@/utils'</code>.
+							enabling clean imports like <code>import { utils } from '#/utils'</code>.
 						</div>
 					</div>
 				</div>

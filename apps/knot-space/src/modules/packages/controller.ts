@@ -230,4 +230,21 @@ export class PackagesController {
       }, 500);
     }
   }
+
+  static async getGlobalStats(c: Context) {
+    try {
+      const stats = await packagesService.getGlobalStats();
+      
+      return c.json({
+        success: true,
+        data: stats
+      });
+    } catch (error) {
+      console.error('Get global stats error:', error);
+      return c.json({
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to get global statistics'
+      }, 500);
+    }
+  }
 }

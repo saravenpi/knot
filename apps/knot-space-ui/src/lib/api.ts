@@ -135,6 +135,11 @@ export const packagesApi = {
     // Backend doesn't have search endpoint, use list with search parameter
     const response = await requestApi<{ success: boolean; data: { packages: Package[] } }>('GET', `/api/packages?search=${encodeURIComponent(query)}`);
     return response.data.packages;
+  },
+
+  async getGlobalStats(): Promise<{ totalPackages: number; totalDownloads: number; totalUsers: number; totalTeams: number; }> {
+    const response = await requestApi<{ success: boolean; data: { totalPackages: number; totalDownloads: number; totalUsers: number; totalTeams: number; } }>('GET', '/api/packages/stats');
+    return response.data;
   }
 };
 

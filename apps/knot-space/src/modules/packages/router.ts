@@ -7,6 +7,7 @@ const packages = new Hono();
 
 packages.post('/', authMiddleware, validatePublishPackage, PackagesController.publishPackage);
 packages.post('/upload', authMiddleware, PackagesController.uploadPackageFile);
+packages.get('/stats', PackagesController.getGlobalStats);
 packages.get('/', validatePackageQuery, PackagesController.listPackages);
 packages.get('/:name/versions', PackagesController.getPackageVersions);
 packages.get('/:name/:version', PackagesController.getPackage);

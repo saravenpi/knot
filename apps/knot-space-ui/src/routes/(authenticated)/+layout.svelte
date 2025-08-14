@@ -78,6 +78,14 @@
           <Icon icon="solar:settings-bold" class="w-5 h-5" />
           <span>Settings</span>
         </a>
+
+        <a 
+          href="/docs" 
+          class="flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {currentPath === '/docs' ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'}"
+        >
+          <Icon icon="solar:book-bold" class="w-5 h-5" />
+          <span>Documentation</span>
+        </a>
       </nav>
     </div>
 

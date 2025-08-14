@@ -2,17 +2,20 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { packagesStore, authStore } from '../lib/stores';
+	import { packagesApi } from '../lib/api';
 	import Icon from '@iconify/svelte';
 
 	$: packages = $packagesStore.packages;
 	$: loading = $packagesStore.loading;
 	$: isAuthenticated = $authStore.isAuthenticated;
 	$: initialized = $authStore.initialized;
-	$: stats = {
-		totalPackages: packages.length,
-		totalDownloads: packages.reduce((sum, pkg) => sum + (pkg.downloads_count || 0), 0),
+	
+	let stats = {
+		totalPackages: 0,
+		totalDownloads: 0,
 		totalUsers: 0
 	};
+	let statsLoading = true;
 
 	onMount(async () => {
 		// Initialize auth first to check if user is logged in
@@ -24,11 +27,18 @@
 			return;
 		}
 
-		// Load packages for public home page
+		// Load packages for public home page and global stats in parallel
 		try {
-			await packagesStore.fetchAll();
+			const [packagesResult, statsResult] = await Promise.all([
+				packagesStore.fetchAll(),
+				packagesApi.getGlobalStats()
+			]);
+			
+			stats = statsResult;
+			statsLoading = false;
 		} catch (error) {
-			console.error('Failed to fetch packages:', error);
+			console.error('Failed to fetch data:', error);
+			statsLoading = false;
 		}
 	});
 </script>
@@ -78,16 +88,34 @@
 <!-- Stats -->
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 py-12 border-t border-b">
 	<div class="text-center">
-		<div class="text-3xl font-bold text-black mb-2">{stats.totalPackages.toLocaleString()}</div>
+		{#if statsLoading}
+			<div class="text-3xl font-bold text-black mb-2">
+				<div class="animate-pulse bg-muted rounded w-16 h-8 mx-auto"></div>
+			</div>
+		{:else}
+			<div class="text-3xl font-bold text-black mb-2">{stats.totalPackages.toLocaleString()}</div>
+		{/if}
 		<div class="text-muted-foreground">Total Packages</div>
 	</div>
 	<div class="text-center">
-		<div class="text-3xl font-bold text-black mb-2">{stats.totalDownloads.toLocaleString()}</div>
+		{#if statsLoading}
+			<div class="text-3xl font-bold text-black mb-2">
+				<div class="animate-pulse bg-muted rounded w-16 h-8 mx-auto"></div>
+			</div>
+		{:else}
+			<div class="text-3xl font-bold text-black mb-2">{stats.totalDownloads.toLocaleString()}</div>
+		{/if}
 		<div class="text-muted-foreground">Total Downloads</div>
 	</div>
 	<div class="text-center">
-		<div class="text-3xl font-bold text-black mb-2">∞</div>
-		<div class="text-muted-foreground">Possibilities</div>
+		{#if statsLoading}
+			<div class="text-3xl font-bold text-black mb-2">
+				<div class="animate-pulse bg-muted rounded w-16 h-8 mx-auto"></div>
+			</div>
+		{:else}
+			<div class="text-3xl font-bold text-black mb-2">{stats.totalUsers.toLocaleString()}</div>
+		{/if}
+		<div class="text-muted-foreground">Total Users</div>
 	</div>
 </div>
 
@@ -156,12 +184,52 @@
 					
 					<div class="flex items-center justify-between text-xs text-muted-foreground">
 						<span>by {pkg.owner.username}</span>
-						<span>{pkg.downloads_count || 0} downloads</span>
+						<span>{pkg.downloadsCount || 0} downloads</span>
 					</div>
 				</div>
 			{/each}
 		</div>
 	{/if}
+</div>
+
+<!-- Quick Start -->
+<div class="py-12 border-t">
+	<div class="max-w-2xl mx-auto text-center">
+		<div class="bg-black/5 border border-border rounded-lg p-8">
+			<h3 class="text-xl font-semibold mb-4">Ready to get started?</h3>
+			<p class="text-muted-foreground mb-6">
+				Install the Knot CLI and start building your monorepo today.
+			</p>
+			<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded mb-6 text-left overflow-x-auto relative">
+				<code>curl -fsSL https://raw.githubusercontent.com/saravenpi/knot/main/install.sh | bash</code>
+				<button 
+					class="absolute top-2 right-2 p-1.5 rounded bg-white/10 hover:bg-white/20 transition-colors"
+					onclick="navigator.clipboard.writeText('curl -fsSL https://raw.githubusercontent.com/saravenpi/knot/main/install.sh | bash')"
+					title="Copy to clipboard"
+				>
+					<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+					</svg>
+				</button>
+			</div>
+			<div class="flex flex-col sm:flex-row gap-3 justify-center">
+				<a 
+					href="/docs" 
+					class="border border-border hover:bg-accent hover:text-accent-foreground px-6 py-3 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
+				>
+					<Icon icon="solar:book-bold" class="w-4 h-4" />
+					<span>Read the Docs</span>
+				</a>
+				<a 
+					href="/register" 
+					class="bg-black text-white hover:bg-black/90 px-6 py-3 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
+				>
+					<Icon icon="solar:rocket-2-bold" class="w-4 h-4" />
+					<span>Get Started</span>
+				</a>
+			</div>
+		</div>
+	</div>
 </div>
 
 <!-- How It Works -->
@@ -192,7 +260,7 @@
 <span class="text-blue-400">description:</span> <span class="text-green-400">A modern TypeScript monorepo</span>
 <span class="text-blue-400">apps:</span>
   <span class="text-blue-400">frontend:</span>
-    <span class="text-blue-400">tsAlias:</span> <span class="text-green-400">"@"</span>
+    <span class="text-blue-400">tsAlias:</span> <span class="text-green-400">"#"</span>
     <span class="text-blue-400">packages:</span> <span class="text-yellow-400">[types, utils]</span>
 <span class="text-blue-400">scripts:</span>
   <span class="text-blue-400">setup:</span> <span class="text-green-400">"npm install"</span>
@@ -276,34 +344,6 @@
 		</div>
 	</div>
 
-	<!-- Quick Start -->
-	<div class="max-w-2xl mx-auto text-center">
-		<div class="bg-black/5 border border-border rounded-lg p-8">
-			<h3 class="text-xl font-semibold mb-4">Ready to get started?</h3>
-			<p class="text-muted-foreground mb-6">
-				Install the Knot CLI and start building your monorepo today.
-			</p>
-			<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded mb-6 text-left overflow-x-auto">
-				<code>curl -fsSL https://raw.githubusercontent.com/saravenpi/knot/main/install.sh | bash</code>
-			</div>
-			<div class="flex flex-col sm:flex-row gap-3 justify-center">
-				<a 
-					href="/docs" 
-					class="border border-border hover:bg-accent hover:text-accent-foreground px-6 py-3 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
-				>
-					<Icon icon="solar:book-bold" class="w-4 h-4" />
-					<span>Read the Docs</span>
-				</a>
-				<a 
-					href="/register" 
-					class="bg-black text-white hover:bg-black/90 px-6 py-3 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
-				>
-					<Icon icon="solar:rocket-2-bold" class="w-4 h-4" />
-					<span>Get Started</span>
-				</a>
-			</div>
-		</div>
-	</div>
 </div>
 
 <!-- Features -->

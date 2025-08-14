@@ -55,7 +55,10 @@
 							</a>
 						</div>
 
-						<div class="flex items-center space-x-2">
+						<div class="flex items-center space-x-4">
+							<a href="/docs" class="text-sm font-medium hover:text-primary transition-colors">
+								Docs
+							</a>
 							<a href="/login" class="text-sm font-medium hover:text-primary transition-colors">
 								Login
 							</a>

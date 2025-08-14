@@ -388,6 +388,31 @@ class PackagesService {
       message: 'File processed successfully (not permanently stored in demo)'
     };
   }
+
+  async getGlobalStats() {
+    // Get total packages count
+    const totalPackages = await prisma.package.count();
+
+    // Get total downloads count
+    const downloadCountResult = await prisma.package.aggregate({
+      _sum: {
+        downloadsCount: true
+      }
+    });
+
+    // Get total users count
+    const totalUsers = await prisma.user.count();
+
+    // Get total teams count
+    const totalTeams = await prisma.team.count();
+
+    return {
+      totalPackages,
+      totalDownloads: Number(downloadCountResult._sum.downloadsCount || 0),
+      totalUsers,
+      totalTeams
+    };
+  }
 }
 
 export const packagesService = new PackagesService();
