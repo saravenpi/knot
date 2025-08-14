@@ -22,8 +22,10 @@ apps:
   knot-space-ui:
     description: "Frontend UI for Knot Space package registry"
     tsAlias: true
-    packages: [types]
+    packages: [types, utils]
 
 packages:
   types:
     description: "Shared TypeScript types for all Knot applications"
+  utils:
+    description: "Shared utility functions for Knot applications"

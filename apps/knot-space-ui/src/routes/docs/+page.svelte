@@ -313,7 +313,7 @@
 						<div class="text-sm font-medium text-blue-900 mb-1">TypeScript Integration</div>
 						<div class="text-sm text-blue-700">
 							Knot automatically updates <code>tsconfig.json</code> with path mappings for your packages, 
-							enabling clean imports like <code>import { utils } from '#/utils'</code>.
+							enabling clean imports like <code>import &#123; utils &#125; from '#/utils'</code>.
 						</div>
 					</div>
 				</div>
