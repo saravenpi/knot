@@ -1,12 +1,17 @@
 <script lang="ts">
 	import '../app.css';
 	import { onMount } from 'svelte';
+	import { page } from '$app/stores';
 	import { authStore } from '../lib/stores';
 
 	$: user = $authStore.user;
 	$: isLoggedIn = $authStore.isAuthenticated;
 	$: initialized = $authStore.initialized;
 	$: loading = $authStore.loading;
+	$: currentPath = $page.url.pathname;
+	
+	// Pages that should use public layout even when authenticated
+	$: isPublicPage = currentPath === '/docs' || currentPath === '/login' || currentPath === '/register' || currentPath === '/';
 
 	onMount(async () => {
 		await authStore.initialize();
@@ -38,11 +43,11 @@
 			</div>
 		</div>
 	{:else}
-		{#if isLoggedIn}
-			<!-- Authenticated users get sidebar layout -->
+		{#if isLoggedIn && !isPublicPage}
+			<!-- Authenticated users get sidebar layout (except for public pages) -->
 			<slot />
 		{:else}
-			<!-- Unauthenticated users get top navbar -->
+			<!-- Public layout for unauthenticated users OR public pages -->
 			<nav class="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
 				<div class="container mx-auto px-4 sm:px-6 lg:px-8">
 					<div class="flex justify-between h-16">
@@ -59,15 +64,32 @@
 							<a href="/docs" class="text-sm font-medium hover:text-primary transition-colors">
 								Docs
 							</a>
-							<a href="/login" class="text-sm font-medium hover:text-primary transition-colors">
-								Login
-							</a>
-							<a
-								href="/register"
-								class="bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-md text-sm font-medium transition-colors"
-							>
-								Sign Up
-							</a>
+							{#if isLoggedIn}
+								<!-- Authenticated user options -->
+								<a href="/packages" class="text-sm font-medium hover:text-primary transition-colors">
+									Dashboard
+								</a>
+								<button
+									on:click={async () => {
+										await authStore.logout();
+										window.location.href = '/';
+									}}
+									class="text-sm font-medium hover:text-primary transition-colors"
+								>
+									Sign Out
+								</button>
+							{:else}
+								<!-- Unauthenticated user options -->
+								<a href="/login" class="text-sm font-medium hover:text-primary transition-colors">
+									Login
+								</a>
+								<a
+									href="/register"
+									class="bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-md text-sm font-medium transition-colors"
+								>
+									Sign Up
+								</a>
+							{/if}
 						</div>
 					</div>
 				</div>
