@@ -18,7 +18,7 @@ export interface Package {
   name: string;
   version: string;
   description?: string;
-  downloadsCount: number;
+  downloadsCount: number | string; // API returns as string due to BigInt serialization
   owner: User;
   team?: { 
     id: string;
@@ -28,7 +28,7 @@ export interface Package {
   createdAt: string;
   updatedAt: string;
   publishedAt?: string;
-  fileSize?: number;
+  fileSize?: number | string; // API returns as string due to BigInt serialization
 }
 
 export interface Team {

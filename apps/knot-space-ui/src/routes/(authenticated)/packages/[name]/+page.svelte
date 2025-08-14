@@ -79,10 +79,11 @@
 		});
 	}
 
-	function formatFileSize(bytes: number): string {
-		if (bytes < 1024) return bytes + ' B';
-		if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-		return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+	function formatFileSize(bytes: number | string | undefined): string {
+		const numBytes = parseInt(bytes?.toString() || '0');
+		if (numBytes < 1024) return numBytes + ' B';
+		if (numBytes < 1024 * 1024) return (numBytes / 1024).toFixed(1) + ' KB';
+		return (numBytes / (1024 * 1024)).toFixed(1) + ' MB';
 	}
 </script>
 
@@ -169,7 +170,7 @@
 					<Icon icon="solar:download-minimalistic-bold" class="w-5 h-5 text-muted-foreground" />
 					<span class="font-medium">Downloads</span>
 				</div>
-				<div class="text-2xl font-bold">{(selectedPackage.downloadsCount || 0).toLocaleString()}</div>
+				<div class="text-2xl font-bold">{(parseInt(selectedPackage.downloadsCount?.toString() || '0')).toLocaleString()}</div>
 			</div>
 			
 			<div class="border rounded-lg p-4">

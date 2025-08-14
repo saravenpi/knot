@@ -85,8 +85,11 @@ const createPackagesStore = () => {
             throw new Error('Package not found');
           }
           // Sort versions by publish date (newest first) and pick the first one
-          versions.sort((a, b) => new Date(b.publishedAt || b.createdAt).getTime() - new Date(a.publishedAt || a.createdAt).getTime());
-          pkg = versions[0];
+          versions.sort((a, b) => new Date(b.publishedAt || a.createdAt).getTime() - new Date(a.publishedAt || a.createdAt).getTime());
+          
+          // Now fetch the full package data for the latest version
+          const latestVersion = versions[0];
+          pkg = await packagesApi.getByNameAndVersion(decodeURIComponent(name), latestVersion.version);
         }
         
         update(state => ({
