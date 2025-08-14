@@ -122,7 +122,15 @@ const createAuthStore = () => {
       update(state => ({ ...state, loading: true }));
       
       try {
-        const response = await authApi.getProfile();
+        // Add timeout to prevent hanging
+        const timeoutPromise = new Promise((_, reject) => {
+          setTimeout(() => reject(new Error('Request timeout')), 3000); // 3 second timeout
+        });
+        
+        const response = await Promise.race([
+          authApi.getProfile(),
+          timeoutPromise
+        ]) as any;
         
         // Handle both direct token and nested data structure
         const authData = response.data || response;
@@ -151,7 +159,8 @@ const createAuthStore = () => {
           isAuthenticated: false,
           initialized: true
         }));
-        throw new Error(handleApiError(error));
+        // Don't throw error to prevent blocking initialization
+        return null;
       }
     },
 
@@ -182,13 +191,8 @@ const createAuthStore = () => {
       
       const token = getStoredToken();
       if (token) {
-        try {
-          await this.getProfile();
-        } catch (error) {
-          console.warn('Authentication initialization failed:', error);
-          // Set as initialized even if profile fetch fails
-          update(state => ({ ...state, initialized: true }));
-        }
+        // getProfile now handles its own errors and won't throw
+        await this.getProfile();
       } else {
         update(state => ({ 
           ...state, 

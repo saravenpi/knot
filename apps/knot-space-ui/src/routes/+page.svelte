@@ -9,7 +9,7 @@
 	$: loading = $packagesStore.loading;
 	$: isAuthenticated = $authStore.isAuthenticated;
 	$: initialized = $authStore.initialized;
-	
+
 	let stats = {
 		totalPackages: 0,
 		totalDownloads: 0,
@@ -20,7 +20,7 @@
 	onMount(async () => {
 		// Initialize auth first to check if user is logged in
 		await authStore.initialize();
-		
+
 		// If user is authenticated, redirect to packages
 		if ($authStore.isAuthenticated) {
 			goto('/packages');
@@ -29,15 +29,25 @@
 
 		// Load packages for public home page and global stats in parallel
 		try {
+			const timeout = new Promise((_, reject) => {
+				setTimeout(() => reject(new Error('Request timeout')), 3000);
+			});
+
 			const [packagesResult, statsResult] = await Promise.all([
-				packagesStore.fetchAll(),
-				packagesApi.getGlobalStats()
+				Promise.race([packagesStore.fetchAll(), timeout]),
+				Promise.race([packagesApi.getGlobalStats(), timeout])
 			]);
-			
-			stats = statsResult;
+
+			stats = statsResult as any;
 			statsLoading = false;
 		} catch (error) {
 			console.error('Failed to fetch data:', error);
+			// Set default values when backend is not available
+			stats = {
+				totalPackages: 0,
+				totalDownloads: 0,
+				totalUsers: 0
+			};
 			statsLoading = false;
 		}
 	});
@@ -58,7 +68,7 @@
 	</div>
 {:else if !isAuthenticated}
 	<!-- Show home page only for unauthenticated users -->
-	
+
 <!-- Hero Section -->
 <div class="text-center py-12 md:py-20">
 	<h1 class="text-4xl md:text-6xl font-bold tracking-tight mb-6" style="font-family: 'Gambarino', 'Satoshi', sans-serif;">
@@ -68,15 +78,15 @@
 		The modern package registry for Knot monorepo packages. Publish, share, and manage your TypeScript/JavaScript packages with teams.
 	</p>
 	<div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-		<a 
-			href="/packages" 
+		<a
+			href="/packages"
 			class="bg-black text-white hover:bg-black/90 px-8 py-3 rounded-lg font-medium transition-colors flex items-center space-x-2"
 		>
 			<Icon icon="solar:box-bold" class="w-5 h-5" />
 			<span>Browse Packages</span>
 		</a>
-		<a 
-			href="/register" 
+		<a
+			href="/register"
 			class="border border-border hover:bg-accent hover:text-accent-foreground px-8 py-3 rounded-lg font-medium transition-colors flex items-center space-x-2"
 		>
 			<Icon icon="solar:rocket-2-bold" class="w-5 h-5" />
@@ -123,8 +133,8 @@
 <div class="py-12">
 	<div class="flex justify-between items-center mb-8">
 		<h2 class="text-3xl font-bold">Recent Packages</h2>
-		<a 
-			href="/packages" 
+		<a
+			href="/packages"
 			class="text-black hover:text-black/80 font-medium"
 		>
 			View All →
@@ -148,8 +158,8 @@
 			</div>
 			<h3 class="text-xl font-semibold mb-2">No packages yet</h3>
 			<p class="text-muted-foreground mb-4">Be the first to publish a package to Knot Space!</p>
-			<a 
-				href="/login" 
+			<a
+				href="/login"
 				class="bg-black text-white hover:bg-black/90 px-6 py-2 rounded-md font-medium transition-colors inline-flex items-center space-x-2"
 			>
 				<Icon icon="solar:rocket-2-bold" class="w-4 h-4" />
@@ -175,13 +185,13 @@
 							</span>
 						{/if}
 					</div>
-					
+
 					{#if pkg.description}
 						<p class="text-muted-foreground text-sm mb-4 line-clamp-2">
 							{pkg.description}
 						</p>
 					{/if}
-					
+
 					<div class="flex items-center justify-between text-xs text-muted-foreground">
 						<span>by {pkg.owner.username}</span>
 						<span>{pkg.downloadsCount || 0} downloads</span>
@@ -202,7 +212,7 @@
 			</p>
 			<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded mb-6 text-left overflow-x-auto relative">
 				<code>curl -fsSL https://raw.githubusercontent.com/saravenpi/knot/main/install.sh | bash</code>
-				<button 
+				<button
 					class="absolute top-2 right-2 p-1.5 rounded bg-white/10 hover:bg-white/20 transition-colors"
 					on:click={() => navigator.clipboard.writeText('curl -fsSL https://raw.githubusercontent.com/saravenpi/knot/main/install.sh | bash')}
 					title="Copy to clipboard"
@@ -214,15 +224,15 @@
 				</button>
 			</div>
 			<div class="flex flex-col sm:flex-row gap-3 justify-center">
-				<a 
-					href="/docs" 
+				<a
+					href="/docs"
 					class="border border-border hover:bg-accent hover:text-accent-foreground px-6 py-3 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
 				>
 					<Icon icon="solar:book-bold" class="w-4 h-4" />
 					<span>Read the Docs</span>
 				</a>
-				<a 
-					href="/register" 
+				<a
+					href="/register"
 					class="bg-black text-white hover:bg-black/90 px-6 py-3 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
 				>
 					<Icon icon="solar:rocket-2-bold" class="w-4 h-4" />
@@ -236,7 +246,7 @@
 <!-- How It Works -->
 <div class="py-12 border-t">
 	<h2 class="text-3xl font-bold text-center mb-12">How It Works</h2>
-	
+
 	<!-- Configuration Examples -->
 	<div class="max-w-6xl mx-auto mb-16">
 		<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -301,7 +311,7 @@
 	<div class="max-w-4xl mx-auto mb-16">
 		<div class="flex items-center justify-center space-x-3 mb-8">
 			<div class="w-8 h-8 bg-black/10 rounded-lg flex items-center justify-center">
-				<Icon icon="solar:terminal-bold" class="w-5 h-5 text-black" />
+				<Icon icon="solar:code-square-bold" class="w-5 h-5 text-black" />
 			</div>
 			<h3 class="text-2xl font-semibold">Essential Commands</h3>
 		</div>
@@ -312,7 +322,7 @@
 					<span class="font-semibold">Link Packages</span>
 				</div>
 				<pre class="text-sm font-mono bg-black/90 text-green-400 p-3 rounded overflow-x-auto"><code>$ knot link
-🔗 Successfully copied all packages and 
+🔗 Successfully copied all packages and
    updated TypeScript configurations</code></pre>
 			</div>
 			<div class="bg-muted/30 rounded-lg p-6">
