@@ -335,7 +335,7 @@ impl AppConfig {
         Ok(())
     }
 
-    fn validate_package_name(&self, package: &str) -> anyhow::Result<()> {
+    pub fn validate_package_name(&self, package: &str) -> anyhow::Result<()> {
         // Check for dangerous characters (allow @ for online packages)
         if package.contains('\0') || package.contains("..") || package.contains('\\') {
             anyhow::bail!("Package name contains unsafe characters: '{}'", package);

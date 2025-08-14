@@ -11,7 +11,7 @@ use clap::{Arg, Command};
 #[tokio::main]
 async fn main() -> Result<()> {
     let matches = Command::new("knot")
-        .version("0.1.0")
+        .version("0.2.0")
         .about("Knot - Monorepo package manager")
         .subcommand_required(true)
         .arg_required_else_help(true)
@@ -132,6 +132,26 @@ async fn main() -> Result<()> {
                 ),
         )
         .subcommand(
+            Command::new("add")
+                .about("Add a package dependency to the current app")
+                .arg(
+                    Arg::new("package")
+                        .help("Package name to add (local: 'utils', online: '@jwt', team: '@team/package')")
+                        .required(true)
+                        .index(1),
+                )
+                .arg(
+                    Arg::new("link")
+                        .help("Automatically link packages after adding")
+                        .long("link")
+                        .action(clap::ArgAction::SetTrue),
+                ),
+        )
+        .subcommand(
+            Command::new("install")
+                .about("Install all dependencies (equivalent to 'knot link' but more intuitive)")
+        )
+        .subcommand(
             Command::new("team")
                 .about("Team management commands")
                 .subcommand_required(true)
@@ -239,6 +259,14 @@ async fn main() -> Result<()> {
             let name = sub_matches.get_one::<String>("name").unwrap();
             let version = sub_matches.get_one::<String>("version").unwrap();
             commands::delete_package(name, version).await?;
+        }
+        Some(("add", sub_matches)) => {
+            let package = sub_matches.get_one::<String>("package").unwrap();
+            let auto_link = sub_matches.get_flag("link");
+            commands::add_package(package, auto_link).await?;
+        }
+        Some(("install", _)) => {
+            commands::install_dependencies().await?;
         }
         Some(("team", sub_matches)) => match sub_matches.subcommand() {
             Some(("create", team_sub)) => {

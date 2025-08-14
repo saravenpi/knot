@@ -168,12 +168,14 @@ pub fn show_status() -> Result<()> {
 
 pub fn show_info() -> Result<()> {
     println!("🪢 Knot - Monorepo package manager");
-    println!("📦 Version: 0.1.0");
+    println!("📦 Version: 0.2.0");
     println!();
     println!("📋 Commands:");
     println!("  🆕 init <name>              Initialize a new project");
     println!("  📦 init:package <name>      Initialize a new package");
     println!("  🚀 init:app <name>          Initialize a new app");
+    println!("  ➕ add <package> [--link]   Add package dependency to current app");
+    println!("  📥 install                  Install all dependencies (link packages)");
     println!("  🔗 link [--symlink]         Copy packages to apps (use --symlink for symlinks)");
     println!("  🔨 build                    Build app(s) using configured build commands");
     println!("  ▶️  run <script>            Run a script from config files");
@@ -189,6 +191,10 @@ pub fn show_info() -> Result<()> {
     println!("  knot init MyProject");
     println!("  knot init:package utils --team myteam");
     println!("  knot init:app frontend --description 'Frontend app'");
+    println!("  knot add utils                    # Add local package dependency");
+    println!("  knot add @jwt --link              # Add online package and auto-link");
+    println!("  knot add @team/package            # Add team package");
+    println!("  knot install                      # Install all dependencies");
     println!("  knot link                         # Copy packages (default)");
     println!("  knot link --symlink              # Use symlinks instead");
     println!("  knot build                        # Build all apps from project root");
@@ -970,6 +976,132 @@ pub async fn remove_team_member(team: &str, username: &str) -> Result<()> {
         anyhow::bail!("Failed to remove team member ({}): {}", status, text);
     }
 
+    Ok(())
+}
+
+pub async fn add_package(package_name: &str, auto_link: bool) -> Result<()> {
+    let current_dir = std::env::current_dir()?;
+    
+    // Check if we're in an app directory
+    let app_yml_path = current_dir.join("app.yml");
+    if !app_yml_path.exists() {
+        // Check if we're in project root and user specified app
+        let project = match Project::find_and_load(&current_dir) {
+            Ok(project) => project,
+            Err(_) => {
+                anyhow::bail!("❌ Not in an app directory or project root. Run 'knot add' from an app directory.");
+            }
+        };
+        
+        // List available apps for user reference
+        if !project.apps.is_empty() {
+            println!("📋 Available apps:");
+            for app_name in project.apps.keys() {
+                println!("  • {}", app_name);
+            }
+            println!("💡 Navigate to an app directory and run 'knot add' there");
+        } else {
+            println!("💡 Create an app first with 'knot init:app <name>'");
+        }
+        return Ok(());
+    }
+
+    // Load current app config
+    let mut app_config = AppConfig::from_file(&app_yml_path)?;
+    
+    // Validate package name
+    app_config.validate_package_name(package_name)?;
+    
+    // Initialize packages vector if it doesn't exist
+    if app_config.packages.is_none() {
+        app_config.packages = Some(Vec::new());
+    }
+    
+    let packages = app_config.packages.as_mut().unwrap();
+    
+    // Check if package is already added
+    if packages.contains(&package_name.to_string()) {
+        println!("📦 Package '{}' is already added to app '{}'", package_name, app_config.name);
+        return Ok(());
+    }
+    
+    // Add the package
+    packages.push(package_name.to_string());
+    
+    // Save updated config
+    let yaml_content = serde_yaml::to_string(&app_config)?;
+    fs::write(&app_yml_path, yaml_content)
+        .context("Failed to update app.yml")?;
+    
+    println!("✅ Added package '{}' to app '{}'", package_name, app_config.name);
+    
+    // Auto-link if requested
+    if auto_link {
+        println!("🔗 Linking packages...");
+        link_packages(false).await?;
+    } else {
+        println!("💡 Run 'knot link' to apply the changes");
+    }
+    
+    Ok(())
+}
+
+pub async fn install_dependencies() -> Result<()> {
+    let current_dir = std::env::current_dir()?;
+    
+    // Check if we're in an app directory
+    let app_yml_path = current_dir.join("app.yml");
+    if app_yml_path.exists() {
+        // Install dependencies for current app
+        let app_config = AppConfig::from_file(&app_yml_path)?;
+        println!("📦 Installing dependencies for app '{}'...", app_config.name);
+        
+        if let Some(packages) = &app_config.packages {
+            if packages.is_empty() {
+                println!("✅ No dependencies to install");
+                return Ok(());
+            }
+            
+            println!("📋 Dependencies: {}", packages.join(", "));
+            link_packages(false).await?;
+        } else {
+            println!("✅ No dependencies configured");
+        }
+        return Ok(());
+    }
+    
+    // Check if we're in project root
+    let project = match Project::find_and_load(&current_dir) {
+        Ok(project) => project,
+        Err(_) => {
+            anyhow::bail!("❌ Not in an app directory or project root");
+        }
+    };
+    
+    // Install dependencies for all apps
+    println!("📦 Installing dependencies for all apps in project '{}'...", project.config.name);
+    
+    let mut apps_with_deps = 0;
+    let mut total_deps = 0;
+    
+    for (app_name, app_config) in &project.apps {
+        if let Some(packages) = &app_config.packages {
+            if !packages.is_empty() {
+                apps_with_deps += 1;
+                total_deps += packages.len();
+                println!("  📱 {}: {} packages", app_name, packages.len());
+            }
+        }
+    }
+    
+    if apps_with_deps == 0 {
+        println!("✅ No dependencies configured in any app");
+        return Ok(());
+    }
+    
+    println!("📊 Total: {} dependencies across {} apps", total_deps, apps_with_deps);
+    link_packages(false).await?;
+    
     Ok(())
 }
 
