@@ -117,8 +117,10 @@ export class PackagesController {
 
       const downloadInfo = await packagesService.downloadPackage(name, version);
       
-      // Increment download count
-      await packagesService.incrementDownloadCount(name, version);
+      // Increment download count with analytics
+      const clientIP = c.req.header('x-forwarded-for') || c.req.header('x-real-ip') || 'unknown';
+      const userAgent = c.req.header('user-agent');
+      await packagesService.incrementDownloadCount(name, version, clientIP, userAgent);
       
       return c.redirect(downloadInfo.downloadUrl);
     } catch (error) {
@@ -159,6 +161,41 @@ export class PackagesController {
         success: false,
         error: error instanceof Error ? error.message : 'Failed to delete package'
       }, 400);
+    }
+  }
+
+  static async getDownloadStats(c: Context) {
+    try {
+      const name = c.req.param('name');
+      const version = c.req.param('version');
+      const days = parseInt(c.req.query('days') || '7');
+      
+      if (!name || !version) {
+        return c.json({ 
+          success: false, 
+          error: 'Package name and version are required' 
+        }, 400);
+      }
+
+      if (days < 1 || days > 90) {
+        return c.json({ 
+          success: false, 
+          error: 'Days must be between 1 and 90' 
+        }, 400);
+      }
+
+      const stats = await packagesService.getDownloadStats(name, version, days);
+      
+      return c.json({
+        success: true,
+        data: stats
+      });
+    } catch (error) {
+      console.error('Get download stats error:', error);
+      return c.json({
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to get download statistics'
+      }, 404);
     }
   }
 

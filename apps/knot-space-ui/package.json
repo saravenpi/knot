@@ -37,6 +37,7 @@
     "autoprefixer": "^10.4.0",
     "lucide-svelte": "^0.460.0",
     "postcss": "^8.4.0",
+    "recharts": "^3.1.2",
     "shadcn-svelte": "^1.0.6",
     "tailwindcss": "^3.4.0"
   }

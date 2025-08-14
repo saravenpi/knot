@@ -11,6 +11,7 @@ packages.get('/', validatePackageQuery, PackagesController.listPackages);
 packages.get('/:name/versions', PackagesController.getPackageVersions);
 packages.get('/:name/:version', PackagesController.getPackage);
 packages.get('/:name/:version/download', PackagesController.downloadPackage);
+packages.get('/:name/:version/stats', PackagesController.getDownloadStats);
 packages.delete('/:name/:version', authMiddleware, PackagesController.deletePackage);
 
 export default packages;

@@ -296,6 +296,65 @@ class TeamsService {
     });
   }
 
+  async updateMemberRole(teamId: string, userId: string, newRole: string, currentUserId: string) {
+    // Check if current user has permission to update member roles
+    const currentMember = await prisma.teamMember.findUnique({
+      where: {
+        teamId_userId: {
+          teamId,
+          userId: currentUserId,
+        }
+      }
+    });
+
+    if (!currentMember || (currentMember.role !== 'owner' && currentMember.role !== 'admin')) {
+      throw new Error('Insufficient permissions to update member roles');
+    }
+
+    const memberToUpdate = await prisma.teamMember.findUnique({
+      where: {
+        teamId_userId: {
+          teamId,
+          userId,
+        }
+      }
+    });
+
+    if (!memberToUpdate) {
+      throw new Error('User is not a team member');
+    }
+
+    // Cannot change team owner role
+    if (memberToUpdate.role === 'owner') {
+      throw new Error('Cannot change team owner role');
+    }
+
+    // Update the member role
+    const updatedMember = await prisma.teamMember.update({
+      where: {
+        teamId_userId: {
+          teamId,
+          userId,
+        }
+      },
+      data: {
+        role: newRole,
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            username: true,
+            email: true,
+            createdAt: true,
+          }
+        }
+      }
+    });
+
+    return updatedMember;
+  }
+
   async deleteTeam(teamId: string, currentUserId: string) {
     const team = await prisma.team.findUnique({
       where: { id: teamId }

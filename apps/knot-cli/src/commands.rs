@@ -635,7 +635,7 @@ struct Team {
 #[derive(Serialize, Deserialize)]
 struct AddTeamMemberRequest {
     username: String,
-    role: String,
+    role: String, // Should be "owner", "admin", or "member"
 }
 
 #[derive(Serialize, Deserialize)]
@@ -643,6 +643,7 @@ struct PublishPackageRequest {
     name: String,
     version: String,
     description: Option<String>,
+    #[serde(rename = "teamName")]
     team_name: Option<String>,
     tags: Option<Vec<String>>,
 }

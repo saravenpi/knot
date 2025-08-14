@@ -169,6 +169,7 @@ async fn main() -> Result<()> {
                                 .short('r')
                                 .long("role")
                                 .value_name("ROLE")
+                                .value_parser(["admin", "member"])
                                 .default_value("member"),
                         ),
                 )

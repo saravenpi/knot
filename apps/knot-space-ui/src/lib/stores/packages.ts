@@ -69,11 +69,25 @@ const createPackagesStore = () => {
       }
     },
 
-    async fetchByName(name: string) {
+    async fetchByName(name: string, version?: string) {
       update(state => ({ ...state, loading: true, error: null }));
       
       try {
-        const pkg = await packagesApi.getByName(name);
+        let pkg: Package;
+        
+        if (version) {
+          // Get specific version
+          pkg = await packagesApi.getByNameAndVersion(decodeURIComponent(name), version);
+        } else {
+          // Get latest version by getting all versions and picking the first one
+          const versions = await packagesApi.getVersions(decodeURIComponent(name));
+          if (versions.length === 0) {
+            throw new Error('Package not found');
+          }
+          // Sort versions by publish date (newest first) and pick the first one
+          versions.sort((a, b) => new Date(b.published_at || b.created_at).getTime() - new Date(a.published_at || a.created_at).getTime());
+          pkg = versions[0];
+        }
         
         update(state => ({
           ...state,
@@ -173,16 +187,16 @@ const createPackagesStore = () => {
       }
     },
 
-    async delete(id: string) {
+    async delete(name: string, version: string) {
       update(state => ({ ...state, loading: true, error: null }));
       
       try {
-        await packagesApi.delete(id);
+        await packagesApi.delete(name, version);
         
         update(state => ({
           ...state,
-          packages: state.packages.filter(pkg => pkg.id !== id),
-          selectedPackage: state.selectedPackage?.id === id ? null : state.selectedPackage,
+          packages: state.packages.filter(pkg => pkg.name !== name || pkg.version !== version),
+          selectedPackage: (state.selectedPackage?.name === name && state.selectedPackage?.version === version) ? null : state.selectedPackage,
           loading: false
         }));
       } catch (error) {

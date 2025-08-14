@@ -76,9 +76,10 @@ model Package {
   updatedAt      DateTime @default(now()) @updatedAt @map("updated_at")
 
   // Relations
-  owner User        @relation("PackageOwner", fields: [ownerId], references: [id], onDelete: Cascade)
-  team  Team?       @relation(fields: [teamId], references: [id], onDelete: SetNull)
-  tags  PackageTag[]
+  owner     User              @relation("PackageOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  team      Team?             @relation(fields: [teamId], references: [id], onDelete: SetNull)
+  tags      PackageTag[]
+  downloads PackageDownload[]
 
   @@unique([name, version])
   @@index([name])
@@ -102,5 +103,24 @@ model PackageTag {
   @@index([tag])
   @@index([packageId])
   @@map("package_tags")
+}
+
+model PackageDownload {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  packageId   String   @map("package_id") @db.Uuid
+  packageName String   @map("package_name") @db.VarChar(100)
+  version     String   @db.VarChar(20)
+  ipHash      String?  @map("ip_hash") @db.VarChar(64)  // Hashed IP for privacy
+  userAgent   String?  @map("user_agent") @db.Text
+  downloadAt  DateTime @default(now()) @map("download_at")
+
+  // Relations
+  package Package @relation(fields: [packageId], references: [id], onDelete: Cascade)
+
+  @@index([packageId])
+  @@index([packageName])
+  @@index([downloadAt])
+  @@index([packageId, downloadAt])
+  @@map("package_downloads")
 }
 

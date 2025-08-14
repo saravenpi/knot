@@ -93,15 +93,29 @@ export const authApi = {
 // Packages API
 export const packagesApi = {
   async getAll(): Promise<Package[]> {
-    return requestApi<Package[]>('GET', '/api/packages');
+    const response = await requestApi<{ success: boolean; data: Package[] }>('GET', '/api/packages');
+    return response.data;
   },
 
   async getById(id: string): Promise<Package> {
-    return requestApi<Package>('GET', `/api/packages/${id}`);
+    // Note: Backend doesn't have this endpoint, this method should not be used
+    throw new Error('getById not supported - use getByName instead');
   },
 
   async getByName(name: string): Promise<Package> {
-    return requestApi<Package>('GET', `/api/packages/name/${name}`);
+    // Backend expects name and version, but we only have name
+    // This will need to be handled differently - get latest version or specific version
+    throw new Error('getByName requires version - use getByNameAndVersion instead');
+  },
+
+  async getByNameAndVersion(name: string, version: string): Promise<Package> {
+    const response = await requestApi<{ success: boolean; data: Package }>('GET', `/api/packages/${encodeURIComponent(name)}/${encodeURIComponent(version)}`);
+    return response.data;
+  },
+
+  async getVersions(name: string): Promise<Package[]> {
+    const response = await requestApi<{ success: boolean; data: Package[] }>('GET', `/api/packages/${encodeURIComponent(name)}/versions`);
+    return response.data;
   },
 
   async create(packageData: Partial<Package>): Promise<Package> {
@@ -109,15 +123,18 @@ export const packagesApi = {
   },
 
   async update(id: string, packageData: Partial<Package>): Promise<Package> {
-    return requestApi<Package>('PUT', `/api/packages/${id}`, packageData);
+    // Backend doesn't have this endpoint
+    throw new Error('Package updates not supported via API');
   },
 
-  async delete(id: string): Promise<void> {
-    return requestApi('DELETE', `/api/packages/${id}`);
+  async delete(name: string, version: string): Promise<void> {
+    return requestApi('DELETE', `/api/packages/${encodeURIComponent(name)}/${encodeURIComponent(version)}`);
   },
 
   async search(query: string): Promise<Package[]> {
-    return requestApi<Package[]>('GET', `/api/packages/search?q=${encodeURIComponent(query)}`);
+    // Backend doesn't have search endpoint, use list with search parameter
+    const response = await requestApi<{ success: boolean; data: Package[] }>('GET', `/api/packages?search=${encodeURIComponent(query)}`);
+    return response.data;
   }
 };
 

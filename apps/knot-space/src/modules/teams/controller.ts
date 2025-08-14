@@ -149,6 +149,42 @@ export class TeamsController {
     }
   }
 
+  static async updateMemberRole(c: Context) {
+    try {
+      const teamId = c.req.param('teamId');
+      const userId = c.req.param('userId');
+      
+      if (!teamId || !userId) {
+        return c.json({ success: false, error: 'Team ID and User ID are required' }, 400);
+      }
+
+      const currentUser = c.get('user');
+      if (!currentUser) {
+        return c.json({ success: false, error: 'Authentication required' }, 401);
+      }
+
+      const body = await c.req.json();
+      const { role } = body;
+
+      if (!role || !['member', 'admin'].includes(role)) {
+        return c.json({ success: false, error: 'Valid role is required (member or admin)' }, 400);
+      }
+
+      await teamsService.updateMemberRole(teamId, userId, role, currentUser.id);
+      
+      return c.json({
+        success: true,
+        message: 'Team member role updated successfully'
+      });
+    } catch (error) {
+      console.error('Update member role error:', error);
+      return c.json({
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to update member role'
+      }, 400);
+    }
+  }
+
   static async deleteTeam(c: Context) {
     try {
       const teamId = c.req.param('teamId');

@@ -10,6 +10,7 @@ teams.get('/', optionalAuthMiddleware, TeamsController.listTeams);
 teams.get('/:teamId', optionalAuthMiddleware, TeamsController.getTeam);
 teams.get('/:teamId/members', optionalAuthMiddleware, TeamsController.getTeamMembers);
 teams.post('/:teamId/members', authMiddleware, validateAddTeamMember, TeamsController.addTeamMember);
+teams.put('/:teamId/members/:userId', authMiddleware, TeamsController.updateMemberRole);
 teams.delete('/:teamId/members/:userId', authMiddleware, TeamsController.removeTeamMember);
 teams.delete('/:teamId', authMiddleware, TeamsController.deleteTeam);
 
