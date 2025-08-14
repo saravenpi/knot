@@ -151,7 +151,7 @@
 								{/if}
 								
 								<div class="flex items-center gap-4 text-sm text-muted-foreground">
-									<span>by {pkg.owner.username}</span>
+									<span>by <a href="/users/{encodeURIComponent(pkg.owner.username)}" class="hover:text-primary transition-colors font-medium">{pkg.owner.username}</a></span>
 									{#if pkg.team}
 										<span class="flex items-center gap-1">
 											<span class="w-2 h-2 bg-primary rounded-full"></span>

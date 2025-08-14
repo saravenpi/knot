@@ -180,6 +180,24 @@ export const teamsApi = {
   }
 };
 
+// Users API
+export const usersApi = {
+  async getUserProfile(username: string): Promise<User> {
+    const response = await requestApi<{ success: boolean; data: User }>('GET', `/api/users/${encodeURIComponent(username)}`);
+    return response.data;
+  },
+
+  async getUserPackages(username: string, offset: number = 0, limit: number = 20): Promise<{ packages: Package[]; pagination: any }> {
+    const response = await requestApi<{ success: boolean; data: { packages: Package[]; pagination: any } }>('GET', `/api/users/${encodeURIComponent(username)}/packages?offset=${offset}&limit=${limit}`);
+    return response.data;
+  },
+
+  async getUserStats(username: string): Promise<{ totalPackages: number; totalDownloads: number; totalTeams: number; }> {
+    const response = await requestApi<{ success: boolean; data: { totalPackages: number; totalDownloads: number; totalTeams: number; } }>('GET', `/api/users/${encodeURIComponent(username)}/stats`);
+    return response.data;
+  }
+};
+
 // Helper function to handle errors consistently
 export const handleApiError = (error: unknown): string => {
   if (error instanceof Error) {

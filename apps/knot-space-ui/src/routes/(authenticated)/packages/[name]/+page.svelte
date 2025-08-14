@@ -135,7 +135,7 @@
 				<div class="flex items-center gap-6 text-sm text-muted-foreground">
 					<span class="flex items-center gap-1">
 						<Icon icon="solar:user-circle-bold" class="w-4 h-4" />
-						by {selectedPackage.owner.username}
+						by <a href="/users/{encodeURIComponent(selectedPackage.owner.username)}" class="hover:text-primary transition-colors font-medium">{selectedPackage.owner.username}</a>
 					</span>
 					{#if selectedPackage.team}
 						<span class="flex items-center gap-1">
