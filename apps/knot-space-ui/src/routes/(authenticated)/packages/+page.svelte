@@ -138,7 +138,7 @@
 							<div class="flex-1 min-w-0">
 								<div class="flex items-center gap-2 mb-2">
 									<h3 class="font-semibold text-lg truncate hover:text-primary transition-colors">
-										{pkg.name}
+										@{pkg.name}
 									</h3>
 									<span class="text-sm text-muted-foreground bg-secondary px-2 py-1 rounded flex-shrink-0">
 										v{pkg.version}
@@ -152,11 +152,15 @@
 								{/if}
 								
 								<div class="flex items-center gap-4 text-sm text-muted-foreground">
-									<span>by <a 
-										href="/users/{encodeURIComponent(pkg.owner.username)}" 
-										class="hover:text-primary transition-colors font-medium"
-										on:click={(e) => e.stopPropagation()}
-									>{pkg.owner.username}</a></span>
+									<span>by 
+										<button 
+											class="hover:text-primary transition-colors font-medium underline"
+											on:click={(e) => {
+												e.stopPropagation();
+												window.location.href = `/users/${encodeURIComponent(pkg.owner.username)}`;
+											}}
+										>{pkg.owner.username}</button>
+									</span>
 									{#if pkg.team}
 										<span class="flex items-center gap-1">
 											<span class="w-2 h-2 bg-primary rounded-full"></span>

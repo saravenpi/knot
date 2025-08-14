@@ -252,58 +252,65 @@ class PackagesService {
   }
 
   async incrementDownloadCount(name: string, version: string, ipAddress?: string, userAgent?: string) {
-    // Find the package to get its ID
-    const pkg = await prisma.package.findUnique({
-      where: {
-        name_version: { name, version }
-      },
-      select: {
-        id: true,
-        name: true,
-        version: true
-      }
-    });
-
-    if (!pkg) {
-      throw new Error('Package not found');
-    }
-
-    // Hash the IP address for privacy (if provided)
-    const ipHash = ipAddress ? crypto.createHash('sha256').update(ipAddress).digest('hex') : null;
-
-    // Use a transaction to ensure consistency
-    await prisma.$transaction([
-      // Increment the total download count
-      prisma.package.update({
+    try {
+      // Find the package to get its ID
+      const pkg = await prisma.package.findUnique({
         where: {
           name_version: { name, version }
         },
-        data: {
-          downloadsCount: {
-            increment: 1
+        select: {
+          id: true,
+          name: true,
+          version: true
+        }
+      });
+
+      if (!pkg) {
+        throw new Error('Package not found');
+      }
+
+      // Hash the IP address for privacy (if provided)
+      const ipHash = ipAddress ? crypto.createHash('sha256').update(ipAddress).digest('hex') : null;
+
+      // Use a transaction to ensure consistency
+      const result = await prisma.$transaction([
+        // Increment the total download count
+        prisma.package.update({
+          where: {
+            name_version: { name, version }
+          },
+          data: {
+            downloadsCount: {
+              increment: 1
+            }
           }
-        }
-      }),
-      // Record the individual download event for analytics
-      prisma.packageDownload.create({
-        data: {
-          packageId: pkg.id,
-          packageName: pkg.name,
-          version: pkg.version,
-          ipHash,
-          userAgent: userAgent ? userAgent.substring(0, 500) : null, // Truncate to fit DB constraint
-        }
-      })
-    ]);
+        }),
+        // Record the individual download event for analytics
+        prisma.packageDownload.create({
+          data: {
+            packageId: pkg.id,
+            packageName: pkg.name,
+            version: pkg.version,
+            ipHash,
+            userAgent: userAgent ? userAgent.substring(0, 500) : null, // Truncate to fit DB constraint
+          }
+        })
+      ]);
+
+      console.log(`Download count incremented for ${name}@${version}. New count: ${result[0].downloadsCount}`);
+      return result;
+    } catch (error) {
+      console.error('Error incrementing download count:', error);
+      throw error;
+    }
   }
 
   async getDownloadStats(packageName: string, version: string, days: number = 7) {
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - days);
     
-    // Get downloads grouped by date for the past N days
-    const downloads = await prisma.packageDownload.groupBy({
-      by: ['downloadAt'],
+    // Get downloads for the package in the date range
+    const downloads = await prisma.packageDownload.findMany({
       where: {
         packageName,
         version,
@@ -311,8 +318,8 @@ class PackagesService {
           gte: startDate
         }
       },
-      _count: {
-        id: true
+      select: {
+        downloadAt: true
       },
       orderBy: {
         downloadAt: 'asc'
@@ -334,7 +341,8 @@ class PackagesService {
       const date = new Date(download.downloadAt);
       date.setHours(0, 0, 0, 0); // Normalize to start of day
       const dateKey = date.toISOString().split('T')[0];
-      statsMap.set(dateKey, download._count.id);
+      const currentCount = statsMap.get(dateKey) || 0;
+      statsMap.set(dateKey, currentCount + 1);
     });
 
     const dailyStats = dateRange.map(date => {

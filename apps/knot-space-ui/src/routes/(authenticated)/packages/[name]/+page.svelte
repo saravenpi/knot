@@ -15,6 +15,7 @@
 	let deleteError = '';
 	let downloadStats: { dailyStats: Array<{ date: string; downloads: number }> } | null = null;
 	let loadingStats = false;
+	let copySuccess = false;
 
 	$: isOwner = currentUser && selectedPackage && (
 		selectedPackage.owner.id === currentUser.id ||
@@ -47,7 +48,7 @@
 				'GET',
 				`/api/packages/${encodeURIComponent(selectedPackage.name)}/${encodeURIComponent(selectedPackage.version)}/stats`
 			);
-			downloadStats = response;
+			downloadStats = response.data || response;
 		} catch (error) {
 			console.error('Failed to fetch download stats:', error);
 			downloadStats = null;
@@ -122,7 +123,7 @@
 					<a href="/packages" class="text-muted-foreground hover:text-foreground transition-colors">
 						<Icon icon="solar:arrow-left-bold" class="w-5 h-5" />
 					</a>
-					<h1 class="text-3xl font-bold">{selectedPackage.name}</h1>
+					<h1 class="text-3xl font-bold">@{selectedPackage.name}</h1>
 					<span class="text-lg text-muted-foreground bg-secondary px-3 py-1 rounded">
 						v{selectedPackage.version}
 					</span>
@@ -240,13 +241,23 @@
 				<div class="flex items-center justify-between mb-2">
 					<span class="text-sm font-medium">Knot CLI</span>
 					<button 
-						on:click={() => navigator.clipboard.writeText(`knot add ${selectedPackage.name}`)}
-						class="text-xs text-muted-foreground hover:text-foreground transition-colors"
+						on:click={async () => {
+							await navigator.clipboard.writeText(`knot add @${selectedPackage.name}`);
+							copySuccess = true;
+							setTimeout(() => copySuccess = false, 2000);
+						}}
+						class="text-xs {copySuccess ? 'text-green-600' : 'text-muted-foreground hover:text-foreground'} transition-colors flex items-center gap-1"
 					>
-						Copy
+						{#if copySuccess}
+							<Icon icon="solar:check-circle-bold" class="w-3 h-3" />
+							Copied!
+						{:else}
+							<Icon icon="solar:copy-bold" class="w-3 h-3" />
+							Copy
+						{/if}
 					</button>
 				</div>
-				<code class="text-sm">knot add {selectedPackage.name}</code>
+				<code class="text-sm">knot add @{selectedPackage.name}</code>
 			</div>
 		</div>
 
