@@ -5,6 +5,11 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "bundler",
+    "paths": {
+      "#/*": [
+        "./knot_packages/*"
+      ]
+    },
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "sourceMap": true,
