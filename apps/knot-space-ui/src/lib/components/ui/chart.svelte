@@ -29,7 +29,7 @@
 	}
 
 	function drawChart() {
-		if (!canvas || !data.length) return;
+		if (!canvas || !data || !Array.isArray(data) || data.length === 0) return;
 
 		const ctx = canvas.getContext('2d');
 		if (!ctx) return;
@@ -146,7 +146,7 @@
 	}
 
 	function handleMouseMove(event: MouseEvent) {
-		if (!canvas || !data.length) return;
+		if (!canvas || !data || !Array.isArray(data) || data.length === 0) return;
 
 		const rect = canvas.getBoundingClientRect();
 		const x = event.clientX - rect.left;
@@ -207,7 +207,7 @@
 	{/if}
 	
 	<div class="relative w-full" style="height: {height}px;">
-		{#if data.length > 0}
+		{#if data && Array.isArray(data) && data.length > 0}
 			<canvas
 				bind:this={canvas}
 				class="w-full h-full cursor-crosshair"

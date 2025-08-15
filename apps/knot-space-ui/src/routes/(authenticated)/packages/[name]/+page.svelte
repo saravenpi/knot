@@ -48,10 +48,20 @@
 				'GET',
 				`/api/packages/${encodeURIComponent(selectedPackage.name)}/${encodeURIComponent(selectedPackage.version)}/stats`
 			);
-			downloadStats = response.data || response;
+			
+			// Handle both success response formats
+			const statsData = response.data || response;
+			
+			// Ensure the data has the expected structure
+			if (statsData && Array.isArray(statsData.dailyStats)) {
+				downloadStats = statsData;
+			} else {
+				// If no stats data or wrong format, show empty state
+				downloadStats = { dailyStats: [] };
+			}
 		} catch (error) {
 			console.error('Failed to fetch download stats:', error);
-			downloadStats = null;
+			downloadStats = { dailyStats: [] };
 		} finally {
 			loadingStats = false;
 		}
@@ -171,7 +181,7 @@
 					<Icon icon="solar:download-minimalistic-bold" class="w-5 h-5 text-muted-foreground" />
 					<span class="font-medium">Downloads</span>
 				</div>
-				<div class="text-2xl font-bold">{(parseInt(selectedPackage.downloadsCount?.toString() || '0')).toLocaleString()}</div>
+				<div class="text-2xl font-bold">{parseInt(selectedPackage.downloadsCount?.toString() || '0').toLocaleString()}</div>
 			</div>
 			
 			<div class="border rounded-lg p-4">
