@@ -2,6 +2,7 @@
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 	import { usersApi, type User, type Package } from '../../../lib/api';
+	import { formatDownloadCount, formatFileSize, formatDate, formatLargeNumber } from '../../../lib/utils/format';
 	import Icon from '@iconify/svelte';
 
 	$: username = $page.params.username;
@@ -71,20 +72,6 @@
 		}
 	}
 
-	function formatDate(dateString: string): string {
-		return new Date(dateString).toLocaleDateString('en-US', {
-			year: 'numeric',
-			month: 'short',
-			day: 'numeric'
-		});
-	}
-
-	function formatFileSize(bytes: number | string | undefined): string {
-		const numBytes = parseInt(bytes?.toString() || '0');
-		if (numBytes < 1024) return numBytes + ' B';
-		if (numBytes < 1024 * 1024) return (numBytes / 1024).toFixed(1) + ' KB';
-		return (numBytes / (1024 * 1024)).toFixed(1) + ' MB';
-	}
 </script>
 
 <svelte:head>
@@ -157,7 +144,7 @@
 					</div>
 					<div class="text-right">
 						<div class="text-2xl sm:text-3xl font-bold text-foreground">
-							{userStats.totalPackages.toLocaleString()}
+							{formatLargeNumber(userStats.totalPackages)}
 						</div>
 						<div class="text-sm text-muted-foreground">Packages</div>
 					</div>
@@ -174,7 +161,7 @@
 					</div>
 					<div class="text-right">
 						<div class="text-2xl sm:text-3xl font-bold text-foreground">
-							{userStats.totalDownloads.toLocaleString()}
+							{formatLargeNumber(userStats.totalDownloads)}
 						</div>
 						<div class="text-sm text-muted-foreground">Downloads</div>
 					</div>
@@ -271,7 +258,7 @@
 									<div class="flex items-center gap-1.5 text-muted-foreground">
 										<Icon icon="solar:download-minimalistic-bold" class="w-4 h-4" />
 										<span class="font-medium">
-											{(parseInt(pkg.downloadsCount?.toString() || '0')).toLocaleString()}
+											{formatDownloadCount(pkg.downloadsCount)}
 										</span>
 									</div>
 									<div class="text-xs text-muted-foreground">

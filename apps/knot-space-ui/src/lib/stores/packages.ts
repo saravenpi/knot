@@ -1,5 +1,6 @@
 import { writable } from 'svelte/store';
 import { packagesApi, handleApiError, type Package } from '../api';
+import { debugPackageData } from '../utils/debug';
 
 interface PackagesState {
   packages: Package[];
@@ -26,6 +27,9 @@ const createPackagesStore = () => {
       
       try {
         const packages = await packagesApi.getAll();
+        
+        // Debug package data in development
+        debugPackageData(packages);
         
         update(state => ({
           ...state,

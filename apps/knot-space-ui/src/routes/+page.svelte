@@ -3,6 +3,7 @@
 	import { goto } from '$app/navigation';
 	import { packagesStore, authStore } from '../lib/stores';
 	import { packagesApi } from '../lib/api';
+	import { formatDownloadCount, formatLargeNumber } from '../lib/utils/format';
 	import Icon from '@iconify/svelte';
 
 	$: packages = $packagesStore.packages;
@@ -103,7 +104,7 @@
 				<div class="animate-pulse bg-muted rounded w-16 h-8 mx-auto"></div>
 			</div>
 		{:else}
-			<div class="text-3xl font-bold text-black mb-2">{stats.totalPackages.toLocaleString()}</div>
+			<div class="text-3xl font-bold text-black mb-2">{formatLargeNumber(stats.totalPackages)}</div>
 		{/if}
 		<div class="text-muted-foreground">Total Packages</div>
 	</div>
@@ -113,7 +114,7 @@
 				<div class="animate-pulse bg-muted rounded w-16 h-8 mx-auto"></div>
 			</div>
 		{:else}
-			<div class="text-3xl font-bold text-black mb-2">{stats.totalDownloads.toLocaleString()}</div>
+			<div class="text-3xl font-bold text-black mb-2">{formatLargeNumber(stats.totalDownloads)}</div>
 		{/if}
 		<div class="text-muted-foreground">Total Downloads</div>
 	</div>
@@ -123,7 +124,7 @@
 				<div class="animate-pulse bg-muted rounded w-16 h-8 mx-auto"></div>
 			</div>
 		{:else}
-			<div class="text-3xl font-bold text-black mb-2">{stats.totalUsers.toLocaleString()}</div>
+			<div class="text-3xl font-bold text-black mb-2">{formatLargeNumber(stats.totalUsers)}</div>
 		{/if}
 		<div class="text-muted-foreground">Total Users</div>
 	</div>
@@ -194,7 +195,7 @@
 
 					<div class="flex items-center justify-between text-xs text-muted-foreground">
 						<span>by {pkg.owner.username}</span>
-						<span>{parseInt(pkg.downloadsCount?.toString() || '0').toLocaleString()} downloads</span>
+						<span>{formatDownloadCount(pkg.downloadsCount)} downloads</span>
 					</div>
 				</div>
 			{/each}

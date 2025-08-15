@@ -856,6 +856,15 @@ pub async fn publish_package(team: Option<&str>, description: Option<&str>) -> R
     // Load package config
     let package_config = PackageConfig::from_file(package_yml)?;
 
+    // Validate version is not a development version (should not end with -dev, -alpha, -beta without publishing intentionally)
+    validate_publish_version(&package_config.version)?;
+
+    // Check if package has been published before with this version
+    if let Err(e) = check_version_exists(&package_config.name, &package_config.version, &token).await {
+        println!("⚠️  Warning: Could not verify version uniqueness: {}", e);
+        println!("💡 Continuing with publish attempt...");
+    }
+
     // Create package tarball
     let tarball_path = format!("{}-{}.tar.gz", package_config.name, package_config.version);
     create_package_tarball(&package_config.name, &tarball_path)?;
@@ -1445,12 +1454,48 @@ fn bump_prerelease(current: &str, preid: &str) -> Result<String> {
 }
 
 fn is_valid_semver(version: &str) -> bool {
-    let parts: Vec<&str> = version.split('.').collect();
+    // Handle prerelease versions (e.g., 1.2.3-alpha.1)
+    let version_main = if let Some(hyphen_pos) = version.find('-') {
+        &version[..hyphen_pos]
+    } else {
+        version
+    };
+    
+    let parts: Vec<&str> = version_main.split('.').collect();
     if parts.len() != 3 {
         return false;
     }
     
-    parts.iter().all(|part| part.parse::<u32>().is_ok())
+    // Check that each part is a valid number and doesn't have leading zeros (except for "0")
+    for part in &parts {
+        if part.is_empty() {
+            return false;
+        }
+        
+        // Check for leading zeros (except for "0" itself)
+        if part.len() > 1 && part.starts_with('0') {
+            return false;
+        }
+        
+        if part.parse::<u32>().is_err() {
+            return false;
+        }
+    }
+    
+    // If there's a prerelease part, validate it's not empty
+    if let Some(hyphen_pos) = version.find('-') {
+        let prerelease = &version[hyphen_pos + 1..];
+        if prerelease.is_empty() {
+            return false;
+        }
+        
+        // Prerelease can contain alphanumeric characters, hyphens, and dots
+        if !prerelease.chars().all(|c| c.is_ascii_alphanumeric() || c == '.' || c == '-') {
+            return false;
+        }
+    }
+    
+    true
 }
 
 fn save_auth_token(token: &str) -> Result<()> {
@@ -1482,5 +1527,72 @@ async fn verify_auth_token() -> Result<String> {
         Ok(user_info)
     } else {
         anyhow::bail!("Token verification failed")
+    }
+}
+
+fn validate_publish_version(version: &str) -> Result<()> {
+    // Check if version is empty or just whitespace
+    if version.trim().is_empty() {
+        anyhow::bail!("Version cannot be empty");
+    }
+
+    // Validate semver format
+    if !is_valid_semver(version) {
+        anyhow::bail!("Invalid version format '{}'. Must follow semantic versioning (e.g., 1.2.3)", version);
+    }
+
+    // Check for development versions - warn user about publishing prerelease versions
+    if version.contains("-dev") || version.contains("-development") {
+        anyhow::bail!(
+            "Cannot publish development version '{}'. \n💡 Use 'knot version set <version>' to set a proper release version first.", 
+            version
+        );
+    }
+
+    if version.contains("-alpha") || version.contains("-beta") || version.contains("-rc") {
+        println!("⚠️  Publishing prerelease version: {}", version);
+        println!("💡 Use 'knot version bump major|minor|patch' for stable releases");
+    }
+
+    // Version 0.0.0 is typically invalid for publishing
+    if version == "0.0.0" {
+        anyhow::bail!(
+            "Cannot publish version '0.0.0'. \n💡 Use 'knot version set <version>' to set a proper version first."
+        );
+    }
+
+    println!("📋 Publishing version: {}", version);
+    Ok(())
+}
+
+async fn check_version_exists(package_name: &str, version: &str, token: &str) -> Result<()> {
+    let base_url = get_knot_space_url();
+    let url = format!("{}/api/packages/{}/{}/exists", base_url, package_name, version);
+
+    let client = reqwest::Client::new();
+    let response = client
+        .get(&url)
+        .header("Authorization", format!("Bearer {}", token))
+        .send()
+        .await?;
+
+    match response.status().as_u16() {
+        200 => {
+            // Version exists
+            anyhow::bail!(
+                "Version '{}' of package '{}' already exists. \n💡 Use 'knot version bump major|minor|patch' to create a new version.",
+                version,
+                package_name
+            );
+        }
+        404 => {
+            // Version doesn't exist, good to proceed
+            println!("✅ Version {} is available for publishing", version);
+            Ok(())
+        }
+        _ => {
+            // API error, but don't block publishing
+            anyhow::bail!("Could not verify version existence (server error)")
+        }
     }
 }

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { packagesStore } from '../../../lib/stores';
+	import { formatDownloadCount, formatFileSize, formatDate } from '../../../lib/utils/format';
 
 	$: packages = $packagesStore.packages;
 	$: loading = $packagesStore.loading;
@@ -32,13 +33,6 @@
 		}
 	}
 
-	function formatDate(dateString: string): string {
-		return new Date(dateString).toLocaleDateString('en-US', {
-			year: 'numeric',
-			month: 'short',
-			day: 'numeric'
-		});
-	}
 </script>
 
 <svelte:head>
@@ -176,10 +170,10 @@
 									<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
 									</svg>
-									{(parseInt(pkg.downloadsCount?.toString() || '0')).toLocaleString()}
+									{formatDownloadCount(pkg.downloadsCount)}
 								</div>
 								<div class="text-xs">
-									{(parseInt(pkg.fileSize?.toString() || '0') / 1024).toFixed(1)} KB
+									{formatFileSize(pkg.fileSize)}
 								</div>
 							</div>
 						</div>

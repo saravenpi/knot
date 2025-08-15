@@ -2,6 +2,7 @@
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 	import { packagesStore, authStore } from '../../../../lib/stores';
+	import { formatDownloadCount, formatFileSize, formatDateTime } from '../../../../lib/utils/format';
 	import Icon from '@iconify/svelte';
 	import Chart from '../../../../lib/components/ui/chart.svelte';
 	import { requestApi } from '../../../../lib/api';
@@ -80,22 +81,6 @@
 		}
 	}
 
-	function formatDate(dateString: string): string {
-		return new Date(dateString).toLocaleDateString('en-US', {
-			year: 'numeric',
-			month: 'long',
-			day: 'numeric',
-			hour: '2-digit',
-			minute: '2-digit'
-		});
-	}
-
-	function formatFileSize(bytes: number | string | undefined): string {
-		const numBytes = parseInt(bytes?.toString() || '0');
-		if (numBytes < 1024) return numBytes + ' B';
-		if (numBytes < 1024 * 1024) return (numBytes / 1024).toFixed(1) + ' KB';
-		return (numBytes / (1024 * 1024)).toFixed(1) + ' MB';
-	}
 </script>
 
 <svelte:head>
@@ -156,7 +141,7 @@
 					{/if}
 					<span class="flex items-center gap-1">
 						<Icon icon="solar:calendar-bold" class="w-4 h-4" />
-						{formatDate(selectedPackage.publishedAt)}
+						{formatDateTime(selectedPackage.publishedAt)}
 					</span>
 				</div>
 			</div>
@@ -181,7 +166,7 @@
 					<Icon icon="solar:download-minimalistic-bold" class="w-5 h-5 text-muted-foreground" />
 					<span class="font-medium">Downloads</span>
 				</div>
-				<div class="text-2xl font-bold">{parseInt(selectedPackage.downloadsCount?.toString() || '0').toLocaleString()}</div>
+				<div class="text-2xl font-bold">{formatDownloadCount(selectedPackage.downloadsCount)}</div>
 			</div>
 			
 			<div class="border rounded-lg p-4">
