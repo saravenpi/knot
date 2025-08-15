@@ -194,7 +194,7 @@
 
 					<div class="flex items-center justify-between text-xs text-muted-foreground">
 						<span>by {pkg.owner.username}</span>
-						<span>{pkg.downloadsCount || 0} downloads</span>
+						<span>{parseInt(pkg.downloadsCount?.toString() || '0').toLocaleString()} downloads</span>
 					</div>
 				</div>
 			{/each}
