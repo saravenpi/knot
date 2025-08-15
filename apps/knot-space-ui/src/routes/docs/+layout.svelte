@@ -81,7 +81,14 @@
 	<!-- Mobile sidebar overlay -->
 	{#if sidebarOpen}
 		<div class="fixed inset-0 z-40 lg:hidden">
-			<div class="fixed inset-0 bg-black/50" on:click={() => sidebarOpen = false}></div>
+			<div 
+				class="fixed inset-0 bg-black/50" 
+				role="button"
+				tabindex="0"
+				on:click={() => sidebarOpen = false}
+				on:keydown={(e) => { if (e.key === 'Escape') sidebarOpen = false; }}
+				aria-label="Close sidebar"
+			></div>
 		</div>
 	{/if}
 

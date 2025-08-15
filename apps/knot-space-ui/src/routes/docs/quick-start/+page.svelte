@@ -141,7 +141,7 @@
 					Edit <code>packages/utils/src/index.ts</code> and add your first utility:
 				</p>
 				<div class="bg-black/90 text-white font-mono text-sm p-4 rounded-lg">
-					<code><span class="text-blue-400">export</span> <span class="text-purple-400">function</span> <span class="text-yellow-400">formatCurrency</span>(<span class="text-green-400">amount</span>: <span class="text-blue-400">number</span>): <span class="text-blue-400">string</span> {
+					<pre><code>{@html `<span class="text-blue-400">export</span> <span class="text-purple-400">function</span> <span class="text-yellow-400">formatCurrency</span>(<span class="text-green-400">amount</span>: <span class="text-blue-400">number</span>): <span class="text-blue-400">string</span> {
   <span class="text-purple-400">return</span> <span class="text-green-400">new</span> <span class="text-yellow-400">Intl</span>.<span class="text-yellow-400">NumberFormat</span>(<span class="text-green-400">'en-US'</span>, {
     <span class="text-red-400">style</span>: <span class="text-green-400">'currency'</span>,
     <span class="text-red-400">currency</span>: <span class="text-green-400">'USD'</span>
@@ -153,7 +153,7 @@
     .<span class="text-yellow-400">toLowerCase</span>()
     .<span class="text-yellow-400">replace</span>(<span class="text-green-400">/[^a-z0-9]+/g</span>, <span class="text-green-400">'-'</span>)
     .<span class="text-yellow-400">replace</span>(<span class="text-green-400">/^-+|-+$/g</span>, <span class="text-green-400">''</span>);
-}</code>
+}`}</code></pre>
 				</div>
 			</div>
 		</div>
@@ -243,7 +243,7 @@
 					Edit <code>apps/frontend/src/App.tsx</code> to use your utilities:
 				</p>
 				<div class="bg-black/90 text-white font-mono text-sm p-4 rounded-lg">
-					<code><span class="text-blue-400">import</span> { <span class="text-yellow-400">formatCurrency</span>, <span class="text-yellow-400">slugify</span> } <span class="text-blue-400">from</span> <span class="text-green-400">'#/utils'</span>;
+					<pre><code>{@html `<span class="text-blue-400">import</span> { <span class="text-yellow-400">formatCurrency</span>, <span class="text-yellow-400">slugify</span> } <span class="text-blue-400">from</span> <span class="text-green-400">'#/utils'</span>;
 
 <span class="text-blue-400">function</span> <span class="text-yellow-400">App</span>() {
   <span class="text-purple-400">const</span> <span class="text-yellow-400">price</span> = <span class="text-green-400">29.99</span>;
@@ -256,7 +256,7 @@
       &lt;<span class="text-red-400">p</span>&gt;Slug: {<span class="text-yellow-400">slugify</span>(<span class="text-yellow-400">title</span>)}&lt;/<span class="text-red-400">p</span>&gt;
     &lt;/<span class="text-red-400">div</span>&gt;
   );
-}</code>
+}`}</code></pre>
 				</div>
 			</div>
 		</div>
