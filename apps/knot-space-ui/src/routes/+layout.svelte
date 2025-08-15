@@ -9,13 +9,13 @@
 	$: initialized = $authStore.initialized;
 	$: loading = $authStore.loading;
 	$: currentPath = $page.url.pathname;
-	
+
 	// Pages that should use public layout even when authenticated
 	$: isPublicPage = currentPath === '/docs' || currentPath === '/login' || currentPath === '/register' || currentPath === '/';
 
 	onMount(async () => {
 		await authStore.initialize();
-		
+
 		// Set up periodic token validation (every 5 minutes)
 		const interval = setInterval(async () => {
 			if ($authStore.isAuthenticated && !$authStore.loading) {
@@ -27,7 +27,7 @@
 				}
 			}
 		}, 5 * 60 * 1000); // 5 minutes
-		
+
 		// Cleanup interval on unmount
 		return () => clearInterval(interval);
 	});
@@ -104,7 +104,7 @@
 			<footer class="border-t mt-auto">
 				<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
 					<div class="text-center text-muted-foreground">
-						<p>&copy; 2024 Knot Space. Built with SvelteKit and ❤️</p>
+						<p>&copy; 2025 Knot Space. Built with SvelteKit and ❤️</p>
 					</div>
 				</div>
 			</footer>

@@ -75,14 +75,14 @@
 <svelte:head>
 	<title>Documentation - Knot Space</title>
 	<meta name="description" content="Complete guide to using Knot CLI for monorepo package management, TypeScript integration, and team collaboration." />
-	
+
 	<!-- Essential Meta Tags -->
 	<meta name="keywords" content="knot cli, monorepo, package manager, typescript, javascript, package registry, team collaboration, build tools" />
 	<meta name="author" content="Knot Space" />
 	<meta name="robots" content="index, follow" />
 	<meta name="language" content="en" />
 	<meta name="theme-color" content="#000000" />
-	
+
 	<!-- Open Graph Meta Tags -->
 	<meta property="og:type" content="website" />
 	<meta property="og:title" content="Knot CLI Documentation - Modern Monorepo Package Manager" />
@@ -94,7 +94,7 @@
 	<meta property="og:url" content="https://knot-space.com/docs" />
 	<meta property="og:site_name" content="Knot Space" />
 	<meta property="og:locale" content="en_US" />
-	
+
 	<!-- Twitter Card Meta Tags -->
 	<meta name="twitter:card" content="summary_large_image" />
 	<meta name="twitter:site" content="@knotspace" />
@@ -103,12 +103,12 @@
 	<meta name="twitter:description" content="Complete guide to using Knot CLI for monorepo package management, TypeScript integration, and team collaboration." />
 	<meta name="twitter:image" content="/images/og/docs-main.png" />
 	<meta name="twitter:image:alt" content="Knot CLI Documentation" />
-	
+
 	<!-- Additional SEO Meta Tags -->
 	<link rel="canonical" href="https://knot-space.com/docs" />
 	<meta name="format-detection" content="telephone=no" />
 	<meta name="HandheldFriendly" content="true" />
-	
+
 	<!-- Structured Data -->
 	<script type="application/ld+json">
 	{
@@ -128,8 +128,8 @@
 				"url": "https://knot-space.com/images/logo.png"
 			}
 		},
-		"datePublished": "2024-01-01",
-		"dateModified": "2024-01-15",
+		"datePublished": "2025-01-01",
+		"dateModified": "2025-01-15",
 		"mainEntityOfPage": {
 			"@type": "WebPage",
 			"@id": "https://knot-space.com/docs"
@@ -145,8 +145,8 @@
 	<!-- Mobile sidebar overlay -->
 	{#if sidebarOpen}
 		<div class="fixed inset-0 z-40 lg:hidden">
-			<div 
-				class="fixed inset-0 bg-black/50" 
+			<div
+				class="fixed inset-0 bg-black/50"
 				role="button"
 				tabindex="0"
 				on:click={() => sidebarOpen = false}
@@ -166,7 +166,7 @@
 						Knot Docs
 					</h1>
 				</a>
-				<button 
+				<button
 					on:click={() => sidebarOpen = false}
 					class="lg:hidden p-2 rounded-md hover:bg-accent"
 				>
@@ -190,8 +190,8 @@
 									<li>
 										<a
 											href={item.href}
-											class="block px-3 py-2 text-sm rounded-md transition-colors {isActive(item.href, item.exact) 
-												? 'bg-primary text-primary-foreground font-medium' 
+											class="block px-3 py-2 text-sm rounded-md transition-colors {isActive(item.href, item.exact)
+												? 'bg-primary text-primary-foreground font-medium'
 												: 'text-muted-foreground hover:text-foreground hover:bg-accent'}"
 											on:click={() => sidebarOpen = false}
 										>
