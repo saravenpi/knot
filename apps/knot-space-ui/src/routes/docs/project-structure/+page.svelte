@@ -287,7 +287,7 @@
 					When you run <code>knot link</code>, your app's tsconfig.json is automatically updated with path mappings:
 				</p>
 				<div class="bg-black/90 text-white font-mono text-sm p-4 rounded-lg">
-					<code>{
+					<pre><code>{@html `{
   <span class="text-blue-400">"compilerOptions"</span>: {
     <span class="text-blue-400">"baseUrl"</span>: <span class="text-green-400">"."</span>,
     <span class="text-blue-400">"paths"</span>: {
@@ -295,7 +295,7 @@
       <span class="text-green-400">"@/utils"</span>: [<span class="text-green-400">"./knot_packages/utils"</span>]
     }
   }
-}</code>
+}`}</code></pre>
 				</div>
 			</div>
 

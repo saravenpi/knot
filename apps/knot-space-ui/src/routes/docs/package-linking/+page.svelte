@@ -230,7 +230,8 @@
 						Your app's <code>tsconfig.json</code> is automatically updated with path mappings for clean imports.
 					</p>
 					<div class="bg-black/90 text-white font-mono text-sm p-4 rounded-lg">
-						<code>{
+						<pre><code>{@html `<span class="text-gray-400">// tsconfig.json</span>
+{
   <span class="text-blue-400">"compilerOptions"</span>: {
     <span class="text-blue-400">"baseUrl"</span>: <span class="text-green-400">"."</span>,
     <span class="text-blue-400">"paths"</span>: {
@@ -239,7 +240,7 @@
       <span class="text-green-400">"@/shared"</span>: [<span class="text-green-400">"./knot_packages/@team_shared"</span>]
     }
   }
-}</code>
+}`}</code></pre>
 					</div>
 				</div>
 			</div>

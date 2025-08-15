@@ -520,7 +520,7 @@ git tag v1.3.0 && git push --tags`)}
 							Set up automated releases with CI/CD:
 						</p>
 						<div class="bg-black/90 text-white font-mono text-sm p-4 rounded-lg">
-							<pre><code><span class="text-gray-400"># .github/workflows/release.yml</span>
+							<pre><code>{@html `<span class="text-gray-400"># .github/workflows/release.yml</span>
 <span class="text-blue-400">name:</span> <span class="text-green-400">Release</span>
 <span class="text-blue-400">on:</span>
   <span class="text-blue-400">push:</span>
@@ -530,8 +530,8 @@ git tag v1.3.0 && git push --tags`)}
   <span class="text-blue-400">publish:</span>
     <span class="text-blue-400">runs-on:</span> <span class="text-green-400">ubuntu-latest</span>
     <span class="text-blue-400">steps:</span>
-      - <span class="text-blue-400">run:</span> <span class="text-green-400">knot login --token ${{ secrets.KNOT_TOKEN }}</span>
-      - <span class="text-blue-400">run:</span> <span class="text-green-400">knot publish</span></code></pre>
+      - <span class="text-blue-400">run:</span> <span class="text-green-400">knot login --token \${{ secrets.KNOT_TOKEN }}</span>
+      - <span class="text-blue-400">run:</span> <span class="text-green-400">knot publish</span>`}</code></pre>
 						</div>
 					</div>
 				</div>
