@@ -18,6 +18,19 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Quick Start Guide - Knot CLI Documentation</title>
+	<meta name="description" content="Get started with Knot CLI in under 5 minutes. Learn to initialize projects, create packages, and link dependencies for TypeScript monorepos." />
+	<meta property="og:title" content="Quick Start Guide - Knot CLI" />
+	<meta property="og:description" content="Get started with Knot CLI in under 5 minutes. Learn to initialize projects, create packages, and link dependencies for TypeScript monorepos." />
+	<meta property="og:image" content="/images/og/quick-start.png" />
+	<meta property="og:url" content="https://knot-space.com/docs/quick-start" />
+	<meta name="twitter:title" content="Quick Start Guide - Knot CLI" />
+	<meta name="twitter:description" content="Get started with Knot CLI in under 5 minutes. Learn to initialize projects, create packages, and link dependencies for TypeScript monorepos." />
+	<meta name="twitter:image" content="/images/og/quick-start.png" />
+	<link rel="canonical" href="https://knot-space.com/docs/quick-start" />
+</svelte:head>
+
 <div class="max-w-4xl mx-auto py-8 px-6">
 	<div class="mb-8">
 		<h1 class="text-3xl font-bold tracking-tight mb-4" style="font-family: 'Gambarino', 'Satoshi', sans-serif;">

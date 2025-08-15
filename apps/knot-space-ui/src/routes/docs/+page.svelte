@@ -2,6 +2,17 @@
 	import Icon from '@iconify/svelte';
 </script>
 
+<svelte:head>
+	<title>Introduction to Knot - Modern Monorepo Package Manager</title>
+	<meta name="description" content="Knot is a modern package manager designed for TypeScript and JavaScript monorepos. Learn about smart package linking, TypeScript integration, and team collaboration." />
+	<meta property="og:title" content="Introduction to Knot - Modern Monorepo Package Manager" />
+	<meta property="og:description" content="Knot is a modern package manager designed for TypeScript and JavaScript monorepos. Learn about smart package linking, TypeScript integration, and team collaboration." />
+	<meta property="og:url" content="https://knot-space.com/docs" />
+	<meta name="twitter:title" content="Introduction to Knot - Modern Monorepo Package Manager" />
+	<meta name="twitter:description" content="Knot is a modern package manager designed for TypeScript and JavaScript monorepos. Learn about smart package linking, TypeScript integration, and team collaboration." />
+	<link rel="canonical" href="https://knot-space.com/docs" />
+</svelte:head>
+
 <div class="max-w-4xl mx-auto py-8 px-6">
 	<div class="mb-12">
 		<h1 class="text-4xl font-bold tracking-tight mb-4" style="font-family: 'Gambarino', 'Satoshi', sans-serif;">
@@ -16,15 +27,15 @@
 	<section class="mb-12">
 		<h2 class="text-2xl font-bold mb-6">What is Knot?</h2>
 		<p class="text-muted-foreground mb-6 leading-relaxed">
-			Knot is a modern package manager designed specifically for TypeScript and JavaScript monorepos. 
-			It simplifies dependency management, package linking, and build orchestration across multiple 
+			Knot is a modern package manager designed specifically for TypeScript and JavaScript monorepos.
+			It simplifies dependency management, package linking, and build orchestration across multiple
 			applications and packages within a single repository.
 		</p>
-		
+
 		<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
 			<div class="border rounded-lg p-6">
 				<div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-					<Icon icon="solar:speed-bold" class="w-6 h-6 text-blue-600" />
+					<Icon icon="solar:bolt-bold-duotone" class="w-6 h-6 text-blue-600" />
 				</div>
 				<h3 class="font-semibold mb-2">Fast & Efficient</h3>
 				<p class="text-sm text-muted-foreground">

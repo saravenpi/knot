@@ -77,7 +77,7 @@
 
 			<div class="border rounded-lg p-6">
 				<div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
-					<Icon icon="solar:hammer-bold" class="w-6 h-6 text-orange-600" />
+					<Icon icon="solar:sledgehammer-bold-duotone" class="w-6 h-6 text-orange-600" />
 				</div>
 				<h3 class="font-semibold mb-2">Build & Scripts</h3>
 				<p class="text-sm text-muted-foreground mb-3">
@@ -122,7 +122,7 @@
 	<!-- Project Management Commands -->
 	<section class="mb-12">
 		<h2 class="text-2xl font-bold mb-6">Project Management</h2>
-		
+
 		<div class="space-y-8">
 			<!-- knot init -->
 			<div class="border rounded-lg p-6">
@@ -130,13 +130,13 @@
 				<p class="text-muted-foreground mb-4">
 					Initialize a new Knot monorepo project with default structure and configuration.
 				</p>
-				
+
 				<div class="space-y-4">
 					<div>
 						<h4 class="font-medium mb-2">Basic Usage</h4>
 						<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
 							<code>knot init my-project</code>
-							<button 
+							<button
 								class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
 								on:click={() => copyToClipboard('knot init my-project')}
 							>
@@ -171,7 +171,7 @@
 						<h4 class="font-medium mb-2">Example with Options</h4>
 						<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
 							<code>knot init my-project --description "A modern web application" --author "Jane Doe"</code>
-							<button 
+							<button
 								class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
 								on:click={() => copyToClipboard('knot init my-project --description "A modern web application" --author "Jane Doe"')}
 							>
@@ -192,13 +192,13 @@
 				<p class="text-muted-foreground mb-4">
 					Display comprehensive information about your project's current state, packages, and dependencies.
 				</p>
-				
+
 				<div class="space-y-4">
 					<div>
 						<h4 class="font-medium mb-2">Basic Usage</h4>
 						<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
 							<code>knot status</code>
-							<button 
+							<button
 								class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
 								on:click={() => copyToClipboard('knot status')}
 							>
@@ -252,13 +252,13 @@
 				<p class="text-muted-foreground mb-4">
 					Display help information, version details, and available commands.
 				</p>
-				
+
 				<div class="space-y-4">
 					<div>
 						<h4 class="font-medium mb-2">Basic Usage</h4>
 						<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
 							<code>knot info</code>
-							<button 
+							<button
 								class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
 								on:click={() => copyToClipboard('knot info')}
 							>
@@ -286,7 +286,7 @@
 	<!-- Package & App Creation -->
 	<section class="mb-12">
 		<h2 class="text-2xl font-bold mb-6">Package & App Creation</h2>
-		
+
 		<div class="space-y-8">
 			<!-- knot init:package -->
 			<div class="border rounded-lg p-6">
@@ -294,13 +294,13 @@
 				<p class="text-muted-foreground mb-4">
 					Create a new package with TypeScript configuration and boilerplate code.
 				</p>
-				
+
 				<div class="space-y-4">
 					<div>
 						<h4 class="font-medium mb-2">Basic Usage</h4>
 						<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
 							<code>knot init:package utils</code>
-							<button 
+							<button
 								class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
 								on:click={() => copyToClipboard('knot init:package utils')}
 							>
@@ -317,7 +317,7 @@
 						<h4 class="font-medium mb-2">With Team Namespace</h4>
 						<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
 							<code>knot init:package shared-lib --team myteam</code>
-							<button 
+							<button
 								class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
 								on:click={() => copyToClipboard('knot init:package shared-lib --team myteam')}
 							>
@@ -356,13 +356,13 @@
 				<p class="text-muted-foreground mb-4">
 					Create a new application with framework-specific setup and configuration.
 				</p>
-				
+
 				<div class="space-y-4">
 					<div>
 						<h4 class="font-medium mb-2">Basic Usage</h4>
 						<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
 							<code>knot init:app frontend</code>
-							<button 
+							<button
 								class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
 								on:click={() => copyToClipboard('knot init:app frontend')}
 							>
@@ -379,7 +379,7 @@
 						<h4 class="font-medium mb-2">With Framework Template</h4>
 						<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
 							<code>knot init:app api --template fastify</code>
-							<button 
+							<button
 								class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
 								on:click={() => copyToClipboard('knot init:app api --template fastify')}
 							>
@@ -411,7 +411,7 @@
 	<!-- Package Linking -->
 	<section class="mb-12">
 		<h2 class="text-2xl font-bold mb-6">Package Linking</h2>
-		
+
 		<div class="space-y-8">
 			<!-- knot link -->
 			<div class="border rounded-lg p-6">
@@ -419,13 +419,13 @@
 				<p class="text-muted-foreground mb-4">
 					Link packages to applications and setup TypeScript path mappings. Default behavior is to copy packages.
 				</p>
-				
+
 				<div class="space-y-4">
 					<div>
 						<h4 class="font-medium mb-2">Basic Usage (Copy Mode)</h4>
 						<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
 							<code>knot link</code>
-							<button 
+							<button
 								class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
 								on:click={() => copyToClipboard('knot link')}
 							>
@@ -442,7 +442,7 @@
 						<h4 class="font-medium mb-2">Symlink Mode (Development)</h4>
 						<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
 							<code>knot link --symlink</code>
-							<button 
+							<button
 								class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
 								on:click={() => copyToClipboard('knot link --symlink')}
 							>
@@ -477,7 +477,7 @@
 						<h4 class="font-medium mb-2">Link Specific App</h4>
 						<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
 							<code>knot link --app frontend</code>
-							<button 
+							<button
 								class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
 								on:click={() => copyToClipboard('knot link --app frontend')}
 							>
@@ -497,7 +497,7 @@
 	<!-- Build & Scripts -->
 	<section class="mb-12">
 		<h2 class="text-2xl font-bold mb-6">Build & Scripts</h2>
-		
+
 		<div class="space-y-8">
 			<!-- knot build -->
 			<div class="border rounded-lg p-6">
@@ -505,13 +505,13 @@
 				<p class="text-muted-foreground mb-4">
 					Build all applications using their configured build commands in parallel.
 				</p>
-				
+
 				<div class="space-y-4">
 					<div>
 						<h4 class="font-medium mb-2">Basic Usage</h4>
 						<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
 							<code>knot build</code>
-							<button 
+							<button
 								class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
 								on:click={() => copyToClipboard('knot build')}
 							>
@@ -528,7 +528,7 @@
 						<h4 class="font-medium mb-2">Build Specific App</h4>
 						<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
 							<code>knot build --app frontend</code>
-							<button 
+							<button
 								class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
 								on:click={() => copyToClipboard('knot build --app frontend')}
 							>
@@ -567,13 +567,13 @@
 				<p class="text-muted-foreground mb-4">
 					Execute scripts with context-aware resolution (app → package → project priority).
 				</p>
-				
+
 				<div class="space-y-4">
 					<div>
 						<h4 class="font-medium mb-2">Basic Usage</h4>
 						<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
 							<code>knot run dev</code>
-							<button 
+							<button
 								class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
 								on:click={() => copyToClipboard('knot run dev')}
 							>
@@ -590,7 +590,7 @@
 						<h4 class="font-medium mb-2">Run Across All Apps</h4>
 						<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
 							<code>knot run test --all</code>
-							<button 
+							<button
 								class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
 								on:click={() => copyToClipboard('knot run test --all')}
 							>
@@ -607,7 +607,7 @@
 						<h4 class="font-medium mb-2">Run in Specific App</h4>
 						<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
 							<code>knot run lint --app frontend</code>
-							<button 
+							<button
 								class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
 								on:click={() => copyToClipboard('knot run lint --app frontend')}
 							>
@@ -647,7 +647,7 @@
 	<!-- Global Options -->
 	<section class="mb-12">
 		<h2 class="text-2xl font-bold mb-6">Global Options</h2>
-		
+
 		<div class="space-y-6">
 			<p class="text-muted-foreground">
 				These options can be used with any Knot command for enhanced functionality.
@@ -696,7 +696,7 @@
 	<!-- Command Examples -->
 	<section class="mb-12">
 		<h2 class="text-2xl font-bold mb-6">Common Workflows</h2>
-		
+
 		<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 			<div class="border rounded-lg p-6">
 				<h3 class="font-semibold mb-3 flex items-center">

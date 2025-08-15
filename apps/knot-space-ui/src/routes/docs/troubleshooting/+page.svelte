@@ -15,7 +15,7 @@
 	<!-- Installation Issues -->
 	<section class="mb-12">
 		<h2 class="text-2xl font-bold mb-6">Installation Issues</h2>
-		
+
 		<div class="space-y-6">
 			<div class="border rounded-lg p-6">
 				<h3 class="font-semibold mb-3 flex items-center">
@@ -53,7 +53,7 @@
 	<!-- Linking Issues -->
 	<section class="mb-12">
 		<h2 class="text-2xl font-bold mb-6">Package Linking Issues</h2>
-		
+
 		<div class="space-y-6">
 			<div class="border rounded-lg p-6">
 				<h3 class="font-semibold mb-3 flex items-center">
@@ -98,7 +98,7 @@
 	<!-- Authentication Issues -->
 	<section class="mb-12">
 		<h2 class="text-2xl font-bold mb-6">Authentication Issues</h2>
-		
+
 		<div class="space-y-6">
 			<div class="border rounded-lg p-6">
 				<h3 class="font-semibold mb-3 flex items-center">
@@ -140,7 +140,7 @@
 	<!-- Build Issues -->
 	<section class="mb-12">
 		<h2 class="text-2xl font-bold mb-6">Build Issues</h2>
-		
+
 		<div class="space-y-6">
 			<div class="border rounded-lg p-6">
 				<h3 class="font-semibold mb-3 flex items-center">
@@ -166,7 +166,7 @@
 	<!-- Publishing Issues -->
 	<section class="mb-12">
 		<h2 class="text-2xl font-bold mb-6">Publishing Issues</h2>
-		
+
 		<div class="space-y-6">
 			<div class="border rounded-lg p-6">
 				<h3 class="font-semibold mb-3 flex items-center">
@@ -193,11 +193,11 @@
 	<!-- Debug Commands -->
 	<section class="mb-12">
 		<h2 class="text-2xl font-bold mb-6">Debug Commands</h2>
-		
+
 		<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 			<div class="border rounded-lg p-6">
 				<h3 class="font-semibold mb-3 flex items-center">
-					<Icon icon="solar:tools-bold" class="w-5 h-5 mr-2 text-blue-600" />
+					<Icon icon="solar:adhesive-plaster-bold-duotone" class="w-5 h-5 mr-2 text-blue-600" />
 					Diagnostic Commands
 				</h3>
 				<div class="space-y-3 text-sm">
@@ -242,7 +242,7 @@
 	<!-- Getting Help -->
 	<section class="mb-12">
 		<h2 class="text-2xl font-bold mb-6">Getting Help</h2>
-		
+
 		<div class="space-y-6">
 			<div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
 				<div class="flex items-start space-x-3">

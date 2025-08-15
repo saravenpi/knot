@@ -18,6 +18,19 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Publishing Packages - Knot CLI Documentation</title>
+	<meta name="description" content="Learn how to publish packages to Knot registry, including version management, authentication, CI/CD workflows, and automated GitHub Actions." />
+	<meta property="og:title" content="Publishing Packages - Knot CLI" />
+	<meta property="og:description" content="Learn how to publish packages to Knot registry, including version management, authentication, CI/CD workflows, and automated GitHub Actions." />
+	<meta property="og:image" content="/images/og/publishing.png" />
+	<meta property="og:url" content="https://knot-space.com/docs/publishing" />
+	<meta name="twitter:title" content="Publishing Packages - Knot CLI" />
+	<meta name="twitter:description" content="Learn how to publish packages to Knot registry, including version management, authentication, CI/CD workflows, and automated GitHub Actions." />
+	<meta name="twitter:image" content="/images/og/publishing.png" />
+	<link rel="canonical" href="https://knot-space.com/docs/publishing" />
+</svelte:head>
+
 <div class="max-w-4xl mx-auto py-8 px-6">
 	<div class="mb-8">
 		<h1 class="text-3xl font-bold tracking-tight mb-4" style="font-family: 'Gambarino', 'Satoshi', sans-serif;">

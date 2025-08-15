@@ -18,6 +18,19 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Installation Guide - Knot CLI Documentation</title>
+	<meta name="description" content="Step-by-step guide to install Knot CLI on your system. Available for macOS, Linux, and Windows with multiple installation methods." />
+	<meta property="og:title" content="Installation Guide - Knot CLI" />
+	<meta property="og:description" content="Step-by-step guide to install Knot CLI on your system. Available for macOS, Linux, and Windows with multiple installation methods." />
+	<meta property="og:image" content="/images/og/installation.png" />
+	<meta property="og:url" content="https://knot-space.com/docs/installation" />
+	<meta name="twitter:title" content="Installation Guide - Knot CLI" />
+	<meta name="twitter:description" content="Step-by-step guide to install Knot CLI on your system. Available for macOS, Linux, and Windows with multiple installation methods." />
+	<meta name="twitter:image" content="/images/og/installation.png" />
+	<link rel="canonical" href="https://knot-space.com/docs/installation" />
+</svelte:head>
+
 <div class="max-w-4xl mx-auto py-8 px-6">
 	<div class="mb-8">
 		<h1 class="text-3xl font-bold tracking-tight mb-4" style="font-family: 'Gambarino', 'Satoshi', sans-serif;">
@@ -41,7 +54,7 @@
 					</p>
 					<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
 						<code>curl -fsSL https://raw.githubusercontent.com/saravenpi/knot/main/install.sh | bash</code>
-						<button 
+						<button
 							class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
 							on:click={() => copyToClipboard('curl -fsSL https://raw.githubusercontent.com/saravenpi/knot/main/install.sh | bash')}
 							title="Copy to clipboard"
@@ -61,26 +74,26 @@
 	<!-- Platform-specific -->
 	<section class="mb-12">
 		<h2 class="text-2xl font-bold mb-6">Platform-specific Installation</h2>
-		
+
 		<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 			<!-- macOS -->
 			<div class="border rounded-lg p-6">
 				<div class="flex items-center space-x-3 mb-4">
 					<div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-						<Icon icon="solar:apple-bold" class="w-6 h-6 text-gray-600" />
+						<Icon icon="solar:laptop-minimalistic-bold-duotone" class="w-6 h-6 text-gray-600" />
 					</div>
 					<div>
 						<h3 class="font-semibold">macOS</h3>
 						<p class="text-sm text-muted-foreground">Intel & Apple Silicon</p>
 					</div>
 				</div>
-				
+
 				<div class="space-y-3">
 					<div>
 						<div class="text-sm font-medium mb-1">Homebrew (recommended)</div>
 						<div class="bg-black/90 text-green-400 font-mono text-xs p-3 rounded relative group">
 							<code>brew install knot-cli</code>
-							<button 
+							<button
 								class="absolute top-1 right-1 p-1.5 rounded bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
 								on:click={() => copyToClipboard('brew install knot-cli')}
 							>
@@ -92,12 +105,12 @@
 							</button>
 						</div>
 					</div>
-					
+
 					<div>
 						<div class="text-sm font-medium mb-1">Direct download</div>
 						<div class="bg-black/90 text-green-400 font-mono text-xs p-3 rounded relative group">
 							<code>curl -L github.com/saravenpi/knot/releases/latest/download/knot-darwin-arm64 -o knot</code>
-							<button 
+							<button
 								class="absolute top-1 right-1 p-1.5 rounded bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
 								on:click={() => copyToClipboard('curl -L github.com/saravenpi/knot/releases/latest/download/knot-darwin-arm64 -o knot')}
 							>
@@ -123,13 +136,13 @@
 						<p class="text-sm text-muted-foreground">x64 & ARM64</p>
 					</div>
 				</div>
-				
+
 				<div class="space-y-3">
 					<div>
 						<div class="text-sm font-medium mb-1">Direct download</div>
 						<div class="bg-black/90 text-green-400 font-mono text-xs p-3 rounded relative group">
 							<code>curl -L github.com/saravenpi/knot/releases/latest/download/knot-linux-x64 -o knot</code>
-							<button 
+							<button
 								class="absolute top-1 right-1 p-1.5 rounded bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
 								on:click={() => copyToClipboard('curl -L github.com/saravenpi/knot/releases/latest/download/knot-linux-x64 -o knot')}
 							>
@@ -141,12 +154,12 @@
 							</button>
 						</div>
 					</div>
-					
+
 					<div>
 						<div class="text-sm font-medium mb-1">Make executable</div>
 						<div class="bg-black/90 text-green-400 font-mono text-xs p-3 rounded relative group">
 							<code>chmod +x knot && sudo mv knot /usr/local/bin/</code>
-							<button 
+							<button
 								class="absolute top-1 right-1 p-1.5 rounded bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
 								on:click={() => copyToClipboard('chmod +x knot && sudo mv knot /usr/local/bin/')}
 							>
@@ -172,13 +185,13 @@
 						<p class="text-sm text-muted-foreground">x64 & ARM64</p>
 					</div>
 				</div>
-				
+
 				<div class="space-y-3">
 					<div>
 						<div class="text-sm font-medium mb-1">PowerShell</div>
 						<div class="bg-blue-900 text-blue-100 font-mono text-xs p-3 rounded relative group">
 							<code>iwr -useb https://raw.githubusercontent.com/saravenpi/knot/main/install.ps1 | iex</code>
-							<button 
+							<button
 								class="absolute top-1 right-1 p-1.5 rounded bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
 								on:click={() => copyToClipboard('iwr -useb https://raw.githubusercontent.com/saravenpi/knot/main/install.ps1 | iex')}
 							>
@@ -190,11 +203,11 @@
 							</button>
 						</div>
 					</div>
-					
+
 					<div>
 						<div class="text-sm font-medium mb-1">Manual download</div>
 						<div class="text-xs text-muted-foreground">
-							Download <code>knot-windows-x64.exe</code> from 
+							Download <code>knot-windows-x64.exe</code> from
 							<a href="https://github.com/saravenpi/knot/releases" class="text-primary hover:underline">GitHub Releases</a>
 						</div>
 					</div>
@@ -206,13 +219,13 @@
 	<!-- Verification -->
 	<section class="mb-12">
 		<h2 class="text-2xl font-bold mb-6">Verify Installation</h2>
-		
+
 		<div class="space-y-6">
 			<div>
 				<h3 class="text-lg font-semibold mb-3">Check version</h3>
 				<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
 					<code>knot --version</code>
-					<button 
+					<button
 						class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
 						on:click={() => copyToClipboard('knot --version')}
 					>
@@ -232,7 +245,7 @@
 				<h3 class="text-lg font-semibold mb-3">Test basic functionality</h3>
 				<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
 					<code>knot help</code>
-					<button 
+					<button
 						class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
 						on:click={() => copyToClipboard('knot help')}
 					>
@@ -253,7 +266,7 @@
 	<!-- Troubleshooting -->
 	<section class="mb-12">
 		<h2 class="text-2xl font-bold mb-6">Troubleshooting</h2>
-		
+
 		<div class="space-y-6">
 			<div class="border rounded-lg p-6">
 				<h3 class="font-semibold mb-3 flex items-center">

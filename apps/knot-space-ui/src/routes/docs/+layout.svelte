@@ -74,7 +74,71 @@
 
 <svelte:head>
 	<title>Documentation - Knot Space</title>
-	<meta name="description" content="Complete guide to using Knot CLI for monorepo package management" />
+	<meta name="description" content="Complete guide to using Knot CLI for monorepo package management, TypeScript integration, and team collaboration." />
+	
+	<!-- Essential Meta Tags -->
+	<meta name="keywords" content="knot cli, monorepo, package manager, typescript, javascript, package registry, team collaboration, build tools" />
+	<meta name="author" content="Knot Space" />
+	<meta name="robots" content="index, follow" />
+	<meta name="language" content="en" />
+	<meta name="theme-color" content="#000000" />
+	
+	<!-- Open Graph Meta Tags -->
+	<meta property="og:type" content="website" />
+	<meta property="og:title" content="Knot CLI Documentation - Modern Monorepo Package Manager" />
+	<meta property="og:description" content="Complete guide to using Knot CLI for monorepo package management, TypeScript integration, and team collaboration." />
+	<meta property="og:image" content="/images/og/docs-main.png" />
+	<meta property="og:image:width" content="1200" />
+	<meta property="og:image:height" content="630" />
+	<meta property="og:image:alt" content="Knot CLI Documentation - Modern Monorepo Package Manager" />
+	<meta property="og:url" content="https://knot-space.com/docs" />
+	<meta property="og:site_name" content="Knot Space" />
+	<meta property="og:locale" content="en_US" />
+	
+	<!-- Twitter Card Meta Tags -->
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:site" content="@knotspace" />
+	<meta name="twitter:creator" content="@knotspace" />
+	<meta name="twitter:title" content="Knot CLI Documentation - Modern Monorepo Package Manager" />
+	<meta name="twitter:description" content="Complete guide to using Knot CLI for monorepo package management, TypeScript integration, and team collaboration." />
+	<meta name="twitter:image" content="/images/og/docs-main.png" />
+	<meta name="twitter:image:alt" content="Knot CLI Documentation" />
+	
+	<!-- Additional SEO Meta Tags -->
+	<link rel="canonical" href="https://knot-space.com/docs" />
+	<meta name="format-detection" content="telephone=no" />
+	<meta name="HandheldFriendly" content="true" />
+	
+	<!-- Structured Data -->
+	<script type="application/ld+json">
+	{
+		"@context": "https://schema.org",
+		"@type": "TechArticle",
+		"headline": "Knot CLI Documentation",
+		"description": "Complete guide to using Knot CLI for monorepo package management, TypeScript integration, and team collaboration.",
+		"author": {
+			"@type": "Organization",
+			"name": "Knot Space"
+		},
+		"publisher": {
+			"@type": "Organization",
+			"name": "Knot Space",
+			"logo": {
+				"@type": "ImageObject",
+				"url": "https://knot-space.com/images/logo.png"
+			}
+		},
+		"datePublished": "2024-01-01",
+		"dateModified": "2024-01-15",
+		"mainEntityOfPage": {
+			"@type": "WebPage",
+			"@id": "https://knot-space.com/docs"
+		},
+		"image": "https://knot-space.com/images/og/docs-main.png",
+		"articleSection": "Documentation",
+		"keywords": ["monorepo", "package manager", "typescript", "cli tools", "build tools"]
+	}
+	</script>
 </svelte:head>
 
 <div class="min-h-screen bg-background">
