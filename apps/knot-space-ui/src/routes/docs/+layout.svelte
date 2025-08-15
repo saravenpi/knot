@@ -93,7 +93,7 @@
 	{/if}
 
 	<!-- Sidebar -->
-	<div class="fixed inset-y-0 left-0 z-50 w-72 bg-background border-r border-border transform {sidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform lg:translate-x-0 lg:static lg:inset-0">
+	<div class="fixed inset-y-0 left-0 z-50 w-72 bg-background border-r border-border transform {sidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform lg:translate-x-0">
 		<div class="flex h-full flex-col">
 			<!-- Header -->
 			<div class="flex h-16 items-center justify-between px-6 border-b border-border">
