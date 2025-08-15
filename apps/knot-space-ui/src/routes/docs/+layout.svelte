@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import Icon from '@iconify/svelte';
+	import { authStore } from '../../lib/stores';
 
 	const sections = [
 		{
@@ -70,6 +71,8 @@
 	}
 
 	let sidebarOpen = false;
+	
+	$: isLoggedIn = $authStore.isAuthenticated;
 </script>
 
 <svelte:head>
@@ -161,11 +164,25 @@
 		<div class="flex h-full flex-col">
 			<!-- Header -->
 			<div class="flex h-16 items-center justify-between px-6 border-b border-border">
-				<a href="/docs" class="flex items-center space-x-2">
-					<h1 class="text-xl font-bold tracking-tight" style="font-family: 'Gambarino', 'Satoshi', sans-serif;">
-						Knot Docs
-					</h1>
-				</a>
+				<div class="flex items-center space-x-4">
+					<a href="/docs" class="flex items-center space-x-2">
+						<h1 class="text-xl font-bold tracking-tight" style="font-family: 'Gambarino', 'Satoshi', sans-serif;">
+							Knot Docs
+						</h1>
+					</a>
+					<div class="hidden lg:flex items-center space-x-2 text-sm">
+						<span class="text-muted-foreground">•</span>
+						{#if isLoggedIn}
+							<a href="/packages" class="text-muted-foreground hover:text-foreground transition-colors">
+								Dashboard
+							</a>
+						{:else}
+							<a href="/" class="text-muted-foreground hover:text-foreground transition-colors">
+								Home
+							</a>
+						{/if}
+					</div>
+				</div>
 				<button 
 					on:click={() => sidebarOpen = false}
 					class="lg:hidden p-2 rounded-md hover:bg-accent"
@@ -230,7 +247,15 @@
 			<h1 class="text-lg font-semibold tracking-tight" style="font-family: 'Gambarino', 'Satoshi', sans-serif;">
 				Knot Docs
 			</h1>
-			<div class="w-9"></div> <!-- Spacer for centering -->
+			{#if isLoggedIn}
+				<a href="/packages" class="p-2 rounded-md hover:bg-accent text-muted-foreground hover:text-foreground transition-colors">
+					<Icon icon="solar:widget-2-bold" class="w-5 h-5" />
+				</a>
+			{:else}
+				<a href="/" class="p-2 rounded-md hover:bg-accent text-muted-foreground hover:text-foreground transition-colors">
+					<Icon icon="solar:home-2-bold" class="w-5 h-5" />
+				</a>
+			{/if}
 		</div>
 
 		<!-- Page content -->
