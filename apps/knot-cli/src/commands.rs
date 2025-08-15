@@ -1,6 +1,7 @@
 use crate::config::{AppConfig, KnotConfig, PackageConfig};
 use crate::linker::Linker;
 use crate::project::Project;
+use crate::templates::TemplateManager;
 use crate::typescript::TypeScriptManager;
 use anyhow::{Context, Result};
 use reqwest::multipart;
@@ -37,7 +38,7 @@ pub fn init_project(name: &str, description: Option<&str>) -> Result<()> {
     Ok(())
 }
 
-pub fn init_package(name: &str, team: Option<&str>, version: Option<&str>) -> Result<()> {
+pub fn init_package(name: &str, team: Option<&str>, version: Option<&str>, template: Option<&str>, description: Option<&str>) -> Result<()> {
     let current_dir = std::env::current_dir()?;
     let knot_yml_path = current_dir.join("knot.yml");
     
@@ -60,25 +61,52 @@ pub fn init_package(name: &str, team: Option<&str>, version: Option<&str>) -> Re
 
     fs::create_dir_all(&package_dir)?;
 
-    let package_yml_path = package_dir.join("package.yml");
-    let config = PackageConfig {
-        name: name.to_string(),
-        team: team.map(|s| s.to_string()),
-        version: version.unwrap_or("0.1.0").to_string(),
-        description: Some("Package description".to_string()),
-        tags: Some(vec!["tag1".to_string(), "tag2".to_string()]),
-        scripts: None,
-    };
+    // Use template if specified
+    if let Some(template_name) = template {
+        let templates = TemplateManager::get_package_templates();
+        if let Some(template) = templates.get(template_name) {
+            let pkg_version = version.unwrap_or("0.1.0");
+            let pkg_description = description.unwrap_or("Package description");
+            
+            TemplateManager::create_from_template(
+                template,
+                &package_dir,
+                name,
+                pkg_version,
+                pkg_description,
+            )?;
+            
+            println!("📦 Initialized new {} package: {}", template_name, name);
+            println!("📁 Created at: {}", package_dir.display());
+            println!("🎯 Template: {} - {}", template.name, template.description);
+        } else {
+            let available = TemplateManager::list_package_templates();
+            anyhow::bail!("Unknown template '{}'. Available templates: {}", template_name, available.join(", "));
+        }
+    } else {
+        // Create basic package without template
+        let package_yml_path = package_dir.join("package.yml");
+        let config = PackageConfig {
+            name: name.to_string(),
+            team: team.map(|s| s.to_string()),
+            version: version.unwrap_or("0.1.0").to_string(),
+            description: Some(description.unwrap_or("Package description").to_string()),
+            tags: Some(vec!["utilities".to_string()]),
+            scripts: None,
+        };
 
-    let yaml_content = serde_yaml::to_string(&config)?;
-    fs::write(&package_yml_path, yaml_content).context("Failed to create package.yml")?;
-
-    println!("📦 Initialized new package: {}", name);
-    println!("📁 Created at: {}", package_dir.display());
+        let yaml_content = serde_yaml::to_string(&config)?;
+        fs::write(&package_yml_path, yaml_content).context("Failed to create package.yml")?;
+        
+        println!("📦 Initialized new package: {}", name);
+        println!("📁 Created at: {}", package_dir.display());
+        println!("💡 Use '--template typescript' or '--template react' for structured templates");
+    }
+    
     Ok(())
 }
 
-pub fn init_app(name: &str, description: Option<&str>) -> Result<()> {
+pub fn init_app(name: &str, template: Option<&str>, description: Option<&str>) -> Result<()> {
     let current_dir = std::env::current_dir()?;
     let knot_yml_path = current_dir.join("knot.yml");
     
@@ -101,24 +129,72 @@ pub fn init_app(name: &str, description: Option<&str>) -> Result<()> {
 
     fs::create_dir_all(&app_dir)?;
 
-    let app_yml_path = app_dir.join("app.yml");
-    let config = AppConfig {
-        name: name.to_string(),
-        description: description.map(|s| s.to_string()),
-        ts_alias: None,
-        packages: None,
-        build: None,
-        scripts: None,
-    };
+    // Use template if specified
+    if let Some(template_name) = template {
+        let templates = TemplateManager::get_app_templates();
+        if let Some(template) = templates.get(template_name) {
+            let app_version = "0.1.0";
+            let app_description = description.unwrap_or("App description");
+            
+            TemplateManager::create_from_template(
+                template,
+                &app_dir,
+                name,
+                app_version,
+                app_description,
+            )?;
+            
+            // Create app.yml for Knot configuration
+            let app_yml_path = app_dir.join("app.yml");
+            let build_cmd = match template_name {
+                "react" => Some("npm run build".to_string()),
+                "svelte" => Some("npm run build".to_string()),
+                _ => Some("npm run build".to_string()),
+            };
+            
+            let config = AppConfig {
+                name: name.to_string(),
+                description: description.map(|s| s.to_string()),
+                ts_alias: None,
+                packages: None,
+                build: build_cmd,
+                scripts: None,
+            };
 
-    let yaml_content = serde_yaml::to_string(&config)?;
-    fs::write(app_yml_path, yaml_content).context("Failed to create app.yml")?;
+            let yaml_content = serde_yaml::to_string(&config)?;
+            fs::write(app_yml_path, yaml_content).context("Failed to create app.yml")?;
+            
+            println!("🚀 Initialized new {} app: {}", template_name, name);
+            println!("📁 Created at: {}", app_dir.display());
+            println!("🎯 Template: {} - {}", template.name, template.description);
+            println!("💡 Run 'cd {}' then 'npm install' to get started", name);
+        } else {
+            let available = TemplateManager::list_app_templates();
+            anyhow::bail!("Unknown template '{}'. Available templates: {}", template_name, available.join(", "));
+        }
+    } else {
+        // Create basic app without template
+        let app_yml_path = app_dir.join("app.yml");
+        let config = AppConfig {
+            name: name.to_string(),
+            description: description.map(|s| s.to_string()),
+            ts_alias: None,
+            packages: None,
+            build: None,
+            scripts: None,
+        };
 
-    let src_dir = app_dir.join("src");
-    fs::create_dir_all(src_dir)?;
+        let yaml_content = serde_yaml::to_string(&config)?;
+        fs::write(app_yml_path, yaml_content).context("Failed to create app.yml")?;
 
-    println!("🚀 Initialized new app: {}", name);
-    println!("📁 Created at: {}", app_dir.display());
+        let src_dir = app_dir.join("src");
+        fs::create_dir_all(src_dir)?;
+
+        println!("🚀 Initialized new app: {}", name);
+        println!("📁 Created at: {}", app_dir.display());
+        println!("💡 Use '--template react' or '--template svelte' for structured templates");
+    }
+
     Ok(())
 }
 
@@ -689,19 +765,40 @@ fn get_knot_space_url() -> String {
     env::var("KNOT_SPACE_URL").unwrap_or_else(|_| "https://knot-space-production.up.railway.app".to_string())
 }
 
-fn get_auth_token() -> Option<String> {
-    env::var("KNOT_TOKEN").ok()
+fn get_auth_token() -> Result<Option<String>> {
+    // Try environment variable first
+    if let Ok(token) = env::var("KNOT_TOKEN") {
+        return Ok(Some(token));
+    }
+    
+    // Try config file
+    let home_dir = match dirs::home_dir() {
+        Some(dir) => dir,
+        None => return Ok(None),
+    };
+    
+    let config_file = home_dir.join(".knot").join("config");
+    if config_file.exists() {
+        let content = fs::read_to_string(config_file)?;
+        for line in content.lines() {
+            if line.starts_with("token=") {
+                return Ok(Some(line[6..].to_string()));
+            }
+        }
+    }
+    
+    Ok(None)
 }
 
 
 fn require_auth_token() -> Result<String> {
-    get_auth_token()
-        .ok_or_else(|| anyhow::anyhow!("Authentication required. Set KNOT_TOKEN environment variable or run 'knot auth' for instructions."))
+    get_auth_token()?
+        .ok_or_else(|| anyhow::anyhow!("Authentication required. Set KNOT_TOKEN environment variable or run 'knot login' for instructions."))
 }
 
 // API Commands
 pub async fn auth_status() -> Result<()> {
-    match get_auth_token() {
+    match get_auth_token()? {
         Some(token) => {
             // Verify token by making a request to the profile endpoint
             let base_url = get_knot_space_url();
@@ -1150,4 +1247,240 @@ fn create_package_tarball(_package_name: &str, output_path: &str) -> Result<()> 
 
     println!("📦 Created package tarball: {}", output_path);
     Ok(())
+}
+
+// Version management commands
+pub async fn version_bump(bump_type: &str) -> Result<()> {
+    let current_dir = std::env::current_dir()?;
+    
+    // Look for package.yml first (we're in a package)
+    let package_yml_path = current_dir.join("package.yml");
+    if package_yml_path.exists() {
+        let mut config: PackageConfig = serde_yaml::from_str(
+            &fs::read_to_string(&package_yml_path)?
+        )?;
+        
+        let new_version = bump_version(&config.version, bump_type)?;
+        config.version = new_version.clone();
+        
+        let yaml_content = serde_yaml::to_string(&config)?;
+        fs::write(&package_yml_path, yaml_content)?;
+        
+        println!("📈 Bumped {} version to {}", bump_type, new_version);
+        return Ok(());
+    }
+    
+    // Look for package.json as fallback
+    let package_json_path = current_dir.join("package.json");
+    if package_json_path.exists() {
+        let content = fs::read_to_string(&package_json_path)?;
+        let mut package_json: serde_json::Value = serde_json::from_str(&content)?;
+        
+        if let Some(current_version) = package_json.get("version").and_then(|v| v.as_str()) {
+            let new_version = bump_version(current_version, bump_type)?;
+            package_json["version"] = serde_json::Value::String(new_version.clone());
+            
+            let json_content = serde_json::to_string_pretty(&package_json)?;
+            fs::write(&package_json_path, json_content)?;
+            
+            println!("📈 Bumped {} version to {}", bump_type, new_version);
+            return Ok(());
+        }
+    }
+    
+    anyhow::bail!("No package.yml or package.json found in current directory");
+}
+
+pub async fn version_prerelease(preid: Option<&str>) -> Result<()> {
+    let current_dir = std::env::current_dir()?;
+    let preid = preid.unwrap_or("alpha");
+    
+    let package_yml_path = current_dir.join("package.yml");
+    if package_yml_path.exists() {
+        let mut config: PackageConfig = serde_yaml::from_str(
+            &fs::read_to_string(&package_yml_path)?
+        )?;
+        
+        let new_version = bump_prerelease(&config.version, preid)?;
+        config.version = new_version.clone();
+        
+        let yaml_content = serde_yaml::to_string(&config)?;
+        fs::write(&package_yml_path, yaml_content)?;
+        
+        println!("📈 Bumped prerelease version to {} ({})", new_version, preid);
+        return Ok(());
+    }
+    
+    anyhow::bail!("No package.yml found in current directory");
+}
+
+pub async fn version_set(version: &str) -> Result<()> {
+    let current_dir = std::env::current_dir()?;
+    
+    // Validate version format
+    if !is_valid_semver(version) {
+        anyhow::bail!("Invalid version format. Please use semantic versioning (e.g., 1.2.3)");
+    }
+    
+    let package_yml_path = current_dir.join("package.yml");
+    if package_yml_path.exists() {
+        let mut config: PackageConfig = serde_yaml::from_str(
+            &fs::read_to_string(&package_yml_path)?
+        )?;
+        
+        config.version = version.to_string();
+        
+        let yaml_content = serde_yaml::to_string(&config)?;
+        fs::write(&package_yml_path, yaml_content)?;
+        
+        println!("📌 Set version to {}", version);
+        return Ok(());
+    }
+    
+    anyhow::bail!("No package.yml found in current directory");
+}
+
+pub async fn login(token: Option<&str>) -> Result<()> {
+    if let Some(token) = token {
+        // Login with provided token
+        save_auth_token(token)?;
+        println!("🔑 Logged in with provided token");
+        
+        // Verify the token works
+        match verify_auth_token().await {
+            Ok(user_info) => {
+                println!("✅ Authentication successful");
+                println!("👤 User: {}", user_info);
+            }
+            Err(_) => {
+                anyhow::bail!("❌ Invalid authentication token");
+            }
+        }
+    } else {
+        // OAuth flow - open browser for authentication
+        println!("🌐 Opening browser for authentication...");
+        println!("If browser doesn't open, visit: https://knot-space.com/auth/cli");
+        
+        // For now, just prompt for manual token entry
+        println!("\n📝 After authenticating, copy your token and run:");
+        println!("   knot login --token <your-token>");
+    }
+    
+    Ok(())
+}
+
+pub async fn whoami() -> Result<()> {
+    match get_auth_token()? {
+        Some(token) => {
+            match verify_auth_token().await {
+                Ok(user_info) => {
+                    println!("👤 Logged in as: {}", user_info);
+                    println!("🔑 Token: {}...{}", &token[..8], &token[token.len()-8..]);
+                }
+                Err(_) => {
+                    println!("❌ Authentication token is invalid or expired");
+                    println!("💡 Run 'knot login' to authenticate");
+                }
+            }
+        }
+        None => {
+            println!("❌ Not authenticated");
+            println!("💡 Run 'knot login' to authenticate");
+        }
+    }
+    
+    Ok(())
+}
+
+// Helper functions for version management
+fn bump_version(current: &str, bump_type: &str) -> Result<String> {
+    let parts: Vec<&str> = current.split('.').collect();
+    if parts.len() != 3 {
+        anyhow::bail!("Invalid version format: {}", current);
+    }
+    
+    let mut major: u32 = parts[0].parse().context("Invalid major version")?;
+    let mut minor: u32 = parts[1].parse().context("Invalid minor version")?;
+    let mut patch: u32 = parts[2].parse().context("Invalid patch version")?;
+    
+    match bump_type {
+        "major" => {
+            major += 1;
+            minor = 0;
+            patch = 0;
+        }
+        "minor" => {
+            minor += 1;
+            patch = 0;
+        }
+        "patch" => {
+            patch += 1;
+        }
+        _ => anyhow::bail!("Invalid bump type: {}", bump_type),
+    }
+    
+    Ok(format!("{}.{}.{}", major, minor, patch))
+}
+
+fn bump_prerelease(current: &str, preid: &str) -> Result<String> {
+    // Simple prerelease implementation
+    if current.contains("-") {
+        // Already a prerelease, increment counter
+        let parts: Vec<&str> = current.split('-').collect();
+        if parts.len() >= 2 {
+            let version_part = parts[0];
+            let prerelease_part = parts[1];
+            
+            if prerelease_part.starts_with(preid) {
+                // Extract number and increment
+                let number_part = prerelease_part.strip_prefix(preid).unwrap_or("0");
+                let current_num: u32 = number_part.parse().unwrap_or(0);
+                return Ok(format!("{}-{}{}", version_part, preid, current_num + 1));
+            }
+        }
+    }
+    
+    // Create new prerelease from current version
+    Ok(format!("{}-{}1", current, preid))
+}
+
+fn is_valid_semver(version: &str) -> bool {
+    let parts: Vec<&str> = version.split('.').collect();
+    if parts.len() != 3 {
+        return false;
+    }
+    
+    parts.iter().all(|part| part.parse::<u32>().is_ok())
+}
+
+fn save_auth_token(token: &str) -> Result<()> {
+    let home_dir = dirs::home_dir().context("Could not find home directory")?;
+    let knot_dir = home_dir.join(".knot");
+    fs::create_dir_all(&knot_dir)?;
+    
+    let config_file = knot_dir.join("config");
+    fs::write(config_file, format!("token={}", token))?;
+    
+    Ok(())
+}
+
+async fn verify_auth_token() -> Result<String> {
+    let token = get_auth_token()?
+        .ok_or_else(|| anyhow::anyhow!("No authentication token found"))?;
+    
+    let knot_space_url = env::var("KNOT_SPACE_URL").unwrap_or_else(|_| "https://knot-space.com".to_string());
+    let client = reqwest::Client::new();
+    
+    let response = client
+        .get(&format!("{}/api/auth/verify", knot_space_url))
+        .bearer_auth(&token)
+        .send()
+        .await?;
+    
+    if response.status().is_success() {
+        let user_info = response.text().await?;
+        Ok(user_info)
+    } else {
+        anyhow::bail!("Token verification failed")
+    }
 }

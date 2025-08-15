@@ -3,6 +3,7 @@ mod config;
 mod downloader;
 mod linker;
 mod project;
+mod templates;
 mod typescript;
 
 use anyhow::Result;
@@ -54,12 +55,31 @@ async fn main() -> Result<()> {
                         .short('v')
                         .long("version")
                         .value_name("VERSION"),
+                )
+                .arg(
+                    Arg::new("template")
+                        .help("Package template (typescript, react)")
+                        .long("template")
+                        .value_name("TEMPLATE"),
+                )
+                .arg(
+                    Arg::new("description")
+                        .help("Package description")
+                        .short('d')
+                        .long("description")
+                        .value_name("DESC"),
                 ),
         )
         .subcommand(
             Command::new("init:app")
                 .about("Initialize a new app")
                 .arg(Arg::new("name").help("App name").required(true).index(1))
+                .arg(
+                    Arg::new("template")
+                        .help("App template (react, svelte, nextjs, fastify, express, vanilla)")
+                        .long("template")
+                        .value_name("TEMPLATE"),
+                )
                 .arg(
                     Arg::new("description")
                         .help("App description")
@@ -152,6 +172,57 @@ async fn main() -> Result<()> {
                 .about("Install all dependencies (equivalent to 'knot link' but more intuitive)")
         )
         .subcommand(
+            Command::new("version")
+                .about("Version management commands")
+                .subcommand_required(true)
+                .subcommand(
+                    Command::new("patch")
+                        .about("Bump patch version (bug fixes)")
+                )
+                .subcommand(
+                    Command::new("minor")
+                        .about("Bump minor version (new features)")
+                )
+                .subcommand(
+                    Command::new("major")
+                        .about("Bump major version (breaking changes)")
+                )
+                .subcommand(
+                    Command::new("prerelease")
+                        .about("Create pre-release version")
+                        .arg(
+                            Arg::new("preid")
+                                .help("Pre-release identifier (alpha, beta, rc)")
+                                .long("preid")
+                                .value_name("ID")
+                        )
+                )
+                .subcommand(
+                    Command::new("set")
+                        .about("Set specific version")
+                        .arg(
+                            Arg::new("version")
+                                .help("Version to set (e.g., 1.2.3)")
+                                .required(true)
+                                .index(1)
+                        )
+                )
+        )
+        .subcommand(
+            Command::new("login")
+                .about("Authenticate with Knot Space")
+                .arg(
+                    Arg::new("token")
+                        .help("Authentication token")
+                        .long("token")
+                        .value_name("TOKEN")
+                )
+        )
+        .subcommand(
+            Command::new("whoami")
+                .about("Show current authenticated user")
+        )
+        .subcommand(
             Command::new("team")
                 .about("Team management commands")
                 .subcommand_required(true)
@@ -219,14 +290,17 @@ async fn main() -> Result<()> {
             let name = sub_matches.get_one::<String>("name").unwrap();
             let team = sub_matches.get_one::<String>("team").map(|s| s.as_str());
             let version = sub_matches.get_one::<String>("version").map(|s| s.as_str());
-            commands::init_package(name, team, version)?;
+            let template = sub_matches.get_one::<String>("template").map(|s| s.as_str());
+            let description = sub_matches.get_one::<String>("description").map(|s| s.as_str());
+            commands::init_package(name, team, version, template, description)?;
         }
         Some(("init:app", sub_matches)) => {
             let name = sub_matches.get_one::<String>("name").unwrap();
+            let template = sub_matches.get_one::<String>("template").map(|s| s.as_str());
             let description = sub_matches
                 .get_one::<String>("description")
                 .map(|s| s.as_str());
-            commands::init_app(name, description)?;
+            commands::init_app(name, template, description)?;
         }
         Some(("link", sub_matches)) => {
             let use_symlinks = sub_matches.get_flag("symlink");
@@ -267,6 +341,33 @@ async fn main() -> Result<()> {
         }
         Some(("install", _)) => {
             commands::install_dependencies().await?;
+        }
+        Some(("version", sub_matches)) => match sub_matches.subcommand() {
+            Some(("patch", _)) => {
+                commands::version_bump("patch").await?;
+            }
+            Some(("minor", _)) => {
+                commands::version_bump("minor").await?;
+            }
+            Some(("major", _)) => {
+                commands::version_bump("major").await?;
+            }
+            Some(("prerelease", prerelease_sub)) => {
+                let preid = prerelease_sub.get_one::<String>("preid").map(|s| s.as_str());
+                commands::version_prerelease(preid).await?;
+            }
+            Some(("set", set_sub)) => {
+                let version = set_sub.get_one::<String>("version").unwrap();
+                commands::version_set(version).await?;
+            }
+            _ => unreachable!(),
+        }
+        Some(("login", sub_matches)) => {
+            let token = sub_matches.get_one::<String>("token").map(|s| s.as_str());
+            commands::login(token).await?;
+        }
+        Some(("whoami", _)) => {
+            commands::whoami().await?;
         }
         Some(("team", sub_matches)) => match sub_matches.subcommand() {
             Some(("create", team_sub)) => {
