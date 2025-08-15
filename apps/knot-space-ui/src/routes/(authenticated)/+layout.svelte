@@ -78,19 +78,19 @@
           <Icon icon="solar:settings-bold" class="w-5 h-5" />
           <span>Settings</span>
         </a>
-
-        <a 
-          href="/docs" 
-          class="flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {currentPath === '/docs' ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'}"
-        >
-          <Icon icon="solar:book-bold" class="w-5 h-5" />
-          <span>Documentation</span>
-        </a>
       </nav>
     </div>
 
-    <!-- Logout button at bottom -->
-    <div class="absolute bottom-6 left-6 right-6">
+    <!-- Bottom actions -->
+    <div class="absolute bottom-6 left-6 right-6 space-y-2">
+      <a 
+        href="/docs" 
+        class="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+      >
+        <Icon icon="solar:book-2-bold" class="w-4 h-4" />
+        <span>Documentation</span>
+      </a>
+      
       <button
         on:click={logout}
         class="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors"
