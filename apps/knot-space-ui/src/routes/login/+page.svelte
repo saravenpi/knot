@@ -49,7 +49,7 @@
 
 <div class="max-w-md mx-auto">
 	<div class="text-center mb-8">
-		<h1 class="text-3xl font-bold mb-2">Welcome Back</h1>
+		<h1 class="text-3xl font-bold mb-2" style="font-family: 'Gambarino', 'Satoshi', sans-serif;">Welcome Back</h1>
 		<p class="text-muted-foreground">Sign in to your Knot Space account</p>
 	</div>
 

@@ -1,0 +1,170 @@
+<script lang="ts">
+	import { page } from '$app/stores';
+	import Icon from '@iconify/svelte';
+
+	const sections = [
+		{
+			title: 'Getting Started',
+			icon: 'solar:rocket-2-bold',
+			items: [
+				{ title: 'Introduction', href: '/docs', exact: true },
+				{ title: 'Installation', href: '/docs/installation' },
+				{ title: 'Quick Start', href: '/docs/quick-start' },
+				{ title: 'Authentication', href: '/docs/authentication' }
+			]
+		},
+		{
+			title: 'Core Concepts',
+			icon: 'solar:book-bold',
+			items: [
+				{ title: 'Project Structure', href: '/docs/project-structure' },
+				{ title: 'Configuration Files', href: '/docs/configuration' },
+				{ title: 'Package Linking', href: '/docs/package-linking' },
+				{ title: 'TypeScript Integration', href: '/docs/typescript' }
+			]
+		},
+		{
+			title: 'CLI Reference',
+			icon: 'solar:terminal-bold',
+			items: [
+				{ title: 'Commands Overview', href: '/docs/cli-commands' },
+				{ title: 'Project Management', href: '/docs/cli-project' },
+				{ title: 'Package Development', href: '/docs/cli-packages' },
+				{ title: 'Publishing', href: '/docs/publishing' }
+			]
+		},
+		{
+			title: 'Team Collaboration',
+			icon: 'solar:users-group-two-rounded-bold',
+			items: [
+				{ title: 'Team Management', href: '/docs/teams' },
+				{ title: 'Permissions', href: '/docs/permissions' },
+				{ title: 'Workflow Best Practices', href: '/docs/workflows' }
+			]
+		},
+		{
+			title: 'Deployment',
+			icon: 'solar:server-bold',
+			items: [
+				{ title: 'Self-Hosting', href: '/docs/self-hosting' },
+				{ title: 'Docker Setup', href: '/docs/docker' },
+				{ title: 'Production Deployment', href: '/docs/production' }
+			]
+		},
+		{
+			title: 'Advanced',
+			icon: 'solar:settings-bold',
+			items: [
+				{ title: 'Custom Aliases', href: '/docs/aliases' },
+				{ title: 'Build Optimization', href: '/docs/build-optimization' },
+				{ title: 'Troubleshooting', href: '/docs/troubleshooting' }
+			]
+		}
+	];
+
+	function isActive(href: string, exact = false): boolean {
+		if (exact) {
+			return $page.url.pathname === href;
+		}
+		return $page.url.pathname.startsWith(href) && $page.url.pathname !== '/docs';
+	}
+
+	let sidebarOpen = false;
+</script>
+
+<svelte:head>
+	<title>Documentation - Knot Space</title>
+	<meta name="description" content="Complete guide to using Knot CLI for monorepo package management" />
+</svelte:head>
+
+<div class="min-h-screen bg-background">
+	<!-- Mobile sidebar overlay -->
+	{#if sidebarOpen}
+		<div class="fixed inset-0 z-40 lg:hidden">
+			<div class="fixed inset-0 bg-black/50" on:click={() => sidebarOpen = false}></div>
+		</div>
+	{/if}
+
+	<!-- Sidebar -->
+	<div class="fixed inset-y-0 left-0 z-50 w-72 bg-background border-r border-border transform {sidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform lg:translate-x-0 lg:static lg:inset-0">
+		<div class="flex h-full flex-col">
+			<!-- Header -->
+			<div class="flex h-16 items-center justify-between px-6 border-b border-border">
+				<a href="/docs" class="flex items-center space-x-2">
+					<h1 class="text-xl font-bold tracking-tight" style="font-family: 'Gambarino', 'Satoshi', sans-serif;">
+						Knot Docs
+					</h1>
+				</a>
+				<button 
+					on:click={() => sidebarOpen = false}
+					class="lg:hidden p-2 rounded-md hover:bg-accent"
+				>
+					<Icon icon="solar:close-circle-bold" class="w-5 h-5" />
+				</button>
+			</div>
+
+			<!-- Navigation -->
+			<nav class="flex-1 overflow-y-auto py-6 px-4">
+				<div class="space-y-8">
+					{#each sections as section}
+						<div>
+							<div class="flex items-center space-x-2 mb-3 px-2">
+								<Icon icon={section.icon} class="w-4 h-4 text-muted-foreground" />
+								<h3 class="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+									{section.title}
+								</h3>
+							</div>
+							<ul class="space-y-1">
+								{#each section.items as item}
+									<li>
+										<a
+											href={item.href}
+											class="block px-3 py-2 text-sm rounded-md transition-colors {isActive(item.href, item.exact) 
+												? 'bg-primary text-primary-foreground font-medium' 
+												: 'text-muted-foreground hover:text-foreground hover:bg-accent'}"
+											on:click={() => sidebarOpen = false}
+										>
+											{item.title}
+										</a>
+									</li>
+								{/each}
+							</ul>
+						</div>
+					{/each}
+				</div>
+			</nav>
+
+			<!-- Footer -->
+			<div class="border-t border-border p-4">
+				<div class="flex items-center justify-between text-xs text-muted-foreground">
+					<span>Knot v1.0.0</span>
+					<a href="https://github.com/saravenpi/knot" class="hover:text-foreground transition-colors">
+						<Icon icon="solar:link-bold" class="w-4 h-4" />
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Main content -->
+	<div class="lg:pl-72">
+		<!-- Top bar for mobile -->
+		<div class="sticky top-0 z-30 lg:hidden h-16 bg-background border-b border-border flex items-center justify-between px-4">
+			<button
+				on:click={() => sidebarOpen = true}
+				class="p-2 rounded-md hover:bg-accent"
+			>
+				<Icon icon="solar:hamburger-menu-bold" class="w-5 h-5" />
+			</button>
+			<h1 class="text-lg font-semibold tracking-tight" style="font-family: 'Gambarino', 'Satoshi', sans-serif;">
+				Knot Docs
+			</h1>
+			<div class="w-9"></div> <!-- Spacer for centering -->
+		</div>
+
+		<!-- Page content -->
+		<main class="min-h-screen">
+			<slot />
+		</main>
+	</div>
+</div>

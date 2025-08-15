@@ -102,7 +102,7 @@
 
 <div class="max-w-4xl mx-auto">
 	<div class="mb-8">
-		<h1 class="text-3xl font-bold tracking-tight">Settings</h1>
+		<h1 class="text-3xl font-bold tracking-tight" style="font-family: 'Gambarino', 'Satoshi', sans-serif;">Settings</h1>
 		<p class="text-muted-foreground mt-2">Manage your account and CLI authentication</p>
 	</div>
 

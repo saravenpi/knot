@@ -75,7 +75,7 @@
 
 <div class="max-w-md mx-auto">
 	<div class="text-center mb-8">
-		<h1 class="text-3xl font-bold mb-2">Create Account</h1>
+		<h1 class="text-3xl font-bold mb-2" style="font-family: 'Gambarino', 'Satoshi', sans-serif;">Create Account</h1>
 		<p class="text-muted-foreground">Join Knot Space and start publishing packages</p>
 	</div>
 

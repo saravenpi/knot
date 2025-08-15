@@ -133,7 +133,7 @@
 					<a href="/packages" class="text-muted-foreground hover:text-foreground transition-colors">
 						<Icon icon="solar:arrow-left-bold" class="w-5 h-5" />
 					</a>
-					<h1 class="text-3xl font-bold">@{selectedPackage.name}</h1>
+					<h1 class="text-3xl font-bold" style="font-family: 'Gambarino', 'Satoshi', sans-serif;">@{selectedPackage.name}</h1>
 					<span class="text-lg text-muted-foreground bg-secondary px-3 py-1 rounded">
 						v{selectedPackage.version}
 					</span>
