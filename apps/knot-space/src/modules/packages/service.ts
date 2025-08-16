@@ -160,11 +160,12 @@ class PackagesService {
 
     const total = await prisma.package.count({ where: whereClause });
 
-    // Convert BigInt fields to strings for JSON serialization
+    // Convert BigInt fields to strings and transform tags for JSON serialization
     const serializedPackages = packages.map(pkg => ({
       ...pkg,
       fileSize: pkg.fileSize.toString(),
       downloadsCount: pkg.downloadsCount.toString(),
+      tags: pkg.tags.map(tag => tag.tag), // Transform from {tag: string}[] to string[]
     }));
 
     return {
@@ -225,11 +226,12 @@ class PackagesService {
       throw new Error('Package not found');
     }
 
-    // Convert BigInt fields to strings for JSON serialization
+    // Convert BigInt fields to strings and transform tags for JSON serialization
     return {
       ...pkg,
       fileSize: pkg.fileSize.toString(),
       downloadsCount: pkg.downloadsCount.toString(),
+      tags: pkg.tags.map(tag => tag.tag), // Transform from {tag: string}[] to string[]
     };
   }
 

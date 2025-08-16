@@ -16,6 +16,7 @@
 	let deleteError = '';
 	let downloadStats: { dailyStats: Array<{ date: string; downloads: number }> } | null = null;
 	let loadingStats = false;
+	let statsLoaded = false;
 	let copySuccess = false;
 
 	$: isOwner = currentUser && selectedPackage && (
@@ -35,8 +36,14 @@
 		}
 	});
 
+	// Reset stats when package changes
+	$: if (selectedPackage) {
+		statsLoaded = false;
+		downloadStats = null;
+	}
+
 	// Fetch download statistics when package is loaded
-	$: if (selectedPackage && selectedPackage.version && !loadingStats) {
+	$: if (selectedPackage && selectedPackage.version && !loadingStats && !statsLoaded) {
 		fetchDownloadStats();
 	}
 
@@ -65,6 +72,7 @@
 			downloadStats = { dailyStats: [] };
 		} finally {
 			loadingStats = false;
+			statsLoaded = true;
 		}
 	}
 
