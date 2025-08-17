@@ -28,10 +28,6 @@
     return unsubscribe;
   });
 
-  async function logout() {
-    await authStore.logout();
-    goto('/');
-  }
 
   $: currentPath = $page.url.pathname;
 </script>
@@ -73,14 +69,6 @@
           <Icon icon="solar:users-group-two-rounded-bold" class="w-5 h-5" />
           <span>Teams</span>
         </a>
-
-        <a 
-          href="/settings" 
-          class="flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {currentPath === '/settings' ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'}"
-        >
-          <Icon icon="solar:settings-bold" class="w-5 h-5" />
-          <span>Settings</span>
-        </a>
       </nav>
     </div>
 
@@ -94,13 +82,13 @@
         <span>Documentation</span>
       </a>
       
-      <button
-        on:click={logout}
-        class="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors"
+      <a 
+        href="/settings" 
+        class="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {currentPath === '/settings' ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'}"
       >
-        <Icon icon="solar:logout-3-bold" class="w-5 h-5" />
-        <span>Sign Out</span>
-      </button>
+        <Icon icon="solar:settings-bold" class="w-5 h-5" />
+        <span>Settings</span>
+      </a>
     </div>
   </aside>
 
