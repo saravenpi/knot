@@ -494,7 +494,7 @@ class PackagesService {
     }
 
     // Update package with real file information
-    const baseUrl = process.env.KNOT_SPACE_URL || 'http://localhost:3001';
+    const baseUrl = process.env.KNOT_SPACE_URL || 'https://knot-space-production.up.railway.app';
     await prisma.package.update({
       where: {
         name_version: { name: packageName, version }
