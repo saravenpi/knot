@@ -411,15 +411,68 @@ class PackagesService {
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     const checksum = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
-    // For now, just return the file metadata
-    // In production, you would save the file to storage and return the path/URL
+    // Create uploads directory if it doesn't exist
+    const fs = require('fs');
+    const path = require('path');
+    const uploadsDir = path.join(process.cwd(), 'uploads');
+    if (!fs.existsSync(uploadsDir)) {
+      fs.mkdirSync(uploadsDir, { recursive: true });
+    }
+
+    // Generate unique filename using checksum
+    const filename = `${checksum}.tar.gz`;
+    const filePath = path.join(uploadsDir, filename);
+
+    // Save file to disk
+    fs.writeFileSync(filePath, fileContent);
+
+    console.log(`File uploaded and saved: ${filePath}`);
+
     return {
       fileSize: fileSize.toString(),
       checksum,
       originalName: file.name,
-      // In production, you would update the package record with actual file info
-      message: 'File processed successfully (not permanently stored in demo)'
+      filePath: `/uploads/${filename}`,
+      downloadUrl: `/uploads/${filename}`,
+      message: 'File uploaded and stored successfully'
     };
+  }
+
+  async updatePackageFileInfo(packageName: string, version: string, userId: string, fileInfo: any) {
+    // Find the package
+    const pkg = await prisma.package.findUnique({
+      where: {
+        name_version: { name: packageName, version }
+      },
+      include: {
+        owner: true
+      }
+    });
+
+    if (!pkg) {
+      throw new Error('Package not found');
+    }
+
+    // Check if user owns the package
+    if (pkg.ownerId !== userId) {
+      throw new Error('Unauthorized: You can only update your own packages');
+    }
+
+    // Update package with real file information
+    const baseUrl = process.env.KNOT_SPACE_URL || 'http://localhost:3001';
+    await prisma.package.update({
+      where: {
+        name_version: { name: packageName, version }
+      },
+      data: {
+        fileSize: BigInt(parseInt(fileInfo.fileSize)),
+        checksumSha256: fileInfo.checksum,
+        filePath: fileInfo.filePath,
+        downloadUrl: `${baseUrl}${fileInfo.downloadUrl}`,
+      }
+    });
+
+    console.log(`Updated package ${packageName}@${version} with real file information`);
   }
 
   async getGlobalStats() {

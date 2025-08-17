@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { prettyJSON } from 'hono/pretty-json';
+import { serveStatic } from 'hono/serve-static';
 import { loadModules } from './lib/loadModules';
 import { securityHeaders, requestLogger, rateLimit } from './lib/security';
 import { errorHandler } from './lib/errorHandler';
@@ -64,6 +65,12 @@ app.get('/health', (c) => {
     timestamp: new Date().toISOString(),
   });
 });
+
+// Serve static files from uploads directory
+app.use('/uploads/*', serveStatic({ 
+  root: './',
+  rewriteRequestPath: (path) => path.replace(/^\/uploads/, '/uploads')
+}));
 
 // Load and mount all modules
 export async function setupRoutes() {

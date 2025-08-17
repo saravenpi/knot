@@ -502,13 +502,4 @@ export default defineConfig({
         Self::get_app_templates().keys().cloned().collect()
     }
     
-    pub fn get_template_info(template_name: &str, is_app: bool) -> Option<String> {
-        let templates = if is_app {
-            Self::get_app_templates()
-        } else {
-            Self::get_package_templates()
-        };
-        
-        templates.get(template_name).map(|t| t.description.clone())
-    }
 }

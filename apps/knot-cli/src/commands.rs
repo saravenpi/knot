@@ -906,7 +906,9 @@ pub async fn publish_package(team: Option<&str>, description: Option<&str>) -> R
         .mime_str("application/gzip")?;
 
     let form = multipart::Form::new()
-        .part("file", file_part);
+        .part("file", file_part)
+        .text("packageName", metadata.name.clone())
+        .text("version", metadata.version.clone());
 
     let upload_response = client
         .post(&upload_url)

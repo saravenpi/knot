@@ -213,19 +213,27 @@ export class PackagesController {
 
       const body = await c.req.parseBody();
       const file = body['file'] as File;
+      const packageName = body['packageName'] as string;
+      const version = body['version'] as string;
       
       if (!file) {
         return c.json({ success: false, error: 'No file provided' }, 400);
       }
 
-      // For now, we'll just return success without actually storing the file
-      // In production, you would save to filesystem or cloud storage
-      const result = await packagesService.handleFileUpload(file, user.id);
+      if (!packageName || !version) {
+        return c.json({ success: false, error: 'Package name and version are required' }, 400);
+      }
+
+      // Handle file upload and get file information
+      const fileInfo = await packagesService.handleFileUpload(file, user.id);
+      
+      // Update the package record with real file information
+      await packagesService.updatePackageFileInfo(packageName, version, user.id, fileInfo);
       
       return c.json({
         success: true,
-        data: result,
-        message: 'File uploaded successfully'
+        data: fileInfo,
+        message: 'File uploaded and package updated successfully'
       });
     } catch (error) {
       console.error('Upload package file error:', error);
