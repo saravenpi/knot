@@ -510,6 +510,20 @@ class PackagesService {
     console.log(`Updated package ${packageName}@${version} with real file information`);
   }
 
+  async getPackageByChecksum(checksum: string) {
+    const pkg = await prisma.package.findFirst({
+      where: {
+        checksumSha256: checksum
+      },
+      select: {
+        name: true,
+        version: true
+      }
+    });
+
+    return pkg;
+  }
+
   async getGlobalStats() {
     // Get total packages count
     const totalPackages = await prisma.package.count();

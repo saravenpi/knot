@@ -125,16 +125,6 @@ export class PackagesController {
         }, 404);
       }
       
-      // Increment download count with analytics
-      try {
-        const clientIP = c.req.header('x-forwarded-for') || c.req.header('x-real-ip') || 'unknown';
-        const userAgent = c.req.header('user-agent');
-        await packagesService.incrementDownloadCount(name, version, clientIP, userAgent);
-      } catch (countError) {
-        console.error('Failed to increment download count:', countError);
-        // Don't fail the download because of analytics error
-      }
-      
       return c.redirect(downloadInfo.downloadUrl);
     } catch (error) {
       console.error('Download package error:', error);
