@@ -157,13 +157,24 @@ class PackagesService {
       ],
     });
 
-    // Group by package name and get only the latest version of each
+    // Group by package name and get only the latest version of each, but calculate total downloads
     const latestPackagesMap = new Map<string, any>();
+    const packageDownloadsMap = new Map<string, bigint>();
     
+    // First pass: calculate total downloads per package name
+    for (const pkg of allPackages) {
+      const currentTotal = packageDownloadsMap.get(pkg.name) || BigInt(0);
+      packageDownloadsMap.set(pkg.name, currentTotal + pkg.downloadsCount);
+    }
+    
+    // Second pass: get latest version and set total downloads
     for (const pkg of allPackages) {
       const existing = latestPackagesMap.get(pkg.name);
       if (!existing || new Date(pkg.publishedAt) > new Date(existing.publishedAt)) {
-        latestPackagesMap.set(pkg.name, pkg);
+        latestPackagesMap.set(pkg.name, {
+          ...pkg,
+          totalDownloadsCount: packageDownloadsMap.get(pkg.name) || BigInt(0)
+        });
       }
     }
 
@@ -179,6 +190,7 @@ class PackagesService {
       ...pkg,
       fileSize: pkg.fileSize.toString(),
       downloadsCount: pkg.downloadsCount.toString(),
+      totalDownloadsCount: pkg.totalDownloadsCount.toString(),
       tags: pkg.tags.map(tag => tag.tag), // Transform from {tag: string}[] to string[]
     }));
 
@@ -240,11 +252,20 @@ class PackagesService {
       throw new Error('Package not found');
     }
 
+    // Calculate total downloads across all versions of this package
+    const allVersions = await prisma.package.findMany({
+      where: { name },
+      select: { downloadsCount: true }
+    });
+
+    const totalDownloadsCount = allVersions.reduce((sum, version) => sum + version.downloadsCount, BigInt(0));
+
     // Convert BigInt fields to strings and transform tags for JSON serialization
     return {
       ...pkg,
       fileSize: pkg.fileSize.toString(),
       downloadsCount: pkg.downloadsCount.toString(),
+      totalDownloadsCount: totalDownloadsCount.toString(),
       tags: pkg.tags.map(tag => tag.tag), // Transform from {tag: string}[] to string[]
     };
   }

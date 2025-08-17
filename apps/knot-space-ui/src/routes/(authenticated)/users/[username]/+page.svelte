@@ -252,7 +252,7 @@
 									<div class="flex flex-col items-end gap-2 text-sm text-muted-foreground ml-4">
 										<div class="flex items-center gap-1">
 											<Icon icon="solar:download-bold" class="h-4 w-4" />
-											{formatDownloadCount(pkg.downloadsCount)}
+											{formatDownloadCount(pkg.totalDownloadsCount || pkg.downloadsCount)}
 										</div>
 										<div class="text-xs">
 											{formatFileSize(pkg.fileSize)}

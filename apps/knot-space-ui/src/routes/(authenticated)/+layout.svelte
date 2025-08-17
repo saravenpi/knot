@@ -47,8 +47,16 @@
       <!-- User info -->
       {#if user}
         <div class="mb-8 p-3 bg-muted/50 rounded-lg">
-          <div class="text-sm font-medium">{user.username}</div>
-          <div class="text-xs text-muted-foreground">{user.email}</div>
+          <div class="flex items-center gap-3">
+            <!-- Profile avatar matching the profile page design -->
+            <div class="w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center text-primary-foreground text-sm font-bold flex-shrink-0">
+              {user.username.charAt(0).toUpperCase()}
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="text-sm font-medium truncate">{user.username}</div>
+              <div class="text-xs text-muted-foreground truncate">{user.email}</div>
+            </div>
+          </div>
         </div>
       {/if}
 

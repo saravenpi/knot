@@ -2,7 +2,7 @@
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 	import { packagesStore, authStore } from '../../../../lib/stores';
-	import { formatDownloadCount, formatFileSize, formatDateTime } from '../../../../lib/utils/format';
+	import { formatDownloadCount, formatFileSize, formatDateTime, formatTimeAgo, formatDate } from '../../../../lib/utils/format';
 	import Icon from '@iconify/svelte';
 	import Chart from '../../../../lib/components/ui/chart.svelte';
 	import { requestApi } from '../../../../lib/api';
@@ -133,24 +133,40 @@
 					<p class="text-muted-foreground text-lg mb-4">{selectedPackage.description}</p>
 				{/if}
 
-				<div class="flex items-center gap-6 text-sm text-muted-foreground">
-					<span class="flex items-center gap-2">
-						<!-- Profile avatar matching the profile page design -->
-						<div class="w-6 h-6 bg-gradient-to-br from-primary to-primary/80 rounded-lg flex items-center justify-center text-primary-foreground text-xs font-bold">
-							{selectedPackage.owner.username.charAt(0).toUpperCase()}
-						</div>
-						by <a href="/users/{encodeURIComponent(selectedPackage.owner.username)}" class="hover:text-primary transition-colors font-medium">{selectedPackage.owner.username}</a>
-					</span>
-					{#if selectedPackage.team}
-						<span class="flex items-center gap-1">
-							<Icon icon="solar:users-group-rounded-bold" class="w-4 h-4" />
-							{selectedPackage.team.name}
+				<div class="space-y-3">
+					<div class="flex items-center gap-6 text-sm text-muted-foreground">
+						<span class="flex items-center gap-2">
+							<!-- Profile avatar matching the profile page design -->
+							<div class="w-6 h-6 bg-gradient-to-br from-primary to-primary/80 rounded-lg flex items-center justify-center text-primary-foreground text-xs font-bold">
+								{selectedPackage.owner.username.charAt(0).toUpperCase()}
+							</div>
+							by <a href="/users/{encodeURIComponent(selectedPackage.owner.username)}" class="hover:text-primary transition-colors font-medium">{selectedPackage.owner.username}</a>
 						</span>
-					{/if}
-					<span class="flex items-center gap-1">
-						<Icon icon="solar:calendar-bold" class="w-4 h-4" />
-						{formatDateTime(selectedPackage.publishedAt)}
-					</span>
+						{#if selectedPackage.team}
+							<span class="flex items-center gap-1">
+								<Icon icon="solar:users-group-rounded-bold" class="w-4 h-4" />
+								{selectedPackage.team.name}
+							</span>
+						{/if}
+					</div>
+					
+					<!-- Timeline section -->
+					<div class="bg-muted/30 rounded-lg p-4 space-y-3">
+						<div class="flex items-center justify-between">
+							<span class="text-sm font-medium text-foreground">Last updated</span>
+							<span class="text-sm text-primary font-medium">{formatTimeAgo(selectedPackage.updatedAt || selectedPackage.publishedAt)}</span>
+						</div>
+						<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-muted-foreground">
+							<div class="flex items-center gap-2">
+								<Icon icon="solar:calendar-add-bold" class="w-4 h-4 text-green-600" />
+								<span>Created {formatDate(selectedPackage.publishedAt)}</span>
+							</div>
+							<div class="flex items-center gap-2">
+								<Icon icon="solar:history-3-bold" class="w-4 h-4 text-blue-600" />
+								<span>Updated {formatDate(selectedPackage.updatedAt || selectedPackage.publishedAt)}</span>
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
 
@@ -174,7 +190,7 @@
 					<Icon icon="solar:download-minimalistic-bold" class="w-5 h-5 text-muted-foreground" />
 					<span class="font-medium">Downloads</span>
 				</div>
-				<div class="text-2xl font-bold">{formatDownloadCount(selectedPackage.downloadsCount)}</div>
+				<div class="text-2xl font-bold">{formatDownloadCount(selectedPackage.totalDownloadsCount || selectedPackage.downloadsCount)}</div>
 			</div>
 			
 			<div class="border rounded-lg p-4">

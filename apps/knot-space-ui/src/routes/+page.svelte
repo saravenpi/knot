@@ -195,7 +195,7 @@
 
 					<div class="flex items-center justify-between text-xs text-muted-foreground">
 						<span>by {pkg.owner.username}</span>
-						<span>{formatDownloadCount(pkg.downloadsCount)} downloads</span>
+						<span>{formatDownloadCount(pkg.totalDownloadsCount || pkg.downloadsCount)} downloads</span>
 					</div>
 				</div>
 			{/each}
