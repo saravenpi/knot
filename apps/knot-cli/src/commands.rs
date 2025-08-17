@@ -225,6 +225,8 @@ pub fn init_app(name: &str, template: Option<&str>, description: Option<&str>) -
 }
 
 pub async fn link_packages(use_symlinks: bool) -> Result<()> {
+    let start_time = std::time::Instant::now();
+    
     let current_dir = std::env::current_dir()?;
     let project = match Project::find_and_load(&current_dir) {
         Ok(project) => project,
@@ -246,8 +248,10 @@ pub async fn link_packages(use_symlinks: bool) -> Result<()> {
         .setup_aliases_for_all_apps()
         .context("Failed to setup TypeScript aliases")?;
 
+    let duration = start_time.elapsed();
     let mode = if use_symlinks { "symlinked" } else { "copied" };
     println!("🔗 Successfully {} all packages and updated TypeScript configurations", mode);
+    println!("⚡ Linked in {}ms", duration.as_millis());
     Ok(())
 }
 
@@ -1280,17 +1284,89 @@ pub async fn install_dependencies() -> Result<()> {
 fn create_package_tarball(_package_name: &str, output_path: &str) -> Result<()> {
     use flate2::write::GzEncoder;
     use flate2::Compression;
+    use std::path::Path;
     use tar::Builder;
 
     let tar_gz = std::fs::File::create(output_path)?;
     let enc = GzEncoder::new(tar_gz, Compression::default());
     let mut tar = Builder::new(enc);
 
-    // Add current directory contents to tarball (excluding certain files)
-    tar.append_dir_all(".", ".")?;
+    // Files and directories to exclude from the tarball
+    let excluded_patterns = [
+        "*.tar.gz",     // Previous tarball files
+        "*.tgz",        // Alternative tarball extension
+        ".git",         // Git directory
+        "node_modules", // Node.js dependencies
+        "target",       // Rust build directory
+        ".DS_Store",    // macOS system files
+        "Thumbs.db",    // Windows system files
+        "*.tmp",        // Temporary files
+        "*.temp",       // Temporary files
+        ".env",         // Environment files (may contain secrets)
+        ".env.local",   // Local environment files
+    ];
+
+    // Walk through directory and add files that don't match excluded patterns
+    let current_dir = std::env::current_dir()?;
+    add_directory_to_tar(&mut tar, &current_dir, ".", &excluded_patterns)?;
+    
     tar.finish()?;
 
     println!("📦 Created package tarball: {}", output_path);
+    Ok(())
+}
+
+fn add_directory_to_tar(
+    tar: &mut tar::Builder<flate2::write::GzEncoder<std::fs::File>>,
+    base_path: &Path,
+    relative_path: &str,
+    excluded_patterns: &[&str],
+) -> Result<()> {
+    let dir_path = base_path.join(relative_path);
+    
+    for entry in std::fs::read_dir(&dir_path)? {
+        let entry = entry?;
+        let file_name = entry.file_name().to_string_lossy();
+        let file_path = entry.path();
+        
+        // Check if this file/directory should be excluded
+        let should_exclude = excluded_patterns.iter().any(|pattern| {
+            if pattern.contains('*') {
+                // Simple glob matching for patterns with *
+                let pattern_without_star = pattern.replace("*", "");
+                if pattern.starts_with('*') {
+                    file_name.ends_with(&pattern_without_star)
+                } else if pattern.ends_with('*') {
+                    file_name.starts_with(&pattern_without_star)
+                } else {
+                    file_name.contains(&pattern_without_star)
+                }
+            } else {
+                // Exact match for patterns without *
+                file_name == *pattern
+            }
+        });
+        
+        if should_exclude {
+            continue;
+        }
+        
+        let entry_relative_path = if relative_path == "." {
+            file_name.to_string()
+        } else {
+            format!("{}/{}", relative_path, file_name)
+        };
+        
+        if file_path.is_dir() {
+            // Recursively add directory contents
+            add_directory_to_tar(tar, base_path, &entry_relative_path, excluded_patterns)?;
+        } else {
+            // Add file to tarball
+            let mut file = std::fs::File::open(&file_path)?;
+            tar.append_file(&entry_relative_path, &mut file)?;
+        }
+    }
+    
     Ok(())
 }
 
