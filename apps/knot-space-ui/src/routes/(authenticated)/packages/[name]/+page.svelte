@@ -152,9 +152,9 @@
 					
 					<!-- Timeline section -->
 					<div class="bg-muted/30 rounded-lg p-4 space-y-3">
-						<div class="flex items-center justify-between">
+						<div class="flex items-center gap-2">
 							<span class="text-sm font-medium text-foreground">Last updated</span>
-							<span class="text-sm text-primary font-medium">{formatTimeAgo(selectedPackage.updatedAt || selectedPackage.publishedAt)}</span>
+							<span class="text-sm text-muted-foreground italic">{formatTimeAgo(selectedPackage.updatedAt || selectedPackage.publishedAt)}</span>
 						</div>
 						<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-muted-foreground">
 							<div class="flex items-center gap-2">
@@ -187,7 +187,7 @@
 		<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 			<div class="border rounded-lg p-4">
 				<div class="flex items-center gap-2 mb-2">
-					<Icon icon="solar:download-minimalistic-bold" class="w-5 h-5 text-muted-foreground" />
+					<Icon icon="solar:download-minimalistic-bold" class="w-5 h-5 text-green-500" />
 					<span class="font-medium">Downloads</span>
 				</div>
 				<div class="text-2xl font-bold">{formatDownloadCount(selectedPackage.totalDownloadsCount || selectedPackage.downloadsCount)}</div>
@@ -195,7 +195,7 @@
 			
 			<div class="border rounded-lg p-4">
 				<div class="flex items-center gap-2 mb-2">
-					<Icon icon="solar:document-bold" class="w-5 h-5 text-muted-foreground" />
+					<Icon icon="solar:document-bold" class="w-5 h-5 text-blue-500" />
 					<span class="font-medium">File Size</span>
 				</div>
 				<div class="text-2xl font-bold">{formatFileSize(selectedPackage.fileSize)}</div>
@@ -203,7 +203,7 @@
 
 			<div class="border rounded-lg p-4">
 				<div class="flex items-center gap-2 mb-2">
-					<Icon icon="solar:tag-bold" class="w-5 h-5 text-muted-foreground" />
+					<Icon icon="solar:tag-bold" class="w-5 h-5 text-purple-500" />
 					<span class="font-medium">Version</span>
 				</div>
 				<div class="text-2xl font-bold">v{selectedPackage.version}</div>

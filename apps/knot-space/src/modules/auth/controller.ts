@@ -1,6 +1,6 @@
 import { Context } from 'hono';
 import { authModuleService } from './service';
-import { CreateUserRequest, LoginRequest } from '../../types';
+import { CreateUserRequest, LoginRequest, UpdateProfileRequest } from '../../types';
 
 export class AuthController {
   static async register(c: Context) {
@@ -114,6 +114,33 @@ export class AuthController {
         success: false,
         error: error instanceof Error ? error.message : 'User not found'
       }, 404);
+    }
+  }
+
+  static async updateProfile(c: Context) {
+    try {
+      const user = c.get('user');
+      if (!user || !user.id) {
+        return c.json({
+          success: false,
+          error: 'User not authenticated'
+        }, 401);
+      }
+
+      const body = await c.req.json() as UpdateProfileRequest;
+      const result = await authModuleService.updateProfile(user.id, body);
+      
+      return c.json({
+        success: true,
+        data: result,
+        message: 'Profile updated successfully'
+      });
+    } catch (error) {
+      console.error('Update profile error:', error);
+      return c.json({
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to update profile'
+      }, 400);
     }
   }
 }

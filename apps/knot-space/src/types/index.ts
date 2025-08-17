@@ -106,8 +106,26 @@ export const PublishPackageSchema = z.object({
     .optional(),
 });
 
+export const UpdateProfileSchema = z.object({
+  username: z
+    .string()
+    .min(3, 'Username must be at least 3 characters')
+    .max(50, 'Username must be at most 50 characters')
+    .regex(
+      /^[a-zA-Z0-9][a-zA-Z0-9\-_]*$/,
+      'Username must start with alphanumeric and contain only alphanumeric, hyphens, or underscores'
+    )
+    .transform((val) => val.trim().toLowerCase()),
+  email: z
+    .string()
+    .email('Invalid email format')
+    .max(255, 'Email must be at most 255 characters')
+    .transform((val) => val.trim().toLowerCase()),
+});
+
 export type CreateUserRequest = z.infer<typeof CreateUserSchema>;
 export type LoginRequest = z.infer<typeof LoginSchema>;
 export type CreateTeamRequest = z.infer<typeof CreateTeamSchema>;
 export type AddTeamMemberRequest = z.infer<typeof AddTeamMemberSchema>;
 export type PublishPackageRequest = z.infer<typeof PublishPackageSchema>;
+export type UpdateProfileRequest = z.infer<typeof UpdateProfileSchema>;

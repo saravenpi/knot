@@ -16,6 +16,10 @@
 	let showDeleteConfirm = false;
 	let deleteConfirmText = '';
 	let isDeleting = false;
+	let showEditProfile = false;
+	let editForm = { username: '', email: '' };
+	let editError = '';
+	let isUpdating = false;
 
 	onMount(async () => {
 		// Get the token from localStorage - no need to call getProfile() again
@@ -94,6 +98,64 @@
 			isDeleting = false;
 		}
 	}
+
+	function showEditDialog() {
+		editForm.username = user?.username || '';
+		editForm.email = user?.email || '';
+		editError = '';
+		showEditProfile = true;
+	}
+
+	function cancelEdit() {
+		showEditProfile = false;
+		editForm = { username: '', email: '' };
+		editError = '';
+		isUpdating = false;
+	}
+
+	async function updateProfile() {
+		if (!editForm.username.trim() || !editForm.email.trim()) {
+			editError = 'Username and email are required';
+			return;
+		}
+
+		isUpdating = true;
+		editError = '';
+
+		try {
+			const response = await fetch('/api/auth/profile', {
+				method: 'PUT',
+				headers: {
+					'Authorization': `Bearer ${token}`,
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					username: editForm.username.trim(),
+					email: editForm.email.trim()
+				})
+			});
+
+			const result = await response.json();
+
+			if (response.ok && result.success) {
+				// Update the auth store with new user data
+				await authStore.updateUser(result.data.user);
+				// Update token in localStorage if provided
+				if (result.data.token) {
+					localStorage.setItem('knot_token', result.data.token);
+					token = result.data.token;
+				}
+				showEditProfile = false;
+			} else {
+				editError = result.error || 'Failed to update profile';
+				isUpdating = false;
+			}
+		} catch (error) {
+			console.error('Error updating profile:', error);
+			editError = 'An error occurred while updating your profile. Please try again.';
+			isUpdating = false;
+		}
+	}
 </script>
 
 <svelte:head>
@@ -118,18 +180,27 @@
 	<div class="space-y-6">
 		<!-- Profile Section -->
 		<div class="bg-card text-card-foreground rounded-lg border p-6">
-			<h2 class="text-xl font-semibold mb-4">Profile Information</h2>
+			<div class="flex justify-between items-center mb-4">
+				<h2 class="text-xl font-semibold">Profile Information</h2>
+				<button
+					on:click={showEditDialog}
+					class="px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded-md text-sm font-medium transition-colors flex items-center gap-2"
+				>
+					<Icon icon="solar:pen-bold" class="w-4 h-4" />
+					Edit Profile
+				</button>
+			</div>
 			<div class="space-y-3">
 				<div class="flex justify-between items-center py-2">
-					<span class="font-medium">Username:</span>
+					<span class="font-medium">Username</span>
 					<span class="text-muted-foreground">{user?.username || 'N/A'}</span>
 				</div>
 				<div class="flex justify-between items-center py-2">
-					<span class="font-medium">Email:</span>
+					<span class="font-medium">Email</span>
 					<span class="text-muted-foreground">{user?.email || 'N/A'}</span>
 				</div>
 				<div class="flex justify-between items-center py-2">
-					<span class="font-medium">Member since:</span>
+					<span class="font-medium">Member since</span>
 					<span class="text-muted-foreground">
 						{user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}
 					</span>
@@ -307,6 +378,76 @@
 					{/if}
 				</button>
 			</div>
+		</div>
+	</div>
+{/if}
+
+<!-- Edit Profile Modal -->
+{#if showEditProfile}
+	<div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+		<div class="bg-card text-card-foreground rounded-lg border max-w-md w-full mx-4 p-6">
+			<div class="flex items-center space-x-3 mb-4">
+				<Icon icon="solar:user-bold" class="w-6 h-6 text-primary" />
+				<h3 class="text-lg font-semibold">Edit Profile</h3>
+			</div>
+			
+			<form on:submit|preventDefault={updateProfile} class="space-y-4">
+				<div>
+					<label for="edit-username" class="block text-sm font-medium mb-2">Username</label>
+					<input
+						id="edit-username"
+						bind:value={editForm.username}
+						type="text"
+						placeholder="Enter username"
+						class="w-full px-3 py-2 border border-input bg-background rounded-md text-sm"
+						disabled={isUpdating}
+						required
+					/>
+				</div>
+
+				<div>
+					<label for="edit-email" class="block text-sm font-medium mb-2">Email</label>
+					<input
+						id="edit-email"
+						bind:value={editForm.email}
+						type="email"
+						placeholder="Enter email"
+						class="w-full px-3 py-2 border border-input bg-background rounded-md text-sm"
+						disabled={isUpdating}
+						required
+					/>
+				</div>
+
+				{#if editError}
+					<div class="bg-destructive/10 border border-destructive/20 rounded-md p-3">
+						<p class="text-sm text-destructive">{editError}</p>
+					</div>
+				{/if}
+				
+				<div class="flex justify-end space-x-2 pt-2">
+					<button
+						type="button"
+						on:click={cancelEdit}
+						class="px-4 py-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground rounded-md text-sm"
+						disabled={isUpdating}
+					>
+						Cancel
+					</button>
+					<button
+						type="submit"
+						class="px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded-md text-sm flex items-center space-x-2"
+						disabled={isUpdating}
+					>
+						{#if isUpdating}
+							<Icon icon="solar:refresh-bold" class="animate-spin w-4 h-4" />
+							<span>Updating...</span>
+						{:else}
+							<Icon icon="solar:check-circle-bold" class="w-4 h-4" />
+							<span>Update Profile</span>
+						{/if}
+					</button>
+				</div>
+			</form>
 		</div>
 	</div>
 {/if}

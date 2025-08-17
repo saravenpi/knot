@@ -227,6 +227,14 @@ const createAuthStore = () => {
           this.logout();
         }
       }
+    },
+
+    // Method to update user data after profile changes
+    async updateUser(user: User) {
+      update(state => ({
+        ...state,
+        user
+      }));
     }
   };
 };
