@@ -3,7 +3,6 @@ description: The Knot CLI tool for monorepo package management
 tsAlias: null
 packages:
 - utils
-- '@jwt'
 build: cargo build --release
 scripts:
   dev: cargo run

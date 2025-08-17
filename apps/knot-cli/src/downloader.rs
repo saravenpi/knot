@@ -46,11 +46,15 @@ impl PackageDownloader {
         let client = reqwest::Client::new();
         let base_url = get_knot_space_url();
         
-        // URL encode the package name to handle @ symbols properly
-        let encoded_package_name = urlencoding::encode(package_name);
+        // Strip @ prefix for API calls - the API expects package names without @
+        let api_package_name = if package_name.starts_with('@') {
+            &package_name[1..]
+        } else {
+            package_name
+        };
         
         // First, get the package versions to find the latest
-        let versions_url = format!("{}/api/packages/{}/versions", base_url, encoded_package_name);
+        let versions_url = format!("{}/api/packages/{}/versions", base_url, api_package_name);
         let versions_response = client.get(&versions_url).send().await?;
         
         if !versions_response.status().is_success() {
@@ -72,11 +76,11 @@ impl PackageDownloader {
             .ok_or_else(|| anyhow::anyhow!("Invalid version format"))?;
         
         // Download the package file
-        let download_url = format!("{}/api/packages/{}/{}/download", base_url, encoded_package_name, latest_version);
+        let download_url = format!("{}/api/packages/{}/{}/download", base_url, api_package_name, latest_version);
         let download_response = client.get(&download_url).send().await?;
         
         if !download_response.status().is_success() {
-            anyhow::bail!("Failed to download package file");
+            anyhow::bail!("Failed to download package file (HTTP {})", download_response.status());
         }
         
         // Download the tar.gz file
