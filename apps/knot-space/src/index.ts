@@ -1,7 +1,7 @@
 // Register path mapping for TypeScript aliases
 import 'tsconfig-paths/register';
 import { serve } from '@hono/node-server';
-import { setupRoutes } from './router';
+import { createApp } from './router';
 import { validateRequiredEnv, env } from './lib/env';
 import { logger } from './lib/logger';
 import { checkDatabaseConnection, disconnectDatabase } from './lib/prisma';
@@ -24,8 +24,8 @@ async function startServer() {
     // Check database connection
     await checkDatabaseConnection();
     
-    // Setup all routes
-    const app = await setupRoutes();
+    // Create app with all routes
+    const app = await createApp();
     
     
     logger.info('Server configuration', {
