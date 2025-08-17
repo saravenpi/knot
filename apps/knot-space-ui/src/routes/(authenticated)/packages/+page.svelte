@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
 	import { packagesStore } from '../../../lib/stores';
 	import { formatDownloadCount, formatFileSize, formatDate } from '../../../lib/utils/format';
 
@@ -151,7 +152,8 @@
 											class="hover:text-primary transition-colors font-medium underline"
 											on:click={(e) => {
 												e.stopPropagation();
-												window.location.href = `/users/${encodeURIComponent(pkg.owner.username)}`;
+												e.preventDefault();
+												goto(`/users/${encodeURIComponent(pkg.owner.username)}`);
 											}}
 										>{pkg.owner.username}</button>
 									</span>

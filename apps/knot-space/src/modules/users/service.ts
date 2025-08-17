@@ -6,6 +6,27 @@ export interface UserPackageFilters {
 }
 
 class UsersService {
+  async getAllUsers() {
+    const users = await prisma.user.findMany({
+      select: {
+        id: true,
+        username: true,
+        email: false, // Don't expose email in public listings
+        createdAt: true,
+        _count: {
+          select: {
+            ownedPackages: true,
+          }
+        }
+      },
+      orderBy: [
+        { createdAt: 'desc' }
+      ]
+    });
+
+    return users;
+  }
+
   async getUserProfile(username: string) {
     const user = await prisma.user.findUnique({
       where: { username },
@@ -40,7 +61,8 @@ class UsersService {
       throw new Error('User not found');
     }
 
-    const packages = await prisma.package.findMany({
+    // Get all packages by this user first
+    const allPackages = await prisma.package.findMany({
       where: { 
         owner: {
           username: username
@@ -66,23 +88,31 @@ class UsersService {
       orderBy: [
         { publishedAt: 'desc' }
       ],
-      skip: filters.offset,
-      take: filters.limit,
     });
 
-    const total = await prisma.package.count({ 
-      where: { 
-        owner: {
-          username: username
-        }
+    // Group by package name and get only the latest version of each
+    const latestPackagesMap = new Map<string, any>();
+    
+    for (const pkg of allPackages) {
+      const existing = latestPackagesMap.get(pkg.name);
+      if (!existing || new Date(pkg.publishedAt) > new Date(existing.publishedAt)) {
+        latestPackagesMap.set(pkg.name, pkg);
       }
-    });
+    }
 
-    // Convert BigInt fields to strings for JSON serialization
+    // Convert map to array, sort by latest published date, and apply pagination
+    const latestPackages = Array.from(latestPackagesMap.values())
+      .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
+    const packages = latestPackages.slice(filters.offset, filters.offset + filters.limit);
+
+    const total = latestPackages.length; // Total unique packages, not total versions
+
+    // Convert BigInt fields to strings and transform tags for JSON serialization
     const serializedPackages = packages.map(pkg => ({
       ...pkg,
       fileSize: pkg.fileSize.toString(),
       downloadsCount: pkg.downloadsCount.toString(),
+      tags: pkg.tags.map(tag => tag.tag), // Transform from {tag: string}[] to string[]
     }));
 
     return {

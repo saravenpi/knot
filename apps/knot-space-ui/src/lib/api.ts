@@ -182,6 +182,11 @@ export const teamsApi = {
 
 // Users API
 export const usersApi = {
+  async getAllUsers(): Promise<User[]> {
+    const response = await requestApi<{ success: boolean; data: User[] }>('GET', '/api/users');
+    return response.data;
+  },
+
   async getUserProfile(username: string): Promise<User> {
     const response = await requestApi<{ success: boolean; data: User }>('GET', `/api/users/${encodeURIComponent(username)}`);
     return response.data;

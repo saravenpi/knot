@@ -137,8 +137,11 @@
 				{/if}
 
 				<div class="flex items-center gap-6 text-sm text-muted-foreground">
-					<span class="flex items-center gap-1">
-						<Icon icon="solar:user-circle-bold" class="w-4 h-4" />
+					<span class="flex items-center gap-2">
+						<!-- Profile avatar matching the profile page design -->
+						<div class="w-6 h-6 bg-gradient-to-br from-primary to-primary/80 rounded-lg flex items-center justify-center text-primary-foreground text-xs font-bold">
+							{selectedPackage.owner.username.charAt(0).toUpperCase()}
+						</div>
 						by <a href="/users/{encodeURIComponent(selectedPackage.owner.username)}" class="hover:text-primary transition-colors font-medium">{selectedPackage.owner.username}</a>
 					</span>
 					{#if selectedPackage.team}
@@ -220,7 +223,7 @@
 					<Chart
 						data={downloadStats.dailyStats}
 						title="Downloads per Day (Last 7 Days)"
-						color="#8b5cf6"
+						color="#000000"
 						height={300}
 					/>
 				</div>

@@ -3,6 +3,7 @@ import { UsersController } from './controller';
 
 const users = new Hono();
 
+users.get('/', UsersController.getAllUsers);
 users.get('/:username', UsersController.getUserProfile);
 users.get('/:username/packages', UsersController.getUserPackages);
 users.get('/:username/stats', UsersController.getUserStats);

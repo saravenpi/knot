@@ -2,6 +2,23 @@ import { Context } from 'hono';
 import { usersService } from './service';
 
 export class UsersController {
+  static async getAllUsers(c: Context) {
+    try {
+      const users = await usersService.getAllUsers();
+      
+      return c.json({
+        success: true,
+        data: users
+      });
+    } catch (error) {
+      console.error('Get all users error:', error);
+      return c.json({
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to get users'
+      }, 500);
+    }
+  }
+
   static async getUserProfile(c: Context) {
     try {
       const username = c.req.param('username');
