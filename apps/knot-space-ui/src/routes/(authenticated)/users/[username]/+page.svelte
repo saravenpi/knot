@@ -135,7 +135,10 @@
 		<!-- Stats Cards -->
 		<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
 			<div class="bg-card rounded-lg border p-6 text-center">
-				<div class="text-2xl sm:text-3xl font-bold text-primary mb-2">
+				<div class="flex items-center justify-center mb-3">
+					<Icon icon="solar:box-bold" class="w-8 h-8 text-blue-500" />
+				</div>
+				<div class="text-2xl sm:text-3xl font-bold text-foreground mb-2">
 					{formatLargeNumber(userStats.totalPackages)}
 				</div>
 				<div class="text-sm text-muted-foreground font-medium">
@@ -144,7 +147,10 @@
 			</div>
 			
 			<div class="bg-card rounded-lg border p-6 text-center">
-				<div class="text-2xl sm:text-3xl font-bold text-primary mb-2">
+				<div class="flex items-center justify-center mb-3">
+					<Icon icon="solar:download-bold" class="w-8 h-8 text-green-500" />
+				</div>
+				<div class="text-2xl sm:text-3xl font-bold text-foreground mb-2">
 					{formatLargeNumber(userStats.totalDownloads)}
 				</div>
 				<div class="text-sm text-muted-foreground font-medium">
@@ -153,7 +159,10 @@
 			</div>
 			
 			<div class="bg-card rounded-lg border p-6 text-center">
-				<div class="text-2xl sm:text-3xl font-bold text-primary mb-2">
+				<div class="flex items-center justify-center mb-3">
+					<Icon icon="solar:users-group-rounded-bold" class="w-8 h-8 text-purple-500" />
+				</div>
+				<div class="text-2xl sm:text-3xl font-bold text-foreground mb-2">
 					{formatLargeNumber(userStats.totalTeams)}
 				</div>
 				<div class="text-sm text-muted-foreground font-medium">
@@ -193,7 +202,7 @@
 									<div class="flex-1 min-w-0">
 										<div class="flex items-center gap-2 mb-2">
 											<h3 class="font-semibold text-lg truncate hover:text-primary transition-colors">
-												@{pkg.name}
+												{pkg.name}
 											</h3>
 											<span class="text-sm text-muted-foreground bg-secondary px-2 py-1 rounded flex-shrink-0">
 												v{pkg.version}

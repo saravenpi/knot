@@ -123,10 +123,11 @@
 		<div class="flex items-start justify-between">
 			<div class="flex-1">
 				<div class="flex items-center gap-2 mb-2">
-					<a href="/packages" class="text-muted-foreground hover:text-foreground transition-colors">
-						<Icon icon="solar:arrow-left-bold" class="w-5 h-5" />
+					<a href="/packages" class="border border-input hover:bg-accent hover:text-accent-foreground px-3 py-1.5 rounded-md text-sm font-medium transition-colors flex items-center gap-2">
+						<Icon icon="solar:arrow-left-bold" class="w-4 h-4" />
+						Back
 					</a>
-					<h1 class="text-3xl font-bold" style="font-family: 'Gambarino', 'Satoshi', sans-serif;">@{selectedPackage.name}</h1>
+					<h1 class="text-3xl font-bold" style="font-family: 'Gambarino', 'Satoshi', sans-serif;">{selectedPackage.name}</h1>
 					<span class="text-lg text-muted-foreground bg-secondary px-3 py-1 rounded">
 						v{selectedPackage.version}
 					</span>
@@ -211,6 +212,33 @@
 			</div>
 		{/if}
 
+		<!-- Installation -->
+		<div class="space-y-4">
+			<h3 class="text-xl font-semibold">Installation</h3>
+			<div class="bg-muted rounded-lg p-4">
+				<div class="flex items-center justify-between mb-2">
+					<span class="text-sm font-medium">Knot CLI</span>
+					<button 
+						on:click={async () => {
+							await navigator.clipboard.writeText(`knot add @${selectedPackage.name}`);
+							copySuccess = true;
+							setTimeout(() => copySuccess = false, 2000);
+						}}
+						class="text-xs {copySuccess ? 'text-green-600' : 'text-muted-foreground hover:text-foreground'} transition-colors flex items-center gap-1"
+					>
+						{#if copySuccess}
+							<Icon icon="solar:check-circle-bold" class="w-3 h-3" />
+							Copied!
+						{:else}
+							<Icon icon="solar:copy-bold" class="w-3 h-3" />
+							Copy
+						{/if}
+					</button>
+				</div>
+				<code class="text-sm">knot add @{selectedPackage.name}</code>
+			</div>
+		</div>
+
 		<!-- Download Statistics -->
 		<div class="space-y-4">
 			<h3 class="text-xl font-semibold">Download Statistics</h3>
@@ -238,33 +266,6 @@
 					</div>
 				</div>
 			{/if}
-		</div>
-
-		<!-- Installation -->
-		<div class="space-y-4">
-			<h3 class="text-xl font-semibold">Installation</h3>
-			<div class="bg-muted rounded-lg p-4">
-				<div class="flex items-center justify-between mb-2">
-					<span class="text-sm font-medium">Knot CLI</span>
-					<button 
-						on:click={async () => {
-							await navigator.clipboard.writeText(`knot add @${selectedPackage.name}`);
-							copySuccess = true;
-							setTimeout(() => copySuccess = false, 2000);
-						}}
-						class="text-xs {copySuccess ? 'text-green-600' : 'text-muted-foreground hover:text-foreground'} transition-colors flex items-center gap-1"
-					>
-						{#if copySuccess}
-							<Icon icon="solar:check-circle-bold" class="w-3 h-3" />
-							Copied!
-						{:else}
-							<Icon icon="solar:copy-bold" class="w-3 h-3" />
-							Copy
-						{/if}
-					</button>
-				</div>
-				<code class="text-sm">knot add @{selectedPackage.name}</code>
-			</div>
 		</div>
 
 		<!-- Delete Confirmation Modal -->

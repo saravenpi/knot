@@ -133,7 +133,7 @@
 							<div class="flex-1 min-w-0">
 								<div class="flex items-center gap-2 mb-2">
 									<h3 class="font-semibold text-lg truncate hover:text-primary transition-colors">
-										@{pkg.name}
+										{pkg.name}
 									</h3>
 									<span class="text-sm text-muted-foreground bg-secondary px-2 py-1 rounded flex-shrink-0">
 										v{pkg.version}

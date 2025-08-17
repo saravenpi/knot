@@ -3,6 +3,7 @@
 	import { goto } from '$app/navigation';
 	import { usersApi, type User } from '../../../lib/api';
 	import { formatDate } from '../../../lib/utils/format';
+	import Icon from '@iconify/svelte';
 
 	let allUsers: User[] = [];
 	let filteredUsers: User[] = [];
@@ -160,7 +161,10 @@
 						
 						<div class="space-y-1 text-sm text-muted-foreground">
 							<div class="flex items-center justify-between">
-								<span>Packages:</span>
+								<span class="flex items-center gap-1">
+									<Icon icon="solar:box-bold" class="w-4 h-4" />
+									Packages
+								</span>
 								<span class="font-medium">{user._count?.ownedPackages || 0}</span>
 							</div>
 						</div>
