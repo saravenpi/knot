@@ -1,7 +1,6 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { prettyJSON } from 'hono/pretty-json';
-import { serveStatic } from 'hono/serve-static';
 import { loadModules } from './lib/loadModules';
 import { securityHeaders, requestLogger, rateLimit } from './lib/security';
 import { errorHandler } from './lib/errorHandler';
@@ -66,23 +65,34 @@ app.get('/health', (c) => {
   });
 });
 
-// Analytics middleware for tracking downloads
-app.use('/uploads/*', async (c, next) => {
-  await next();
-  
-  // Only track if file was served successfully
-  if (c.res.status === 200) {
+// Custom file serving for uploads with analytics
+app.get('/uploads/*', async (c) => {
+  try {
+    const fs = await import('fs');
+    const path = await import('path');
+    
+    // Extract filename from URL
+    const requestPath = c.req.path;
+    const filename = requestPath.replace('/uploads/', '');
+    const filePath = path.join(process.cwd(), 'uploads', filename);
+    
+    // Check if file exists
+    if (!fs.existsSync(filePath)) {
+      return c.json({ success: false, error: 'File not found' }, 404);
+    }
+    
+    // Read file
+    const fileBuffer = fs.readFileSync(filePath);
+    
+    // Set appropriate headers
+    const mimeType = filename.endsWith('.tar.gz') ? 'application/gzip' : 'application/octet-stream';
+    
+    // Track analytics for successful downloads
     try {
-      // Extract package info from filename (format: checksum.tar.gz)
-      const path = c.req.path;
-      const filename = path.split('/').pop();
-      
-      if (filename && filename.endsWith('.tar.gz')) {
-        // Find package by file checksum
+      if (filename.endsWith('.tar.gz')) {
         const { packagesService } = await import('./modules/packages/service');
         const checksum = filename.replace('.tar.gz', '');
         
-        // Get package info by checksum
         const pkg = await packagesService.getPackageByChecksum(checksum);
         if (pkg) {
           const clientIP = c.req.header('x-forwarded-for') || c.req.header('x-real-ip') || 'unknown';
@@ -90,18 +100,24 @@ app.use('/uploads/*', async (c, next) => {
           await packagesService.incrementDownloadCount(pkg.name, pkg.version, clientIP, userAgent);
         }
       }
-    } catch (error) {
-      console.error('Failed to track download analytics:', error);
+    } catch (analyticsError) {
+      console.error('Failed to track download analytics:', analyticsError);
       // Don't fail the file serving because of analytics error
     }
+    
+    return new Response(fileBuffer, {
+      headers: {
+        'Content-Type': mimeType,
+        'Content-Length': fileBuffer.length.toString(),
+        'Content-Disposition': `attachment; filename="${filename}"`,
+        'Cache-Control': 'public, max-age=31536000' // 1 year cache
+      }
+    });
+  } catch (error) {
+    console.error('File serving error:', error);
+    return c.json({ success: false, error: 'Internal server error' }, 500);
   }
 });
-
-// Serve static files from uploads directory
-app.use('/uploads/*', serveStatic({ 
-  root: './uploads',
-  rewriteRequestPath: (path) => path.replace(/^\/uploads/, '')
-}));
 
 // Load and mount all modules
 export async function setupRoutes() {
