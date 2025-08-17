@@ -123,10 +123,6 @@
 		<div class="flex items-start justify-between">
 			<div class="flex-1">
 				<div class="flex items-center gap-2 mb-2">
-					<a href="/packages" class="border border-input hover:bg-accent hover:text-accent-foreground px-3 py-1.5 rounded-md text-sm font-medium transition-colors flex items-center gap-2">
-						<Icon icon="solar:arrow-left-bold" class="w-4 h-4" />
-						Back
-					</a>
 					<h1 class="text-3xl font-bold" style="font-family: 'Gambarino', 'Satoshi', sans-serif;">{selectedPackage.name}</h1>
 					<span class="text-lg text-muted-foreground bg-secondary px-3 py-1 rounded">
 						v{selectedPackage.version}

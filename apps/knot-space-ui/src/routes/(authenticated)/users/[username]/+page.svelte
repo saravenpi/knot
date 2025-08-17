@@ -134,39 +134,51 @@
 
 		<!-- Stats Cards -->
 		<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
-			<div class="bg-card rounded-lg border p-6 text-center">
-				<div class="flex items-center justify-center mb-3">
-					<Icon icon="solar:box-bold" class="w-8 h-8 text-blue-500" />
-				</div>
-				<div class="text-2xl sm:text-3xl font-bold text-foreground mb-2">
-					{formatLargeNumber(userStats.totalPackages)}
-				</div>
-				<div class="text-sm text-muted-foreground font-medium">
-					Package{userStats.totalPackages === 1 ? '' : 's'}
-				</div>
-			</div>
-			
-			<div class="bg-card rounded-lg border p-6 text-center">
-				<div class="flex items-center justify-center mb-3">
-					<Icon icon="solar:download-bold" class="w-8 h-8 text-green-500" />
-				</div>
-				<div class="text-2xl sm:text-3xl font-bold text-foreground mb-2">
-					{formatLargeNumber(userStats.totalDownloads)}
-				</div>
-				<div class="text-sm text-muted-foreground font-medium">
-					Total Downloads
+			<div class="bg-card rounded-lg border p-6">
+				<div class="flex items-center gap-4">
+					<div class="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center p-3">
+						<Icon icon="solar:box-bold" class="w-6 h-6 text-blue-500" />
+					</div>
+					<div class="flex-1">
+						<div class="text-2xl sm:text-3xl font-bold text-foreground">
+							{formatLargeNumber(userStats.totalPackages)}
+						</div>
+						<div class="text-sm text-muted-foreground font-medium">
+							Package{userStats.totalPackages === 1 ? '' : 's'}
+						</div>
+					</div>
 				</div>
 			</div>
 			
-			<div class="bg-card rounded-lg border p-6 text-center">
-				<div class="flex items-center justify-center mb-3">
-					<Icon icon="solar:users-group-rounded-bold" class="w-8 h-8 text-purple-500" />
+			<div class="bg-card rounded-lg border p-6">
+				<div class="flex items-center gap-4">
+					<div class="w-12 h-12 bg-green-500/10 rounded-xl flex items-center justify-center p-3">
+						<Icon icon="solar:download-bold" class="w-6 h-6 text-green-500" />
+					</div>
+					<div class="flex-1">
+						<div class="text-2xl sm:text-3xl font-bold text-foreground">
+							{formatLargeNumber(userStats.totalDownloads)}
+						</div>
+						<div class="text-sm text-muted-foreground font-medium">
+							Total Downloads
+						</div>
+					</div>
 				</div>
-				<div class="text-2xl sm:text-3xl font-bold text-foreground mb-2">
-					{formatLargeNumber(userStats.totalTeams)}
-				</div>
-				<div class="text-sm text-muted-foreground font-medium">
-					Team{userStats.totalTeams === 1 ? '' : 's'}
+			</div>
+			
+			<div class="bg-card rounded-lg border p-6">
+				<div class="flex items-center gap-4">
+					<div class="w-12 h-12 bg-purple-500/10 rounded-xl flex items-center justify-center p-3">
+						<Icon icon="solar:users-group-rounded-bold" class="w-6 h-6 text-purple-500" />
+					</div>
+					<div class="flex-1">
+						<div class="text-2xl sm:text-3xl font-bold text-foreground">
+							{formatLargeNumber(userStats.totalTeams)}
+						</div>
+						<div class="text-sm text-muted-foreground font-medium">
+							Team{userStats.totalTeams === 1 ? '' : 's'}
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>

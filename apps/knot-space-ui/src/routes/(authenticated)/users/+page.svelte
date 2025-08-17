@@ -160,12 +160,9 @@
 						</div>
 						
 						<div class="space-y-1 text-sm text-muted-foreground">
-							<div class="flex items-center justify-between">
-								<span class="flex items-center gap-1">
-									<Icon icon="solar:box-bold" class="w-4 h-4" />
-									Packages
-								</span>
-								<span class="font-medium">{user._count?.ownedPackages || 0}</span>
+							<div class="flex items-center gap-1">
+								<Icon icon="solar:box-bold" class="w-4 h-4" />
+								<span class="font-medium">{user._count?.ownedPackages || 0} package{(user._count?.ownedPackages || 0) === 1 ? '' : 's'}</span>
 							</div>
 						</div>
 					</button>
