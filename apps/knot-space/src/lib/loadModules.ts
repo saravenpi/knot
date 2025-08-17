@@ -10,7 +10,7 @@ export interface Module {
 }
 
 // Allowed module names (security: whitelist only expected modules)
-const ALLOWED_MODULES = ['auth', 'teams', 'packages', 'users'];
+const ALLOWED_MODULES = ['auth', 'teams', 'packages', 'users', 'uploads'];
 
 // Security: Validate module name
 function isValidModuleName(name: string): boolean {

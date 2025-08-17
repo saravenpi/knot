@@ -210,7 +210,7 @@
 				<div class="flex items-center justify-between text-xs text-muted-foreground">
 					<span>Knot v1.0.0</span>
 					<a href="https://github.com/saravenpi/knot" class="flex items-center space-x-1 hover:text-foreground transition-colors">
-						<Icon icon="solar:github-bold" class="w-4 h-4" />
+						<Icon icon="mdi:github" class="w-4 h-4" />
 						<span>GitHub</span>
 					</a>
 				</div>
