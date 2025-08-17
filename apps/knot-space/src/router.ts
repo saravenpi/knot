@@ -66,43 +66,42 @@ app.get('/health', (c) => {
   });
 });
 
-// Serve static files from uploads directory with download analytics
+// Analytics middleware for tracking downloads
 app.use('/uploads/*', async (c, next) => {
-  // Serve the static file
-  const staticHandler = serveStatic({ 
-    root: './uploads',
-    rewriteRequestPath: (path) => path.replace(/^\/uploads/, '')
-  });
+  await next();
   
-  await staticHandler(c, async () => {
-    // If file was served successfully (no error thrown), track analytics
-    if (c.res.status === 200) {
-      try {
-        // Extract package info from filename (format: checksum.tar.gz)
-        const path = c.req.path;
-        const filename = path.split('/').pop();
+  // Only track if file was served successfully
+  if (c.res.status === 200) {
+    try {
+      // Extract package info from filename (format: checksum.tar.gz)
+      const path = c.req.path;
+      const filename = path.split('/').pop();
+      
+      if (filename && filename.endsWith('.tar.gz')) {
+        // Find package by file checksum
+        const { packagesService } = await import('./modules/packages/service');
+        const checksum = filename.replace('.tar.gz', '');
         
-        if (filename && filename.endsWith('.tar.gz')) {
-          // Find package by file checksum
-          const { packagesService } = await import('./modules/packages/service');
-          const checksum = filename.replace('.tar.gz', '');
-          
-          // Get package info by checksum
-          const pkg = await packagesService.getPackageByChecksum(checksum);
-          if (pkg) {
-            const clientIP = c.req.header('x-forwarded-for') || c.req.header('x-real-ip') || 'unknown';
-            const userAgent = c.req.header('user-agent');
-            await packagesService.incrementDownloadCount(pkg.name, pkg.version, clientIP, userAgent);
-          }
+        // Get package info by checksum
+        const pkg = await packagesService.getPackageByChecksum(checksum);
+        if (pkg) {
+          const clientIP = c.req.header('x-forwarded-for') || c.req.header('x-real-ip') || 'unknown';
+          const userAgent = c.req.header('user-agent');
+          await packagesService.incrementDownloadCount(pkg.name, pkg.version, clientIP, userAgent);
         }
-      } catch (error) {
-        console.error('Failed to track download analytics:', error);
-        // Don't fail the file serving because of analytics error
       }
+    } catch (error) {
+      console.error('Failed to track download analytics:', error);
+      // Don't fail the file serving because of analytics error
     }
-    return next();
-  });
+  }
 });
+
+// Serve static files from uploads directory
+app.use('/uploads/*', serveStatic({ 
+  root: './uploads',
+  rewriteRequestPath: (path) => path.replace(/^\/uploads/, '')
+}));
 
 // Load and mount all modules
 export async function setupRoutes() {
