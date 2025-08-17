@@ -2,8 +2,14 @@ use anyhow::Result;
 use std::fs;
 use std::path::Path;
 use std::io::Cursor;
+use std::env;
 use flate2::read::GzDecoder;
 use tar::Archive;
+
+// Helper function to get the Knot Space URL (same as in commands.rs)
+fn get_knot_space_url() -> String {
+    env::var("KNOT_SPACE_URL").unwrap_or_else(|_| "https://knot-space-production.up.railway.app".to_string())
+}
 
 pub struct PackageDownloader;
 
@@ -45,8 +51,7 @@ impl PackageDownloader {
     async fn download_from_knot_space(package_name: &str, destination: &Path) -> Result<()> {
         // Get the latest version of the package
         let client = reqwest::Client::new();
-        let base_url = std::env::var("KNOT_SPACE_URL")
-            .unwrap_or_else(|_| "http://localhost:3001".to_string());
+        let base_url = get_knot_space_url();
         
         // First, get the package versions to find the latest
         let versions_url = format!("{}/api/packages/{}/versions", base_url, package_name);

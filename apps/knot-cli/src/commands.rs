@@ -1404,7 +1404,7 @@ pub async fn login(token: Option<&str>) -> Result<()> {
     } else {
         // OAuth flow - open browser for authentication
         println!("🌐 Opening browser for authentication...");
-        println!("If browser doesn't open, visit: https://knot-space.com/auth/cli");
+        println!("If browser doesn't open, visit: {}/auth/cli", get_knot_space_url());
         
         // For now, just prompt for manual token entry
         println!("\n📝 After authenticating, copy your token and run:");
@@ -1549,7 +1549,7 @@ async fn verify_auth_token() -> Result<String> {
     let token = get_auth_token()?
         .ok_or_else(|| anyhow::anyhow!("No authentication token found"))?;
     
-    let knot_space_url = env::var("KNOT_SPACE_URL").unwrap_or_else(|_| "https://knot-space.com".to_string());
+    let knot_space_url = get_knot_space_url();
     let client = reqwest::Client::new();
     
     let response = client

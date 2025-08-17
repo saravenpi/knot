@@ -34,7 +34,7 @@
 
 <div class="flex min-h-screen bg-background">
   <!-- Sidebar -->
-  <aside class="w-64 bg-card border-r border-border flex-shrink-0 relative">
+  <aside class="w-64 h-screen bg-card border-r border-border flex-shrink-0 relative fixed left-0 top-0">
     <div class="p-6">
       <!-- Logo -->
       <div class="flex items-center space-x-2 mb-8">
@@ -93,7 +93,7 @@
   </aside>
 
   <!-- Main content -->
-  <main class="flex-1 p-8">
+  <main class="flex-1 p-8 ml-64">
     <slot />
   </main>
 </div>
