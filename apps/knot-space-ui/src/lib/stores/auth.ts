@@ -47,9 +47,15 @@ const createAuthStore = () => {
         const token = authData.token || response.token;
         const user = authData.user || response.user;
         
-        if (token) {
-          setStoredToken(token);
+        if (!token) {
+          throw new Error('No authentication token received from server');
         }
+        
+        if (!user) {
+          throw new Error('No user data received from server');
+        }
+        
+        setStoredToken(token);
         
         update(state => ({
           ...state,
@@ -82,9 +88,15 @@ const createAuthStore = () => {
         const token = authData.token || response.token;
         const user = authData.user || response.user;
         
-        if (token) {
-          setStoredToken(token);
+        if (!token) {
+          throw new Error('No authentication token received from server');
         }
+        
+        if (!user) {
+          throw new Error('No user data received from server');
+        }
+        
+        setStoredToken(token);
         
         update(state => ({
           ...state,
@@ -124,7 +136,7 @@ const createAuthStore = () => {
       try {
         // Add timeout to prevent hanging
         const timeoutPromise = new Promise((_, reject) => {
-          setTimeout(() => reject(new Error('Request timeout')), 3000); // 3 second timeout
+          setTimeout(() => reject(new Error('Request timeout')), 10000); // 10 second timeout
         });
         
         const response = await Promise.race([

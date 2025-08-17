@@ -10,6 +10,32 @@ use std::env;
 use std::fs;
 use std::path::Path;
 
+// Helper function to format API error responses in a user-friendly way
+fn format_api_error(status: reqwest::StatusCode, response_text: &str) -> String {
+    // Try to parse as JSON first to extract the actual error message
+    let error_message = if let Ok(json_value) = serde_json::from_str::<serde_json::Value>(response_text) {
+        json_value
+            .get("error")
+            .or_else(|| json_value.get("message"))
+            .and_then(|v| v.as_str())
+            .unwrap_or(response_text)
+            .to_string()
+    } else {
+        response_text.to_string()
+    };
+    
+    // Provide user-friendly context based on status code and add appropriate emoji
+    match status.as_u16() {
+        400 => format!("❌ {}", error_message),
+        401 => format!("🔐 Authentication failed. Please log in again with 'knot auth'"),
+        403 => format!("🚫 You don't have permission to perform this action"),
+        404 => format!("🔍 Resource not found. {}", error_message),
+        409 => format!("⚠️  {}", error_message),
+        500..=599 => format!("🔥 Server error. Please try again later"),
+        _ => format!("❌ {}", error_message),
+    }
+}
+
 pub fn init_project(name: &str, description: Option<&str>) -> Result<()> {
     let knot_yml_path = Path::new("knot.yml");
 
@@ -895,7 +921,8 @@ pub async fn publish_package(team: Option<&str>, description: Option<&str>) -> R
     if !metadata_response.status().is_success() {
         let status = metadata_response.status();
         let text = metadata_response.text().await.unwrap_or_default();
-        anyhow::bail!("Publish metadata failed ({}): {}", status, text);
+        let formatted_error = format_api_error(status, &text);
+        anyhow::bail!("Failed to publish package: {}", formatted_error);
     }
 
     // 2. Upload tarball
@@ -931,7 +958,8 @@ pub async fn publish_package(team: Option<&str>, description: Option<&str>) -> R
     } else {
         let status = upload_response.status();
         let text = upload_response.text().await.unwrap_or_default();
-        anyhow::bail!("Publish failed ({}): {}", status, text);
+        let formatted_error = format_api_error(status, &text);
+        anyhow::bail!("Failed to upload package files: {}", formatted_error);
     }
 
     Ok(())
@@ -955,7 +983,8 @@ pub async fn delete_package(name: &str, version: &str) -> Result<()> {
     } else {
         let status = response.status();
         let text = response.text().await.unwrap_or_default();
-        anyhow::bail!("Delete failed ({}): {}", status, text);
+        let formatted_error = format_api_error(status, &text);
+        anyhow::bail!("Failed to delete package: {}", formatted_error);
     }
 
     Ok(())
@@ -989,7 +1018,8 @@ pub async fn create_team(name: &str, description: Option<&str>) -> Result<()> {
     } else {
         let status = response.status();
         let text = response.text().await.unwrap_or_default();
-        anyhow::bail!("Team creation failed ({}): {}", status, text);
+        let formatted_error = format_api_error(status, &text);
+        anyhow::bail!("Failed to create team: {}", formatted_error);
     }
 
     Ok(())
@@ -1020,7 +1050,8 @@ pub async fn list_teams() -> Result<()> {
     } else {
         let status = response.status();
         let text = response.text().await.unwrap_or_default();
-        anyhow::bail!("Failed to list teams ({}): {}", status, text);
+        let formatted_error = format_api_error(status, &text);
+        anyhow::bail!("Could not retrieve teams: {}", formatted_error);
     }
 
     Ok(())
@@ -1057,7 +1088,8 @@ pub async fn team_info(name: &str) -> Result<()> {
     } else {
         let status = response.status();
         let text = response.text().await.unwrap_or_default();
-        anyhow::bail!("Failed to get team info ({}): {}", status, text);
+        let formatted_error = format_api_error(status, &text);
+        anyhow::bail!("Could not retrieve team information: {}", formatted_error);
     }
 
     Ok(())
@@ -1087,7 +1119,8 @@ pub async fn add_team_member(team: &str, username: &str, role: &str) -> Result<(
     } else {
         let status = response.status();
         let text = response.text().await.unwrap_or_default();
-        anyhow::bail!("Failed to add team member ({}): {}", status, text);
+        let formatted_error = format_api_error(status, &text);
+        anyhow::bail!("Could not add team member: {}", formatted_error);
     }
 
     Ok(())
@@ -1111,7 +1144,8 @@ pub async fn remove_team_member(team: &str, username: &str) -> Result<()> {
     } else {
         let status = response.status();
         let text = response.text().await.unwrap_or_default();
-        anyhow::bail!("Failed to remove team member ({}): {}", status, text);
+        let formatted_error = format_api_error(status, &text);
+        anyhow::bail!("Could not remove team member: {}", formatted_error);
     }
 
     Ok(())

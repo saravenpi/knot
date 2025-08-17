@@ -16,7 +16,7 @@
 	onMount(async () => {
 		await authStore.initialize();
 
-		// Set up periodic token validation (every 5 minutes)
+		// Set up periodic token validation (every 15 minutes)
 		const interval = setInterval(async () => {
 			if ($authStore.isAuthenticated && !$authStore.loading) {
 				try {
@@ -26,7 +26,7 @@
 					// Don't show error to user, just silently log out
 				}
 			}
-		}, 5 * 60 * 1000); // 5 minutes
+		}, 15 * 60 * 1000); // 15 minutes
 
 		// Cleanup interval on unmount
 		return () => clearInterval(interval);

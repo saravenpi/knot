@@ -1,0 +1,6 @@
+{
+  "description": "Mock fallback for @jwt package",
+  "main": "index.js",
+  "name": "@@jwt",
+  "version": "1.0.0"
+}

@@ -9,7 +9,10 @@
   $: isAuthenticated = $authStore.isAuthenticated;
 
   onMount(async () => {
-    await authStore.initialize();
+    // Don't initialize again if already initialized
+    if (!$authStore.initialized) {
+      await authStore.initialize();
+    }
     
     const unsubscribe = authStore.subscribe(({ initialized, isAuthenticated }) => {
       if (initialized && !isAuthenticated) {

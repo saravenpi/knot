@@ -14,7 +14,9 @@
 
 	onMount(async () => {
 		// Wait for auth to initialize before checking authentication status
-		await authStore.initialize();
+		if (!$authStore.initialized) {
+			await authStore.initialize();
+		}
 		
 		// Redirect if already logged in
 		if ($authStore.isAuthenticated) {
