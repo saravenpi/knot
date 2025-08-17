@@ -117,6 +117,14 @@ export class PackagesController {
 
       const downloadInfo = await packagesService.downloadPackage(name, version);
       
+      // Check if the package has a valid download URL (not a placeholder)
+      if (!downloadInfo.downloadUrl || downloadInfo.downloadUrl.includes('example.com')) {
+        return c.json({
+          success: false,
+          error: 'Package file not available. The package may not have been uploaded yet.'
+        }, 404);
+      }
+      
       // Increment download count with analytics
       try {
         const clientIP = c.req.header('x-forwarded-for') || c.req.header('x-real-ip') || 'unknown';
