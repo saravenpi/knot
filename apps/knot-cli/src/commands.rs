@@ -1284,7 +1284,6 @@ pub async fn install_dependencies() -> Result<()> {
 fn create_package_tarball(_package_name: &str, output_path: &str) -> Result<()> {
     use flate2::write::GzEncoder;
     use flate2::Compression;
-    use std::path::Path;
     use tar::Builder;
 
     let tar_gz = std::fs::File::create(output_path)?;
@@ -1318,7 +1317,7 @@ fn create_package_tarball(_package_name: &str, output_path: &str) -> Result<()> 
 
 fn add_directory_to_tar(
     tar: &mut tar::Builder<flate2::write::GzEncoder<std::fs::File>>,
-    base_path: &Path,
+    base_path: &std::path::Path,
     relative_path: &str,
     excluded_patterns: &[&str],
 ) -> Result<()> {
@@ -1326,7 +1325,7 @@ fn add_directory_to_tar(
     
     for entry in std::fs::read_dir(&dir_path)? {
         let entry = entry?;
-        let file_name = entry.file_name().to_string_lossy();
+        let file_name = entry.file_name().to_string_lossy().to_string();
         let file_path = entry.path();
         
         // Check if this file/directory should be excluded
