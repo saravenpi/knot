@@ -132,7 +132,8 @@ class PackagesService {
       };
     }
 
-    const packages = await prisma.package.findMany({
+    // First, get all packages with their names
+    const allPackages = await prisma.package.findMany({
       where: whereClause,
       include: {
         owner: {
@@ -154,11 +155,24 @@ class PackagesService {
       orderBy: [
         { publishedAt: 'desc' }
       ],
-      skip: filters.offset,
-      take: filters.limit,
     });
 
-    const total = await prisma.package.count({ where: whereClause });
+    // Group by package name and get only the latest version of each
+    const latestPackagesMap = new Map<string, any>();
+    
+    for (const pkg of allPackages) {
+      const existing = latestPackagesMap.get(pkg.name);
+      if (!existing || new Date(pkg.publishedAt) > new Date(existing.publishedAt)) {
+        latestPackagesMap.set(pkg.name, pkg);
+      }
+    }
+
+    // Convert map to array, sort by latest published date, and apply pagination
+    const latestPackages = Array.from(latestPackagesMap.values())
+      .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
+    const packages = latestPackages.slice(filters.offset, filters.offset + filters.limit);
+
+    const total = latestPackages.length; // Total unique packages, not total versions
 
     // Convert BigInt fields to strings and transform tags for JSON serialization
     const serializedPackages = packages.map(pkg => ({
