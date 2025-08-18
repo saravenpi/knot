@@ -1877,7 +1877,7 @@ pub async fn update_cli(force: bool) -> Result<()> {
                 }
             }
             
-            update_binary().await?;
+            update_binary_with_animation().await?;
             println!("✅ Update completed successfully!");
             println!("🎉 Run 'knot info' to verify the new version");
         }
@@ -1925,32 +1925,126 @@ async fn check_latest_version() -> Result<String> {
     Ok(version.to_string())
 }
 
-async fn update_binary() -> Result<()> {
-    use std::process::Command;
+async fn update_binary_with_animation() -> Result<()> {
     use std::env;
+    use std::time::Duration;
     
-    println!("⬇️ Downloading and installing latest version...");
+    // Start the loading animation in the background
+    let (animation_sender, mut animation_receiver) = tokio::sync::mpsc::channel(1);
+    let animation_task = tokio::spawn(async move {
+        let frames = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
+        let mut frame_index = 0;
+        
+        loop {
+            tokio::select! {
+                _ = animation_receiver.recv() => break,
+                _ = tokio::time::sleep(Duration::from_millis(100)) => {
+                    print!("\r{} Downloading and installing latest version...", frames[frame_index]);
+                    std::io::Write::flush(&mut std::io::stdout()).unwrap_or(());
+                    frame_index = (frame_index + 1) % frames.len();
+                }
+            }
+        }
+        print!("\r✅ Downloaded and installed latest version          \n");
+        std::io::Write::flush(&mut std::io::stdout()).unwrap_or(());
+    });
     
-    // Create a temporary script that runs the installer
-    let install_script = r#"#!/bin/bash
-set -e
-curl -fsSL https://raw.githubusercontent.com/saravenpi/knot/main/install.sh | bash
-"#;
-    
-    // Get current binary path to potentially preserve it
+    // Get current binary path
     let current_exe = env::current_exe()?;
-    println!("📍 Installing to the same location: {}", current_exe.display());
+    let current_dir = current_exe.parent()
+        .ok_or_else(|| anyhow::anyhow!("Could not determine current binary directory"))?;
     
-    // Run the install script
-    let output = Command::new("bash")
+    // Create a temporary backup of the current binary
+    let backup_path = current_dir.join("knot.backup");
+    let temp_path = current_dir.join("knot.new");
+    
+    // Create enhanced installation script that preserves binary location
+    let install_script = format!(r#"#!/bin/bash
+set -e
+
+# Set target directory to the same directory as current binary
+export KNOT_INSTALL_DIR="{}"
+
+# Function to safely replace binary
+replace_binary() {{
+    local target_dir="$1"
+    local temp_binary="$target_dir/knot.new"
+    local current_binary="$target_dir/knot"
+    local backup_binary="$target_dir/knot.backup"
+    
+    # Create backup of current binary
+    if [ -f "$current_binary" ]; then
+        cp "$current_binary" "$backup_binary" 2>/dev/null || true
+    fi
+    
+    # Move new binary into place
+    if [ -f "$temp_binary" ]; then
+        mv "$temp_binary" "$current_binary"
+        chmod +x "$current_binary"
+        
+        # Verify the new binary works
+        if "$current_binary" --version >/dev/null 2>&1; then
+            # Success - remove backup
+            rm -f "$backup_binary"
+            return 0
+        else
+            # Restore from backup if verification fails
+            if [ -f "$backup_binary" ]; then
+                mv "$backup_binary" "$current_binary"
+            fi
+            return 1
+        fi
+    fi
+    return 1
+}}
+
+# Download and build Knot
+TEMP_DIR=$(mktemp -d)
+trap 'rm -rf "$TEMP_DIR"' EXIT
+
+cd "$TEMP_DIR"
+git clone --depth 1 https://github.com/saravenpi/knot.git
+cd knot/apps/knot-cli
+
+# Build the project
+cargo build --release
+
+# Copy binary to target directory with temporary name
+cp target/release/knot "$KNOT_INSTALL_DIR/knot.new"
+
+# Replace the binary safely
+if ! replace_binary "$KNOT_INSTALL_DIR"; then
+    echo "Failed to replace binary" >&2
+    exit 1
+fi
+"#, current_dir.display());
+    
+    // Run the enhanced install script
+    let output = tokio::process::Command::new("bash")
         .arg("-c")
-        .arg(install_script)
-        .output()?;
+        .arg(&install_script)
+        .output()
+        .await?;
+    
+    // Stop the animation
+    let _ = animation_sender.send(()).await;
+    let _ = animation_task.await;
     
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
-        anyhow::bail!("Installation failed: {}", stderr);
+        let stdout = String::from_utf8_lossy(&output.stdout);
+        
+        // Try to restore from backup if it exists
+        if backup_path.exists() {
+            let _ = std::fs::rename(&backup_path, &current_exe);
+        }
+        
+        anyhow::bail!("Installation failed:\nSTDOUT: {}\nSTDERR: {}", stdout, stderr);
     }
+    
+    // Clean up any remaining temporary files
+    let _ = std::fs::remove_file(&backup_path);
+    let _ = std::fs::remove_file(&temp_path);
     
     Ok(())
 }
