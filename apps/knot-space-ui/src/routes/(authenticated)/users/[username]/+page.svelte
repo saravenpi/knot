@@ -4,6 +4,7 @@
 	import { usersApi, type User, type Package } from '../../../../lib/api';
 	import { formatDownloadCount, formatFileSize, formatDate, formatLargeNumber } from '../../../../lib/utils/format';
 	import Icon from '@iconify/svelte';
+	import PackageCard from '../../../../lib/components/PackageCard.svelte';
 
 	$: username = $page.params.username;
 	
@@ -206,60 +207,7 @@
 				{:else}
 					<div class="space-y-4">
 						{#each userPackages as pkg}
-							<a 
-								href="/packages/{encodeURIComponent(pkg.name)}"
-								class="block border rounded-lg p-6 hover:shadow-md transition-all duration-200 hover:border-primary/50"
-							>
-								<div class="flex items-start justify-between mb-4">
-									<div class="flex-1 min-w-0">
-										<div class="flex items-center gap-2 mb-2">
-											<h3 class="font-semibold text-lg truncate hover:text-primary transition-colors">
-												{pkg.name}
-											</h3>
-											<span class="text-sm text-muted-foreground bg-secondary px-2 py-1 rounded flex-shrink-0">
-												v{pkg.version}
-											</span>
-										</div>
-										
-										{#if pkg.description}
-											<p class="text-muted-foreground mb-3 line-clamp-2">
-												{pkg.description}
-											</p>
-										{/if}
-										
-										<!-- Tags -->
-										{#if pkg.tags && pkg.tags.length > 0}
-											<div class="flex flex-wrap gap-2 mb-3">
-												{#each pkg.tags as tag}
-													<span class="text-xs bg-secondary text-secondary-foreground px-2 py-1 rounded-full">
-														{tag}
-													</span>
-												{/each}
-											</div>
-										{/if}
-										
-										<div class="flex items-center gap-4 text-sm text-muted-foreground">
-											{#if pkg.team}
-												<span class="flex items-center gap-1">
-													<span class="w-2 h-2 bg-primary rounded-full"></span>
-													{pkg.team.name}
-												</span>
-											{/if}
-											<span>{formatDate(pkg.publishedAt)}</span>
-										</div>
-									</div>
-									
-									<div class="flex flex-col items-end gap-2 text-sm text-muted-foreground ml-4">
-										<div class="flex items-center gap-1">
-											<Icon icon="solar:download-bold" class="h-4 w-4" />
-											{formatDownloadCount(pkg.totalDownloadsCount || pkg.downloadsCount)}
-										</div>
-										<div class="text-xs">
-											{formatFileSize(pkg.fileSize)}
-										</div>
-									</div>
-								</div>
-							</a>
+							<PackageCard {pkg} showOwner={false} showUpdatedTime={false} />
 						{/each}
 						
 						{#if hasMore}

@@ -10,8 +10,9 @@
 	$: loading = $authStore.loading;
 	$: currentPath = $page.url.pathname;
 
-	// Pages that should use public layout even when authenticated
-	$: isPublicPage = currentPath === '/docs' || currentPath === '/login' || currentPath === '/register' || currentPath === '/';
+	// Pages that should use public layout even when authenticated (docs has its own layout)
+	$: isPublicPage = currentPath === '/login' || currentPath === '/register' || currentPath === '/';
+	$: isDocsPage = currentPath.startsWith('/docs');
 
 	onMount(async () => {
 		await authStore.initialize();
@@ -43,7 +44,10 @@
 			</div>
 		</div>
 	{:else}
-		{#if isLoggedIn && !isPublicPage}
+		{#if isDocsPage}
+			<!-- Docs pages get their own layout -->
+			<slot />
+		{:else if isLoggedIn && !isPublicPage}
 			<!-- Authenticated users get sidebar layout (except for public pages) -->
 			<slot />
 		{:else}

@@ -124,7 +124,7 @@
 			<div class="flex-1">
 				<div class="flex items-center gap-2 mb-2">
 					<h1 class="text-3xl font-bold" style="font-family: 'Gambarino', 'Satoshi', sans-serif;">{selectedPackage.name}</h1>
-					<span class="text-lg text-muted-foreground bg-secondary px-3 py-1 rounded">
+					<span class="text-lg text-muted-foreground bg-secondary px-3 py-1 rounded-full">
 						v{selectedPackage.version}
 					</span>
 				</div>

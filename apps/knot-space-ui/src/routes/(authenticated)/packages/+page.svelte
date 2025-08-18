@@ -3,6 +3,7 @@
 	import { goto } from '$app/navigation';
 	import { packagesStore } from '../../../lib/stores';
 	import { formatDownloadCount, formatFileSize, formatDate, formatTimeAgo } from '../../../lib/utils/format';
+	import PackageCard from '../../../lib/components/PackageCard.svelte';
 
 	$: packages = $packagesStore.packages;
 	$: loading = $packagesStore.loading;
@@ -135,7 +136,7 @@
 						<span>Selected tags:</span>
 						<div class="flex flex-wrap gap-1">
 							{#each selectedTags as tag}
-								<span class="px-2 py-1 bg-primary/10 text-primary rounded">
+								<span class="px-2 py-1 bg-primary/10 text-primary rounded-full">
 									{tag}
 									<button 
 										on:click={() => toggleTag(tag)}
@@ -219,80 +220,7 @@
 			<!-- Package list -->
 			<div class="grid grid-cols-1 gap-4">
 				{#each filteredPackages as pkg}
-					<a 
-						href="/packages/{encodeURIComponent(pkg.name)}"
-						class="block border rounded-lg p-6 hover:shadow-md transition-all duration-200 hover:border-primary/50 cursor-pointer"
-					>
-						<div class="flex items-start justify-between mb-4">
-							<div class="flex-1 min-w-0">
-								<div class="flex items-center gap-2 mb-2">
-									<h3 class="font-semibold text-lg truncate hover:text-primary transition-colors">
-										{pkg.name}
-									</h3>
-									<span class="text-sm text-muted-foreground bg-secondary px-2 py-1 rounded flex-shrink-0">
-										v{pkg.version}
-									</span>
-								</div>
-								
-								{#if pkg.description}
-									<p class="text-muted-foreground mb-3 line-clamp-2">
-										{pkg.description}
-									</p>
-								{/if}
-
-								<!-- Tags -->
-								{#if pkg.tags && pkg.tags.length > 0}
-									<div class="flex flex-wrap gap-1 mb-3">
-										{#each pkg.tags as tag}
-											<span class="px-2 py-1 text-xs bg-secondary text-secondary-foreground rounded border">
-												{tag}
-											</span>
-										{/each}
-									</div>
-								{/if}
-								
-								<div class="flex items-center gap-4 text-sm text-muted-foreground">
-									<span>by 
-										<button 
-											class="hover:text-primary transition-colors font-medium underline"
-											on:click={(e) => {
-												e.stopPropagation();
-												e.preventDefault();
-												goto(`/users/${encodeURIComponent(pkg.owner.username)}`);
-											}}
-										>{pkg.owner.username}</button>
-									</span>
-									{#if pkg.team}
-										<span class="flex items-center gap-1">
-											<span class="w-2 h-2 bg-primary rounded-full"></span>
-											{pkg.team.name}
-										</span>
-									{/if}
-									<span>{formatDate(pkg.publishedAt || pkg.createdAt)}</span>
-									{#if pkg.updatedAt && pkg.updatedAt !== pkg.createdAt}
-										<span class="flex items-center gap-1 text-xs">
-											<svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-											</svg>
-											Updated {formatTimeAgo(pkg.updatedAt)}
-										</span>
-									{/if}
-								</div>
-							</div>
-							
-							<div class="flex flex-col items-end gap-2 text-sm text-muted-foreground ml-4">
-								<div class="flex items-center gap-1">
-									<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
-									</svg>
-									{formatDownloadCount(pkg.totalDownloadsCount || pkg.downloadsCount)}
-								</div>
-								<div class="text-xs">
-									{formatFileSize(pkg.fileSize)}
-								</div>
-							</div>
-						</div>
-					</a>
+					<PackageCard {pkg} />
 				{/each}
 			</div>
 		</div>

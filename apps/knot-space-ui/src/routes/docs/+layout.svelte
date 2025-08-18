@@ -161,11 +161,16 @@
 		<div class="flex h-full flex-col">
 			<!-- Header -->
 			<div class="flex h-16 items-center justify-between px-6 border-b border-border">
-				<a href="/docs" class="flex items-center space-x-2">
-					<h1 class="text-xl font-bold tracking-tight" style="font-family: 'Gambarino', 'Satoshi', sans-serif;">
-						Knot Docs
-					</h1>
-				</a>
+				<div class="flex items-center space-x-4">
+					<a href="/docs" class="flex items-center space-x-2">
+						<h1 class="text-xl font-bold tracking-tight" style="font-family: 'Gambarino', 'Satoshi', sans-serif;">
+							Knot Docs
+						</h1>
+					</a>
+					<a href="/" class="text-sm text-muted-foreground hover:text-foreground transition-colors">
+						← Back to Knot Space
+					</a>
+				</div>
 				<button
 					on:click={() => sidebarOpen = false}
 					class="lg:hidden p-2 rounded-md hover:bg-accent"
