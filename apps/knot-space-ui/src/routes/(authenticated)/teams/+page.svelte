@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { teamsStore, authStore } from '../../../lib/stores';
+	import { usersApi } from '../../../lib/api';
 	import Icon from '@iconify/svelte';
+	import type { User } from '#/types';
 
 	$: teams = $teamsStore.teams;
 	$: loading = $teamsStore.loading;
@@ -17,6 +19,8 @@
 	let showDeleteConfirm = false;
 	let deleteTeamId = '';
 	let deleteError = '';
+	let showManageModal = false;
+	let manageTeamId = '';
 
 	// Member management state
 	let showAddMember = false;
@@ -24,10 +28,74 @@
 	let newMemberUsername = '';
 	let newMemberRole = 'member';
 	let memberError = '';
+	
+	// User search/autocomplete state
+	let allUsers: User[] = [];
+	let filteredUsers: User[] = [];
+	let userSearchTerm = '';
+	let showUserSuggestions = false;
 
 	onMount(async () => {
 		await teamsStore.fetchAll();
+		// Load all users for autocomplete
+		try {
+			allUsers = await usersApi.getAllUsers();
+		} catch (error) {
+			console.error('Failed to load users:', error);
+		}
 	});
+
+	// Filter users based on search term
+	$: {
+		if (userSearchTerm.trim()) {
+			filteredUsers = allUsers
+				.filter(user => 
+					user.username.toLowerCase().includes(userSearchTerm.toLowerCase()) ||
+					user.email.toLowerCase().includes(userSearchTerm.toLowerCase())
+				)
+				.slice(0, 5); // Limit to 5 suggestions
+			showUserSuggestions = filteredUsers.length > 0;
+		} else {
+			filteredUsers = [];
+			showUserSuggestions = false;
+		}
+	}
+
+	function selectUser(user: User) {
+		newMemberUsername = user.username;
+		userSearchTerm = user.username;
+		showUserSuggestions = false;
+	}
+
+	function getRoleIcon(role: string) {
+		switch (role) {
+			case 'owner':
+				return 'solar:crown-bold';
+			case 'admin':
+				return 'solar:shield-check-bold';
+			case 'member':
+				return 'solar:user-bold';
+			default:
+				return 'solar:user-bold';
+		}
+	}
+
+	function getRoleColor(role: string) {
+		switch (role) {
+			case 'owner':
+				return 'text-amber-500';
+			case 'admin':
+				return 'text-blue-500';
+			case 'member':
+				return 'text-gray-500';
+			default:
+				return 'text-gray-500';
+		}
+	}
+
+	function getUserInitials(username: string) {
+		return username.charAt(0).toUpperCase();
+	}
 
 	async function handleCreateTeam() {
 		if (!teamName.trim()) {
@@ -86,12 +154,19 @@
 			
 			// Reset form
 			newMemberUsername = '';
+			userSearchTerm = '';
 			newMemberRole = 'member';
 			showAddMember = false;
 			addMemberTeamId = '';
+			showUserSuggestions = false;
 		} catch (error) {
 			memberError = error instanceof Error ? error.message : 'Failed to add member';
 		}
+	}
+
+	function openManageTeam(teamId: string) {
+		manageTeamId = teamId;
+		showManageModal = true;
 	}
 
 	async function handleRemoveMember(teamId: string, userId: string) {
@@ -265,12 +340,21 @@
 									<div class="flex items-center space-x-3">
 										<div class="w-8 h-8 bg-muted rounded-full flex items-center justify-center">
 											<span class="text-xs font-medium">
-												{member.user.username.charAt(0).toUpperCase()}
+												{getUserInitials(member.user.username)}
 											</span>
 										</div>
-										<div>
-											<div class="font-medium text-sm">{member.user.username}</div>
-											<div class="text-xs text-muted-foreground">{member.user.email}</div>
+										<div class="flex items-center space-x-2">
+											<div>
+												<div class="font-medium text-sm flex items-center gap-2">
+													{member.user.username}
+													<Icon 
+														icon={getRoleIcon(member.role)} 
+														class="w-3 h-3 {getRoleColor(member.role)}"
+														title={member.role}
+													/>
+												</div>
+												<div class="text-xs text-muted-foreground">{member.user.email}</div>
+											</div>
 										</div>
 									</div>
 									<div class="flex items-center gap-2">
@@ -303,7 +387,10 @@
 					<div class="mt-4 pt-4 border-t border-border">
 						<div class="flex justify-between items-center text-sm text-muted-foreground">
 							<span>Created {formatDate(team.createdAt || new Date())}</span>
-							<button class="text-black hover:underline font-medium">
+							<button 
+								on:click={() => openManageTeam(team.id)}
+								class="text-black hover:underline font-medium"
+							>
 								Manage Team
 							</button>
 						</div>
@@ -330,16 +417,42 @@
 			{/if}
 
 			<form on:submit|preventDefault={handleAddMember} class="space-y-4">
-				<div>
+				<div class="relative">
 					<label for="memberUsername" class="block text-sm font-medium mb-2">Username</label>
 					<input
 						id="memberUsername"
 						type="text"
-						bind:value={newMemberUsername}
-						placeholder="Enter username"
+						bind:value={userSearchTerm}
+						on:input={() => {
+							newMemberUsername = userSearchTerm;
+						}}
+						placeholder="Start typing to search users..."
 						class="w-full px-3 py-2 border border-input rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
 						required
 					/>
+					
+					<!-- User suggestions dropdown -->
+					{#if showUserSuggestions}
+						<div class="absolute z-10 w-full mt-1 bg-background border border-border rounded-md shadow-lg max-h-60 overflow-y-auto">
+							{#each filteredUsers as user}
+								<button
+									type="button"
+									on:click={() => selectUser(user)}
+									class="w-full flex items-center gap-3 px-3 py-2 hover:bg-muted text-left transition-colors"
+								>
+									<div class="w-8 h-8 bg-muted rounded-full flex items-center justify-center">
+										<span class="text-xs font-medium">
+											{getUserInitials(user.username)}
+										</span>
+									</div>
+									<div class="flex-1 min-w-0">
+										<div class="font-medium text-sm text-foreground">{user.username}</div>
+										<div class="text-xs text-muted-foreground truncate">{user.email}</div>
+									</div>
+								</button>
+							{/each}
+						</div>
+					{/if}
 				</div>
 
 				<div>
@@ -362,7 +475,9 @@
 							addMemberTeamId = ''; 
 							memberError = '';
 							newMemberUsername = '';
+							userSearchTerm = '';
 							newMemberRole = 'member';
+							showUserSuggestions = false;
 						}}
 						class="border border-input bg-background hover:bg-accent hover:text-accent-foreground px-4 py-2 rounded-md text-sm font-medium transition-colors"
 					>
@@ -413,6 +528,130 @@
 					Delete Team
 				</button>
 			</div>
+		</div>
+	</div>
+{/if}
+
+<!-- Team Management Modal -->
+{#if showManageModal}
+	<div class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+		<div class="bg-background border border-border rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+			{#if teams.find(t => t.id === manageTeamId)}
+				{@const managedTeam = teams.find(t => t.id === manageTeamId)}
+				<div class="flex items-center gap-3 mb-6">
+					<Icon icon="solar:settings-bold" class="w-6 h-6 text-primary" />
+					<h3 class="text-lg font-semibold">Manage Team: {managedTeam.name}</h3>
+				</div>
+				
+				<div class="space-y-6">
+					<!-- Team Info -->
+					<div>
+						<h4 class="text-md font-medium mb-3">Team Information</h4>
+						<div class="bg-muted/30 rounded-lg p-4 space-y-2">
+							<div class="flex justify-between">
+								<span class="text-sm text-muted-foreground">Name:</span>
+								<span class="text-sm font-medium">{managedTeam.name}</span>
+							</div>
+							{#if managedTeam.description}
+								<div class="flex justify-between">
+									<span class="text-sm text-muted-foreground">Description:</span>
+									<span class="text-sm font-medium">{managedTeam.description}</span>
+								</div>
+							{/if}
+							<div class="flex justify-between">
+								<span class="text-sm text-muted-foreground">Members:</span>
+								<span class="text-sm font-medium">{managedTeam.members?.length || 0}</span>
+							</div>
+							<div class="flex justify-between">
+								<span class="text-sm text-muted-foreground">Created:</span>
+								<span class="text-sm font-medium">{formatDate(managedTeam.createdAt || new Date())}</span>
+							</div>
+						</div>
+					</div>
+
+					<!-- Members List -->
+					<div>
+						<div class="flex justify-between items-center mb-3">
+							<h4 class="text-md font-medium">Team Members</h4>
+							{#if isTeamOwnerOrAdmin(managedTeam)}
+								<button
+									on:click={() => {
+										addMemberTeamId = managedTeam.id;
+										showAddMember = true;
+										showManageModal = false;
+									}}
+									class="bg-primary text-primary-foreground hover:bg-primary/90 px-3 py-1 rounded-md text-xs font-medium transition-colors flex items-center gap-1"
+								>
+									<Icon icon="solar:user-plus-bold" class="w-3 h-3" />
+									Add Member
+								</button>
+							{/if}
+						</div>
+						
+						<div class="space-y-3 max-h-60 overflow-y-auto">
+							{#each (managedTeam.members || []) as member}
+								<div class="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
+									<div class="flex items-center space-x-3">
+										<div class="w-10 h-10 bg-muted rounded-full flex items-center justify-center">
+											<span class="text-sm font-medium">
+												{getUserInitials(member.user.username)}
+											</span>
+										</div>
+										<div>
+											<div class="font-medium text-sm flex items-center gap-2">
+												{member.user.username}
+												<Icon 
+													icon={getRoleIcon(member.role)} 
+													class="w-4 h-4 {getRoleColor(member.role)}"
+													title={member.role}
+												/>
+											</div>
+											<div class="text-xs text-muted-foreground">{member.user.email}</div>
+											<div class="text-xs text-muted-foreground capitalize">{member.role}</div>
+										</div>
+									</div>
+									
+									{#if isTeamOwnerOrAdmin(managedTeam) && member.role !== 'owner'}
+										<div class="flex items-center gap-2">
+											<select
+												value={member.role}
+												on:change={(e) => handleUpdateMemberRole(managedTeam.id, member.user.id, e.target.value)}
+												class="text-xs px-2 py-1 bg-background border border-border rounded-md font-medium"
+											>
+												<option value="member">Member</option>
+												<option value="admin">Admin</option>
+											</select>
+											<button
+												on:click={() => handleRemoveMember(managedTeam.id, member.user.id)}
+												class="text-xs text-destructive hover:bg-destructive/10 p-2 rounded transition-colors"
+												title="Remove member"
+											>
+												<Icon icon="solar:trash-bin-minimalistic-bold" class="w-4 h-4" />
+											</button>
+										</div>
+									{:else}
+										<span class="text-xs px-2 py-1 bg-muted rounded-md font-medium capitalize">
+											{member.role}
+										</span>
+									{/if}
+								</div>
+							{/each}
+						</div>
+					</div>
+				</div>
+				
+				<div class="flex justify-end gap-3 mt-6">
+					<button
+						on:click={() => { 
+							showManageModal = false; 
+							manageTeamId = ''; 
+						}}
+						class="border border-input bg-background hover:bg-accent hover:text-accent-foreground px-4 py-2 rounded-md text-sm font-medium transition-colors"
+					>
+						Close
+					</button>
+				</div>
+			{/if}
 		</div>
 	</div>
 {/if}
