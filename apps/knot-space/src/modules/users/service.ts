@@ -13,10 +13,11 @@ class UsersService {
         username: true,
         email: false, // Don't expose email in public listings
         createdAt: true,
-        _count: {
+        ownedPackages: {
           select: {
-            ownedPackages: true,
-          }
+            name: true
+          },
+          distinct: ['name']
         }
       },
       orderBy: [
@@ -24,7 +25,14 @@ class UsersService {
       ]
     });
 
-    return users;
+    // Transform the result to include unique package count
+    return users.map(user => ({
+      ...user,
+      _count: {
+        ownedPackages: user.ownedPackages.length
+      },
+      ownedPackages: undefined // Remove the packages array from the response
+    }));
   }
 
   async getUserProfile(username: string) {
@@ -35,10 +43,11 @@ class UsersService {
         username: true,
         email: false, // Don't expose email in public profiles
         createdAt: true,
-        _count: {
+        ownedPackages: {
           select: {
-            ownedPackages: true,
-          }
+            name: true
+          },
+          distinct: ['name']
         }
       }
     });
@@ -47,7 +56,14 @@ class UsersService {
       throw new Error('User not found');
     }
 
-    return user;
+    // Transform the result to include unique package count
+    return {
+      ...user,
+      _count: {
+        ownedPackages: user.ownedPackages.length
+      },
+      ownedPackages: undefined // Remove the packages array from the response
+    };
   }
 
   async getUserPackages(username: string, filters: UserPackageFilters) {
@@ -137,14 +153,19 @@ class UsersService {
       throw new Error('User not found');
     }
 
-    // Get total packages count
-    const totalPackages = await prisma.package.count({
+    // Get total unique packages count (distinct by name)
+    const uniquePackagesResult = await prisma.package.groupBy({
+      by: ['name'],
       where: { 
         owner: {
           username: username
         }
+      },
+      _count: {
+        name: true
       }
     });
+    const totalPackages = uniquePackagesResult.length;
 
     // Get total downloads count
     const downloadCountResult = await prisma.package.aggregate({

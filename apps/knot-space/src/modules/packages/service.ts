@@ -525,8 +525,14 @@ class PackagesService {
   }
 
   async getGlobalStats() {
-    // Get total packages count
-    const totalPackages = await prisma.package.count();
+    // Get total unique packages count (distinct by name)
+    const uniquePackagesResult = await prisma.package.groupBy({
+      by: ['name'],
+      _count: {
+        name: true
+      }
+    });
+    const totalPackages = uniquePackagesResult.length;
 
     // Get total downloads count
     const downloadCountResult = await prisma.package.aggregate({
