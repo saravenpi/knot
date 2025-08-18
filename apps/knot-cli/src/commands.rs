@@ -1895,6 +1895,29 @@ async fn check_latest_version() -> Result<String> {
     // Try to get latest version from GitHub API
     let client = reqwest::Client::new();
     let response = client
+        .get("https://api.github.com/repos/saravenpi/knot/releases/latest")
+        .header("User-Agent", "knot-cli")
+        .send()
+        .await?;
+    
+    if !response.status().is_success() {
+        // Fallback to tags if no releases found
+        return check_latest_tag().await;
+    }
+    
+    let release: serde_json::Value = response.json().await?;
+    let version_name = release["tag_name"]
+        .as_str()
+        .ok_or_else(|| anyhow::anyhow!("Invalid release format"))?;
+    
+    // Remove 'v' prefix if present
+    let version = version_name.strip_prefix('v').unwrap_or(version_name);
+    Ok(version.to_string())
+}
+
+async fn check_latest_tag() -> Result<String> {
+    let client = reqwest::Client::new();
+    let response = client
         .get("https://api.github.com/repos/saravenpi/knot/tags")
         .header("User-Agent", "knot-cli")
         .send()
@@ -1909,7 +1932,6 @@ async fn check_latest_version() -> Result<String> {
     
     if tags_array.is_empty() {
         // No tags/releases found, assume latest development version available
-        // Since the install script always gets the latest from main branch
         println!("ℹ️  No tagged releases found, will update to latest development version");
         return Ok("latest".to_string());
     }
@@ -1954,97 +1976,213 @@ async fn update_binary_with_animation() -> Result<()> {
     let current_dir = current_exe.parent()
         .ok_or_else(|| anyhow::anyhow!("Could not determine current binary directory"))?;
     
-    // Create a temporary backup of the current binary
-    let backup_path = current_dir.join("knot.backup");
-    let temp_path = current_dir.join("knot.new");
-    
-    // Create enhanced installation script that preserves binary location
-    let install_script = format!(r#"#!/bin/bash
-set -e
-
-# Set target directory to the same directory as current binary
-export KNOT_INSTALL_DIR="{}"
-
-# Function to safely replace binary
-replace_binary() {{
-    local target_dir="$1"
-    local temp_binary="$target_dir/knot.new"
-    local current_binary="$target_dir/knot"
-    local backup_binary="$target_dir/knot.backup"
-    
-    # Create backup of current binary
-    if [ -f "$current_binary" ]; then
-        cp "$current_binary" "$backup_binary" 2>/dev/null || true
-    fi
-    
-    # Move new binary into place
-    if [ -f "$temp_binary" ]; then
-        mv "$temp_binary" "$current_binary"
-        chmod +x "$current_binary"
-        
-        # Verify the new binary works
-        if "$current_binary" --version >/dev/null 2>&1; then
-            # Success - remove backup
-            rm -f "$backup_binary"
-            return 0
-        else
-            # Restore from backup if verification fails
-            if [ -f "$backup_binary" ]; then
-                mv "$backup_binary" "$current_binary"
-            fi
-            return 1
-        fi
-    fi
-    return 1
-}}
-
-# Download and build Knot
-TEMP_DIR=$(mktemp -d)
-trap 'rm -rf "$TEMP_DIR"' EXIT
-
-cd "$TEMP_DIR"
-git clone --depth 1 https://github.com/saravenpi/knot.git
-cd knot/apps/knot-cli
-
-# Build the project
-cargo build --release
-
-# Copy binary to target directory with temporary name
-cp target/release/knot "$KNOT_INSTALL_DIR/knot.new"
-
-# Replace the binary safely
-if ! replace_binary "$KNOT_INSTALL_DIR"; then
-    echo "Failed to replace binary" >&2
-    exit 1
-fi
-"#, current_dir.display());
-    
-    // Run the enhanced install script
-    let output = tokio::process::Command::new("bash")
-        .arg("-c")
-        .arg(&install_script)
-        .output()
-        .await?;
+    // Try fast binary download first, fallback to source compilation
+    let result = match try_binary_download(&current_dir).await {
+        Ok(()) => {
+            println!("🚀 Successfully updated using pre-built binary!");
+            Ok(())
+        }
+        Err(e) => {
+            println!("⚠️  Binary download failed: {}", e);
+            println!("📦 Falling back to source compilation...");
+            
+            // Fallback to source compilation
+            compile_from_source(&current_dir).await
+        }
+    };
     
     // Stop the animation
     let _ = animation_sender.send(()).await;
     let _ = animation_task.await;
     
-    if !output.status.success() {
-        let stderr = String::from_utf8_lossy(&output.stderr);
-        let stdout = String::from_utf8_lossy(&output.stdout);
-        
-        // Try to restore from backup if it exists
-        if backup_path.exists() {
-            let _ = std::fs::rename(&backup_path, &current_exe);
+    result
+}
+
+async fn try_binary_download(target_dir: &std::path::Path) -> Result<()> {
+    // Detect current platform
+    let os = env::consts::OS;
+    let arch = env::consts::ARCH;
+    
+    // Map to GitHub release asset names
+    let platform_name = match (os, arch) {
+        ("macos", "x86_64") => "knot-macos-x86_64",
+        ("macos", "aarch64") => "knot-macos-aarch64", 
+        ("linux", "x86_64") => "knot-linux-x86_64",
+        ("linux", "aarch64") => "knot-linux-aarch64",
+        ("windows", "x86_64") => "knot-windows-x86_64.exe",
+        _ => {
+            anyhow::bail!("No pre-built binary available for {}-{}", os, arch);
         }
-        
-        anyhow::bail!("Installation failed:\nSTDOUT: {}\nSTDERR: {}", stdout, stderr);
+    };
+    
+    // Get latest release info
+    let client = reqwest::Client::new();
+    let response = client
+        .get("https://api.github.com/repos/saravenpi/knot/releases/latest")
+        .header("User-Agent", "knot-cli")
+        .send()
+        .await?;
+    
+    if !response.status().is_success() {
+        anyhow::bail!("Failed to fetch latest release information");
     }
     
-    // Clean up any remaining temporary files
-    let _ = std::fs::remove_file(&backup_path);
-    let _ = std::fs::remove_file(&temp_path);
+    let release: serde_json::Value = response.json().await?;
+    let assets = release["assets"]
+        .as_array()
+        .ok_or_else(|| anyhow::anyhow!("No assets found in release"))?;
+    
+    // Find matching asset for current platform
+    let asset = assets
+        .iter()
+        .find(|asset| {
+            asset["name"]
+                .as_str()
+                .map(|name| name == platform_name)
+                .unwrap_or(false)
+        })
+        .ok_or_else(|| anyhow::anyhow!("No binary found for platform: {}", platform_name))?;
+    
+    let download_url = asset["browser_download_url"]
+        .as_str()
+        .ok_or_else(|| anyhow::anyhow!("Invalid download URL"))?;
+    
+    println!("📦 Downloading pre-built binary for {}-{}...", os, arch);
+    
+    // Download the binary
+    let response = client.get(download_url).send().await?;
+    if !response.status().is_success() {
+        anyhow::bail!("Failed to download binary from {}", download_url);
+    }
+    
+    let binary_data = response.bytes().await?;
+    
+    // Create backup and write new binary
+    let current_binary = target_dir.join("knot");
+    let backup_binary = target_dir.join("knot.backup");
+    let temp_binary = target_dir.join("knot.new");
+    
+    // Backup current binary
+    if current_binary.exists() {
+        std::fs::copy(&current_binary, &backup_binary)?;
+    }
+    
+    // Write new binary
+    std::fs::write(&temp_binary, &binary_data)?;
+    
+    // Make executable (Unix only)
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        let mut perms = std::fs::metadata(&temp_binary)?.permissions();
+        perms.set_mode(0o755);
+        std::fs::set_permissions(&temp_binary, perms)?;
+    }
+    
+    // Test new binary
+    let test_output = tokio::process::Command::new(&temp_binary)
+        .arg("--version")
+        .output()
+        .await?;
+    
+    if !test_output.status.success() {
+        let _ = std::fs::remove_file(&temp_binary);
+        anyhow::bail!("Downloaded binary failed verification test");
+    }
+    
+    // Replace current binary with new one
+    std::fs::rename(&temp_binary, &current_binary)?;
+    
+    // Clean up backup
+    let _ = std::fs::remove_file(&backup_binary);
+    
+    Ok(())
+}
+
+async fn compile_from_source(target_dir: &std::path::Path) -> Result<()> {
+    // Enhanced source compilation with persistent cache
+    let cache_dir = dirs::home_dir()
+        .ok_or_else(|| anyhow::anyhow!("Could not find home directory"))?
+        .join(".knot")
+        .join("build-cache");
+    
+    // Create cache directory if it doesn't exist
+    std::fs::create_dir_all(&cache_dir)?;
+    
+    let src_dir = cache_dir.join("src");
+    let build_dir = cache_dir.join("build");
+    
+    // Clone or update source
+    if src_dir.exists() {
+        println!("🔄 Updating existing source cache...");
+        
+        // Update existing repository
+        let output = tokio::process::Command::new("git")
+            .args(&["pull", "origin", "main"])
+            .current_dir(&src_dir)
+            .output()
+            .await?;
+            
+        if !output.status.success() {
+            println!("⚠️  Git pull failed, re-cloning...");
+            std::fs::remove_dir_all(&src_dir)?;
+            clone_source(&src_dir).await?;
+        }
+    } else {
+        println!("📦 Cloning source to cache...");
+        clone_source(&src_dir).await?;
+    }
+    
+    // Build with cache
+    println!("🔨 Building (using incremental compilation)...");
+    
+    let knot_cli_dir = src_dir.join("apps").join("knot-cli");
+    let output = tokio::process::Command::new("cargo")
+        .args(&["build", "--release"])
+        .env("CARGO_TARGET_DIR", &build_dir)
+        .current_dir(&knot_cli_dir)
+        .output()
+        .await?;
+    
+    if !output.status.success() {
+        let stderr = String::from_utf8_lossy(&output.stderr);
+        anyhow::bail!("Build failed: {}", stderr);
+    }
+    
+    // Copy binary to target location
+    let built_binary = build_dir.join("release").join("knot");
+    let current_binary = target_dir.join("knot");
+    let backup_binary = target_dir.join("knot.backup");
+    
+    // Backup and replace
+    if current_binary.exists() {
+        std::fs::copy(&current_binary, &backup_binary)?;
+    }
+    
+    std::fs::copy(&built_binary, &current_binary)?;
+    
+    // Clean up backup
+    let _ = std::fs::remove_file(&backup_binary);
+    
+    println!("🎉 Successfully compiled and installed from source!");
+    Ok(())
+}
+
+async fn clone_source(target_dir: &std::path::Path) -> Result<()> {
+    let output = tokio::process::Command::new("git")
+        .args(&[
+            "clone", 
+            "--depth", "1", 
+            "https://github.com/saravenpi/knot.git",
+            target_dir.to_str().unwrap()
+        ])
+        .output()
+        .await?;
+    
+    if !output.status.success() {
+        let stderr = String::from_utf8_lossy(&output.stderr);
+        anyhow::bail!("Git clone failed: {}", stderr);
+    }
     
     Ok(())
 }
