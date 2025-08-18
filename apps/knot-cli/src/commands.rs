@@ -1366,13 +1366,145 @@ fn add_directory_to_tar(
             // Recursively add directory contents
             add_directory_to_tar(tar, base_path, &entry_relative_path, ignore)?;
         } else {
-            // Add file to tarball
-            let mut file = std::fs::File::open(&file_path)?;
-            tar.append_file(&entry_relative_path, &mut file)?;
+            // Add file to tarball with better error handling
+            let file = std::fs::File::open(&file_path)
+                .with_context(|| format!("Failed to open file: {}", file_path.display()))?;
+            
+            // Get file metadata for proper tar entry
+            let metadata = file.metadata()
+                .with_context(|| format!("Failed to get metadata for file: {}", file_path.display()))?;
+            
+            let mut header = tar::Header::new_gnu();
+            header.set_size(metadata.len());
+            header.set_mode(0o644); // Standard file permissions
+            header.set_cksum();
+            
+            tar.append_data(&mut header, &entry_relative_path, file)
+                .with_context(|| format!("Failed to add file to archive: {}", entry_relative_path))?;
         }
     }
     
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use tempfile::tempdir;
+    use std::fs::{self, File};
+    use std::io::Write;
+
+    #[test]
+    fn test_create_package_tarball_ignores_correctly() -> Result<()> {
+        let dir = tempdir()?;
+        let package_dir = dir.path();
+
+        // Create test files and directories
+        fs::create_dir_all(package_dir.join("src"))?;
+        fs::create_dir_all(package_dir.join("node_modules"))?;
+        fs::create_dir_all(package_dir.join(".git"))?;
+        fs::create_dir_all(package_dir.join("build"))?;
+
+        // Create test files
+        File::create(package_dir.join("README.md"))?.write_all(b"readme")?;
+        File::create(package_dir.join("package.yml"))?.write_all(b"name: test")?;
+        File::create(package_dir.join(".knotignore"))?.write_all(b"build/\n*.log")?;
+        File::create(package_dir.join("error.log"))?.write_all(b"error")?;
+        File::create(package_dir.join("test-1.0.0.tar.gz"))?.write_all(b"old tarball")?;
+        File::create(package_dir.join("src/main.js"))?.write_all(b"console.log('test')")?;
+        File::create(package_dir.join("node_modules/package.json"))?.write_all(b"{}")?;
+        File::create(package_dir.join(".git/config"))?.write_all(b"[core]")?;
+        File::create(package_dir.join("build/output.js"))?.write_all(b"built")?;
+
+        // Change to the package directory
+        let original_dir = std::env::current_dir()?;
+        std::env::set_current_dir(package_dir)?;
+
+        // Create tarball
+        let tarball_path = "test-package.tar.gz";
+        create_package_tarball("test-package", tarball_path)?;
+
+        // Restore original directory
+        std::env::set_current_dir(original_dir)?;
+
+        // Verify tarball was created
+        assert!(package_dir.join(tarball_path).exists());
+
+        // Extract and verify contents
+        let extract_dir = tempdir()?;
+        let tarball_file = std::fs::File::open(package_dir.join(tarball_path))?;
+        let tar = flate2::read::GzDecoder::new(tarball_file);
+        let mut archive = tar::Archive::new(tar);
+        archive.unpack(extract_dir.path())?;
+
+        // Check that correct files are included
+        assert!(extract_dir.path().join("README.md").exists());
+        assert!(extract_dir.path().join("package.yml").exists());
+        assert!(extract_dir.path().join("src/main.js").exists());
+
+        // Check that ignored files are NOT included
+        assert!(!extract_dir.path().join(".knotignore").exists());
+        assert!(!extract_dir.path().join("error.log").exists());
+        assert!(!extract_dir.path().join("test-1.0.0.tar.gz").exists());
+        assert!(!extract_dir.path().join("node_modules").exists());
+        assert!(!extract_dir.path().join(".git").exists());
+        assert!(!extract_dir.path().join("build").exists());
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_create_package_tarball_with_custom_knotignore() -> Result<()> {
+        let dir = tempdir()?;
+        let package_dir = dir.path();
+
+        // Create test structure
+        fs::create_dir_all(package_dir.join("src"))?;
+        fs::create_dir_all(package_dir.join("docs"))?;
+        fs::create_dir_all(package_dir.join("temp_cache"))?;
+
+        // Create files
+        File::create(package_dir.join("README.md"))?.write_all(b"readme")?;
+        File::create(package_dir.join("src/index.js"))?.write_all(b"code")?;
+        File::create(package_dir.join("docs/api.md"))?.write_all(b"docs")?;
+        File::create(package_dir.join("debug.log"))?.write_all(b"debug")?;
+        File::create(package_dir.join("temp_cache/data.json"))?.write_all(b"cache")?;
+
+        // Create custom .knotignore
+        let mut knotignore = File::create(package_dir.join(".knotignore"))?;
+        writeln!(knotignore, "# Custom ignore rules")?;
+        writeln!(knotignore, "docs/")?;
+        writeln!(knotignore, "*.log")?;
+        writeln!(knotignore, "temp_*")?;
+
+        // Change to package directory and create tarball
+        let original_dir = std::env::current_dir()?;
+        std::env::set_current_dir(package_dir)?;
+
+        let tarball_path = "custom-test.tar.gz";
+        create_package_tarball("custom-test", tarball_path)?;
+
+        std::env::set_current_dir(original_dir)?;
+
+        // Extract and verify
+        let extract_dir = tempdir()?;
+        let tarball_file = std::fs::File::open(package_dir.join(tarball_path))?;
+        let tar = flate2::read::GzDecoder::new(tarball_file);
+        let mut archive = tar::Archive::new(tar);
+        archive.unpack(extract_dir.path())?;
+
+        // Should include
+        assert!(extract_dir.path().join("README.md").exists());
+        assert!(extract_dir.path().join("src/index.js").exists());
+
+        // Should exclude based on custom .knotignore
+        assert!(!extract_dir.path().join(".knotignore").exists());
+        assert!(!extract_dir.path().join("docs").exists());
+        assert!(!extract_dir.path().join("debug.log").exists());
+        assert!(!extract_dir.path().join("temp_cache").exists());
+
+        Ok(())
+    }
 }
 
 // Version management commands
