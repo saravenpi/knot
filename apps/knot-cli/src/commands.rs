@@ -260,9 +260,25 @@ pub fn show_status() -> Result<()> {
     let current_dir = std::env::current_dir()?;
     let project = match Project::find_and_load(&current_dir) {
         Ok(project) => project,
-        Err(_) => {
-            println!("❌ No knot.yml found in current directory or any parent directory");
-            println!("💡 Run 'knot init <project-name>' to initialize a new Knot project");
+        Err(e) => {
+            // First check if we can find the project root (file exists)
+            match Project::find_project_root(&current_dir) {
+                Ok(project_root) => {
+                    let config_path = project_root.join("knot.yml");
+                    println!("🔍 Found knot.yml at: {}", config_path.display());
+                    println!("❌ Failed to load knot.yml: {}", e);
+                    println!("💡 This could be due to:");
+                    println!("   • Invalid YAML syntax");
+                    println!("   • Missing required fields");
+                    println!("   • File permission issues");
+                    println!("   • Corrupted file content");
+                    println!("\n🛠️  Try running 'knot init --help' to create a new valid knot.yml");
+                }
+                Err(_) => {
+                    println!("❌ No knot.yml found in current directory or any parent directory");
+                    println!("💡 Run 'knot init <project-name>' to initialize a new Knot project");
+                }
+            }
             return Ok(());
         }
     };

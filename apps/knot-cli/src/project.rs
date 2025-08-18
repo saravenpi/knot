@@ -30,7 +30,7 @@ impl Project {
         Ok(project)
     }
 
-    fn find_project_root(start_dir: &Path) -> Result<PathBuf> {
+    pub fn find_project_root(start_dir: &Path) -> Result<PathBuf> {
         let mut current = start_dir.to_path_buf();
 
         loop {
