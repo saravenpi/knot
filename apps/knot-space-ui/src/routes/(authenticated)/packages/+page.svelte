@@ -12,6 +12,9 @@
 	let selectedTags: string[] = [];
 	let filteredPackages: any[] = [];
 	let availableTags: string[] = [];
+	let popularTags: { tag: string; count: number }[] = [];
+	let tagSearchTerm = '';
+	let showAllTags = false;
 
 	onMount(async () => {
 		try {
@@ -21,13 +24,21 @@
 		}
 	});
 
-	// Extract all available tags from packages
+	// Extract all available tags from packages and calculate popularity
 	$: {
-		const tagSet = new Set<string>();
+		const tagCount = new Map<string, number>();
 		packages.forEach(pkg => {
-			pkg.tags?.forEach(tag => tagSet.add(tag));
+			pkg.tags?.forEach(tag => {
+				tagCount.set(tag, (tagCount.get(tag) || 0) + 1);
+			});
 		});
-		availableTags = Array.from(tagSet).sort();
+		
+		// Sort by popularity (count) then alphabetically
+		popularTags = Array.from(tagCount.entries())
+			.map(([tag, count]) => ({ tag, count }))
+			.sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag));
+		
+		availableTags = popularTags.map(t => t.tag);
 	}
 
 	// Filter packages based on search term and selected tags
@@ -74,7 +85,18 @@
 	function clearAllFilters() {
 		searchTerm = '';
 		selectedTags = [];
+		tagSearchTerm = '';
+		showAllTags = false;
 	}
+
+	// Filter tags based on search term
+	$: filteredTagsForSearch = popularTags.filter(({ tag }) => 
+		tagSearchTerm.trim() === '' || 
+		tag.toLowerCase().includes(tagSearchTerm.toLowerCase())
+	);
+
+	// Get tags to display: popular ones first, then filtered by search
+	$: displayTags = showAllTags ? filteredTagsForSearch : filteredTagsForSearch.slice(0, 12);
 
 </script>
 
@@ -105,9 +127,9 @@
 			</div>
 		</div>
 
-		<!-- Tag Filters -->
+		<!-- Enhanced Tag Filters -->
 		{#if availableTags.length > 0}
-			<div class="space-y-3">
+			<div class="space-y-4">
 				<div class="flex items-center justify-between">
 					<h3 class="text-sm font-medium text-foreground">Filter by tags</h3>
 					{#if selectedTags.length > 0 || searchTerm.trim() !== ''}
@@ -119,32 +141,97 @@
 						</button>
 					{/if}
 				</div>
-				<div class="flex flex-wrap gap-2">
-					{#each availableTags as tag}
-						<button
-							on:click={() => toggleTag(tag)}
-							class="px-3 py-1 text-xs rounded-full border transition-all duration-200 {selectedTags.includes(tag) 
-								? 'bg-primary text-primary-foreground border-primary' 
-								: 'bg-secondary hover:bg-secondary/80 text-secondary-foreground border-input hover:border-primary/50'}"
-						>
-							{tag}
-						</button>
-					{/each}
-				</div>
+
+				<!-- Selected tags display -->
 				{#if selectedTags.length > 0}
-					<div class="flex items-center gap-2 text-xs text-muted-foreground">
-						<span>Selected tags:</span>
+					<div class="space-y-2">
+						<span class="text-xs font-medium text-muted-foreground">Selected tags:</span>
 						<div class="flex flex-wrap gap-1">
 							{#each selectedTags as tag}
-								<span class="px-2 py-1 bg-primary/10 text-primary rounded-full">
+								<span class="px-2 py-1 bg-primary text-primary-foreground rounded-full text-xs flex items-center gap-1">
 									{tag}
 									<button 
 										on:click={() => toggleTag(tag)}
-										class="ml-1 hover:text-primary-foreground transition-colors"
-									>×</button>
+										class="hover:bg-primary-foreground/20 rounded-full p-0.5 transition-colors"
+										aria-label="Remove {tag} filter"
+									>
+										<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+										</svg>
+									</button>
 								</span>
 							{/each}
 						</div>
+					</div>
+				{/if}
+
+				<!-- Tag search -->
+				<div class="relative">
+					<svg class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+					</svg>
+					<input
+						type="text"
+						placeholder="Search tags..."
+						bind:value={tagSearchTerm}
+						class="pl-10 pr-4 py-2 w-full text-sm border border-input rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+					/>
+					{#if tagSearchTerm.trim() !== ''}
+						<button
+							on:click={() => tagSearchTerm = ''}
+							class="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+						>
+							<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+							</svg>
+						</button>
+					{/if}
+				</div>
+
+				<!-- Available tags -->
+				{#if displayTags.length > 0}
+					<div class="space-y-3">
+						{#if tagSearchTerm.trim() === ''}
+							<span class="text-xs text-muted-foreground">
+								{showAllTags ? 'All tags' : 'Popular tags'} 
+								({displayTags.length}{showAllTags ? '' : ` of ${popularTags.length}`})
+							</span>
+						{:else}
+							<span class="text-xs text-muted-foreground">
+								{displayTags.length} tag{displayTags.length === 1 ? '' : 's'} found
+							</span>
+						{/if}
+						
+						<div class="flex flex-wrap gap-2">
+							{#each displayTags as { tag, count }}
+								<button
+									on:click={() => toggleTag(tag)}
+									class="group px-3 py-1.5 text-xs rounded-full border transition-all duration-200 {selectedTags.includes(tag) 
+										? 'bg-primary text-primary-foreground border-primary shadow-sm' 
+										: 'bg-secondary hover:bg-secondary/80 text-secondary-foreground border-input hover:border-primary/50 hover:shadow-sm'}"
+									title="{count} package{count === 1 ? '' : 's'}"
+								>
+									<span class="font-medium">{tag}</span>
+									<span class="ml-1 opacity-60 text-xs">({count})</span>
+								</button>
+							{/each}
+						</div>
+
+						<!-- Show more/less button -->
+						{#if tagSearchTerm.trim() === '' && popularTags.length > 12}
+							<div class="text-center">
+								<button
+									on:click={() => showAllTags = !showAllTags}
+									class="text-xs text-muted-foreground hover:text-primary transition-colors underline"
+								>
+									{showAllTags ? 'Show less tags' : `Show all ${popularTags.length} tags`}
+								</button>
+							</div>
+						{/if}
+					</div>
+				{:else if tagSearchTerm.trim() !== ''}
+					<div class="text-center py-4 text-muted-foreground text-sm">
+						No tags found matching "{tagSearchTerm}"
 					</div>
 				{/if}
 			</div>
