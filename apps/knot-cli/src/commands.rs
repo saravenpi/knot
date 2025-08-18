@@ -1720,16 +1720,25 @@ pub async fn update_cli(force: bool) -> Result<()> {
     // Check for latest version from GitHub releases or repository
     match check_latest_version().await {
         Ok(latest_version) => {
-            if !force && current_version == latest_version {
+            if !force && latest_version != "latest" && current_version == latest_version {
                 println!("✅ You already have the latest version ({})", current_version);
                 return Ok(());
             }
             
             if !force {
-                println!("🎯 Latest version available: {}", latest_version);
-                println!("⬆️ Updating from {} to {}...", current_version, latest_version);
+                if latest_version == "latest" {
+                    println!("🎯 Updating to latest development version from main branch");
+                    println!("⬆️ Updating from {}...", current_version);
+                } else {
+                    println!("🎯 Latest version available: {}", latest_version);
+                    println!("⬆️ Updating from {} to {}...", current_version, latest_version);
+                }
             } else {
-                println!("🔄 Force updating to {}...", latest_version);
+                if latest_version == "latest" {
+                    println!("🔄 Force updating to latest development version...");
+                } else {
+                    println!("🔄 Force updating to {}...", latest_version);
+                }
             }
             
             update_binary().await?;
@@ -1763,7 +1772,10 @@ async fn check_latest_version() -> Result<String> {
     let tags_array = tags.as_array().ok_or_else(|| anyhow::anyhow!("Invalid response format"))?;
     
     if tags_array.is_empty() {
-        anyhow::bail!("No versions found");
+        // No tags/releases found, assume latest development version available
+        // Since the install script always gets the latest from main branch
+        println!("ℹ️  No tagged releases found, will update to latest development version");
+        return Ok("latest".to_string());
     }
     
     // Get the latest version (first in the list)

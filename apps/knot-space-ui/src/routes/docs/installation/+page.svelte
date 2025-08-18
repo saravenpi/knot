@@ -20,13 +20,13 @@
 
 <svelte:head>
 	<title>Installation Guide - Knot CLI Documentation</title>
-	<meta name="description" content="Step-by-step guide to install Knot CLI on your system. Available for macOS, Linux, and Windows with multiple installation methods." />
+	<meta name="description" content="Install Knot CLI with our one-line installer script. Works on macOS, Linux, and Windows. Includes built-in self-update functionality." />
 	<meta property="og:title" content="Installation Guide - Knot CLI" />
-	<meta property="og:description" content="Step-by-step guide to install Knot CLI on your system. Available for macOS, Linux, and Windows with multiple installation methods." />
+	<meta property="og:description" content="Install Knot CLI with our one-line installer script. Works on macOS, Linux, and Windows. Includes built-in self-update functionality." />
 	<meta property="og:image" content="/images/og/installation.png" />
 	<meta property="og:url" content="https://knot-space.com/docs/installation" />
 	<meta name="twitter:title" content="Installation Guide - Knot CLI" />
-	<meta name="twitter:description" content="Step-by-step guide to install Knot CLI on your system. Available for macOS, Linux, and Windows with multiple installation methods." />
+	<meta name="twitter:description" content="Install Knot CLI with our one-line installer script. Works on macOS, Linux, and Windows. Includes built-in self-update functionality." />
 	<meta name="twitter:image" content="/images/og/installation.png" />
 	<link rel="canonical" href="https://knot-space.com/docs/installation" />
 </svelte:head>
@@ -71,144 +71,49 @@
 		</div>
 	</section>
 
-	<!-- Platform-specific -->
+	<!-- Update Command -->
 	<section class="mb-12">
-		<h2 class="text-2xl font-bold mb-6">Platform-specific Installation</h2>
-
-		<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-			<!-- macOS -->
-			<div class="border rounded-lg p-6">
-				<div class="flex items-center space-x-3 mb-4">
-					<div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-						<Icon icon="solar:laptop-minimalistic-bold-duotone" class="w-6 h-6 text-gray-600" />
-					</div>
-					<div>
-						<h3 class="font-semibold">macOS</h3>
-						<p class="text-sm text-muted-foreground">Intel & Apple Silicon</p>
-					</div>
-				</div>
-
-				<div class="space-y-3">
-					<div>
-						<div class="text-sm font-medium mb-1">Homebrew (recommended)</div>
-						<div class="bg-black/90 text-green-400 font-mono text-xs p-3 rounded relative group">
-							<code>brew install knot-cli</code>
-							<button
-								class="absolute top-1 right-1 p-1.5 rounded bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
-								on:click={() => copyToClipboard('brew install knot-cli')}
-							>
-								{#if showCopied && copyText === 'brew install knot-cli'}
-									<Icon icon="solar:check-circle-bold" class="w-3 h-3 text-green-400" />
-								{:else}
-									<Icon icon="solar:copy-bold" class="w-3 h-3" />
-								{/if}
-							</button>
+		<h2 class="text-2xl font-bold mb-6">Keeping Knot Updated</h2>
+		<div class="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-lg p-6">
+			<div class="flex items-start space-x-3">
+				<Icon icon="solar:refresh-circle-bold" class="w-6 h-6 text-purple-600 mt-1 flex-shrink-0" />
+				<div class="flex-1">
+					<h3 class="font-semibold text-purple-900 mb-2">Self-Update Command</h3>
+					<p class="text-sm text-purple-700 mb-4">
+						Knot can update itself to the latest version automatically. No need to reinstall!
+					</p>
+					<div class="space-y-3">
+						<div>
+							<div class="text-sm font-medium text-purple-900 mb-1">Update to latest version</div>
+							<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
+								<code>knot update</code>
+								<button
+									class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
+									on:click={() => copyToClipboard('knot update')}
+								>
+									{#if showCopied && copyText === 'knot update'}
+										<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+									{:else}
+										<Icon icon="solar:copy-bold" class="w-4 h-4" />
+									{/if}
+								</button>
+							</div>
 						</div>
-					</div>
-
-					<div>
-						<div class="text-sm font-medium mb-1">Direct download</div>
-						<div class="bg-black/90 text-green-400 font-mono text-xs p-3 rounded relative group">
-							<code>curl -L github.com/saravenpi/knot/releases/latest/download/knot-darwin-arm64 -o knot</code>
-							<button
-								class="absolute top-1 right-1 p-1.5 rounded bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
-								on:click={() => copyToClipboard('curl -L github.com/saravenpi/knot/releases/latest/download/knot-darwin-arm64 -o knot')}
-							>
-								{#if showCopied && copyText.includes('darwin-arm64')}
-									<Icon icon="solar:check-circle-bold" class="w-3 h-3 text-green-400" />
-								{:else}
-									<Icon icon="solar:copy-bold" class="w-3 h-3" />
-								{/if}
-							</button>
-						</div>
-					</div>
-				</div>
-			</div>
-
-			<!-- Linux -->
-			<div class="border rounded-lg p-6">
-				<div class="flex items-center space-x-3 mb-4">
-					<div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-						<Icon icon="solar:programming-bold" class="w-6 h-6 text-orange-600" />
-					</div>
-					<div>
-						<h3 class="font-semibold">Linux</h3>
-						<p class="text-sm text-muted-foreground">x64 & ARM64</p>
-					</div>
-				</div>
-
-				<div class="space-y-3">
-					<div>
-						<div class="text-sm font-medium mb-1">Direct download</div>
-						<div class="bg-black/90 text-green-400 font-mono text-xs p-3 rounded relative group">
-							<code>curl -L github.com/saravenpi/knot/releases/latest/download/knot-linux-x64 -o knot</code>
-							<button
-								class="absolute top-1 right-1 p-1.5 rounded bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
-								on:click={() => copyToClipboard('curl -L github.com/saravenpi/knot/releases/latest/download/knot-linux-x64 -o knot')}
-							>
-								{#if showCopied && copyText.includes('linux-x64')}
-									<Icon icon="solar:check-circle-bold" class="w-3 h-3 text-green-400" />
-								{:else}
-									<Icon icon="solar:copy-bold" class="w-3 h-3" />
-								{/if}
-							</button>
-						</div>
-					</div>
-
-					<div>
-						<div class="text-sm font-medium mb-1">Make executable</div>
-						<div class="bg-black/90 text-green-400 font-mono text-xs p-3 rounded relative group">
-							<code>chmod +x knot && sudo mv knot /usr/local/bin/</code>
-							<button
-								class="absolute top-1 right-1 p-1.5 rounded bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
-								on:click={() => copyToClipboard('chmod +x knot && sudo mv knot /usr/local/bin/')}
-							>
-								{#if showCopied && copyText.includes('chmod')}
-									<Icon icon="solar:check-circle-bold" class="w-3 h-3 text-green-400" />
-								{:else}
-									<Icon icon="solar:copy-bold" class="w-3 h-3" />
-								{/if}
-							</button>
-						</div>
-					</div>
-				</div>
-			</div>
-
-			<!-- Windows -->
-			<div class="border rounded-lg p-6">
-				<div class="flex items-center space-x-3 mb-4">
-					<div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-						<Icon icon="solar:monitor-bold" class="w-6 h-6 text-blue-600" />
-					</div>
-					<div>
-						<h3 class="font-semibold">Windows</h3>
-						<p class="text-sm text-muted-foreground">x64 & ARM64</p>
-					</div>
-				</div>
-
-				<div class="space-y-3">
-					<div>
-						<div class="text-sm font-medium mb-1">PowerShell</div>
-						<div class="bg-blue-900 text-blue-100 font-mono text-xs p-3 rounded relative group">
-							<code>iwr -useb https://raw.githubusercontent.com/saravenpi/knot/main/install.ps1 | iex</code>
-							<button
-								class="absolute top-1 right-1 p-1.5 rounded bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
-								on:click={() => copyToClipboard('iwr -useb https://raw.githubusercontent.com/saravenpi/knot/main/install.ps1 | iex')}
-							>
-								{#if showCopied && copyText.includes('install.ps1')}
-									<Icon icon="solar:check-circle-bold" class="w-3 h-3 text-green-400" />
-								{:else}
-									<Icon icon="solar:copy-bold" class="w-3 h-3" />
-								{/if}
-							</button>
-						</div>
-					</div>
-
-					<div>
-						<div class="text-sm font-medium mb-1">Manual download</div>
-						<div class="text-xs text-muted-foreground">
-							Download <code>knot-windows-x64.exe</code> from
-							<a href="https://github.com/saravenpi/knot/releases" class="text-primary hover:underline">GitHub Releases</a>
+						<div>
+							<div class="text-sm font-medium text-purple-900 mb-1">Force update (reinstall current version)</div>
+							<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
+								<code>knot update --force</code>
+								<button
+									class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
+									on:click={() => copyToClipboard('knot update --force')}
+								>
+									{#if showCopied && copyText === 'knot update --force'}
+										<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+									{:else}
+										<Icon icon="solar:copy-bold" class="w-4 h-4" />
+									{/if}
+								</button>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -244,12 +149,12 @@
 			<div>
 				<h3 class="text-lg font-semibold mb-3">Test basic functionality</h3>
 				<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
-					<code>knot help</code>
+					<code>knot info</code>
 					<button
 						class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
-						on:click={() => copyToClipboard('knot help')}
+						on:click={() => copyToClipboard('knot info')}
 					>
-						{#if showCopied && copyText === 'knot help'}
+						{#if showCopied && copyText === 'knot info'}
 							<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
 						{:else}
 							<Icon icon="solar:copy-bold" class="w-4 h-4" />
@@ -257,7 +162,7 @@
 					</button>
 				</div>
 				<div class="mt-2 text-sm text-muted-foreground">
-					This should display the help menu with available commands.
+					This should display version information and available commands.
 				</div>
 			</div>
 		</div>

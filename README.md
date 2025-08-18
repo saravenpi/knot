@@ -43,6 +43,12 @@ knot build                                 # Build apps (context-aware)
 knot run <script>                          # Run scripts from config files
 ```
 
+### Updates & Maintenance
+```bash
+knot update                                # Update to latest version
+knot update --force                        # Force reinstall current version
+```
+
 ## 🎯 Quick Start
 
 ```bash
