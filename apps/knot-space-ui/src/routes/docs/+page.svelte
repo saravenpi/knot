@@ -86,8 +86,8 @@
 					<Icon icon="solar:terminal-bold" class="w-5 h-5 mr-2 text-gray-600" />
 					Common Workflow
 				</h3>
-				<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded">
-					<code># Initialize a new project
+				<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded overflow-x-auto">
+					<pre><code># Initialize a new project
 knot init MyProject
 
 # Create packages and apps
@@ -101,7 +101,7 @@ knot link
 knot build
 
 # Publish packages
-knot publish</code>
+knot publish</code></pre>
 				</div>
 			</div>
 		</div>
