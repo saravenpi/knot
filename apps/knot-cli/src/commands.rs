@@ -305,7 +305,7 @@ pub fn show_status() -> Result<()> {
 
 pub fn show_info() -> Result<()> {
     println!("🪢 Knot - Monorepo package manager");
-    println!("📦 Version: 0.2.0");
+    println!("📦 Version: {}", env!("CARGO_PKG_VERSION"));
     println!();
     println!("📋 Commands:");
     println!("  🆕 init <name>              Initialize a new project");
@@ -322,6 +322,7 @@ pub fn show_info() -> Result<()> {
     println!("  🔑 auth                     Check authentication status");
     println!("  📊 status                   Show project status");
     println!("  ℹ️  info                     Show this information");
+    println!("  🔄 update [--force]         Update Knot CLI to latest version");
     println!("  ❓ help                     Show help for commands");
     println!();
     println!("📖 Examples:");
@@ -1707,4 +1708,101 @@ async fn check_version_exists(package_name: &str, version: &str, token: &str) ->
             anyhow::bail!("Could not verify version existence (server error)")
         }
     }
+}
+
+// CLI Self-Update
+pub async fn update_cli(force: bool) -> Result<()> {
+    println!("🔄 Checking for Knot CLI updates...");
+    
+    let current_version = env!("CARGO_PKG_VERSION");
+    println!("📦 Current version: {}", current_version);
+    
+    // Check for latest version from GitHub releases or repository
+    match check_latest_version().await {
+        Ok(latest_version) => {
+            if !force && current_version == latest_version {
+                println!("✅ You already have the latest version ({})", current_version);
+                return Ok(());
+            }
+            
+            if !force {
+                println!("🎯 Latest version available: {}", latest_version);
+                println!("⬆️ Updating from {} to {}...", current_version, latest_version);
+            } else {
+                println!("🔄 Force updating to {}...", latest_version);
+            }
+            
+            update_binary().await?;
+            println!("✅ Update completed successfully!");
+            println!("🎉 Run 'knot info' to verify the new version");
+        }
+        Err(e) => {
+            println!("❌ Failed to check for updates: {}", e);
+            println!("💡 You can try updating manually by running the install script:");
+            println!("   curl -fsSL https://raw.githubusercontent.com/saravenpi/knot/main/install.sh | bash");
+        }
+    }
+    
+    Ok(())
+}
+
+async fn check_latest_version() -> Result<String> {
+    // Try to get latest version from GitHub API
+    let client = reqwest::Client::new();
+    let response = client
+        .get("https://api.github.com/repos/saravenpi/knot/tags")
+        .header("User-Agent", "knot-cli")
+        .send()
+        .await?;
+    
+    if !response.status().is_success() {
+        anyhow::bail!("Failed to fetch version information from GitHub");
+    }
+    
+    let tags: serde_json::Value = response.json().await?;
+    let tags_array = tags.as_array().ok_or_else(|| anyhow::anyhow!("Invalid response format"))?;
+    
+    if tags_array.is_empty() {
+        anyhow::bail!("No versions found");
+    }
+    
+    // Get the latest version (first in the list)
+    let latest_tag = &tags_array[0];
+    let version_name = latest_tag["name"]
+        .as_str()
+        .ok_or_else(|| anyhow::anyhow!("Invalid tag format"))?;
+    
+    // Remove 'v' prefix if present
+    let version = version_name.strip_prefix('v').unwrap_or(version_name);
+    Ok(version.to_string())
+}
+
+async fn update_binary() -> Result<()> {
+    use std::process::Command;
+    use std::env;
+    
+    println!("⬇️ Downloading and installing latest version...");
+    
+    // Create a temporary script that runs the installer
+    let install_script = r#"#!/bin/bash
+set -e
+curl -fsSL https://raw.githubusercontent.com/saravenpi/knot/main/install.sh | bash
+"#;
+    
+    // Get current binary path to potentially preserve it
+    let current_exe = env::current_exe()?;
+    println!("📍 Installing to the same location: {}", current_exe.display());
+    
+    // Run the install script
+    let output = Command::new("bash")
+        .arg("-c")
+        .arg(install_script)
+        .output()?;
+    
+    if !output.status.success() {
+        let stderr = String::from_utf8_lossy(&output.stderr);
+        anyhow::bail!("Installation failed: {}", stderr);
+    }
+    
+    Ok(())
 }

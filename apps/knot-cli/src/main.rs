@@ -12,7 +12,7 @@ use clap::{Arg, Command};
 #[tokio::main]
 async fn main() -> Result<()> {
     let matches = Command::new("knot")
-        .version("0.2.0")
+        .version(env!("CARGO_PKG_VERSION"))
         .about("Knot - Monorepo package manager")
         .subcommand_required(true)
         .arg_required_else_help(true)
@@ -276,6 +276,16 @@ async fn main() -> Result<()> {
                         ),
                 ),
         )
+        .subcommand(
+            Command::new("update")
+                .about("Update Knot CLI to the latest version")
+                .arg(
+                    Arg::new("force")
+                        .help("Force update even if already on latest version")
+                        .long("force")
+                        .action(clap::ArgAction::SetTrue),
+                )
+        )
         .get_matches();
 
     match matches.subcommand() {
@@ -397,6 +407,10 @@ async fn main() -> Result<()> {
             }
             _ => unreachable!(),
         },
+        Some(("update", sub_matches)) => {
+            let force = sub_matches.get_flag("force");
+            commands::update_cli(force).await?;
+        }
         _ => unreachable!(),
     }
 

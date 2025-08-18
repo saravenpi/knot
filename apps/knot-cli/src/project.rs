@@ -37,9 +37,10 @@ impl Project {
             let knot_yml = current.join("knot.yml");
             if knot_yml.exists() {
                 // Only canonicalize when we find the file to get the clean path
-                return current.canonicalize()
-                    .or_else(|_| Ok(current))
-                    .with_context(|| "Failed to resolve project root path");
+                return match current.canonicalize() {
+                    Ok(canonical) => Ok(canonical),
+                    Err(_) => Ok(current), // Fall back to non-canonical path
+                };
             }
 
             match current.parent() {
