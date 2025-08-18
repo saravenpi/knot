@@ -36,7 +36,9 @@
     "***.spec.ts"
   ],
   "include": [
+    "src/**/*",
     "src*",
-    "prisma*"
+    "prisma*",
+    "knot_packages/**/*"
   ]
 }
