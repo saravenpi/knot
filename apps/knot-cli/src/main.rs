@@ -1,6 +1,7 @@
 mod commands;
 mod config;
 mod downloader;
+mod ignore;
 mod linker;
 mod project;
 mod templates;

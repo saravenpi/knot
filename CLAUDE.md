@@ -43,6 +43,13 @@ Knot is a modern monorepo package manager for TypeScript/JavaScript projects wri
   3. Project root (`knot.yml`) - lowest priority
 - Supports complex command chaining with `&&` and `||`
 
+### 📦 Package Publishing with .knotignore
+- **Smart file filtering**: Use `.knotignore` file to exclude unwanted files from published packages
+- **GitIgnore-style syntax**: Supports glob patterns like `*.log`, `temp_*`, `*cache*`
+- **Sensible defaults**: Automatically excludes common files (node_modules, .git, *.tar.gz, etc.)
+- **Flexible patterns**: Supports prefix matching (`temp*`), suffix matching (`*.log`), and contains matching (`*cache*`)
+- **Comment support**: Add comments with `#` and skip empty lines
+
 ## CLI Commands
 
 ### Project Management
@@ -123,7 +130,48 @@ scripts:
 4. **Link** packages with `knot link` (copies by default, use `--symlink` for development)
 5. **Build** with `knot build`
 6. **Run** development scripts with `knot run <script>`
-7. **Publish** packages with `knot publish` (requires authentication)
+7. **Configure** publishing with `.knotignore` file to exclude unwanted files
+8. **Publish** packages with `knot publish` (requires authentication)
+
+## .knotignore File Usage
+
+The `.knotignore` file allows you to specify which files and directories should be excluded when publishing packages. It works similarly to `.gitignore` but specifically for package publishing.
+
+### Pattern Syntax
+- **Exact match**: `filename.txt` - matches exactly that file
+- **Extension match**: `*.log` - matches all .log files  
+- **Prefix match**: `temp*` - matches files starting with "temp"
+- **Suffix match**: `*cache` - matches files ending with "cache"
+- **Contains match**: `*cache*` - matches files containing "cache"
+- **Directory match**: `node_modules/` - matches directories
+- **Comments**: `# This is a comment` - lines starting with # are ignored
+
+### Default Excluded Files
+Even without a `.knotignore` file, Knot automatically excludes:
+- `*.tar.gz`, `*.tgz` - Previous package archives
+- `.git/` - Git repository data
+- `node_modules/` - Node.js dependencies
+- `target/` - Rust build directory
+- `.DS_Store`, `Thumbs.db` - OS system files
+- `*.tmp`, `*.temp` - Temporary files
+- `.env`, `.env.local` - Environment files (may contain secrets)
+
+### Example .knotignore
+```
+# Build artifacts
+dist/
+build/
+*.tar.gz
+
+# Development files
+.vscode/
+*.log
+temp_*
+
+# Test files (if you don't want to publish tests)
+__tests__/
+*.test.js
+```
 
 ## New Features Added
 

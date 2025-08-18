@@ -1,4 +1,5 @@
 use crate::config::{AppConfig, KnotConfig, PackageConfig, parse_yaml_error_to_user_friendly};
+use crate::ignore::KnotIgnore;
 use crate::linker::Linker;
 use crate::project::Project;
 use crate::templates::TemplateManager;
@@ -1308,24 +1309,28 @@ fn create_package_tarball(_package_name: &str, output_path: &str) -> Result<()> 
     let enc = GzEncoder::new(tar_gz, Compression::default());
     let mut tar = Builder::new(enc);
 
-    // Files and directories to exclude from the tarball
-    let excluded_patterns = [
-        "*.tar.gz",     // Previous tarball files
-        "*.tgz",        // Alternative tarball extension
-        ".git",         // Git directory
-        "node_modules", // Node.js dependencies
-        "target",       // Rust build directory
-        ".DS_Store",    // macOS system files
-        "Thumbs.db",    // Windows system files
-        "*.tmp",        // Temporary files
-        "*.temp",       // Temporary files
-        ".env",         // Environment files (may contain secrets)
-        ".env.local",   // Local environment files
-    ];
-
-    // Walk through directory and add files that don't match excluded patterns
     let current_dir = std::env::current_dir()?;
-    add_directory_to_tar(&mut tar, &current_dir, ".", &excluded_patterns)?;
+    let knotignore_path = current_dir.join(".knotignore");
+    
+    // Load ignore patterns from .knotignore file or use defaults
+    let ignore = match KnotIgnore::from_file(&knotignore_path) {
+        Ok(ignore) => {
+            if knotignore_path.exists() {
+                println!("📋 Using .knotignore file with {} patterns", ignore.patterns().len());
+            } else {
+                println!("📋 Using default ignore patterns (create .knotignore to customize)");
+            }
+            ignore
+        }
+        Err(e) => {
+            println!("⚠️  Failed to read .knotignore file: {}", e);
+            println!("📋 Using default ignore patterns");
+            KnotIgnore::default()
+        }
+    };
+
+    // Walk through directory and add files that don't match ignore patterns
+    add_directory_to_tar(&mut tar, &current_dir, ".", &ignore)?;
     
     tar.finish()?;
 
@@ -1337,7 +1342,7 @@ fn add_directory_to_tar(
     tar: &mut tar::Builder<flate2::write::GzEncoder<std::fs::File>>,
     base_path: &std::path::Path,
     relative_path: &str,
-    excluded_patterns: &[&str],
+    ignore: &KnotIgnore,
 ) -> Result<()> {
     let dir_path = base_path.join(relative_path);
     
@@ -1346,37 +1351,20 @@ fn add_directory_to_tar(
         let file_name = entry.file_name().to_string_lossy().to_string();
         let file_path = entry.path();
         
-        // Check if this file/directory should be excluded
-        let should_exclude = excluded_patterns.iter().any(|pattern| {
-            if pattern.contains('*') {
-                // Simple glob matching for patterns with *
-                let pattern_without_star = pattern.replace("*", "");
-                if pattern.starts_with('*') {
-                    file_name.ends_with(&pattern_without_star)
-                } else if pattern.ends_with('*') {
-                    file_name.starts_with(&pattern_without_star)
-                } else {
-                    file_name.contains(&pattern_without_star)
-                }
-            } else {
-                // Exact match for patterns without *
-                file_name == *pattern
-            }
-        });
-        
-        if should_exclude {
-            continue;
-        }
-        
         let entry_relative_path = if relative_path == "." {
             file_name.to_string()
         } else {
             format!("{}/{}", relative_path, file_name)
         };
         
+        // Check if this file/directory should be ignored
+        if ignore.is_ignored(&entry_relative_path) || ignore.is_ignored(&file_name) {
+            continue;
+        }
+        
         if file_path.is_dir() {
             // Recursively add directory contents
-            add_directory_to_tar(tar, base_path, &entry_relative_path, excluded_patterns)?;
+            add_directory_to_tar(tar, base_path, &entry_relative_path, ignore)?;
         } else {
             // Add file to tarball
             let mut file = std::fs::File::open(&file_path)?;

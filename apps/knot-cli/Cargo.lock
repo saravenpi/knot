@@ -675,6 +675,7 @@ dependencies = [
  "serde_yaml",
  "symlink",
  "tar",
+ "tempfile",
  "tokio",
  "walkdir",
 ]
