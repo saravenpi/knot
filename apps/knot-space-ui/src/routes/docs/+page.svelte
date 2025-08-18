@@ -13,7 +13,7 @@
 	<link rel="canonical" href="https://knot-space.com/docs" />
 </svelte:head>
 
-<div class="max-w-4xl mx-auto py-8 px-6">
+<div class="max-w-4xl mx-auto py-8 px-4 sm:px-6">
 	<div class="mb-12">
 		<h1 class="text-4xl font-bold tracking-tight mb-4" style="font-family: 'Gambarino', 'Satoshi', sans-serif;">
 			Introduction to Knot
