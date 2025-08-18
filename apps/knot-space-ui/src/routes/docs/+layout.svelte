@@ -167,8 +167,9 @@
 							Knot Docs
 						</h1>
 					</a>
-					<a href="/" class="text-sm text-muted-foreground hover:text-foreground transition-colors">
-						← Back to Knot Space
+					<a href="/" class="flex items-center text-sm text-muted-foreground hover:text-foreground transition-colors">
+						<Icon icon="solar:arrow-left-bold" class="w-3 h-3 mr-1" />
+						Back to Knot Space
 					</a>
 				</div>
 				<button
