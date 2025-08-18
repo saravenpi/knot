@@ -2,6 +2,52 @@ use anyhow::Context;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
+pub fn parse_yaml_error_to_user_friendly(error: &serde_yaml::Error) -> String {
+    let error_msg = error.to_string();
+    
+    // Check for missing fields
+    if error_msg.contains("missing field") {
+        if let Some(field_start) = error_msg.find("`") {
+            if let Some(field_end) = error_msg[field_start + 1..].find("`") {
+                let field_name = &error_msg[field_start + 1..field_start + 1 + field_end];
+                return match field_name {
+                    "name" => "Missing name field".to_string(),
+                    "version" => "Missing version field".to_string(),
+                    _ => format!("Missing {} field", field_name),
+                };
+            }
+        }
+        return "Missing required field".to_string();
+    }
+    
+    // Check for invalid type errors
+    if error_msg.contains("invalid type") {
+        if error_msg.contains("expected a string") {
+            return "Expected string value".to_string();
+        }
+        if error_msg.contains("expected a sequence") {
+            return "Expected array/list value".to_string();
+        }
+        if error_msg.contains("expected a map") {
+            return "Expected object/mapping value".to_string();
+        }
+        return "Invalid field type".to_string();
+    }
+    
+    // Check for duplicate key errors
+    if error_msg.contains("duplicate key") {
+        return "Duplicate field found".to_string();
+    }
+    
+    // Check for invalid YAML syntax
+    if error_msg.contains("while parsing") {
+        return "Invalid YAML syntax".to_string();
+    }
+    
+    // Fallback to original error for unknown cases
+    error_msg
+}
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct KnotConfig {
     pub name: String,
@@ -87,6 +133,7 @@ impl KnotConfig {
         }
 
         let config: KnotConfig = serde_yaml::from_str(&content)
+            .map_err(|e| anyhow::anyhow!("{}", parse_yaml_error_to_user_friendly(&e)))
             .with_context(|| format!("Failed to parse knot.yml file: {}", path.display()))?;
 
         config.validate()?;
@@ -157,6 +204,7 @@ impl PackageConfig {
         }
 
         let config: PackageConfig = serde_yaml::from_str(&content)
+            .map_err(|e| anyhow::anyhow!("{}", parse_yaml_error_to_user_friendly(&e)))
             .with_context(|| format!("Failed to parse package.yml file: {}", path.display()))?;
 
         config.validate()?;
@@ -265,6 +313,7 @@ impl AppConfig {
         }
 
         let config: AppConfig = serde_yaml::from_str(&content)
+            .map_err(|e| anyhow::anyhow!("{}", parse_yaml_error_to_user_friendly(&e)))
             .with_context(|| format!("Failed to parse app.yml file: {}", path.display()))?;
 
         config.validate()?;

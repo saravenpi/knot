@@ -1,4 +1,4 @@
-use crate::config::{AppConfig, KnotConfig, PackageConfig};
+use crate::config::{AppConfig, KnotConfig, PackageConfig, parse_yaml_error_to_user_friendly};
 use crate::linker::Linker;
 use crate::project::Project;
 use crate::templates::TemplateManager;
@@ -1396,7 +1396,7 @@ pub async fn version_bump(bump_type: &str) -> Result<()> {
     if package_yml_path.exists() {
         let mut config: PackageConfig = serde_yaml::from_str(
             &fs::read_to_string(&package_yml_path)?
-        )?;
+        ).map_err(|e| anyhow::anyhow!("{}", parse_yaml_error_to_user_friendly(&e)))?;
         
         let new_version = bump_version(&config.version, bump_type)?;
         config.version = new_version.clone();
@@ -1437,7 +1437,7 @@ pub async fn version_prerelease(preid: Option<&str>) -> Result<()> {
     if package_yml_path.exists() {
         let mut config: PackageConfig = serde_yaml::from_str(
             &fs::read_to_string(&package_yml_path)?
-        )?;
+        ).map_err(|e| anyhow::anyhow!("{}", parse_yaml_error_to_user_friendly(&e)))?;
         
         let new_version = bump_prerelease(&config.version, preid)?;
         config.version = new_version.clone();
@@ -1464,7 +1464,7 @@ pub async fn version_set(version: &str) -> Result<()> {
     if package_yml_path.exists() {
         let mut config: PackageConfig = serde_yaml::from_str(
             &fs::read_to_string(&package_yml_path)?
-        )?;
+        ).map_err(|e| anyhow::anyhow!("{}", parse_yaml_error_to_user_friendly(&e)))?;
         
         config.version = version.to_string();
         
