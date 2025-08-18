@@ -37,7 +37,8 @@ fn format_api_error(status: reqwest::StatusCode, response_text: &str) -> String 
 }
 
 pub fn init_project(name: &str, description: Option<&str>) -> Result<()> {
-    let knot_yml_path = Path::new("knot.yml");
+    let current_dir = std::env::current_dir()?;
+    let knot_yml_path = current_dir.join("knot.yml");
 
     if knot_yml_path.exists() {
         anyhow::bail!("knot.yml already exists in current directory");

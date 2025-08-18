@@ -31,12 +31,15 @@ impl Project {
     }
 
     fn find_project_root(start_dir: &Path) -> Result<PathBuf> {
-        let mut current = start_dir.canonicalize()?;
+        let mut current = start_dir.to_path_buf();
 
         loop {
             let knot_yml = current.join("knot.yml");
             if knot_yml.exists() {
-                return Ok(current);
+                // Only canonicalize when we find the file to get the clean path
+                return current.canonicalize()
+                    .or_else(|_| Ok(current))
+                    .with_context(|| "Failed to resolve project root path");
             }
 
             match current.parent() {
