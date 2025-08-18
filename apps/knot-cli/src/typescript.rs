@@ -106,12 +106,148 @@ impl<'a> TypeScriptManager<'a> {
             paths_obj.insert(knot_packages_path, json!([new_path]));
         }
 
-        let updated_content = serde_json::to_string_pretty(&tsconfig)?;
+        // Handle the include array - add knot_packages/**/* if not present
+        let include = tsconfig_obj.entry("include").or_insert_with(|| json!(["src/**/*"]));
+        
+        match include {
+            Value::Array(arr) => {
+                // Always ensure src/**/* is present (most projects need this)
+                if !self.has_include_pattern(arr, "src") {
+                    // Insert at the beginning to maintain conventional order
+                    arr.insert(0, Value::String("src/**/*".to_string()));
+                }
+                
+                // Check if knot_packages is already included in any form
+                if !self.has_include_pattern(arr, "knot_packages") {
+                    arr.push(Value::String("knot_packages/**/*".to_string()));
+                }
+            }
+            Value::String(single_path) => {
+                // Handle case where include is a single string instead of array
+                let existing_path = single_path.clone();
+                *include = json!([existing_path, "knot_packages/**/*"]);
+                
+                // Add src if not already the existing path
+                if !self.is_pattern_match(&existing_path, "src") {
+                    if let Value::Array(arr) = include {
+                        arr.insert(0, Value::String("src/**/*".to_string()));
+                    }
+                }
+            }
+            _ => {
+                // If it's null, undefined, or any other type, create proper array
+                *include = json!(["src/**/*", "knot_packages/**/*"]);
+            }
+        }
+
+        // Validate the final JSON before writing
+        let updated_content = match serde_json::to_string_pretty(&tsconfig) {
+            Ok(content) => content,
+            Err(e) => {
+                eprintln!("⚠️  Warning: Failed to serialize updated tsconfig: {}", e);
+                eprintln!("💡 Creating a fresh tsconfig with minimal configuration...");
+                
+                // Fallback: create a minimal but correct tsconfig
+                let fallback_tsconfig = json!({
+                    "compilerOptions": {
+                        "target": "es2020",
+                        "module": "esnext",
+                        "moduleResolution": "node",
+                        "esModuleInterop": true,
+                        "allowSyntheticDefaultImports": true,
+                        "strict": true,
+                        "skipLibCheck": true,
+                        "forceConsistentCasingInFileNames": true,
+                        "paths": {
+                            format!("{}/*", alias): ["./knot_packages/*"]
+                        }
+                    },
+                    "include": ["src/**/*", "knot_packages/**/*"],
+                    "exclude": ["node_modules", "dist"]
+                });
+                
+                serde_json::to_string_pretty(&fallback_tsconfig)
+                    .context("Failed to create fallback tsconfig")?
+            }
+        };
+
         fs::write(tsconfig_path, updated_content)
             .with_context(|| format!("Failed to write updated tsconfig to {:?}", tsconfig_path))?;
 
-        println!("Updated tsconfig.json for app with alias '{}'", alias);
+        println!("✅ Updated tsconfig.json with alias '{}' and knot_packages include", alias);
         Ok(())
+    }
+
+    fn has_include_pattern(&self, include_array: &[Value], pattern: &str) -> bool {
+        include_array.iter().any(|item| {
+            if let Some(path_str) = item.as_str() {
+                self.is_pattern_match(path_str, pattern)
+            } else {
+                false
+            }
+        })
+    }
+
+    fn is_pattern_match(&self, path_str: &str, pattern: &str) -> bool {
+        // Normalize paths: remove leading ./, convert backslashes, remove trailing slashes, handle multiple slashes
+        let normalized = path_str
+            .replace('\\', "/")
+            .trim_start_matches("./")
+            .trim_end_matches('/')
+            .replace("//", "/")  // Handle multiple consecutive slashes
+            .to_string();
+        
+        let pattern_base = pattern
+            .replace('\\', "/")
+            .trim_start_matches("./")
+            .trim_end_matches('/')
+            .replace("//", "/")
+            .to_string();
+
+        // Check for exact matches or pattern matches
+        match pattern_base.as_str() {
+            "knot_packages" => {
+                // Check for various knot_packages patterns
+                let knot_patterns = [
+                    "knot_packages",
+                    "knot_packages/*",
+                    "knot_packages/**",
+                    "knot_packages/**/*",
+                    "knot_packages/**/*.ts",
+                    "knot_packages/**/*.tsx",
+                    "knot_packages/**/*.js",
+                    "knot_packages/**/*.jsx",
+                ];
+                knot_patterns.iter().any(|p| normalized == *p) || 
+                (normalized.starts_with("knot_packages/") && 
+                 !normalized.starts_with("knot_packages_") && 
+                 normalized != "knot_packages")
+            }
+            "src" => {
+                // Check for various src patterns
+                let src_patterns = [
+                    "src",
+                    "src/*",
+                    "src/**",
+                    "src/**/*",
+                    "src/**/*.ts",
+                    "src/**/*.tsx",
+                    "src/**/*.js",
+                    "src/**/*.jsx",
+                ];
+                src_patterns.iter().any(|p| normalized == *p) || 
+                (normalized.starts_with("src/") && 
+                 !normalized.starts_with("src_") && 
+                 normalized != "src")
+            }
+            _ => {
+                // For other patterns, do exact match or directory prefix match
+                normalized == pattern_base || 
+                (normalized.starts_with(&format!("{}/", pattern_base)) && 
+                 !normalized.starts_with(&format!("{}_", pattern_base)) &&
+                 normalized != pattern_base)
+            }
+        }
     }
 
     fn remove_json_comments(&self, content: &str) -> Result<String> {
@@ -199,7 +335,7 @@ impl<'a> TypeScriptManager<'a> {
                     knot_packages_path: ["./knot_packages/*"]
                 }
             },
-            "include": ["src/**/*"],
+            "include": ["src/**/*", "knot_packages/**/*"],
             "exclude": ["node_modules", "dist"]
         });
 
@@ -207,7 +343,7 @@ impl<'a> TypeScriptManager<'a> {
         fs::write(tsconfig_path, content)
             .with_context(|| format!("Failed to create default tsconfig at {:?}", tsconfig_path))?;
 
-        println!("Created default tsconfig.json with alias '{}'", alias);
+        println!("✅ Created tsconfig.json with alias '{}' and knot_packages include", alias);
         Ok(())
     }
 }
