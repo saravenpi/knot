@@ -58,7 +58,7 @@
 	}
 
 	function isTeamOwnerOrAdmin(team: any): boolean {
-		if (!currentUser) return false;
+		if (!currentUser || !team.members) return false;
 		const member = team.members.find(m => m.user.id === currentUser.id);
 		return member && (member.role === 'owner' || member.role === 'admin');
 	}
@@ -228,7 +228,7 @@
 						</div>
 						<div class="flex items-center space-x-2">
 							<span class="text-sm text-muted-foreground">
-								{team.members.length} member{team.members.length !== 1 ? 's' : ''}
+								{team.members?.length || 0} member{(team.members?.length || 0) !== 1 ? 's' : ''}
 							</span>
 							{#if isTeamOwnerOrAdmin(team)}
 								<div class="flex gap-2">
@@ -260,7 +260,7 @@
 					<div class="space-y-3">
 						<h4 class="text-sm font-medium">Members</h4>
 						<div class="space-y-2">
-							{#each team.members as member}
+							{#each (team.members || []) as member}
 								<div class="flex justify-between items-center py-2">
 									<div class="flex items-center space-x-3">
 										<div class="w-8 h-8 bg-muted rounded-full flex items-center justify-center">

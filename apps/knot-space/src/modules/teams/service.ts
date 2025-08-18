@@ -38,7 +38,34 @@ class TeamsService {
       }
     });
 
-    return team;
+    // Return the team with members included to match the expected structure
+    const teamWithMembers = await prisma.team.findUnique({
+      where: { id: team.id },
+      include: {
+        owner: {
+          select: {
+            id: true,
+            username: true,
+            email: true,
+            createdAt: true,
+          }
+        },
+        members: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                username: true,
+                email: true,
+                createdAt: true,
+              }
+            }
+          }
+        }
+      }
+    });
+
+    return teamWithMembers;
   }
 
   async listTeams(userId?: string) {
