@@ -51,7 +51,7 @@
 			filteredUsers = allUsers
 				.filter(user => 
 					user.username.toLowerCase().includes(userSearchTerm.toLowerCase()) ||
-					user.email.toLowerCase().includes(userSearchTerm.toLowerCase())
+					(user.email && user.email.toLowerCase().includes(userSearchTerm.toLowerCase()))
 				)
 				.slice(0, 5); // Limit to 5 suggestions
 			showUserSuggestions = filteredUsers.length > 0;
@@ -353,7 +353,7 @@
 														title={member.role}
 													/>
 												</div>
-												<div class="text-xs text-muted-foreground">{member.user.email}</div>
+												<div class="text-xs text-muted-foreground">{member.user.email || 'No email'}</div>
 											</div>
 										</div>
 									</div>
@@ -447,7 +447,7 @@
 									</div>
 									<div class="flex-1 min-w-0">
 										<div class="font-medium text-sm text-foreground">{user.username}</div>
-										<div class="text-xs text-muted-foreground truncate">{user.email}</div>
+										<div class="text-xs text-muted-foreground truncate">{user.email || 'No email'}</div>
 									</div>
 								</button>
 							{/each}
@@ -606,7 +606,7 @@
 													title={member.role}
 												/>
 											</div>
-											<div class="text-xs text-muted-foreground">{member.user.email}</div>
+											<div class="text-xs text-muted-foreground">{member.user.email || 'No email'}</div>
 											<div class="text-xs text-muted-foreground capitalize">{member.role}</div>
 										</div>
 									</div>
