@@ -108,8 +108,17 @@
     </div>
   </aside>
 
+  <!-- Mobile Floating Docs Button -->
+  <a 
+    href="/docs"
+    class="lg:hidden fixed top-4 right-4 z-40 bg-primary text-primary-foreground p-3 rounded-full shadow-lg hover:bg-primary/90 transition-all duration-200 {currentPath.startsWith('/docs') ? 'ring-2 ring-primary ring-offset-2' : ''}"
+    title="Documentation"
+  >
+    <Icon icon="solar:book-2-bold" class="w-5 h-5" />
+  </a>
+
   <!-- Main content -->
-  <main class="lg:ml-64 p-4 lg:p-8 pb-20 lg:pb-8">
+  <main class="lg:ml-64 p-4 lg:p-8 pb-20 lg:pb-8 pt-16 lg:pt-8">
     <slot />
   </main>
 
@@ -118,7 +127,7 @@
     <div class="flex items-center justify-around py-2">
       <a 
         href="/packages" 
-        class="flex flex-col items-center py-2 px-3 min-w-0 flex-1 text-center transition-colors {currentPath === '/packages' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}"
+        class="flex flex-col items-center py-2 px-4 min-w-0 flex-1 text-center transition-colors {currentPath === '/packages' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}"
       >
         <Icon icon="solar:box-bold" class="w-6 h-6 mb-1" />
         <span class="text-xs font-medium truncate">Packages</span>
@@ -126,7 +135,7 @@
 
       <a 
         href="/users" 
-        class="flex flex-col items-center py-2 px-3 min-w-0 flex-1 text-center transition-colors {currentPath === '/users' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}"
+        class="flex flex-col items-center py-2 px-4 min-w-0 flex-1 text-center transition-colors {currentPath === '/users' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}"
       >
         <Icon icon="solar:user-bold" class="w-6 h-6 mb-1" />
         <span class="text-xs font-medium truncate">Users</span>
@@ -134,23 +143,15 @@
 
       <a 
         href="/teams" 
-        class="flex flex-col items-center py-2 px-3 min-w-0 flex-1 text-center transition-colors {currentPath === '/teams' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}"
+        class="flex flex-col items-center py-2 px-4 min-w-0 flex-1 text-center transition-colors {currentPath === '/teams' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}"
       >
         <Icon icon="solar:users-group-two-rounded-bold" class="w-6 h-6 mb-1" />
         <span class="text-xs font-medium truncate">Teams</span>
       </a>
 
       <a 
-        href="/docs" 
-        class="flex flex-col items-center py-2 px-3 min-w-0 flex-1 text-center transition-colors {currentPath.startsWith('/docs') ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}"
-      >
-        <Icon icon="solar:book-2-bold" class="w-6 h-6 mb-1" />
-        <span class="text-xs font-medium truncate">Docs</span>
-      </a>
-
-      <a 
         href="/settings" 
-        class="flex flex-col items-center py-2 px-3 min-w-0 flex-1 text-center transition-colors {currentPath === '/settings' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}"
+        class="flex flex-col items-center py-2 px-4 min-w-0 flex-1 text-center transition-colors {currentPath === '/settings' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}"
       >
         <Icon icon="solar:settings-bold" class="w-6 h-6 mb-1" />
         <span class="text-xs font-medium truncate">Settings</span>
