@@ -50,8 +50,8 @@
 		<!-- Drawer content -->
 		<div
 			class="relative z-10 {side === 'right' ? 'ml-auto' : side === 'left' ? 'mr-auto' : 'mt-auto'} 
-			       {side === 'bottom' ? 'w-full max-h-[80vh]' : 'h-full w-full max-w-sm'} 
-			       bg-background border-l border-border shadow-lg"
+			       {side === 'bottom' ? 'w-full max-h-[80vh]' : 'h-full w-full max-w-md'} 
+			       bg-background border-l border-border shadow-lg flex flex-col"
 			transition:fly={{
 				x: side === 'right' ? 320 : side === 'left' ? -320 : 0,
 				y: side === 'bottom' ? 320 : 0,
@@ -59,7 +59,7 @@
 			}}
 		>
 			<!-- Header -->
-			<div class="flex items-center justify-between p-6 border-b border-border">
+			<div class="flex items-center justify-between p-6 border-b border-border flex-shrink-0">
 				<div class="space-y-1">
 					{#if title}
 						<h2 class="text-lg font-semibold leading-none tracking-tight">{title}</h2>
@@ -77,8 +77,8 @@
 				</button>
 			</div>
 
-			<!-- Content -->
-			<div class="p-6">
+			<!-- Content with scroll -->
+			<div class="p-6 overflow-y-auto flex-1">
 				<slot />
 			</div>
 		</div>

@@ -522,143 +522,140 @@
 			{/if}
 
 			<div class="flex flex-col sm:flex-row justify-end gap-3">
-				<button
+				<Button
 					on:click={() => { showDeleteConfirm = false; deleteTeamId = ''; deleteError = ''; }}
-					class="border border-input bg-background hover:bg-accent hover:text-accent-foreground px-4 py-2 rounded-md text-sm font-medium transition-colors w-full sm:w-auto order-2 sm:order-1"
+					variant="outline"
+					class="w-full sm:w-auto order-2 sm:order-1"
 				>
 					Cancel
-				</button>
-				<button
+				</Button>
+				<Button
 					on:click={() => handleDeleteTeam(deleteTeamId)}
-					class="bg-destructive text-destructive-foreground hover:bg-destructive/90 px-4 py-2 rounded-md text-sm font-medium transition-colors w-full sm:w-auto order-1 sm:order-2"
+					variant="destructive"
+					class="w-full sm:w-auto order-1 sm:order-2"
 				>
 					Delete Team
-				</button>
+				</Button>
 			</div>
 		</div>
-	</div>
 {/if}
 
-<!-- Team Management Modal -->
-{#if showManageModal}
-	<div class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-		<div class="bg-background border border-border rounded-lg p-4 sm:p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-			{#if teams.find(t => t.id === manageTeamId)}
-				{@const managedTeam = teams.find(t => t.id === manageTeamId)}
-				<div class="flex items-center gap-3 mb-6">
-					<Icon icon="solar:settings-bold" class="w-6 h-6 text-primary" />
-					<h3 class="text-lg font-semibold">Manage Team: {managedTeam.name}</h3>
+<!-- Team Management Drawer -->
+<Drawer
+	bind:open={showManageModal}
+	title="Manage Team"
+	description="View and manage team members and settings"
+	side="right"
+>
+	{#if teams.find(t => t.id === manageTeamId)}
+		{@const managedTeam = teams.find(t => t.id === manageTeamId)}
+		<div class="space-y-6">
+			<!-- Team Info -->
+			<div>
+				<h4 class="text-md font-medium mb-3">Team Information</h4>
+				<div class="bg-muted/30 rounded-lg p-4 space-y-2">
+					<div class="flex justify-between">
+						<span class="text-sm text-muted-foreground">Name:</span>
+						<span class="text-sm font-medium">{managedTeam.name}</span>
+					</div>
+					{#if managedTeam.description}
+						<div class="flex justify-between">
+							<span class="text-sm text-muted-foreground">Description:</span>
+							<span class="text-sm font-medium">{managedTeam.description}</span>
+						</div>
+					{/if}
+					<div class="flex justify-between">
+						<span class="text-sm text-muted-foreground">Members:</span>
+						<span class="text-sm font-medium">{managedTeam.members?.length || 0}</span>
+					</div>
+					<div class="flex justify-between">
+						<span class="text-sm text-muted-foreground">Created:</span>
+						<span class="text-sm font-medium">{formatDate(managedTeam.createdAt || new Date())}</span>
+					</div>
+				</div>
+			</div>
+
+			<!-- Members List -->
+			<div>
+				<div class="flex justify-between items-center mb-3">
+					<h4 class="text-md font-medium">Team Members</h4>
+					{#if isTeamOwnerOrAdmin(managedTeam)}
+						<Button
+							on:click={() => {
+								addMemberTeamId = managedTeam.id;
+								showAddMember = true;
+								showManageModal = false;
+							}}
+							size="sm"
+						>
+							<Icon icon="solar:user-plus-bold" class="w-3 h-3 mr-1" />
+							Add Member
+						</Button>
+					{/if}
 				</div>
 				
-				<div class="space-y-6">
-					<!-- Team Info -->
-					<div>
-						<h4 class="text-md font-medium mb-3">Team Information</h4>
-						<div class="bg-muted/30 rounded-lg p-4 space-y-2">
-							<div class="flex justify-between">
-								<span class="text-sm text-muted-foreground">Name:</span>
-								<span class="text-sm font-medium">{managedTeam.name}</span>
-							</div>
-							{#if managedTeam.description}
-								<div class="flex justify-between">
-									<span class="text-sm text-muted-foreground">Description:</span>
-									<span class="text-sm font-medium">{managedTeam.description}</span>
+				<div class="space-y-3 max-h-60 overflow-y-auto">
+					{#each (managedTeam.members || []) as member}
+						<div class="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
+							<div class="flex items-center space-x-3">
+								<div class="w-10 h-10 bg-muted rounded-full flex items-center justify-center">
+									<span class="text-sm font-medium">
+										{getUserInitials(member.user.username)}
+									</span>
 								</div>
-							{/if}
-							<div class="flex justify-between">
-								<span class="text-sm text-muted-foreground">Members:</span>
-								<span class="text-sm font-medium">{managedTeam.members?.length || 0}</span>
-							</div>
-							<div class="flex justify-between">
-								<span class="text-sm text-muted-foreground">Created:</span>
-								<span class="text-sm font-medium">{formatDate(managedTeam.createdAt || new Date())}</span>
-							</div>
-						</div>
-					</div>
-
-					<!-- Members List -->
-					<div>
-						<div class="flex justify-between items-center mb-3">
-							<h4 class="text-md font-medium">Team Members</h4>
-							{#if isTeamOwnerOrAdmin(managedTeam)}
-								<button
-									on:click={() => {
-										addMemberTeamId = managedTeam.id;
-										showAddMember = true;
-										showManageModal = false;
-									}}
-									class="bg-primary text-primary-foreground hover:bg-primary/90 px-3 py-1 rounded-md text-xs font-medium transition-colors flex items-center gap-1"
-								>
-									<Icon icon="solar:user-plus-bold" class="w-3 h-3" />
-									Add Member
-								</button>
-							{/if}
-						</div>
-						
-						<div class="space-y-3 max-h-60 overflow-y-auto">
-							{#each (managedTeam.members || []) as member}
-								<div class="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
-									<div class="flex items-center space-x-3">
-										<div class="w-10 h-10 bg-muted rounded-full flex items-center justify-center">
-											<span class="text-sm font-medium">
-												{getUserInitials(member.user.username)}
-											</span>
-										</div>
-										<div>
-											<div class="font-medium text-sm flex items-center gap-2">
-												{member.user.username}
-												<Icon 
-													icon={getRoleIcon(member.role)} 
-													class="w-4 h-4 {getRoleColor(member.role)}"
-													title={member.role}
-												/>
-											</div>
-											<div class="text-xs text-muted-foreground">{member.user.email || 'No email'}</div>
-											<div class="text-xs text-muted-foreground capitalize">{member.role}</div>
-										</div>
+								<div>
+									<div class="font-medium text-sm flex items-center gap-2">
+										{member.user.username}
+										<Icon 
+											icon={getRoleIcon(member.role)} 
+											class="w-4 h-4 {getRoleColor(member.role)}"
+											title={member.role}
+										/>
 									</div>
-									
-									{#if isTeamOwnerOrAdmin(managedTeam) && member.role !== 'owner'}
-										<div class="flex items-center gap-2">
-											<select
-												value={member.role}
-												on:change={(e) => handleUpdateMemberRole(managedTeam.id, member.user.id, e.target.value)}
-												class="text-xs px-2 py-1 bg-background border border-border rounded-md font-medium"
-											>
-												<option value="member">Member</option>
-												<option value="admin">Admin</option>
-											</select>
-											<button
-												on:click={() => handleRemoveMember(managedTeam.id, member.user.id)}
-												class="text-xs text-destructive hover:bg-destructive/10 p-2 rounded transition-colors"
-												title="Remove member"
-											>
-												<Icon icon="solar:trash-bin-minimalistic-bold" class="w-4 h-4" />
-											</button>
-										</div>
-									{:else}
-										<span class="text-xs px-2 py-1 bg-muted rounded-md font-medium capitalize">
-											{member.role}
-										</span>
-									{/if}
+									<div class="text-xs text-muted-foreground">{member.user.email || 'No email'}</div>
+									<div class="text-xs text-muted-foreground capitalize">{member.role}</div>
 								</div>
-							{/each}
+							</div>
+							
+							{#if isTeamOwnerOrAdmin(managedTeam) && member.role !== 'owner'}
+								<div class="flex items-center gap-2">
+									<select
+										value={member.role}
+										on:change={(e) => handleUpdateMemberRole(managedTeam.id, member.user.id, e.target.value)}
+										class="text-xs px-2 py-1 bg-background border border-border rounded-md font-medium"
+									>
+										<option value="member">Member</option>
+										<option value="admin">Admin</option>
+									</select>
+									<button
+										on:click={() => handleRemoveMember(managedTeam.id, member.user.id)}
+										class="text-xs text-destructive hover:bg-destructive/10 p-2 rounded transition-colors"
+										title="Remove member"
+									>
+										<Icon icon="solar:trash-bin-minimalistic-bold" class="w-4 h-4" />
+									</button>
+								</div>
+							{:else}
+								<span class="text-xs px-2 py-1 bg-muted rounded-md font-medium capitalize">
+									{member.role}
+								</span>
+							{/if}
 						</div>
-					</div>
+					{/each}
 				</div>
-				
-				<div class="flex justify-end gap-3 mt-6">
-					<button
-						on:click={() => { 
-							showManageModal = false; 
-							manageTeamId = ''; 
-						}}
-						class="border border-input bg-background hover:bg-accent hover:text-accent-foreground px-4 py-2 rounded-md text-sm font-medium transition-colors w-full sm:w-auto"
-					>
-						Close
-					</button>
-				</div>
-			{/if}
+			</div>
+
+			<div class="flex justify-end gap-3 pt-4 border-t border-border">
+				<Button
+					on:click={() => { 
+						showManageModal = false; 
+						manageTeamId = ''; 
+					}}
+					variant="outline"
+				>
+					Close
+				</Button>
+			</div>
 		</div>
-	</div>
-{/if}
+	{/if}
+</Drawer>
