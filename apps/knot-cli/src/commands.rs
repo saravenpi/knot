@@ -9,11 +9,9 @@ use reqwest::multipart;
 use serde::{Deserialize, Serialize};
 use std::env;
 use std::fs;
-use std::io;
 use std::path::{Path, PathBuf};
 use inquire::{Text, Select, Confirm};
 use console::style;
-use indicatif::{ProgressBar, ProgressStyle};
 
 // Helper function for interactive input with beautiful UI
 fn prompt_for_input(prompt: &str, default: Option<&str>) -> Result<String> {
@@ -65,18 +63,6 @@ fn prompt_for_confirm(prompt: &str, default: Option<bool>) -> Result<bool> {
     Ok(confirm_prompt.prompt()?)
 }
 
-// Progress bar helper
-fn create_progress_bar(message: &str, len: u64) -> ProgressBar {
-    let pb = ProgressBar::new(len);
-    pb.set_style(
-        ProgressStyle::default_bar()
-            .template("{spinner:.green} [{elapsed_precise}] [{bar:40.cyan/blue}] {pos}/{len} {msg}")
-            .unwrap()
-            .progress_chars("#>-"),
-    );
-    pb.set_message(message.to_string());
-    pb
-}
 
 // Helper function to determine the best directory for creating packages/apps
 fn determine_target_directory(current_dir: &Path, item_type: &str) -> Result<(PathBuf, String, bool)> {
