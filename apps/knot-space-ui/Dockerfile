@@ -1,14 +1,14 @@
 # Build stage
-FROM node:18-alpine as builder
+FROM oven/bun as builder
 
 # Set working directory
 WORKDIR /app
 
 # Copy package files
-COPY package.json package-lock.json ./
+COPY package.json bun.lock ./
 
 # Install dependencies
-RUN npm ci
+RUN bun install --frozen-lockfile
 
 # Copy app source code (knot_packages already included via pre-commit hook)
 COPY . ./
@@ -18,7 +18,7 @@ ARG PUBLIC_BACKEND_URL
 ENV PUBLIC_BACKEND_URL=${PUBLIC_BACKEND_URL}
 
 # Build application
-RUN npm run build
+RUN bun run build
 
 # Runtime stage
 FROM node:18-alpine
