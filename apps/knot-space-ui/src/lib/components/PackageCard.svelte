@@ -10,15 +10,16 @@
 
 <a 
 	href="/packages/{encodeURIComponent(pkg.name)}"
-	class="block border rounded-lg p-6 hover:shadow-md transition-all duration-200 hover:border-primary/50 cursor-pointer"
+	class="block border rounded-lg p-4 sm:p-6 hover:shadow-md transition-all duration-200 hover:border-primary/50 cursor-pointer"
 >
-	<div class="flex items-start justify-between mb-4">
+	<!-- Header with title and stats -->
+	<div class="flex items-start justify-between gap-4 mb-4">
 		<div class="flex-1 min-w-0">
-			<div class="flex items-center gap-2 mb-2">
+			<div class="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
 				<h3 class="font-semibold text-lg truncate hover:text-primary transition-colors">
 					{pkg.name}
 				</h3>
-				<span class="text-sm text-muted-foreground bg-secondary px-2 py-1 rounded flex-shrink-0">
+				<span class="text-sm text-muted-foreground bg-secondary px-2 py-1 rounded flex-shrink-0 w-fit">
 					v{pkg.version}
 				</span>
 			</div>
@@ -39,8 +40,27 @@
 					{/each}
 				</div>
 			{/if}
-			
-			<div class="flex items-center gap-4 text-sm text-muted-foreground">
+		</div>
+		
+		<!-- Right side stats - visible on desktop -->
+		<div class="hidden sm:flex flex-col items-end gap-2 text-sm text-muted-foreground flex-shrink-0">
+			<div class="flex items-center gap-1">
+				<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
+				</svg>
+				{formatDownloadCount(pkg.totalDownloadsCount || pkg.downloadsCount)}
+			</div>
+			<div class="text-xs">
+				{formatFileSize(pkg.fileSize)}
+			</div>
+		</div>
+	</div>
+
+	<!-- Bottom metadata section - responsive layout -->
+	<div class="space-y-3 sm:space-y-0">
+		<!-- Owner, team, and dates -->
+		<div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-muted-foreground">
+			<div class="flex flex-col xs:flex-row xs:items-center gap-2 xs:gap-4">
 				{#if showOwner && pkg.owner}
 					<span>by 
 						<button 
@@ -59,6 +79,9 @@
 						{pkg.team.name}
 					</span>
 				{/if}
+			</div>
+			
+			<div class="flex flex-col xs:flex-row xs:items-center gap-2 xs:gap-4 text-sm">
 				<span>{formatDate(pkg.publishedAt || pkg.createdAt)}</span>
 				{#if showUpdatedTime && pkg.updatedAt && pkg.updatedAt !== pkg.createdAt}
 					<span class="flex items-center gap-1 text-xs">
@@ -70,13 +93,14 @@
 				{/if}
 			</div>
 		</div>
-		
-		<div class="flex flex-col items-end gap-2 text-sm text-muted-foreground ml-4">
+
+		<!-- Mobile stats - visible only on mobile -->
+		<div class="sm:hidden flex items-center justify-between pt-2 border-t border-border text-sm text-muted-foreground">
 			<div class="flex items-center gap-1">
 				<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
 				</svg>
-				{formatDownloadCount(pkg.totalDownloadsCount || pkg.downloadsCount)}
+				<span>{formatDownloadCount(pkg.totalDownloadsCount || pkg.downloadsCount)} downloads</span>
 			</div>
 			<div class="text-xs">
 				{formatFileSize(pkg.fileSize)}
