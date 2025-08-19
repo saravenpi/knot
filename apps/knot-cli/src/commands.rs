@@ -13,8 +13,23 @@ use std::path::{Path, PathBuf};
 use inquire::{Text, Select, Confirm};
 use console::style;
 
+// Check if running in interactive environment
+fn is_interactive() -> bool {
+    use std::io::IsTerminal;
+    std::io::IsTerminal::is_terminal(&std::io::stdin())
+}
+
 // Helper function for interactive input with beautiful UI
 fn prompt_for_input(prompt: &str, default: Option<&str>) -> Result<String> {
+    // Fallback to default if not interactive
+    if !is_interactive() {
+        if let Some(default_val) = default {
+            return Ok(default_val.to_string());
+        } else {
+            anyhow::bail!("Interactive input required but running in non-interactive environment. Please provide values via command line arguments.");
+        }
+    }
+    
     let mut text_prompt = Text::new(prompt);
     
     if let Some(default_val) = default {
@@ -37,6 +52,15 @@ fn prompt_for_input(prompt: &str, default: Option<&str>) -> Result<String> {
 
 // Enhanced input for descriptions (allows more characters)
 fn prompt_for_description(prompt: &str, default: Option<&str>) -> Result<String> {
+    // Fallback to default if not interactive
+    if !is_interactive() {
+        if let Some(default_val) = default {
+            return Ok(default_val.to_string());
+        } else {
+            return Ok(String::new()); // Optional descriptions can be empty
+        }
+    }
+    
     let mut text_prompt = Text::new(prompt);
     
     if let Some(default_val) = default {
@@ -48,12 +72,26 @@ fn prompt_for_description(prompt: &str, default: Option<&str>) -> Result<String>
 
 // Enhanced select prompt
 fn prompt_for_select(prompt: &str, options: Vec<&str>) -> Result<String> {
+    // Fallback to first option if not interactive
+    if !is_interactive() {
+        return Ok(options.first().unwrap_or(&"basic").to_string());
+    }
+    
     let selection = Select::new(prompt, options).prompt()?;
     Ok(selection.to_string())
 }
 
 // Enhanced confirm prompt
 fn prompt_for_confirm(prompt: &str, default: Option<bool>) -> Result<bool> {
+    // Fallback to default if not interactive
+    if !is_interactive() {
+        if let Some(default_val) = default {
+            return Ok(default_val);
+        } else {
+            return Ok(false); // Default to false if no default provided
+        }
+    }
+    
     let mut confirm_prompt = Confirm::new(prompt);
     
     if let Some(default_val) = default {
