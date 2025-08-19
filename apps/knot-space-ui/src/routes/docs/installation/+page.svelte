@@ -31,7 +31,7 @@
 	<link rel="canonical" href="https://knot-space.com/docs/installation" />
 </svelte:head>
 
-<div class="max-w-4xl mx-auto py-8 px-4 sm:px-6">
+<div class="max-w-4xl mx-auto py-8 px-4 sm:px-6 overflow-x-hidden">
 	<div class="mb-8">
 		<h1 class="text-3xl font-bold tracking-tight mb-4" style="font-family: 'Gambarino', 'Satoshi', sans-serif;">
 			Installation
@@ -47,14 +47,14 @@
 		<div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6">
 			<div class="flex items-start space-x-3">
 				<Icon icon="solar:rocket-2-bold" class="w-6 h-6 text-blue-600 mt-1 flex-shrink-0" />
-				<div class="flex-1">
+				<div class="flex-1 min-w-0">
 					<h3 class="font-semibold text-blue-900 mb-2">One-line installer</h3>
 					<p class="text-sm text-blue-700 mb-4">
 						This script automatically detects your platform and installs the latest version of Knot CLI.
 					</p>
-					<div class="bg-black/90 text-green-400 font-mono text-sm rounded-lg relative group">
-						<div class="overflow-x-auto p-4 pr-12">
-							<code class="whitespace-nowrap block">curl -fsSL https://raw.githubusercontent.com/saravenpi/knot/main/install.sh | bash</code>
+					<div class="bg-black/90 text-green-400 font-mono text-sm rounded-lg relative group w-full max-w-full">
+						<div class="overflow-x-auto overflow-y-hidden p-4 pr-12 max-w-full">
+							<pre class="whitespace-nowrap m-0 min-w-max"><code>curl -fsSL https://raw.githubusercontent.com/saravenpi/knot/main/install.sh | bash</code></pre>
 						</div>
 						<button
 							class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100 z-10"
@@ -79,7 +79,7 @@
 		<div class="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-lg p-6">
 			<div class="flex items-start space-x-3">
 				<Icon icon="solar:refresh-circle-bold" class="w-6 h-6 text-purple-600 mt-1 flex-shrink-0" />
-				<div class="flex-1">
+				<div class="flex-1 min-w-0">
 					<h3 class="font-semibold text-purple-900 mb-2">Self-Update Command</h3>
 					<p class="text-sm text-purple-700 mb-4">
 						Knot can update itself to the latest version automatically. No need to reinstall!
@@ -87,9 +87,9 @@
 					<div class="space-y-3">
 						<div>
 							<div class="text-sm font-medium text-purple-900 mb-1">Update to latest version</div>
-							<div class="bg-black/90 text-green-400 font-mono text-sm rounded-lg relative group">
-								<div class="overflow-x-auto p-4 pr-12">
-									<code class="whitespace-nowrap block">knot update</code>
+							<div class="bg-black/90 text-green-400 font-mono text-sm rounded-lg relative group w-full max-w-full">
+								<div class="overflow-x-auto overflow-y-hidden p-4 pr-12 max-w-full">
+									<pre class="whitespace-nowrap m-0 min-w-max"><code>knot update</code></pre>
 								</div>
 								<button
 									class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100 z-10"
@@ -105,9 +105,9 @@
 						</div>
 						<div>
 							<div class="text-sm font-medium text-purple-900 mb-1">Force update (reinstall current version)</div>
-							<div class="bg-black/90 text-green-400 font-mono text-sm rounded-lg relative group">
-								<div class="overflow-x-auto p-4 pr-12">
-									<code class="whitespace-nowrap block">knot update --force</code>
+							<div class="bg-black/90 text-green-400 font-mono text-sm rounded-lg relative group w-full max-w-full">
+								<div class="overflow-x-auto overflow-y-hidden p-4 pr-12 max-w-full">
+									<pre class="whitespace-nowrap m-0 min-w-max"><code>knot update --force</code></pre>
 								</div>
 								<button
 									class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100 z-10"
@@ -134,9 +134,9 @@
 		<div class="space-y-6">
 			<div>
 				<h3 class="text-lg font-semibold mb-3">Check version</h3>
-				<div class="bg-black/90 text-green-400 font-mono text-sm rounded-lg relative group">
-					<div class="overflow-x-auto p-4 pr-12">
-						<code class="whitespace-nowrap block">knot --version</code>
+				<div class="bg-black/90 text-green-400 font-mono text-sm rounded-lg relative group w-full max-w-full">
+					<div class="overflow-x-auto overflow-y-hidden p-4 pr-12 max-w-full">
+						<pre class="whitespace-nowrap m-0 min-w-max"><code>knot --version</code></pre>
 					</div>
 					<button
 						class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100 z-10"
@@ -156,9 +156,9 @@
 
 			<div>
 				<h3 class="text-lg font-semibold mb-3">Test basic functionality</h3>
-				<div class="bg-black/90 text-green-400 font-mono text-sm rounded-lg relative group">
-					<div class="overflow-x-auto p-4 pr-12">
-						<code class="whitespace-nowrap block">knot info</code>
+				<div class="bg-black/90 text-green-400 font-mono text-sm rounded-lg relative group w-full max-w-full">
+					<div class="overflow-x-auto overflow-y-hidden p-4 pr-12 max-w-full">
+						<pre class="whitespace-nowrap m-0 min-w-max"><code>knot info</code></pre>
 					</div>
 					<button
 						class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100 z-10"
