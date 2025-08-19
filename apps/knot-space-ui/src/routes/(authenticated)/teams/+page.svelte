@@ -316,10 +316,10 @@
 											showAddMember = true;
 										}}
 										class="text-xs bg-secondary hover:bg-secondary/80 text-secondary-foreground px-3 py-2 rounded transition-colors flex items-center gap-1 flex-1 sm:flex-initial justify-center sm:justify-start"
+										title="Add Member"
 									>
-										<Icon icon="solar:user-plus-bold" class="w-3 h-3" />
+										<Icon icon="solar:user-plus-bold" class="w-4 h-4 sm:w-3 sm:h-3" />
 										<span class="hidden sm:inline">Add Member</span>
-										<span class="sm:hidden">Add</span>
 									</button>
 									<button
 										on:click={() => {
@@ -327,10 +327,10 @@
 											showDeleteConfirm = true;
 										}}
 										class="text-xs bg-destructive/10 hover:bg-destructive/20 text-destructive px-3 py-2 rounded transition-colors flex items-center gap-1 flex-1 sm:flex-initial justify-center sm:justify-start"
+										title="Delete Team"
 									>
-										<Icon icon="solar:trash-bin-minimalistic-bold" class="w-3 h-3" />
+										<Icon icon="solar:trash-bin-minimalistic-bold" class="w-4 h-4 sm:w-3 sm:h-3" />
 										<span class="hidden sm:inline">Delete</span>
-										<span class="sm:hidden">Del</span>
 									</button>
 								</div>
 							{/if}
