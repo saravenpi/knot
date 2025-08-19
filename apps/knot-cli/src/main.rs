@@ -38,13 +38,6 @@ async fn main() -> Result<()> {
                         .short('d')
                         .long("description")
                         .value_name("DESC"),
-                )
-                .arg(
-                    Arg::new("interactive")
-                        .help("Run in interactive mode")
-                        .short('i')
-                        .long("interactive")
-                        .action(clap::ArgAction::SetTrue),
                 ),
         )
         .subcommand(
@@ -94,13 +87,6 @@ async fn main() -> Result<()> {
                         .help("Create package in current directory instead of creating new subfolder")
                         .long("here")
                         .action(clap::ArgAction::SetTrue),
-                )
-                .arg(
-                    Arg::new("interactive")
-                        .help("Run in interactive mode")
-                        .short('i')
-                        .long("interactive")
-                        .action(clap::ArgAction::SetTrue),
                 ),
         )
         .subcommand(
@@ -125,13 +111,6 @@ async fn main() -> Result<()> {
                     Arg::new("here")
                         .help("Create app in current directory instead of creating new subfolder")
                         .long("here")
-                        .action(clap::ArgAction::SetTrue),
-                )
-                .arg(
-                    Arg::new("interactive")
-                        .help("Run in interactive mode")
-                        .short('i')
-                        .long("interactive")
                         .action(clap::ArgAction::SetTrue),
                 ),
         )
@@ -255,20 +234,7 @@ async fn main() -> Result<()> {
                         )
                 )
         )
-        .subcommand(
-            Command::new("login")
-                .about("Authenticate with Knot Space")
-                .arg(
-                    Arg::new("token")
-                        .help("Authentication token")
-                        .long("token")
-                        .value_name("TOKEN")
-                )
-        )
-        .subcommand(
-            Command::new("whoami")
-                .about("Show current authenticated user")
-        )
+        
         .subcommand(
             Command::new("team")
                 .about("Team management commands")
@@ -342,8 +308,7 @@ async fn main() -> Result<()> {
             let description = sub_matches
                 .get_one::<String>("description")
                 .map(|s| s.as_str());
-            let interactive = sub_matches.get_flag("interactive");
-            commands::init_project(name.map(|s| s.as_str()), path.map(|s| s.as_str()), description, interactive)?;
+            commands::init_project(name.map(|s| s.as_str()), path.map(|s| s.as_str()), description)?;
         }
         Some(("init:package", sub_matches)) => {
             let name = sub_matches.get_one::<String>("name");
@@ -353,9 +318,8 @@ async fn main() -> Result<()> {
             let template = sub_matches.get_one::<String>("template").map(|s| s.as_str());
             let description = sub_matches.get_one::<String>("description").map(|s| s.as_str());
             let here = sub_matches.get_flag("here");
-            let interactive = sub_matches.get_flag("interactive");
             
-            commands::init_package(name.map(|s| s.as_str()), team, version, template, description, path.map(|s| s.as_str()), here, interactive)?;
+            commands::init_package(name.map(|s| s.as_str()), team, version, template, description, path.map(|s| s.as_str()), here)?;
         }
         Some(("init:app", sub_matches)) => {
             let name = sub_matches.get_one::<String>("name");
@@ -365,9 +329,8 @@ async fn main() -> Result<()> {
                 .get_one::<String>("description")
                 .map(|s| s.as_str());
             let here = sub_matches.get_flag("here");
-            let interactive = sub_matches.get_flag("interactive");
 
-            commands::init_app(name.map(|s| s.as_str()), template, description, path.map(|s| s.as_str()), here, interactive)?;
+            commands::init_app(name.map(|s| s.as_str()), template, description, path.map(|s| s.as_str()), here)?;
         }
         Some(("link", sub_matches)) => {
             let use_symlinks = sub_matches.get_flag("symlink");
@@ -429,13 +392,7 @@ async fn main() -> Result<()> {
             }
             _ => unreachable!(),
         }
-        Some(("login", sub_matches)) => {
-            let token = sub_matches.get_one::<String>("token").map(|s| s.as_str());
-            commands::login(token).await?;
-        }
-        Some(("whoami", _)) => {
-            commands::whoami().await?;
-        }
+        
         Some(("team", sub_matches)) => match sub_matches.subcommand() {
             Some(("create", team_sub)) => {
                 let name = team_sub.get_one::<String>("name").unwrap();

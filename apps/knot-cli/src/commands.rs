@@ -99,11 +99,12 @@ fn format_api_error(status: reqwest::StatusCode, response_text: &str) -> String 
     }
 }
 
-pub fn init_project(name: Option<&str>, path: Option<&str>, description: Option<&str>, interactive: bool) -> Result<()> {
+pub fn init_project(name: Option<&str>, path: Option<&str>, description: Option<&str>) -> Result<()> {
+    let interactive = name.is_none();
+
     let project_name = match name {
         Some(n) => n.to_string(),
-        None if interactive => prompt_for_input("Project name", None)?,
-        None => anyhow::bail!("Project name is required in non-interactive mode"),
+        None => prompt_for_input("Project name", None)?,
     };
 
     let project_description = match description {
@@ -148,16 +149,15 @@ pub fn init_project(name: Option<&str>, path: Option<&str>, description: Option<
     Ok(())
 }
 
-pub fn init_package(name: Option<&str>, team: Option<&str>, version: Option<&str>, template: Option<&str>, description: Option<&str>, path: Option<&str>, here: bool, interactive: bool) -> Result<()> {
+pub fn init_package(name: Option<&str>, team: Option<&str>, version: Option<&str>, template: Option<&str>, description: Option<&str>, path: Option<&str>, here: bool) -> Result<()> {
     let current_dir = std::env::current_dir()?;
-    
+
     let package_name = match name {
         Some(n) => n.to_string(),
-        None if interactive => {
+        None => {
             println!("🎯 Creating a new package");
             prompt_for_input("Package name", None)?
         }
-        None => anyhow::bail!("Package name is required in non-interactive mode"),
     };
 
     // Determine target directory based on options
@@ -257,16 +257,15 @@ pub fn init_package(name: Option<&str>, team: Option<&str>, version: Option<&str
     Ok(())
 }
 
-pub fn init_app(name: Option<&str>, template: Option<&str>, description: Option<&str>, path: Option<&str>, here: bool, interactive: bool) -> Result<()> {
+pub fn init_app(name: Option<&str>, template: Option<&str>, description: Option<&str>, path: Option<&str>, here: bool) -> Result<()> {
     let current_dir = std::env::current_dir()?;
     
     let app_name = match name {
         Some(n) => n.to_string(),
-        None if interactive => {
+        None => {
             println!("🚀 Creating a new app");
             prompt_for_input("App name", None)?
         }
-        None => anyhow::bail!("App name is required in non-interactive mode"),
     };
 
     // Determine target directory based on options
@@ -1010,7 +1009,7 @@ fn get_auth_token() -> Result<Option<String>> {
 
 fn require_auth_token() -> Result<String> {
     get_auth_token()?
-        .ok_or_else(|| anyhow::anyhow!("Authentication required. Set KNOT_TOKEN environment variable or run 'knot login' for instructions."))
+        .ok_or_else(|| anyhow::anyhow!("Authentication required. Set KNOT_TOKEN environment variable."))
 }
 
 // API Commands
@@ -1201,10 +1200,30 @@ pub async fn create_team(name: &str, description: Option<&str>) -> Result<()> {
         .await?;
 
     if response.status().is_success() {
-        let team: Team = response.json().await?;
-        println!("👥 Created team: {}", team.name);
-        if let Some(desc) = team.description {
-            println!("   Description: {}", desc);
+        let response_text = response.text().await?;
+        match serde_json::from_str::<Team>(&response_text) {
+            Ok(team) => {
+                println!("👥 Created team: {}", team.name);
+                if let Some(desc) = team.description {
+                    println!("   Description: {}", desc);
+                }
+            }
+            Err(_) => {
+                match serde_json::from_str::<serde_json::Value>(&response_text) {
+                    Ok(json) => {
+                        if let Some(error_message) = json.get("error").and_then(|v| v.as_str()) {
+                            anyhow::bail!("Failed to create team: {}", error_message);
+                        } else if let Some(message) = json.get("message").and_then(|v| v.as_str()) {
+                            anyhow::bail!("Failed to create team: {}", message);
+                        } else {
+                            anyhow::bail!("Failed to parse the server response. The server sent an unexpected JSON object:\n{}", response_text);
+                        }
+                    }
+                    Err(_) => {
+                        anyhow::bail!("Failed to parse the server response. The server sent the following unexpected response:\n{}", response_text);
+                    }
+                }
+            }
         }
     } else {
         let status = response.status();
@@ -1224,18 +1243,38 @@ pub async fn list_teams() -> Result<()> {
     let response = client.get(&url).send().await?;
 
     if response.status().is_success() {
-        let teams: Vec<Team> = response.json().await?;
-
-        if teams.is_empty() {
-            println!("No teams found.");
-        } else {
-            println!("👥 Teams:");
-            for team in teams {
-                println!(
-                    "  • {} - {}",
-                    team.name,
-                    team.description.unwrap_or("No description".to_string())
-                );
+        let response_text = response.text().await?;
+        match serde_json::from_str::<Vec<Team>>(&response_text) {
+            Ok(teams) => {
+                if teams.is_empty() {
+                    println!("No teams found.");
+                } else {
+                    println!("👥 Teams:");
+                    for team in teams {
+                        println!(
+                            "  • {} - {}",
+                            team.name,
+                            team.description.unwrap_or("No description".to_string())
+                        );
+                    }
+                }
+            }
+            Err(_e) => {
+                // Attempt to parse as a generic JSON value to provide a better error message
+                match serde_json::from_str::<serde_json::Value>(&response_text) {
+                    Ok(json) => {
+                        if let Some(error_message) = json.get("error").and_then(|v| v.as_str()) {
+                            anyhow::bail!("Failed to list teams: {}", error_message);
+                        } else if let Some(message) = json.get("message").and_then(|v| v.as_str()) {
+                            anyhow::bail!("Failed to list teams: {}", message);
+                        } else {
+                            anyhow::bail!("Failed to parse the server response. The server sent an unexpected JSON object:\n{}", response_text);
+                        }
+                    }
+                    Err(_) => {
+                        anyhow::bail!("Failed to parse the server response. The server sent the following unexpected response:\n{}", response_text);
+                    }
+                }
             }
         }
     } else {
@@ -1256,24 +1295,51 @@ pub async fn team_info(name: &str) -> Result<()> {
     let response = client.get(&url).send().await?;
 
     if response.status().is_success() {
-        let team: Team = response.json().await?;
-        println!("👥 Team: {}", team.name);
-        if let Some(desc) = team.description {
-            println!("   Description: {}", desc);
-        }
-        println!("   Created: {}", team.created_at);
+        let response_text = response.text().await?;
+        match serde_json::from_str::<Team>(&response_text) {
+            Ok(team) => {
+                println!("👥 Team: {}", team.name);
+                if let Some(desc) = team.description {
+                    println!("   Description: {}", desc);
+                }
+                println!("   Created: {}", team.created_at);
 
-        // Get team members
-        let members_url = format!("{}/api/teams/{}/members", base_url, name);
-        let members_response = client.get(&members_url).send().await?;
+                // Get team members
+                let members_url = format!("{}/api/teams/{}/members", base_url, name);
+                let members_response = client.get(&members_url).send().await?;
 
-        if members_response.status().is_success() {
-            let members: Vec<serde_json::Value> = members_response.json().await?;
-            println!("   Members:");
-            for member in members {
-                let role = member["role"].as_str().unwrap_or("unknown");
-                let username = member["user"]["username"].as_str().unwrap_or("unknown");
-                println!("     • {} ({})", username, role);
+                if members_response.status().is_success() {
+                    let members_text = members_response.text().await?;
+                    match serde_json::from_str::<Vec<serde_json::Value>>(&members_text) {
+                        Ok(members) => {
+                            println!("   Members:");
+                            for member in members {
+                                let role = member["role"].as_str().unwrap_or("unknown");
+                                let username = member["user"]["username"].as_str().unwrap_or("unknown");
+                                println!("     • {} ({})", username, role);
+                            }
+                        }
+                        Err(_) => {
+                            anyhow::bail!("Failed to parse team members from server response.");
+                        }
+                    }
+                }
+            }
+            Err(_) => {
+                match serde_json::from_str::<serde_json::Value>(&response_text) {
+                    Ok(json) => {
+                        if let Some(error_message) = json.get("error").and_then(|v| v.as_str()) {
+                            anyhow::bail!("Failed to get team info: {}", error_message);
+                        } else if let Some(message) = json.get("message").and_then(|v| v.as_str()) {
+                            anyhow::bail!("Failed to get team info: {}", message);
+                        } else {
+                            anyhow::bail!("Failed to parse the server response. The server sent an unexpected JSON object:\n{}", response_text);
+                        }
+                    }
+                    Err(_) => {
+                        anyhow::bail!("Failed to parse the server response. The server sent the following unexpected response:\n{}", response_text);
+                    }
+                }
             }
         }
     } else {
@@ -1766,57 +1832,7 @@ pub async fn version_set(version: &str) -> Result<()> {
     anyhow::bail!("No package.yml found in current directory");
 }
 
-pub async fn login(token: Option<&str>) -> Result<()> {
-    if let Some(token) = token {
-        // Login with provided token
-        save_auth_token(token)?;
-        println!("🔑 Logged in with provided token");
-        
-        // Verify the token works
-        match verify_auth_token().await {
-            Ok(user_info) => {
-                println!("✅ Authentication successful");
-                println!("👤 User: {}", user_info);
-            }
-            Err(_) => {
-                anyhow::bail!("❌ Invalid authentication token");
-            }
-        }
-    } else {
-        // OAuth flow - open browser for authentication
-        println!("🌐 Opening browser for authentication...");
-        println!("If browser doesn't open, visit: {}/auth/cli", get_knot_space_url());
-        
-        // For now, just prompt for manual token entry
-        println!("\n📝 After authenticating, copy your token and run:");
-        println!("   knot login --token <your-token>");
-    }
-    
-    Ok(())
-}
 
-pub async fn whoami() -> Result<()> {
-    match get_auth_token()? {
-        Some(token) => {
-            match verify_auth_token().await {
-                Ok(user_info) => {
-                    println!("👤 Logged in as: {}", user_info);
-                    println!("🔑 Token: {}...{}", &token[..8], &token[token.len()-8..]);
-                }
-                Err(_) => {
-                    println!("❌ Authentication token is invalid or expired");
-                    println!("💡 Run 'knot login' to authenticate");
-                }
-            }
-        }
-        None => {
-            println!("❌ Not authenticated");
-            println!("💡 Run 'knot login' to authenticate");
-        }
-    }
-    
-    Ok(())
-}
 
 // Helper functions for version management
 fn bump_version(current: &str, bump_type: &str) -> Result<String> {
@@ -1915,37 +1931,7 @@ fn is_valid_semver(version: &str) -> bool {
     true
 }
 
-fn save_auth_token(token: &str) -> Result<()> {
-    let home_dir = dirs::home_dir().context("Could not find home directory")?;
-    let knot_dir = home_dir.join(".knot");
-    fs::create_dir_all(&knot_dir)?;
-    
-    let config_file = knot_dir.join("config");
-    fs::write(config_file, format!("token={}", token))?;
-    
-    Ok(())
-}
 
-async fn verify_auth_token() -> Result<String> {
-    let token = get_auth_token()?
-        .ok_or_else(|| anyhow::anyhow!("No authentication token found"))?;
-    
-    let knot_space_url = get_knot_space_url();
-    let client = reqwest::Client::new();
-    
-    let response = client
-        .get(&format!("{}/api/auth/verify", knot_space_url))
-        .bearer_auth(&token)
-        .send()
-        .await?;
-    
-    if response.status().is_success() {
-        let user_info = response.text().await?;
-        Ok(user_info)
-    } else {
-        anyhow::bail!("Token verification failed")
-    }
-}
 
 fn validate_publish_version(version: &str) -> Result<()> {
     // Check if version is empty or just whitespace
