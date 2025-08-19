@@ -21,7 +21,7 @@ ENV PUBLIC_BACKEND_URL=${PUBLIC_BACKEND_URL}
 RUN bun run build
 
 # Runtime stage
-FROM node:18-alpine
+FROM oven/bun
 
 # Create app user
 RUN addgroup -g 1001 -S nodejs && \
@@ -33,6 +33,7 @@ WORKDIR /app
 # Copy built application
 COPY --from=builder --chown=nextjs:nodejs /app/build ./build
 COPY --from=builder --chown=nextjs:nodejs /app/knot_packages ./knot_packages
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
 
 # Switch to non-root user
