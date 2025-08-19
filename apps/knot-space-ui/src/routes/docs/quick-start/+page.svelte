@@ -72,10 +72,12 @@
 		<div class="space-y-6">
 			<div>
 				<h3 class="text-lg font-semibold mb-3">Initialize a new project</h3>
-				<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
-					<code>knot init my-awesome-project</code>
+				<div class="bg-black/90 text-green-400 font-mono text-sm rounded-lg relative group">
+					<div class="overflow-x-auto p-4 pr-12">
+						<code class="whitespace-nowrap block">knot init my-awesome-project</code>
+					</div>
 					<button 
-						class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
+						class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100 z-10"
 						on:click={() => copyToClipboard('knot init my-awesome-project')}
 					>
 						{#if showCopied && copyText === 'knot init my-awesome-project'}
@@ -92,10 +94,12 @@
 
 			<div>
 				<h3 class="text-lg font-semibold mb-3">Navigate to your project</h3>
-				<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
-					<code>cd my-awesome-project</code>
+				<div class="bg-black/90 text-green-400 font-mono text-sm rounded-lg relative group">
+					<div class="overflow-x-auto p-4 pr-12">
+						<code class="whitespace-nowrap block">cd my-awesome-project</code>
+					</div>
 					<button 
-						class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
+						class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100 z-10"
 						on:click={() => copyToClipboard('cd my-awesome-project')}
 					>
 						{#if showCopied && copyText === 'cd my-awesome-project'}
