@@ -538,7 +538,7 @@
 				</Button>
 			</div>
 		</div>
-{/if}
+</Drawer>
 
 <!-- Team Management Drawer -->
 <Drawer
