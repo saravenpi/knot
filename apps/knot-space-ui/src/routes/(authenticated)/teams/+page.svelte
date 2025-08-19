@@ -191,7 +191,7 @@
 </svelte:head>
 
 <div class="space-y-6">
-	<div class="flex justify-between items-center">
+	<div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
 		<div>
 			<h1 class="text-3xl font-bold tracking-tight" style="font-family: 'Gambarino', 'Satoshi', sans-serif;">Teams</h1>
 			<p class="text-muted-foreground mt-2">Manage your teams and collaborations</p>
@@ -199,7 +199,7 @@
 		
 		<button
 			on:click={() => showCreateForm = !showCreateForm}
-			class="bg-black text-white hover:bg-black/90 px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-2"
+			class="bg-black text-white hover:bg-black/90 px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center justify-center space-x-2 w-full sm:w-auto"
 		>
 			<Icon icon={showCreateForm ? "solar:close-circle-bold" : "solar:add-circle-bold"} class="w-4 h-4" />
 			<span>{showCreateForm ? 'Cancel' : 'Create Team'}</span>
@@ -247,10 +247,10 @@
 					></textarea>
 				</div>
 
-				<div class="flex space-x-3">
+				<div class="flex flex-col sm:flex-row gap-3">
 					<button
 						type="submit"
-						class="bg-black text-white hover:bg-black/90 px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-2"
+						class="bg-black text-white hover:bg-black/90 px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center justify-center space-x-2 w-full sm:w-auto"
 					>
 						<Icon icon="solar:check-circle-bold" class="w-4 h-4" />
 						<span>Create Team</span>
@@ -258,7 +258,7 @@
 					<button
 						type="button"
 						on:click={() => showCreateForm = false}
-						class="border border-input bg-background hover:bg-accent hover:text-accent-foreground px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-2"
+						class="border border-input bg-background hover:bg-accent hover:text-accent-foreground px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center justify-center space-x-2 w-full sm:w-auto"
 					>
 						<Icon icon="solar:close-circle-bold" class="w-4 h-4" />
 						<span>Cancel</span>
@@ -284,7 +284,7 @@
 			<p class="text-muted-foreground mb-6">Create your first team to start collaborating with others.</p>
 			<button
 				on:click={() => showCreateForm = true}
-				class="bg-black text-white hover:bg-black/90 px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-2 mx-auto"
+				class="bg-black text-white hover:bg-black/90 px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center justify-center space-x-2 mx-auto w-full sm:w-auto max-w-xs"
 			>
 				<Icon icon="solar:add-circle-bold" class="w-4 h-4" />
 				<span>Create Your First Team</span>
@@ -293,39 +293,44 @@
 	{:else}
 		<div class="grid gap-6">
 			{#each teams as team}
-				<div class="bg-card border border-border rounded-lg p-6">
-					<div class="flex justify-between items-start mb-4">
-						<div>
+				<div class="bg-card border border-border rounded-lg p-4 sm:p-6">
+					<div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-4">
+						<div class="flex-1">
 							<h3 class="text-lg font-semibold">{team.name}</h3>
 							{#if team.description}
 								<p class="text-muted-foreground mt-1">{team.description}</p>
 							{/if}
+							<span class="text-sm text-muted-foreground mt-2 sm:hidden block">
+								{team.members?.length || 0} member{(team.members?.length || 0) !== 1 ? 's' : ''}
+							</span>
 						</div>
-						<div class="flex items-center space-x-2">
-							<span class="text-sm text-muted-foreground">
+						<div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-2">
+							<span class="text-sm text-muted-foreground hidden sm:block">
 								{team.members?.length || 0} member{(team.members?.length || 0) !== 1 ? 's' : ''}
 							</span>
 							{#if isTeamOwnerOrAdmin(team)}
-								<div class="flex gap-2">
+								<div class="flex gap-2 w-full sm:w-auto">
 									<button
 										on:click={() => {
 											addMemberTeamId = team.id;
 											showAddMember = true;
 										}}
-										class="text-xs bg-secondary hover:bg-secondary/80 text-secondary-foreground px-2 py-1 rounded transition-colors flex items-center gap-1"
+										class="text-xs bg-secondary hover:bg-secondary/80 text-secondary-foreground px-3 py-2 rounded transition-colors flex items-center gap-1 flex-1 sm:flex-initial justify-center sm:justify-start"
 									>
 										<Icon icon="solar:user-plus-bold" class="w-3 h-3" />
-										Add Member
+										<span class="hidden sm:inline">Add Member</span>
+										<span class="sm:hidden">Add</span>
 									</button>
 									<button
 										on:click={() => {
 											deleteTeamId = team.id;
 											showDeleteConfirm = true;
 										}}
-										class="text-xs bg-destructive/10 hover:bg-destructive/20 text-destructive px-2 py-1 rounded transition-colors flex items-center gap-1"
+										class="text-xs bg-destructive/10 hover:bg-destructive/20 text-destructive px-3 py-2 rounded transition-colors flex items-center gap-1 flex-1 sm:flex-initial justify-center sm:justify-start"
 									>
 										<Icon icon="solar:trash-bin-minimalistic-bold" class="w-3 h-3" />
-										Delete
+										<span class="hidden sm:inline">Delete</span>
+										<span class="sm:hidden">Del</span>
 									</button>
 								</div>
 							{/if}
@@ -336,40 +341,38 @@
 						<h4 class="text-sm font-medium">Members</h4>
 						<div class="space-y-2">
 							{#each (team.members || []) as member}
-								<div class="flex justify-between items-center py-2">
-									<div class="flex items-center space-x-3">
-										<div class="w-8 h-8 bg-muted rounded-full flex items-center justify-center">
+								<div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 py-2">
+									<div class="flex items-center space-x-3 flex-1 min-w-0">
+										<div class="w-8 h-8 bg-muted rounded-full flex items-center justify-center flex-shrink-0">
 											<span class="text-xs font-medium">
 												{getUserInitials(member.user.username)}
 											</span>
 										</div>
-										<div class="flex items-center space-x-2">
-											<div>
-												<div class="font-medium text-sm flex items-center gap-2">
-													{member.user.username}
-													<Icon 
-														icon={getRoleIcon(member.role)} 
-														class="w-3 h-3 {getRoleColor(member.role)}"
-														title={member.role}
-													/>
-												</div>
-												<div class="text-xs text-muted-foreground">{member.user.email || 'No email'}</div>
+										<div class="flex-1 min-w-0">
+											<div class="font-medium text-sm flex items-center gap-2">
+												<span class="truncate">{member.user.username}</span>
+												<Icon 
+													icon={getRoleIcon(member.role)} 
+													class="w-3 h-3 {getRoleColor(member.role)} flex-shrink-0"
+													title={member.role}
+												/>
 											</div>
+											<div class="text-xs text-muted-foreground truncate">{member.user.email || 'No email'}</div>
 										</div>
 									</div>
-									<div class="flex items-center gap-2">
+									<div class="flex items-center gap-2 sm:flex-shrink-0">
 										{#if isTeamOwnerOrAdmin(team) && member.role !== 'owner'}
 											<select
 												value={member.role}
 												on:change={(e) => handleUpdateMemberRole(team.id, member.user.id, e.target.value)}
-												class="text-xs px-2 py-1 bg-muted rounded-md font-medium border-none outline-none"
+												class="text-xs px-2 py-1 bg-muted rounded-md font-medium border-none outline-none flex-1 sm:flex-initial"
 											>
 												<option value="member">Member</option>
 												<option value="admin">Admin</option>
 											</select>
 											<button
 												on:click={() => handleRemoveMember(team.id, member.user.id)}
-												class="text-xs text-destructive hover:bg-destructive/10 p-1 rounded transition-colors"
+												class="text-xs text-destructive hover:bg-destructive/10 p-2 rounded transition-colors flex-shrink-0"
 											>
 												<Icon icon="solar:close-circle-bold" class="w-3 h-3" />
 											</button>
@@ -385,11 +388,11 @@
 					</div>
 
 					<div class="mt-4 pt-4 border-t border-border">
-						<div class="flex justify-between items-center text-sm text-muted-foreground">
+						<div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 text-sm text-muted-foreground">
 							<span>Created {formatDate(team.createdAt || new Date())}</span>
 							<button 
 								on:click={() => openManageTeam(team.id)}
-								class="text-black hover:underline font-medium"
+								class="text-black hover:underline font-medium text-left sm:text-right"
 							>
 								Manage Team
 							</button>
@@ -404,7 +407,7 @@
 <!-- Add Member Modal -->
 {#if showAddMember}
 	<div class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-		<div class="bg-background border border-border rounded-lg p-6 max-w-md w-full">
+		<div class="bg-background border border-border rounded-lg p-4 sm:p-6 max-w-md w-full">
 			<div class="flex items-center gap-3 mb-4">
 				<Icon icon="solar:user-plus-bold" class="w-6 h-6 text-primary" />
 				<h3 class="text-lg font-semibold">Add Team Member</h3>
@@ -467,7 +470,7 @@
 					</select>
 				</div>
 
-				<div class="flex justify-end gap-3">
+				<div class="flex flex-col sm:flex-row justify-end gap-3">
 					<button
 						type="button"
 						on:click={() => { 
@@ -479,13 +482,13 @@
 							newMemberRole = 'member';
 							showUserSuggestions = false;
 						}}
-						class="border border-input bg-background hover:bg-accent hover:text-accent-foreground px-4 py-2 rounded-md text-sm font-medium transition-colors"
+						class="border border-input bg-background hover:bg-accent hover:text-accent-foreground px-4 py-2 rounded-md text-sm font-medium transition-colors w-full sm:w-auto order-2 sm:order-1"
 					>
 						Cancel
 					</button>
 					<button
 						type="submit"
-						class="bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-md text-sm font-medium transition-colors"
+						class="bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-md text-sm font-medium transition-colors w-full sm:w-auto order-1 sm:order-2"
 					>
 						Add Member
 					</button>
@@ -498,7 +501,7 @@
 <!-- Delete Team Confirmation Modal -->
 {#if showDeleteConfirm}
 	<div class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-		<div class="bg-background border border-border rounded-lg p-6 max-w-md w-full">
+		<div class="bg-background border border-border rounded-lg p-4 sm:p-6 max-w-md w-full">
 			<div class="flex items-center gap-3 mb-4">
 				<Icon icon="solar:danger-triangle-bold" class="w-6 h-6 text-destructive" />
 				<h3 class="text-lg font-semibold">Delete Team</h3>
@@ -514,16 +517,16 @@
 				</div>
 			{/if}
 
-			<div class="flex justify-end gap-3">
+			<div class="flex flex-col sm:flex-row justify-end gap-3">
 				<button
 					on:click={() => { showDeleteConfirm = false; deleteTeamId = ''; deleteError = ''; }}
-					class="border border-input bg-background hover:bg-accent hover:text-accent-foreground px-4 py-2 rounded-md text-sm font-medium transition-colors"
+					class="border border-input bg-background hover:bg-accent hover:text-accent-foreground px-4 py-2 rounded-md text-sm font-medium transition-colors w-full sm:w-auto order-2 sm:order-1"
 				>
 					Cancel
 				</button>
 				<button
 					on:click={() => handleDeleteTeam(deleteTeamId)}
-					class="bg-destructive text-destructive-foreground hover:bg-destructive/90 px-4 py-2 rounded-md text-sm font-medium transition-colors"
+					class="bg-destructive text-destructive-foreground hover:bg-destructive/90 px-4 py-2 rounded-md text-sm font-medium transition-colors w-full sm:w-auto order-1 sm:order-2"
 				>
 					Delete Team
 				</button>
@@ -535,7 +538,7 @@
 <!-- Team Management Modal -->
 {#if showManageModal}
 	<div class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-		<div class="bg-background border border-border rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+		<div class="bg-background border border-border rounded-lg p-4 sm:p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
 			{#if teams.find(t => t.id === manageTeamId)}
 				{@const managedTeam = teams.find(t => t.id === manageTeamId)}
 				<div class="flex items-center gap-3 mb-6">
@@ -646,7 +649,7 @@
 							showManageModal = false; 
 							manageTeamId = ''; 
 						}}
-						class="border border-input bg-background hover:bg-accent hover:text-accent-foreground px-4 py-2 rounded-md text-sm font-medium transition-colors"
+						class="border border-input bg-background hover:bg-accent hover:text-accent-foreground px-4 py-2 rounded-md text-sm font-medium transition-colors w-full sm:w-auto"
 					>
 						Close
 					</button>
