@@ -52,8 +52,8 @@
 					<p class="text-sm text-blue-700 mb-4">
 						This script automatically detects your platform and installs the latest version of Knot CLI.
 					</p>
-					<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
-						<code>curl -fsSL https://raw.githubusercontent.com/saravenpi/knot/main/install.sh | bash</code>
+					<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group overflow-x-auto">
+						<code class="whitespace-nowrap block">curl -fsSL https://raw.githubusercontent.com/saravenpi/knot/main/install.sh | bash</code>
 						<button
 							class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
 							on:click={() => copyToClipboard('curl -fsSL https://raw.githubusercontent.com/saravenpi/knot/main/install.sh | bash')}
@@ -85,8 +85,8 @@
 					<div class="space-y-3">
 						<div>
 							<div class="text-sm font-medium text-purple-900 mb-1">Update to latest version</div>
-							<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
-								<code>knot update</code>
+							<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group overflow-x-auto">
+								<code class="whitespace-nowrap block">knot update</code>
 								<button
 									class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
 									on:click={() => copyToClipboard('knot update')}
@@ -101,8 +101,8 @@
 						</div>
 						<div>
 							<div class="text-sm font-medium text-purple-900 mb-1">Force update (reinstall current version)</div>
-							<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
-								<code>knot update --force</code>
+							<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group overflow-x-auto">
+								<code class="whitespace-nowrap block">knot update --force</code>
 								<button
 									class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
 									on:click={() => copyToClipboard('knot update --force')}
@@ -128,8 +128,8 @@
 		<div class="space-y-6">
 			<div>
 				<h3 class="text-lg font-semibold mb-3">Check version</h3>
-				<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
-					<code>knot --version</code>
+				<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group overflow-x-auto">
+					<code class="whitespace-nowrap block">knot --version</code>
 					<button
 						class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
 						on:click={() => copyToClipboard('knot --version')}
@@ -148,8 +148,8 @@
 
 			<div>
 				<h3 class="text-lg font-semibold mb-3">Test basic functionality</h3>
-				<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
-					<code>knot info</code>
+				<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group overflow-x-auto">
+					<code class="whitespace-nowrap block">knot info</code>
 					<button
 						class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
 						on:click={() => copyToClipboard('knot info')}

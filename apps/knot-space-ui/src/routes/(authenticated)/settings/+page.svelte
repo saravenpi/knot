@@ -252,7 +252,7 @@
 					<h3 class="font-medium mb-2">CLI Setup Instructions</h3>
 					<div class="space-y-2 text-sm text-muted-foreground">
 						<p><strong>1. Install the Knot CLI:</strong></p>
-						<code class="block bg-background px-3 py-1 rounded font-mono text-xs">
+						<code class="block bg-background px-3 py-1 rounded font-mono text-xs overflow-x-auto whitespace-nowrap">
 							curl -fsSL https://raw.githubusercontent.com/saravenpi/knot/main/install.sh | bash
 						</code>
 						

@@ -39,9 +39,15 @@ async fn main() -> Result<()> {
                 .about("Initialize a new package")
                 .arg(
                     Arg::new("name")
-                        .help("Package name")
-                        .required(true)
+                        .help("Package name (optional, will prompt if not provided)")
+                        .required(false)
                         .index(1),
+                )
+                .arg(
+                    Arg::new("target_path")
+                        .help("Target path for package creation (optional)")
+                        .required(false)
+                        .index(2),
                 )
                 .arg(
                     Arg::new("team")
@@ -69,12 +75,26 @@ async fn main() -> Result<()> {
                         .short('d')
                         .long("description")
                         .value_name("DESC"),
+                )
+                .arg(
+                    Arg::new("path")
+                        .help("Custom path for package creation (use '.' for current directory)")
+                        .short('p')
+                        .long("path")
+                        .value_name("PATH"),
+                )
+                .arg(
+                    Arg::new("here")
+                        .help("Create package in current directory instead of creating new subfolder")
+                        .long("here")
+                        .action(clap::ArgAction::SetTrue),
                 ),
         )
         .subcommand(
             Command::new("init:app")
                 .about("Initialize a new app")
-                .arg(Arg::new("name").help("App name").required(true).index(1))
+                .arg(Arg::new("name").help("App name (optional, will prompt if not provided)").required(false).index(1))
+                .arg(Arg::new("target_path").help("Target path for app creation (optional)").required(false).index(2))
                 .arg(
                     Arg::new("template")
                         .help("App template (react, svelte, nextjs, fastify, express, vanilla)")
@@ -87,6 +107,19 @@ async fn main() -> Result<()> {
                         .short('d')
                         .long("description")
                         .value_name("DESC"),
+                )
+                .arg(
+                    Arg::new("path")
+                        .help("Custom path for app creation (use '.' for current directory)")
+                        .short('p')
+                        .long("path")
+                        .value_name("PATH"),
+                )
+                .arg(
+                    Arg::new("here")
+                        .help("Create app in current directory instead of creating new subfolder")
+                        .long("here")
+                        .action(clap::ArgAction::SetTrue),
                 ),
         )
         .subcommand(
@@ -298,20 +331,34 @@ async fn main() -> Result<()> {
             commands::init_project(name, description)?;
         }
         Some(("init:package", sub_matches)) => {
-            let name = sub_matches.get_one::<String>("name").unwrap();
+            let name = sub_matches.get_one::<String>("name");
+            let target_path = sub_matches.get_one::<String>("target_path");
             let team = sub_matches.get_one::<String>("team").map(|s| s.as_str());
             let version = sub_matches.get_one::<String>("version").map(|s| s.as_str());
             let template = sub_matches.get_one::<String>("template").map(|s| s.as_str());
             let description = sub_matches.get_one::<String>("description").map(|s| s.as_str());
-            commands::init_package(name, team, version, template, description)?;
+            let path = sub_matches.get_one::<String>("path").map(|s| s.as_str());
+            let here = sub_matches.get_flag("here");
+            
+            // Use target_path if provided, otherwise fall back to --path flag
+            let final_path = target_path.map(|s| s.as_str()).or(path);
+            
+            commands::init_package(name.map(|s| s.as_str()), team, version, template, description, final_path, here)?;
         }
         Some(("init:app", sub_matches)) => {
-            let name = sub_matches.get_one::<String>("name").unwrap();
+            let name = sub_matches.get_one::<String>("name");
+            let target_path = sub_matches.get_one::<String>("target_path");
             let template = sub_matches.get_one::<String>("template").map(|s| s.as_str());
             let description = sub_matches
                 .get_one::<String>("description")
                 .map(|s| s.as_str());
-            commands::init_app(name, template, description)?;
+            let path = sub_matches.get_one::<String>("path").map(|s| s.as_str());
+            let here = sub_matches.get_flag("here");
+            
+            // Use target_path if provided, otherwise fall back to --path flag
+            let final_path = target_path.map(|s| s.as_str()).or(path);
+            
+            commands::init_app(name.map(|s| s.as_str()), template, description, final_path, here)?;
         }
         Some(("link", sub_matches)) => {
             let use_symlinks = sub_matches.get_flag("symlink");

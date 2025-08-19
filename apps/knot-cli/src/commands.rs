@@ -9,7 +9,69 @@ use reqwest::multipart;
 use serde::{Deserialize, Serialize};
 use std::env;
 use std::fs;
-use std::path::Path;
+use std::io::{self, Write};
+use std::path::{Path, PathBuf};
+
+// Helper function for interactive input
+fn prompt_for_input(prompt: &str, default: Option<&str>) -> Result<String> {
+    loop {
+        if let Some(default_val) = default {
+            print!("{} [{}]: ", prompt, default_val);
+        } else {
+            print!("{}: ", prompt);
+        }
+        io::stdout().flush()?;
+        
+        let mut input = String::new();
+        io::stdin().read_line(&mut input)?;
+        let input = input.trim();
+        
+        if input.is_empty() {
+            if let Some(default_val) = default {
+                return Ok(default_val.to_string());
+            } else {
+                println!("❌ This field is required. Please enter a value.");
+                continue;
+            }
+        }
+        
+        // Validate name (basic alphanumeric with hyphens and underscores)
+        if input.chars().all(|c| c.is_ascii_alphanumeric() || c == '-' || c == '_') {
+            return Ok(input.to_string());
+        } else {
+            println!("❌ Invalid name. Please use only letters, numbers, hyphens, and underscores.");
+            continue;
+        }
+    }
+}
+
+// Helper function to determine the best directory for creating packages/apps
+fn determine_target_directory(current_dir: &Path, item_type: &str) -> Result<(PathBuf, String, bool)> {
+    // Try to find project root
+    match Project::find_project_root(current_dir) {
+        Ok(project_root) => {
+            // We're in a Knot project
+            let target_dir = match item_type {
+                "packages" => project_root.join("packages"),
+                "apps" => project_root.join("apps"),
+                _ => current_dir.to_path_buf(),
+            };
+            
+            let context = if project_root == *current_dir {
+                format!("in project root, will create in {}/ directory", item_type)
+            } else {
+                format!("in Knot project, will create in {}/ directory relative to project root", item_type)
+            };
+            
+            Ok((target_dir, context, true))
+        },
+        Err(_) => {
+            // Not in a Knot project, create in current directory
+            let context = format!("outside Knot project, will create in current directory");
+            Ok((current_dir.to_path_buf(), context, false))
+        }
+    }
+}
 
 // Helper function to format API error responses in a user-friendly way
 fn format_api_error(status: reqwest::StatusCode, response_text: &str) -> String {
@@ -66,28 +128,70 @@ pub fn init_project(name: &str, description: Option<&str>) -> Result<()> {
     Ok(())
 }
 
-pub fn init_package(name: &str, team: Option<&str>, version: Option<&str>, template: Option<&str>, description: Option<&str>) -> Result<()> {
+pub fn init_package(name: Option<&str>, team: Option<&str>, version: Option<&str>, template: Option<&str>, description: Option<&str>, path: Option<&str>, here: bool) -> Result<()> {
     let current_dir = std::env::current_dir()?;
-    let knot_yml_path = current_dir.join("knot.yml");
     
-    // Determine where to create the package
-    let package_dir = if knot_yml_path.exists() {
-        // We're in project root, create package in packages/ directory
-        let packages_dir = current_dir.join("packages");
-        if !packages_dir.exists() {
-            fs::create_dir_all(&packages_dir)?;
+    // Interactive mode: prompt for name if not provided
+    let package_name = match name {
+        Some(n) => n.to_string(),
+        None => {
+            println!("🎯 Creating a new package");
+            prompt_for_input("Package name", None)?
         }
-        packages_dir.join(name)
-    } else {
-        // Not in project root, create in current directory
-        current_dir.join(name)
     };
 
-    if package_dir.exists() {
-        anyhow::bail!("Package directory '{}' already exists", name);
+    // Determine target directory based on options
+    let (base_dir, context, in_project) = if let Some(custom_path) = path {
+        let target_path = if custom_path == "." {
+            current_dir.clone()
+        } else {
+            Path::new(custom_path).to_path_buf()
+        };
+        
+        if !target_path.exists() {
+            anyhow::bail!("Specified path '{}' does not exist", custom_path);
+        }
+        
+        (target_path, format!("using custom path '{}'", custom_path), false)
+    } else if here {
+        (current_dir.clone(), "in current directory".to_string(), false)
+    } else {
+        determine_target_directory(&current_dir, "packages")?
+    };
+
+    // Create target directory if needed
+    if !base_dir.exists() {
+        fs::create_dir_all(&base_dir)?;
     }
 
-    fs::create_dir_all(&package_dir)?;
+    // Determine final package directory
+    let package_dir = if here || (path.is_some() && path.unwrap() == ".") {
+        // Create package files directly in the specified directory
+        base_dir
+    } else {
+        // Create a new subdirectory for the package
+        let pkg_dir = base_dir.join(&package_name);
+        if pkg_dir.exists() {
+            anyhow::bail!("Package directory '{}' already exists", package_name);
+        }
+        pkg_dir
+    };
+
+    // Create package directory if it doesn't exist
+    if !package_dir.exists() {
+        fs::create_dir_all(&package_dir)?;
+    }
+
+    // Check if package.yml already exists (when using --here or --path .)
+    let package_yml_path = package_dir.join("package.yml");
+    if package_yml_path.exists() {
+        anyhow::bail!("package.yml already exists in the target directory. Choose a different location or remove the existing file.");
+    }
+
+    println!("📦 Creating package '{}' {}", package_name, context);
+    if in_project {
+        println!("✨ Detected Knot project - package will be available for linking");
+    }
 
     // Use template if specified
     if let Some(template_name) = template {
@@ -99,12 +203,12 @@ pub fn init_package(name: &str, team: Option<&str>, version: Option<&str>, templ
             TemplateManager::create_from_template(
                 template,
                 &package_dir,
-                name,
+                &package_name,
                 pkg_version,
                 pkg_description,
             )?;
             
-            println!("📦 Initialized new {} package: {}", template_name, name);
+            println!("✅ Initialized new {} package: {}", template_name, package_name);
             println!("📁 Created at: {}", package_dir.display());
             println!("🎯 Template: {} - {}", template.name, template.description);
         } else {
@@ -113,9 +217,8 @@ pub fn init_package(name: &str, team: Option<&str>, version: Option<&str>, templ
         }
     } else {
         // Create basic package without template
-        let package_yml_path = package_dir.join("package.yml");
         let config = PackageConfig {
-            name: name.to_string(),
+            name: package_name.clone(),
             team: team.map(|s| s.to_string()),
             version: version.unwrap_or("0.1.0").to_string(),
             description: Some(description.unwrap_or("Package description").to_string()),
@@ -126,7 +229,7 @@ pub fn init_package(name: &str, team: Option<&str>, version: Option<&str>, templ
         let yaml_content = serde_yaml::to_string(&config)?;
         fs::write(&package_yml_path, yaml_content).context("Failed to create package.yml")?;
         
-        println!("📦 Initialized new package: {}", name);
+        println!("✅ Initialized new package: {}", package_name);
         println!("📁 Created at: {}", package_dir.display());
         println!("💡 Use '--template typescript' or '--template react' for structured templates");
     }
@@ -134,28 +237,70 @@ pub fn init_package(name: &str, team: Option<&str>, version: Option<&str>, templ
     Ok(())
 }
 
-pub fn init_app(name: &str, template: Option<&str>, description: Option<&str>) -> Result<()> {
+pub fn init_app(name: Option<&str>, template: Option<&str>, description: Option<&str>, path: Option<&str>, here: bool) -> Result<()> {
     let current_dir = std::env::current_dir()?;
-    let knot_yml_path = current_dir.join("knot.yml");
     
-    // Determine where to create the app
-    let app_dir = if knot_yml_path.exists() {
-        // We're in project root, create app in apps/ directory
-        let apps_dir = current_dir.join("apps");
-        if !apps_dir.exists() {
-            fs::create_dir_all(&apps_dir)?;
+    // Interactive mode: prompt for name if not provided
+    let app_name = match name {
+        Some(n) => n.to_string(),
+        None => {
+            println!("🚀 Creating a new app");
+            prompt_for_input("App name", None)?
         }
-        apps_dir.join(name)
-    } else {
-        // Not in project root, create in current directory
-        current_dir.join(name)
     };
 
-    if app_dir.exists() {
-        anyhow::bail!("App directory '{}' already exists", name);
+    // Determine target directory based on options
+    let (base_dir, context, in_project) = if let Some(custom_path) = path {
+        let target_path = if custom_path == "." {
+            current_dir.clone()
+        } else {
+            Path::new(custom_path).to_path_buf()
+        };
+        
+        if !target_path.exists() {
+            anyhow::bail!("Specified path '{}' does not exist", custom_path);
+        }
+        
+        (target_path, format!("using custom path '{}'", custom_path), false)
+    } else if here {
+        (current_dir.clone(), "in current directory".to_string(), false)
+    } else {
+        determine_target_directory(&current_dir, "apps")?
+    };
+
+    // Create target directory if needed
+    if !base_dir.exists() {
+        fs::create_dir_all(&base_dir)?;
     }
 
-    fs::create_dir_all(&app_dir)?;
+    // Determine final app directory
+    let app_dir = if here || (path.is_some() && path.unwrap() == ".") {
+        // Create app files directly in the specified directory
+        base_dir
+    } else {
+        // Create a new subdirectory for the app
+        let app_subdir = base_dir.join(&app_name);
+        if app_subdir.exists() {
+            anyhow::bail!("App directory '{}' already exists", app_name);
+        }
+        app_subdir
+    };
+
+    // Create app directory if it doesn't exist
+    if !app_dir.exists() {
+        fs::create_dir_all(&app_dir)?;
+    }
+
+    // Check if app.yml already exists (when using --here or --path .)
+    let app_yml_path = app_dir.join("app.yml");
+    if app_yml_path.exists() {
+        anyhow::bail!("app.yml already exists in the target directory. Choose a different location or remove the existing file.");
+    }
+
+    println!("🚀 Creating app '{}' {}", app_name, context);
+    if in_project {
+        println!("✨ Detected Knot project - app will be available for building and linking");
+    }
 
     // Use template if specified
     if let Some(template_name) = template {
@@ -167,13 +312,12 @@ pub fn init_app(name: &str, template: Option<&str>, description: Option<&str>) -
             TemplateManager::create_from_template(
                 template,
                 &app_dir,
-                name,
+                &app_name,
                 app_version,
                 app_description,
             )?;
             
             // Create app.yml for Knot configuration
-            let app_yml_path = app_dir.join("app.yml");
             let build_cmd = match template_name {
                 "react" => Some("npm run build".to_string()),
                 "svelte" => Some("npm run build".to_string()),
@@ -181,7 +325,7 @@ pub fn init_app(name: &str, template: Option<&str>, description: Option<&str>) -
             };
             
             let config = AppConfig {
-                name: name.to_string(),
+                name: app_name.clone(),
                 description: description.map(|s| s.to_string()),
                 ts_alias: None,
                 packages: None,
@@ -190,21 +334,25 @@ pub fn init_app(name: &str, template: Option<&str>, description: Option<&str>) -
             };
 
             let yaml_content = serde_yaml::to_string(&config)?;
-            fs::write(app_yml_path, yaml_content).context("Failed to create app.yml")?;
+            fs::write(&app_yml_path, yaml_content).context("Failed to create app.yml")?;
             
-            println!("🚀 Initialized new {} app: {}", template_name, name);
+            println!("✅ Initialized new {} app: {}", template_name, app_name);
             println!("📁 Created at: {}", app_dir.display());
             println!("🎯 Template: {} - {}", template.name, template.description);
-            println!("💡 Run 'cd {}' then 'npm install' to get started", name);
+            
+            if !here && path.map(|p| p == ".").unwrap_or(false) == false {
+                println!("💡 Run 'cd {}' then 'npm install' to get started", app_name);
+            } else {
+                println!("💡 Run 'npm install' to get started");
+            }
         } else {
             let available = TemplateManager::list_app_templates();
             anyhow::bail!("Unknown template '{}'. Available templates: {}", template_name, available.join(", "));
         }
     } else {
         // Create basic app without template
-        let app_yml_path = app_dir.join("app.yml");
         let config = AppConfig {
-            name: name.to_string(),
+            name: app_name.clone(),
             description: description.map(|s| s.to_string()),
             ts_alias: None,
             packages: None,
@@ -213,12 +361,12 @@ pub fn init_app(name: &str, template: Option<&str>, description: Option<&str>) -
         };
 
         let yaml_content = serde_yaml::to_string(&config)?;
-        fs::write(app_yml_path, yaml_content).context("Failed to create app.yml")?;
+        fs::write(&app_yml_path, yaml_content).context("Failed to create app.yml")?;
 
         let src_dir = app_dir.join("src");
         fs::create_dir_all(src_dir)?;
 
-        println!("🚀 Initialized new app: {}", name);
+        println!("✅ Initialized new app: {}", app_name);
         println!("📁 Created at: {}", app_dir.display());
         println!("💡 Use '--template react' or '--template svelte' for structured templates");
     }
