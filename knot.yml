@@ -1,6 +1,6 @@
 name: Knot
 description: A modern monorepo package manager for TypeScript/JavaScript projects
-# Global project scripts
+
 scripts:
   setup: "echo 'Setting up Knot development environment...' && echo 'Run cargo build in each app directory to build'"
   test-all: "echo 'Running all tests...' && cd apps/knot-cli && cargo test && cd ../knot-space && cargo test"

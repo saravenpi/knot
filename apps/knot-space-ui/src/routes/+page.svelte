@@ -17,6 +17,23 @@
 		totalUsers: 0
 	};
 	let statsLoading = true;
+	let mouseX = 0;
+	let mouseY = 0;
+	let cursorElement: HTMLElement;
+
+	onMount(async () => {
+		// Mouse cursor follower
+		const handleMouseMove = (e: MouseEvent) => {
+			mouseX = e.clientX;
+			mouseY = e.clientY;
+		};
+
+		document.addEventListener('mousemove', handleMouseMove);
+
+		return () => {
+			document.removeEventListener('mousemove', handleMouseMove);
+		};
+	});
 
 	onMount(async () => {
 		// Initialize auth first to check if user is logged in
@@ -71,7 +88,16 @@
 	<!-- Show home page only for unauthenticated users -->
 
 <!-- Hero Section -->
-<div class="text-center py-12 md:py-20">
+<div class="text-center py-12 md:py-20 relative overflow-hidden">
+	<!-- Dotted Grid Background with Fade -->
+	<div class="absolute -inset-[500px] transform rotate-12" 
+		 style="background-image: radial-gradient(circle, #9ca3af 2px, transparent 2px); 
+				background-size: 24px 24px;
+				mask-image: radial-gradient(ellipse 80% 60% at center, black 20%, transparent 80%);
+				-webkit-mask-image: radial-gradient(ellipse 80% 60% at center, black 20%, transparent 80%);
+				opacity: 0.15;">
+	</div>
+	<div class="relative z-10">
 	<h1 class="text-4xl md:text-6xl font-bold tracking-tight mb-6" style="font-family: 'Gambarino', 'Satoshi', sans-serif;">
 		Welcome to <span class="text-black">Knot Space</span>
 	</h1>
@@ -93,6 +119,7 @@
 			<Icon icon="solar:rocket-2-bold" class="w-5 h-5" />
 			<span>Get Started</span>
 		</a>
+	</div>
 	</div>
 </div>
 
@@ -391,5 +418,14 @@
 		</div>
 	</div>
 </div>
+
+<!-- Custom cursor follower (only show on landing page) -->
+{#if !isAuthenticated}
+	<div 
+		bind:this={cursorElement}
+		class="fixed w-3 h-3 bg-black rounded-full pointer-events-none z-50 transition-transform duration-500 ease-out"
+		style="left: {mouseX - 6}px; top: {mouseY - 6}px; transform: translate3d(0, 0, 0);"
+	></div>
+{/if}
 
 {/if}

@@ -3,6 +3,8 @@
 	import { onMount } from 'svelte';
 	import { authStore } from '../../lib/stores';
 	import Icon from '@iconify/svelte';
+	import Input from '../../lib/components/ui/input.svelte';
+	import Button from '../../lib/components/ui/button.svelte';
 
 	let username = '';
 	let password = '';
@@ -68,13 +70,12 @@
 					<label for="username" class="block text-sm font-medium mb-2">
 						Username
 					</label>
-					<input
+					<Input
 						id="username"
 						type="text"
 						bind:value={username}
 						on:keypress={handleKeyPress}
 						placeholder="Enter your username"
-						class="w-full px-3 py-2 border border-input rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
 						disabled={loading}
 						required
 					/>
@@ -84,35 +85,30 @@
 					<label for="password" class="block text-sm font-medium mb-2">
 						Password
 					</label>
-					<input
+					<Input
 						id="password"
 						type="password"
 						bind:value={password}
 						on:keypress={handleKeyPress}
 						placeholder="Enter your password"
-						class="w-full px-3 py-2 border border-input rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
 						disabled={loading}
 						required
 					/>
 				</div>
 
-				<button
+				<Button
 					type="submit"
 					disabled={loading}
-					class="w-full bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed px-4 py-2 rounded-md font-medium transition-colors"
+					class="w-full"
 				>
 					{#if loading}
-						<span class="flex items-center justify-center">
-							<Icon icon="solar:refresh-bold" class="animate-spin -ml-1 mr-3 h-4 w-4" />
-							Signing In...
-						</span>
+						<Icon icon="solar:refresh-bold" class="animate-spin mr-2 h-4 w-4" />
+						Signing In...
 					{:else}
-						<span class="flex items-center justify-center">
-							<Icon icon="solar:login-3-bold" class="mr-2 h-4 w-4" />
-							Sign In
-						</span>
+						<Icon icon="solar:login-3-bold" class="mr-2 h-4 w-4" />
+						Sign In
 					{/if}
-				</button>
+				</Button>
 			</div>
 		</form>
 	</div>

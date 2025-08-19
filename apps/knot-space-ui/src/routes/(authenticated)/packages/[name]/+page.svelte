@@ -5,6 +5,7 @@
 	import { formatDownloadCount, formatFileSize, formatDateTime, formatTimeAgo, formatDate } from '../../../../lib/utils/format';
 	import Icon from '@iconify/svelte';
 	import Chart from '../../../../lib/components/ui/chart.svelte';
+	import Drawer from '../../../../lib/components/ui/drawer.svelte';
 	import { requestApi } from '../../../../lib/api';
 
 	$: packageName = $page.params.name;
@@ -13,6 +14,7 @@
 	$: currentUser = $authStore.user;
 
 	let showDeleteConfirm = false;
+	let showOptionsMenu = false;
 	let deleteError = '';
 	let downloadStats: { dailyStats: Array<{ date: string; downloads: number }> } | null = null;
 	let loadingStats = false;
@@ -89,6 +91,13 @@
 		}
 	}
 
+	function handleClickOutside(event: MouseEvent) {
+		const target = event.target as Element;
+		if (!target.closest('[data-options-menu]')) {
+			showOptionsMenu = false;
+		}
+	}
+
 </script>
 
 <svelte:head>
@@ -118,15 +127,45 @@
 		</a>
 	</div>
 {:else}
-	<div class="space-y-6">
+	<div class="space-y-6" on:click={handleClickOutside}>
 		<!-- Header -->
-		<div class="flex items-start justify-between">
-			<div class="flex-1">
-				<div class="flex items-center gap-2 mb-2">
-					<h1 class="text-3xl font-bold" style="font-family: 'Gambarino', 'Satoshi', sans-serif;">{selectedPackage.name}</h1>
-					<span class="text-lg text-muted-foreground bg-secondary px-3 py-1 rounded-full">
-						v{selectedPackage.version}
-					</span>
+		<div class="flex items-start justify-between gap-4">
+			<div class="flex-1 min-w-0">
+				<div class="space-y-2 mb-2">
+					<div class="flex items-center justify-between gap-4">
+						<h1 class="text-2xl sm:text-3xl font-bold leading-tight" style="font-family: 'Gambarino', 'Satoshi', sans-serif;">{selectedPackage.name}</h1>
+						{#if isOwner}
+							<div class="flex-shrink-0 relative" data-options-menu>
+								<button
+									on:click={() => showOptionsMenu = !showOptionsMenu}
+									class="border border-input bg-background hover:bg-accent hover:text-accent-foreground p-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2"
+									aria-label="Package options"
+								>
+									<Icon icon="solar:menu-dots-bold" class="w-4 h-4" />
+								</button>
+								
+								{#if showOptionsMenu}
+									<div class="absolute right-0 top-full mt-1 bg-background border border-border rounded-md shadow-lg z-10 w-48">
+										<button
+											on:click={() => {
+												showDeleteConfirm = true;
+												showOptionsMenu = false;
+											}}
+											class="w-full text-left px-4 py-2 text-sm hover:bg-muted flex items-center gap-2 text-destructive hover:bg-destructive/10"
+										>
+											<Icon icon="solar:trash-bin-minimalistic-bold" class="w-4 h-4" />
+											Delete Package
+										</button>
+									</div>
+								{/if}
+							</div>
+						{/if}
+					</div>
+					<div>
+						<span class="text-sm sm:text-base text-muted-foreground bg-secondary px-2 sm:px-3 py-1 rounded-full">
+							v{selectedPackage.version}
+						</span>
+					</div>
 				</div>
 				
 				{#if selectedPackage.description}
@@ -169,18 +208,6 @@
 					</div>
 				</div>
 			</div>
-
-			{#if isOwner}
-				<div class="flex items-center gap-2">
-					<button
-						on:click={() => showDeleteConfirm = true}
-						class="border border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2"
-					>
-						<Icon icon="solar:trash-bin-minimalistic-bold" class="w-4 h-4" />
-						Delete Package
-					</button>
-				</div>
-			{/if}
 		</div>
 
 		<!-- Stats -->
@@ -280,42 +307,59 @@
 			{/if}
 		</div>
 
-		<!-- Delete Confirmation Modal -->
-		{#if showDeleteConfirm}
-			<div class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-				<div class="bg-background border border-border rounded-lg p-6 max-w-md w-full">
-					<div class="flex items-center gap-3 mb-4">
-						<Icon icon="solar:danger-triangle-bold" class="w-6 h-6 text-destructive" />
-						<h3 class="text-lg font-semibold">Delete Package</h3>
+		<!-- Delete Confirmation Drawer -->
+		<Drawer
+			bind:open={showDeleteConfirm}
+			title="Delete Package"
+			description="This action cannot be undone"
+			side="right"
+			on:close={() => { deleteError = ''; }}
+		>
+			<div class="space-y-6">
+				<div class="flex items-center gap-3 p-4 bg-destructive/10 rounded-lg border border-destructive/20">
+					<Icon icon="solar:danger-triangle-bold" class="w-5 h-5 text-destructive flex-shrink-0" />
+					<div class="text-sm">
+						<p class="font-medium text-destructive mb-1">Permanent Deletion</p>
+						<p class="text-muted-foreground">
+							You are about to permanently delete <strong>{selectedPackage?.name}</strong> v{selectedPackage?.version}.
+						</p>
 					</div>
-					
-					<p class="text-muted-foreground mb-4">
-						Are you sure you want to delete <strong>{selectedPackage.name}</strong> v{selectedPackage.version}?
-						This action cannot be undone.
-					</p>
+				</div>
+
+				<div class="space-y-4">
+					<div>
+						<h4 class="font-medium mb-2">What will happen:</h4>
+						<ul class="text-sm text-muted-foreground space-y-1 list-disc list-inside">
+							<li>The package will be removed from all registries</li>
+							<li>All download statistics will be lost</li>
+							<li>Projects using this package may break</li>
+							<li>This action cannot be reversed</li>
+						</ul>
+					</div>
 
 					{#if deleteError}
-						<div class="bg-destructive/10 text-destructive border border-destructive/20 rounded-md p-3 mb-4">
+						<div class="bg-destructive/10 text-destructive border border-destructive/20 rounded-md p-3">
 							{deleteError}
 						</div>
 					{/if}
+				</div>
 
-					<div class="flex justify-end gap-3">
-						<button
-							on:click={() => { showDeleteConfirm = false; deleteError = ''; }}
-							class="border border-input bg-background hover:bg-accent hover:text-accent-foreground px-4 py-2 rounded-md text-sm font-medium transition-colors"
-						>
-							Cancel
-						</button>
-						<button
-							on:click={handleDeletePackage}
-							class="bg-destructive text-destructive-foreground hover:bg-destructive/90 px-4 py-2 rounded-md text-sm font-medium transition-colors"
-						>
-							Delete Package
-						</button>
-					</div>
+				<div class="flex flex-col gap-3 pt-4 border-t border-border">
+					<button
+						on:click={handleDeletePackage}
+						class="bg-destructive text-destructive-foreground hover:bg-destructive/90 px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center justify-center gap-2"
+					>
+						<Icon icon="solar:trash-bin-minimalistic-bold" class="w-4 h-4" />
+						Delete Package
+					</button>
+					<button
+						on:click={() => { showDeleteConfirm = false; deleteError = ''; }}
+						class="border border-input bg-background hover:bg-accent hover:text-accent-foreground px-4 py-2 rounded-md text-sm font-medium transition-colors"
+					>
+						Cancel
+					</button>
 				</div>
 			</div>
-		{/if}
+		</Drawer>
 	</div>
 {/if}

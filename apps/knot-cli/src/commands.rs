@@ -9,40 +9,73 @@ use reqwest::multipart;
 use serde::{Deserialize, Serialize};
 use std::env;
 use std::fs;
-use std::io::{self, Write};
+use std::io;
 use std::path::{Path, PathBuf};
+use inquire::{Text, Select, Confirm};
+use console::style;
+use indicatif::{ProgressBar, ProgressStyle};
 
-// Helper function for interactive input
+// Helper function for interactive input with beautiful UI
 fn prompt_for_input(prompt: &str, default: Option<&str>) -> Result<String> {
-    loop {
-        if let Some(default_val) = default {
-            print!("{} [{}]: ", prompt, default_val);
-        } else {
-            print!("{}: ", prompt);
-        }
-        io::stdout().flush()?;
-        
-        let mut input = String::new();
-        io::stdin().read_line(&mut input)?;
-        let input = input.trim();
-        
-        if input.is_empty() {
-            if let Some(default_val) = default {
-                return Ok(default_val.to_string());
-            } else {
-                println!("❌ This field is required. Please enter a value.");
-                continue;
-            }
-        }
-        
-        // Validate name (basic alphanumeric with hyphens and underscores)
-        if input.chars().all(|c| c.is_ascii_alphanumeric() || c == '-' || c == '_') {
-            return Ok(input.to_string());
-        } else {
-            println!("❌ Invalid name. Please use only letters, numbers, hyphens, and underscores.");
-            continue;
-        }
+    let mut text_prompt = Text::new(prompt);
+    
+    if let Some(default_val) = default {
+        text_prompt = text_prompt.with_default(default_val);
     }
+    
+    let is_required = default.is_none();
+    text_prompt = text_prompt.with_validator(move |input: &str| {
+        if input.trim().is_empty() && is_required {
+            Ok(inquire::validator::Validation::Invalid("This field is required".into()))
+        } else if !input.trim().is_empty() && !input.chars().all(|c| c.is_ascii_alphanumeric() || c == '-' || c == '_' || c == ' ') {
+            Ok(inquire::validator::Validation::Invalid("Please use only letters, numbers, hyphens, underscores, and spaces".into()))
+        } else {
+            Ok(inquire::validator::Validation::Valid)
+        }
+    });
+    
+    Ok(text_prompt.prompt()?)
+}
+
+// Enhanced input for descriptions (allows more characters)
+fn prompt_for_description(prompt: &str, default: Option<&str>) -> Result<String> {
+    let mut text_prompt = Text::new(prompt);
+    
+    if let Some(default_val) = default {
+        text_prompt = text_prompt.with_default(default_val);
+    }
+    
+    Ok(text_prompt.prompt()?)
+}
+
+// Enhanced select prompt
+fn prompt_for_select(prompt: &str, options: Vec<&str>) -> Result<String> {
+    let selection = Select::new(prompt, options).prompt()?;
+    Ok(selection.to_string())
+}
+
+// Enhanced confirm prompt
+fn prompt_for_confirm(prompt: &str, default: Option<bool>) -> Result<bool> {
+    let mut confirm_prompt = Confirm::new(prompt);
+    
+    if let Some(default_val) = default {
+        confirm_prompt = confirm_prompt.with_default(default_val);
+    }
+    
+    Ok(confirm_prompt.prompt()?)
+}
+
+// Progress bar helper
+fn create_progress_bar(message: &str, len: u64) -> ProgressBar {
+    let pb = ProgressBar::new(len);
+    pb.set_style(
+        ProgressStyle::default_bar()
+            .template("{spinner:.green} [{elapsed_precise}] [{bar:40.cyan/blue}] {pos}/{len} {msg}")
+            .unwrap()
+            .progress_chars("#>-"),
+    );
+    pb.set_message(message.to_string());
+    pb
 }
 
 // Helper function to determine the best directory for creating packages/apps
@@ -102,16 +135,23 @@ fn format_api_error(status: reqwest::StatusCode, response_text: &str) -> String 
 pub fn init_project(name: Option<&str>, path: Option<&str>, description: Option<&str>) -> Result<()> {
     let interactive = name.is_none() || path.is_none();
 
-    println!("🚀 Let's create a new Knot project!");
+    // Pretty header
+    println!();
+    println!("{}", style("🚀 Welcome to Knot Project Initializer").bold().cyan());
+    println!("{}", style("Let's create a new Knot project together!").dim());
+    println!();
 
     let project_name = match name {
         Some(n) => n.to_string(),
-        None => prompt_for_input("✨ Project name", None)?,
+        None => prompt_for_input("✨ What's your project name?", None)?,
     };
 
     let project_description = match description {
         Some(d) => Some(d.to_string()),
-        None if interactive => Some(prompt_for_input("📝 Project description", Some(""))?),
+        None if interactive => {
+            let desc = prompt_for_description("📝 Project description (optional)", Some("A new Knot project"))?;
+            if desc.trim().is_empty() { None } else { Some(desc) }
+        },
         None => None,
     };
 
@@ -119,11 +159,28 @@ pub fn init_project(name: Option<&str>, path: Option<&str>, description: Option<
         Some(p) => PathBuf::from(p),
         None if interactive => {
             let suggested_path = PathBuf::from(format!("./{}", project_name));
-            let path_str = prompt_for_input("📁 Target directory", Some(suggested_path.to_str().unwrap_or(".")))?;
+            let path_str = prompt_for_input("📁 Where should we create the project?", Some(suggested_path.to_str().unwrap_or(".")))?;
             PathBuf::from(path_str)
         }
         None => std::env::current_dir()?,
     };
+
+    // Show summary and confirm
+    if interactive {
+        println!();
+        println!("{}", style("📋 Project Summary:").bold().green());
+        println!("   {} {}", style("Name:").dim(), style(&project_name).bold());
+        if let Some(desc) = &project_description {
+            println!("   {} {}", style("Description:").dim(), desc);
+        }
+        println!("   {} {}", style("Location:").dim(), target_dir.display());
+        println!();
+
+        if !prompt_for_confirm("Create this project?", Some(true))? {
+            println!("{}", style("❌ Project creation cancelled").red());
+            return Ok(());
+        }
+    }
 
     if !target_dir.exists() {
         fs::create_dir_all(&target_dir)?;
@@ -160,11 +217,61 @@ pub fn init_package(name: Option<&str>, team: Option<&str>, version: Option<&str
     let current_dir = std::env::current_dir()?;
     let interactive = name.is_none() || path.is_none();
 
-    println!("📦 Let's create a new package!");
+    // Pretty header
+    println!();
+    println!("{}", style("📦 Welcome to Knot Package Creator").bold().magenta());
+    println!("{}", style("Let's create a new package!").dim());
+    println!();
 
     let package_name = match name {
         Some(n) => n.to_string(),
-        None => prompt_for_input("✨ Package name", None)?,
+        None => prompt_for_input("✨ What's your package name?", None)?,
+    };
+
+    // Enhanced team selection with interactive prompt
+    let _package_team = match team {
+        Some(t) => Some(t.to_string()),
+        None if interactive => {
+            let use_team = prompt_for_confirm("🏢 Is this package for a team?", Some(false))?;
+            if use_team {
+                Some(prompt_for_input("Team name", None)?)
+            } else {
+                None
+            }
+        },
+        None => None,
+    };
+
+    // Enhanced version with better default
+    let _package_version = match version {
+        Some(v) => v.to_string(),
+        None => {
+            if interactive {
+                prompt_for_input("📌 Initial version", Some("1.0.0"))?
+            } else {
+                "1.0.0".to_string()
+            }
+        }
+    };
+
+    // Enhanced template selection
+    let _package_template = match template {
+        Some(t) => Some(t.to_string()),
+        None if interactive => {
+            let available_templates = vec!["basic", "typescript", "react", "vue", "svelte"];
+            let template_choice = prompt_for_select("🎨 Choose a template", available_templates)?;
+            Some(template_choice)
+        },
+        None => None,
+    };
+
+    let _package_description = match description {
+        Some(d) => Some(d.to_string()),
+        None if interactive => {
+            let desc = prompt_for_description("📝 Package description (optional)", Some(""))?;
+            if desc.trim().is_empty() { None } else { Some(desc) }
+        },
+        None => None,
     };
 
     // Determine target directory based on options

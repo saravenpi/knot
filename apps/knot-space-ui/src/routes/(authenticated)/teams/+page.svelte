@@ -3,6 +3,10 @@
 	import { teamsStore, authStore } from '../../../lib/stores';
 	import { usersApi } from '../../../lib/api';
 	import Icon from '@iconify/svelte';
+	import Drawer from '../../../lib/components/ui/drawer.svelte';
+	import Input from '../../../lib/components/ui/input.svelte';
+	import Button from '../../../lib/components/ui/button.svelte';
+	import Textarea from '../../../lib/components/ui/textarea.svelte';
 	import type { User } from '#/types';
 
 	$: teams = $teamsStore.teams;
@@ -197,13 +201,13 @@
 			<p class="text-muted-foreground mt-2">Manage your teams and collaborations</p>
 		</div>
 		
-		<button
+		<Button
 			on:click={() => showCreateForm = !showCreateForm}
-			class="bg-black text-white hover:bg-black/90 px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center justify-center space-x-2 w-full sm:w-auto"
+			class="w-full sm:w-auto"
 		>
-			<Icon icon={showCreateForm ? "solar:close-circle-bold" : "solar:add-circle-bold"} class="w-4 h-4" />
-			<span>{showCreateForm ? 'Cancel' : 'Create Team'}</span>
-		</button>
+			<Icon icon={showCreateForm ? "solar:close-circle-bold" : "solar:add-circle-bold"} class="w-4 h-4 mr-2" />
+			{showCreateForm ? 'Cancel' : 'Create Team'}
+		</Button>
 	</div>
 
 	{#if showCreateForm}
@@ -221,12 +225,11 @@
 					<label for="teamName" class="block text-sm font-medium mb-2">
 						Team Name
 					</label>
-					<input
+					<Input
 						id="teamName"
 						type="text"
 						bind:value={teamName}
 						placeholder="Enter team name"
-						class="w-full px-3 py-2 border border-input rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
 						required
 					/>
 					<p class="text-xs text-muted-foreground mt-1">
@@ -238,31 +241,31 @@
 					<label for="teamDescription" class="block text-sm font-medium mb-2">
 						Description (Optional)
 					</label>
-					<textarea
+					<Textarea
 						id="teamDescription"
 						bind:value={teamDescription}
 						placeholder="Describe your team"
 						rows="3"
-						class="w-full px-3 py-2 border border-input rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
-					></textarea>
+					/>
 				</div>
 
 				<div class="flex flex-col sm:flex-row gap-3">
-					<button
+					<Button
 						type="submit"
-						class="bg-black text-white hover:bg-black/90 px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center justify-center space-x-2 w-full sm:w-auto"
+						class="w-full sm:w-auto"
 					>
-						<Icon icon="solar:check-circle-bold" class="w-4 h-4" />
-						<span>Create Team</span>
-					</button>
-					<button
+						<Icon icon="solar:check-circle-bold" class="w-4 h-4 mr-2" />
+						Create Team
+					</Button>
+					<Button
 						type="button"
 						on:click={() => showCreateForm = false}
-						class="border border-input bg-background hover:bg-accent hover:text-accent-foreground px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center justify-center space-x-2 w-full sm:w-auto"
+						variant="outline"
+						class="w-full sm:w-auto"
 					>
-						<Icon icon="solar:close-circle-bold" class="w-4 h-4" />
-						<span>Cancel</span>
-					</button>
+						<Icon icon="solar:close-circle-bold" class="w-4 h-4 mr-2" />
+						Cancel
+					</Button>
 				</div>
 			</form>
 		</div>
@@ -404,17 +407,16 @@
 	{/if}
 </div>
 
-<!-- Add Member Modal -->
-{#if showAddMember}
-	<div class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-		<div class="bg-background border border-border rounded-lg p-4 sm:p-6 max-w-md w-full">
-			<div class="flex items-center gap-3 mb-4">
-				<Icon icon="solar:user-plus-bold" class="w-6 h-6 text-primary" />
-				<h3 class="text-lg font-semibold">Add Team Member</h3>
-			</div>
-			
+<!-- Add Member Drawer -->
+<Drawer
+	bind:open={showAddMember}
+	title="Add Team Member"
+	description="Invite a user to join your team"
+	side="right"
+>
+	<div class="space-y-6">
 			{#if memberError}
-				<div class="bg-destructive/10 text-destructive border border-destructive/20 rounded-md p-3 mb-4">
+				<div class="bg-destructive/10 text-destructive border border-destructive/20 rounded-md p-3">
 					{memberError}
 				</div>
 			{/if}
@@ -422,7 +424,7 @@
 			<form on:submit|preventDefault={handleAddMember} class="space-y-4">
 				<div class="relative">
 					<label for="memberUsername" class="block text-sm font-medium mb-2">Username</label>
-					<input
+					<Input
 						id="memberUsername"
 						type="text"
 						bind:value={userSearchTerm}
@@ -430,7 +432,6 @@
 							newMemberUsername = userSearchTerm;
 						}}
 						placeholder="Start typing to search users..."
-						class="w-full px-3 py-2 border border-input rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
 						required
 					/>
 					
@@ -470,9 +471,16 @@
 					</select>
 				</div>
 
-				<div class="flex flex-col sm:flex-row justify-end gap-3">
-					<button
+				<div class="flex flex-col gap-3 pt-4 border-t border-border">
+					<Button
+						type="submit"
+					>
+						<Icon icon="solar:user-plus-bold" class="mr-2 h-4 w-4" />
+						Add Member
+					</Button>
+					<Button
 						type="button"
+						variant="outline"
 						on:click={() => { 
 							showAddMember = false; 
 							addMemberTeamId = ''; 
@@ -482,26 +490,22 @@
 							newMemberRole = 'member';
 							showUserSuggestions = false;
 						}}
-						class="border border-input bg-background hover:bg-accent hover:text-accent-foreground px-4 py-2 rounded-md text-sm font-medium transition-colors w-full sm:w-auto order-2 sm:order-1"
 					>
 						Cancel
-					</button>
-					<button
-						type="submit"
-						class="bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-md text-sm font-medium transition-colors w-full sm:w-auto order-1 sm:order-2"
-					>
-						Add Member
-					</button>
+					</Button>
 				</div>
 			</form>
 		</div>
-	</div>
-{/if}
+</Drawer>
 
-<!-- Delete Team Confirmation Modal -->
-{#if showDeleteConfirm}
-	<div class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-		<div class="bg-background border border-border rounded-lg p-4 sm:p-6 max-w-md w-full">
+<!-- Delete Team Confirmation Drawer -->
+<Drawer
+	bind:open={showDeleteConfirm}
+	title="Delete Team"
+	description="This action cannot be undone"
+	side="right"
+>
+	<div class="space-y-6">
 			<div class="flex items-center gap-3 mb-4">
 				<Icon icon="solar:danger-triangle-bold" class="w-6 h-6 text-destructive" />
 				<h3 class="text-lg font-semibold">Delete Team</h3>

@@ -67,9 +67,9 @@
 			ctx.stroke();
 		}
 
-		// Vertical grid lines
+		// Vertical grid lines (at bar centers)
 		for (let i = 0; i < data.length; i++) {
-			const x = padding.left + (chartWidth / (data.length - 1)) * i;
+			const x = padding.left + (chartWidth / data.length) * i + (chartWidth / data.length) / 2;
 			ctx.beginPath();
 			ctx.moveTo(x, padding.top);
 			ctx.lineTo(x, padding.top + chartHeight);
@@ -78,33 +78,40 @@
 
 		ctx.setLineDash([]);
 
-		// Draw line
-		ctx.strokeStyle = color;
-		ctx.lineWidth = 2;
-		ctx.beginPath();
-
-		data.forEach((point, index) => {
-			const x = padding.left + (chartWidth / (data.length - 1)) * index;
-			const y = padding.top + chartHeight - ((point.downloads - minDownloads) / (maxDownloads - minDownloads)) * chartHeight;
-			
-			if (index === 0) {
-				ctx.moveTo(x, y);
-			} else {
-				ctx.lineTo(x, y);
-			}
-		});
-
-		ctx.stroke();
-
-		// Draw points
+		// Draw bars
 		ctx.fillStyle = color;
+		const barWidth = chartWidth / data.length * 0.7; // 70% of available space for bars
+		const barSpacing = chartWidth / data.length * 0.3; // 30% for spacing
+
 		data.forEach((point, index) => {
-			const x = padding.left + (chartWidth / (data.length - 1)) * index;
-			const y = padding.top + chartHeight - ((point.downloads - minDownloads) / (maxDownloads - minDownloads)) * chartHeight;
+			const x = padding.left + (chartWidth / data.length) * index + barSpacing / 2;
+			const barHeight = ((point.downloads - minDownloads) / (maxDownloads - minDownloads)) * chartHeight;
+			const y = padding.top + chartHeight - barHeight;
 			
+			// Draw bar with rounded top corners
 			ctx.beginPath();
-			ctx.arc(x, y, 4, 0, Math.PI * 2);
+			const radius = Math.min(4, barWidth / 4);
+			
+			// Fallback for browsers that don't support roundRect
+			if (typeof ctx.roundRect === 'function') {
+				ctx.roundRect(x, y, barWidth, barHeight, [radius, radius, 0, 0]);
+			} else {
+				// Manual rounded rectangle for top corners only
+				ctx.moveTo(x + radius, y);
+				ctx.lineTo(x + barWidth - radius, y);
+				ctx.arcTo(x + barWidth, y, x + barWidth, y + radius, radius);
+				ctx.lineTo(x + barWidth, y + barHeight);
+				ctx.lineTo(x, y + barHeight);
+				ctx.lineTo(x, y + radius);
+				ctx.arcTo(x, y, x + radius, y, radius);
+				ctx.closePath();
+			}
 			ctx.fill();
+			
+			// Add subtle border
+			ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
+			ctx.lineWidth = 1;
+			ctx.stroke();
 		});
 
 		// Draw axes
@@ -131,7 +138,7 @@
 		// X-axis labels
 		data.forEach((point, index) => {
 			if (index % Math.ceil(data.length / 6) === 0) {
-				const x = padding.left + (chartWidth / (data.length - 1)) * index;
+				const x = padding.left + (chartWidth / data.length) * index + (chartWidth / data.length) / 2;
 				ctx.fillText(formatDate(point.date), x, padding.top + chartHeight + 20);
 			}
 		});
@@ -161,15 +168,22 @@
 		let closestDistance = Infinity;
 
 		data.forEach((point, index) => {
-			const pointX = padding.left + (chartWidth / (data.length - 1)) * index;
+			const barWidth = chartWidth / data.length * 0.7;
+			const barSpacing = chartWidth / data.length * 0.3;
+			const barX = padding.left + (chartWidth / data.length) * index + barSpacing / 2;
 			const maxDownloads = Math.max(...data.map(d => d.downloads), 1);
-			const pointY = padding.top + chartHeight - ((point.downloads - 0) / (maxDownloads - 0)) * chartHeight;
+			const barHeight = ((point.downloads - 0) / (maxDownloads - 0)) * chartHeight;
+			const barY = padding.top + chartHeight - barHeight;
 			
-			const distance = Math.sqrt((x - pointX) ** 2 + (y - pointY) ** 2);
-			
-			if (distance < 15 && distance < closestDistance) {
-				closestDistance = distance;
-				closestPoint = { x: pointX, y: pointY, data: point };
+			// Check if mouse is over this bar
+			if (x >= barX && x <= barX + barWidth && y >= barY && y <= padding.top + chartHeight) {
+				const centerX = barX + barWidth / 2;
+				const distance = Math.abs(x - centerX);
+				
+				if (distance < closestDistance) {
+					closestDistance = distance;
+					closestPoint = { x: centerX, y: barY, data: point };
+				}
 			}
 		});
 

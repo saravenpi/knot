@@ -2,6 +2,20 @@ import { prisma } from '../../lib/prisma';
 import { CreateTeamRequest, AddTeamMemberRequest } from '../../types';
 
 class TeamsService {
+  private async findTeamByIdentifier(teamIdentifier: string) {
+    // Check if the identifier is a UUID or a team name
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(teamIdentifier);
+    
+    const team = await prisma.team.findUnique({
+      where: isUuid ? { id: teamIdentifier } : { name: teamIdentifier }
+    });
+
+    if (!team) {
+      throw new Error('Team not found');
+    }
+
+    return team;
+  }
   async createTeam(data: CreateTeamRequest, ownerId: string) {
     const existingTeam = await prisma.team.findUnique({
       where: { name: data.name }
@@ -147,9 +161,12 @@ class TeamsService {
     }
   }
 
-  async getTeam(teamId: string, userId?: string) {
-    const team = await prisma.team.findUnique({
-      where: { id: teamId },
+  async getTeam(teamIdentifier: string, userId?: string) {
+    const team = await this.findTeamByIdentifier(teamIdentifier);
+    
+    // Get team with all details
+    const fullTeam = await prisma.team.findUnique({
+      where: { id: team.id },
       include: {
         owner: {
           select: {
@@ -180,7 +197,7 @@ class TeamsService {
       }
     });
 
-    if (!team) {
+    if (!fullTeam) {
       throw new Error('Team not found');
     }
 
@@ -189,7 +206,7 @@ class TeamsService {
       const member = await prisma.teamMember.findUnique({
         where: {
           teamId_userId: {
-            teamId,
+            teamId: fullTeam.id,
             userId,
           }
         }
@@ -198,22 +215,16 @@ class TeamsService {
     }
 
     return {
-      ...team,
+      ...fullTeam,
       memberRole,
     };
   }
 
-  async getTeamMembers(teamId: string) {
-    const team = await prisma.team.findUnique({
-      where: { id: teamId }
-    });
-
-    if (!team) {
-      throw new Error('Team not found');
-    }
+  async getTeamMembers(teamIdentifier: string) {
+    const team = await this.findTeamByIdentifier(teamIdentifier);
 
     const members = await prisma.teamMember.findMany({
-      where: { teamId },
+      where: { teamId: team.id },
       include: {
         user: {
           select: {
@@ -233,12 +244,14 @@ class TeamsService {
     return members;
   }
 
-  async addTeamMember(teamId: string, data: AddTeamMemberRequest, currentUserId: string) {
+  async addTeamMember(teamIdentifier: string, data: AddTeamMemberRequest, currentUserId: string) {
+    const team = await this.findTeamByIdentifier(teamIdentifier);
+    
     // Check if current user has permission to add members
     const currentMember = await prisma.teamMember.findUnique({
       where: {
         teamId_userId: {
-          teamId,
+          teamId: team.id,
           userId: currentUserId,
         }
       }
@@ -261,7 +274,7 @@ class TeamsService {
     const existingMember = await prisma.teamMember.findUnique({
       where: {
         teamId_userId: {
-          teamId,
+          teamId: team.id,
           userId: user.id,
         }
       }
@@ -273,7 +286,7 @@ class TeamsService {
 
     const newMember = await prisma.teamMember.create({
       data: {
-        teamId,
+        teamId: team.id,
         userId: user.id,
         role: data.role,
       },
@@ -292,12 +305,14 @@ class TeamsService {
     return newMember;
   }
 
-  async removeTeamMember(teamId: string, userId: string, currentUserId: string) {
+  async removeTeamMember(teamIdentifier: string, userId: string, currentUserId: string) {
+    const team = await this.findTeamByIdentifier(teamIdentifier);
+    
     // Check if current user has permission to remove members
     const currentMember = await prisma.teamMember.findUnique({
       where: {
         teamId_userId: {
-          teamId,
+          teamId: team.id,
           userId: currentUserId,
         }
       }
@@ -310,7 +325,7 @@ class TeamsService {
     const memberToRemove = await prisma.teamMember.findUnique({
       where: {
         teamId_userId: {
-          teamId,
+          teamId: team.id,
           userId,
         }
       }
@@ -328,19 +343,21 @@ class TeamsService {
     await prisma.teamMember.delete({
       where: {
         teamId_userId: {
-          teamId,
+          teamId: team.id,
           userId,
         }
       }
     });
   }
 
-  async updateMemberRole(teamId: string, userId: string, newRole: string, currentUserId: string) {
+  async updateMemberRole(teamIdentifier: string, userId: string, newRole: string, currentUserId: string) {
+    const team = await this.findTeamByIdentifier(teamIdentifier);
+    
     // Check if current user has permission to update member roles
     const currentMember = await prisma.teamMember.findUnique({
       where: {
         teamId_userId: {
-          teamId,
+          teamId: team.id,
           userId: currentUserId,
         }
       }
@@ -353,7 +370,7 @@ class TeamsService {
     const memberToUpdate = await prisma.teamMember.findUnique({
       where: {
         teamId_userId: {
-          teamId,
+          teamId: team.id,
           userId,
         }
       }
@@ -372,7 +389,7 @@ class TeamsService {
     const updatedMember = await prisma.teamMember.update({
       where: {
         teamId_userId: {
-          teamId,
+          teamId: team.id,
           userId,
         }
       },
@@ -394,21 +411,15 @@ class TeamsService {
     return updatedMember;
   }
 
-  async deleteTeam(teamId: string, currentUserId: string) {
-    const team = await prisma.team.findUnique({
-      where: { id: teamId }
-    });
-
-    if (!team) {
-      throw new Error('Team not found');
-    }
+  async deleteTeam(teamIdentifier: string, currentUserId: string) {
+    const team = await this.findTeamByIdentifier(teamIdentifier);
 
     if (team.ownerId !== currentUserId) {
       throw new Error('Only team owner can delete the team');
     }
 
     await prisma.team.delete({
-      where: { id: teamId }
+      where: { id: team.id }
     });
   }
 }
