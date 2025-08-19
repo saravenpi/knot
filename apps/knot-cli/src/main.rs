@@ -23,8 +23,14 @@ async fn main() -> Result<()> {
                 .arg(
                     Arg::new("name")
                         .help("Project name")
-                        .required(true)
+                        .required(false)
                         .index(1),
+                )
+                .arg(
+                    Arg::new("path")
+                        .help("Target path for project creation (optional)")
+                        .required(false)
+                        .index(2),
                 )
                 .arg(
                     Arg::new("description")
@@ -32,6 +38,13 @@ async fn main() -> Result<()> {
                         .short('d')
                         .long("description")
                         .value_name("DESC"),
+                )
+                .arg(
+                    Arg::new("interactive")
+                        .help("Run in interactive mode")
+                        .short('i')
+                        .long("interactive")
+                        .action(clap::ArgAction::SetTrue),
                 ),
         )
         .subcommand(
@@ -44,7 +57,7 @@ async fn main() -> Result<()> {
                         .index(1),
                 )
                 .arg(
-                    Arg::new("target_path")
+                    Arg::new("path")
                         .help("Target path for package creation (optional)")
                         .required(false)
                         .index(2),
@@ -77,16 +90,16 @@ async fn main() -> Result<()> {
                         .value_name("DESC"),
                 )
                 .arg(
-                    Arg::new("path")
-                        .help("Custom path for package creation (use '.' for current directory)")
-                        .short('p')
-                        .long("path")
-                        .value_name("PATH"),
-                )
-                .arg(
                     Arg::new("here")
                         .help("Create package in current directory instead of creating new subfolder")
                         .long("here")
+                        .action(clap::ArgAction::SetTrue),
+                )
+                .arg(
+                    Arg::new("interactive")
+                        .help("Run in interactive mode")
+                        .short('i')
+                        .long("interactive")
                         .action(clap::ArgAction::SetTrue),
                 ),
         )
@@ -94,7 +107,7 @@ async fn main() -> Result<()> {
             Command::new("init:app")
                 .about("Initialize a new app")
                 .arg(Arg::new("name").help("App name (optional, will prompt if not provided)").required(false).index(1))
-                .arg(Arg::new("target_path").help("Target path for app creation (optional)").required(false).index(2))
+                .arg(Arg::new("path").help("Target path for app creation (optional)").required(false).index(2))
                 .arg(
                     Arg::new("template")
                         .help("App template (react, svelte, nextjs, fastify, express, vanilla)")
@@ -109,16 +122,16 @@ async fn main() -> Result<()> {
                         .value_name("DESC"),
                 )
                 .arg(
-                    Arg::new("path")
-                        .help("Custom path for app creation (use '.' for current directory)")
-                        .short('p')
-                        .long("path")
-                        .value_name("PATH"),
-                )
-                .arg(
                     Arg::new("here")
                         .help("Create app in current directory instead of creating new subfolder")
                         .long("here")
+                        .action(clap::ArgAction::SetTrue),
+                )
+                .arg(
+                    Arg::new("interactive")
+                        .help("Run in interactive mode")
+                        .short('i')
+                        .long("interactive")
                         .action(clap::ArgAction::SetTrue),
                 ),
         )
@@ -324,41 +337,37 @@ async fn main() -> Result<()> {
 
     match matches.subcommand() {
         Some(("init", sub_matches)) => {
-            let name = sub_matches.get_one::<String>("name").unwrap();
+            let name = sub_matches.get_one::<String>("name");
+            let path = sub_matches.get_one::<String>("path");
             let description = sub_matches
                 .get_one::<String>("description")
                 .map(|s| s.as_str());
-            commands::init_project(name, description)?;
+            let interactive = sub_matches.get_flag("interactive");
+            commands::init_project(name.map(|s| s.as_str()), path.map(|s| s.as_str()), description, interactive)?;
         }
         Some(("init:package", sub_matches)) => {
             let name = sub_matches.get_one::<String>("name");
-            let target_path = sub_matches.get_one::<String>("target_path");
+            let path = sub_matches.get_one::<String>("path");
             let team = sub_matches.get_one::<String>("team").map(|s| s.as_str());
             let version = sub_matches.get_one::<String>("version").map(|s| s.as_str());
             let template = sub_matches.get_one::<String>("template").map(|s| s.as_str());
             let description = sub_matches.get_one::<String>("description").map(|s| s.as_str());
-            let path = sub_matches.get_one::<String>("path").map(|s| s.as_str());
             let here = sub_matches.get_flag("here");
+            let interactive = sub_matches.get_flag("interactive");
             
-            // Use target_path if provided, otherwise fall back to --path flag
-            let final_path = target_path.map(|s| s.as_str()).or(path);
-            
-            commands::init_package(name.map(|s| s.as_str()), team, version, template, description, final_path, here)?;
+            commands::init_package(name.map(|s| s.as_str()), team, version, template, description, path.map(|s| s.as_str()), here, interactive)?;
         }
         Some(("init:app", sub_matches)) => {
             let name = sub_matches.get_one::<String>("name");
-            let target_path = sub_matches.get_one::<String>("target_path");
+            let path = sub_matches.get_one::<String>("path");
             let template = sub_matches.get_one::<String>("template").map(|s| s.as_str());
             let description = sub_matches
                 .get_one::<String>("description")
                 .map(|s| s.as_str());
-            let path = sub_matches.get_one::<String>("path").map(|s| s.as_str());
             let here = sub_matches.get_flag("here");
-            
-            // Use target_path if provided, otherwise fall back to --path flag
-            let final_path = target_path.map(|s| s.as_str()).or(path);
-            
-            commands::init_app(name.map(|s| s.as_str()), template, description, final_path, here)?;
+            let interactive = sub_matches.get_flag("interactive");
+
+            commands::init_app(name.map(|s| s.as_str()), template, description, path.map(|s| s.as_str()), here, interactive)?;
         }
         Some(("link", sub_matches)) => {
             let use_symlinks = sub_matches.get_flag("symlink");

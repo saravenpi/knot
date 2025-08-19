@@ -99,17 +99,37 @@ fn format_api_error(status: reqwest::StatusCode, response_text: &str) -> String 
     }
 }
 
-pub fn init_project(name: &str, description: Option<&str>) -> Result<()> {
-    let current_dir = std::env::current_dir()?;
-    let knot_yml_path = current_dir.join("knot.yml");
+pub fn init_project(name: Option<&str>, path: Option<&str>, description: Option<&str>, interactive: bool) -> Result<()> {
+    let project_name = match name {
+        Some(n) => n.to_string(),
+        None if interactive => prompt_for_input("Project name", None)?,
+        None => anyhow::bail!("Project name is required in non-interactive mode"),
+    };
+
+    let project_description = match description {
+        Some(d) => Some(d.to_string()),
+        None if interactive => Some(prompt_for_input("Project description", Some(""))?),
+        None => None,
+    };
+
+    let target_dir = match path {
+        Some(p) => PathBuf::from(p),
+        None => std::env::current_dir()?,
+    };
+
+    if !target_dir.exists() {
+        fs::create_dir_all(&target_dir)?;
+    }
+
+    let knot_yml_path = target_dir.join("knot.yml");
 
     if knot_yml_path.exists() {
-        anyhow::bail!("knot.yml already exists in current directory");
+        anyhow::bail!("knot.yml already exists in the target directory");
     }
 
     let config = KnotConfig {
-        name: name.to_string(),
-        description: description.map(|s| s.to_string()),
+        name: project_name.clone(),
+        description: project_description,
         ts_alias: Some(crate::config::TsAlias::Boolean(false)),
         apps: None,
         scripts: None,
@@ -118,26 +138,26 @@ pub fn init_project(name: &str, description: Option<&str>) -> Result<()> {
     let yaml_content = serde_yaml::to_string(&config)?;
     fs::write(knot_yml_path, yaml_content).context("Failed to create knot.yml")?;
 
-    fs::create_dir_all("packages")?;
-    fs::create_dir_all("apps")?;
+    fs::create_dir_all(target_dir.join("packages"))?;
+    fs::create_dir_all(target_dir.join("apps"))?;
 
-    println!("✅ Initialized new Knot project: {}", name);
+    println!("✅ Initialized new Knot project: {}", project_name);
     println!("📁 Created directories: packages/, apps/");
     println!("💡 Use 'knot init:package <name>' to create packages");
     println!("💡 Use 'knot init:app <name>' to create apps");
     Ok(())
 }
 
-pub fn init_package(name: Option<&str>, team: Option<&str>, version: Option<&str>, template: Option<&str>, description: Option<&str>, path: Option<&str>, here: bool) -> Result<()> {
+pub fn init_package(name: Option<&str>, team: Option<&str>, version: Option<&str>, template: Option<&str>, description: Option<&str>, path: Option<&str>, here: bool, interactive: bool) -> Result<()> {
     let current_dir = std::env::current_dir()?;
     
-    // Interactive mode: prompt for name if not provided
     let package_name = match name {
         Some(n) => n.to_string(),
-        None => {
+        None if interactive => {
             println!("🎯 Creating a new package");
             prompt_for_input("Package name", None)?
         }
+        None => anyhow::bail!("Package name is required in non-interactive mode"),
     };
 
     // Determine target directory based on options
@@ -237,16 +257,16 @@ pub fn init_package(name: Option<&str>, team: Option<&str>, version: Option<&str
     Ok(())
 }
 
-pub fn init_app(name: Option<&str>, template: Option<&str>, description: Option<&str>, path: Option<&str>, here: bool) -> Result<()> {
+pub fn init_app(name: Option<&str>, template: Option<&str>, description: Option<&str>, path: Option<&str>, here: bool, interactive: bool) -> Result<()> {
     let current_dir = std::env::current_dir()?;
     
-    // Interactive mode: prompt for name if not provided
     let app_name = match name {
         Some(n) => n.to_string(),
-        None => {
+        None if interactive => {
             println!("🚀 Creating a new app");
             prompt_for_input("App name", None)?
         }
+        None => anyhow::bail!("App name is required in non-interactive mode"),
     };
 
     // Determine target directory based on options
