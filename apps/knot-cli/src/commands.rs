@@ -100,21 +100,28 @@ fn format_api_error(status: reqwest::StatusCode, response_text: &str) -> String 
 }
 
 pub fn init_project(name: Option<&str>, path: Option<&str>, description: Option<&str>) -> Result<()> {
-    let interactive = name.is_none();
+    let interactive = name.is_none() || path.is_none();
+
+    println!("🚀 Let's create a new Knot project!");
 
     let project_name = match name {
         Some(n) => n.to_string(),
-        None => prompt_for_input("Project name", None)?,
+        None => prompt_for_input("✨ Project name", None)?,
     };
 
     let project_description = match description {
         Some(d) => Some(d.to_string()),
-        None if interactive => Some(prompt_for_input("Project description", Some(""))?),
+        None if interactive => Some(prompt_for_input("📝 Project description", Some(""))?),
         None => None,
     };
 
     let target_dir = match path {
         Some(p) => PathBuf::from(p),
+        None if interactive => {
+            let suggested_path = PathBuf::from(format!("./{}", project_name));
+            let path_str = prompt_for_input("📁 Target directory", Some(suggested_path.to_str().unwrap_or(".")))?;
+            PathBuf::from(path_str)
+        }
         None => std::env::current_dir()?,
     };
 
@@ -151,13 +158,13 @@ pub fn init_project(name: Option<&str>, path: Option<&str>, description: Option<
 
 pub fn init_package(name: Option<&str>, team: Option<&str>, version: Option<&str>, template: Option<&str>, description: Option<&str>, path: Option<&str>, here: bool) -> Result<()> {
     let current_dir = std::env::current_dir()?;
+    let interactive = name.is_none() || path.is_none();
+
+    println!("📦 Let's create a new package!");
 
     let package_name = match name {
         Some(n) => n.to_string(),
-        None => {
-            println!("🎯 Creating a new package");
-            prompt_for_input("Package name", None)?
-        }
+        None => prompt_for_input("✨ Package name", None)?,
     };
 
     // Determine target directory based on options
@@ -175,6 +182,11 @@ pub fn init_package(name: Option<&str>, team: Option<&str>, version: Option<&str
         (target_path, format!("using custom path '{}'", custom_path), false)
     } else if here {
         (current_dir.clone(), "in current directory".to_string(), false)
+    } else if interactive {
+        let (suggested_base, _, in_project) = determine_target_directory(&current_dir, "packages")?;
+        let suggested_path = suggested_base.join(&package_name);
+        let path_str = prompt_for_input("📁 Target directory", Some(suggested_path.to_str().unwrap_or(".")))?;
+        (PathBuf::from(path_str), "using custom path".to_string(), in_project)
     } else {
         determine_target_directory(&current_dir, "packages")?
     };
@@ -259,13 +271,13 @@ pub fn init_package(name: Option<&str>, team: Option<&str>, version: Option<&str
 
 pub fn init_app(name: Option<&str>, template: Option<&str>, description: Option<&str>, path: Option<&str>, here: bool) -> Result<()> {
     let current_dir = std::env::current_dir()?;
-    
+    let interactive = name.is_none() || path.is_none();
+
+    println!("🚀 Let's create a new app!");
+
     let app_name = match name {
         Some(n) => n.to_string(),
-        None => {
-            println!("🚀 Creating a new app");
-            prompt_for_input("App name", None)?
-        }
+        None => prompt_for_input("✨ App name", None)?,
     };
 
     // Determine target directory based on options
@@ -283,6 +295,11 @@ pub fn init_app(name: Option<&str>, template: Option<&str>, description: Option<
         (target_path, format!("using custom path '{}'", custom_path), false)
     } else if here {
         (current_dir.clone(), "in current directory".to_string(), false)
+    } else if interactive {
+        let (suggested_base, _, in_project) = determine_target_directory(&current_dir, "apps")?;
+        let suggested_path = suggested_base.join(&app_name);
+        let path_str = prompt_for_input("📁 Target directory", Some(suggested_path.to_str().unwrap_or(".")))?;
+        (PathBuf::from(path_str), "using custom path".to_string(), in_project)
     } else {
         determine_target_directory(&current_dir, "apps")?
     };
@@ -955,9 +972,34 @@ struct Team {
     id: String,
     name: String,
     description: Option<String>,
+    #[serde(rename = "ownerId")]
     owner_id: String,
+    #[serde(rename = "createdAt")]
     created_at: String,
+    #[serde(rename = "updatedAt")]
     updated_at: String,
+    owner: UserProfile,
+    _count: TeamCounts,
+    members: Vec<TeamMember>,
+}
+
+#[derive(Serialize, Deserialize)]
+struct TeamCounts {
+    members: u32,
+    packages: u32,
+}
+
+#[derive(Serialize, Deserialize)]
+struct TeamMember {
+    id: String,
+    #[serde(rename = "teamId")]
+    team_id: String,
+    #[serde(rename = "userId")]
+    user_id: String,
+    role: String,
+    #[serde(rename = "joinedAt")]
+    joined_at: String,
+    user: UserProfile,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -1201,11 +1243,19 @@ pub async fn create_team(name: &str, description: Option<&str>) -> Result<()> {
 
     if response.status().is_success() {
         let response_text = response.text().await?;
-        match serde_json::from_str::<Team>(&response_text) {
-            Ok(team) => {
-                println!("👥 Created team: {}", team.name);
-                if let Some(desc) = team.description {
-                    println!("   Description: {}", desc);
+        match serde_json::from_str::<ApiResponse<Team>>(&response_text) {
+            Ok(api_response) => {
+                if api_response.success {
+                    if let Some(team) = api_response.data {
+                        println!("👥 Created team: {}", team.name);
+                        if let Some(desc) = team.description {
+                            println!("   Description: {}", desc);
+                        }
+                    } else {
+                        anyhow::bail!("Server response was successful but contained no data.");
+                    }
+                } else {
+                    anyhow::bail!("Server reported an error: {}", api_response.error.unwrap_or_else(|| "Unknown error".to_string()));
                 }
             }
             Err(_) => {
@@ -1215,7 +1265,8 @@ pub async fn create_team(name: &str, description: Option<&str>) -> Result<()> {
                             anyhow::bail!("Failed to create team: {}", error_message);
                         } else if let Some(message) = json.get("message").and_then(|v| v.as_str()) {
                             anyhow::bail!("Failed to create team: {}", message);
-                        } else {
+                        }
+                        else {
                             anyhow::bail!("Failed to parse the server response. The server sent an unexpected JSON object:\n{}", response_text);
                         }
                     }
@@ -1244,22 +1295,30 @@ pub async fn list_teams() -> Result<()> {
 
     if response.status().is_success() {
         let response_text = response.text().await?;
-        match serde_json::from_str::<Vec<Team>>(&response_text) {
-            Ok(teams) => {
-                if teams.is_empty() {
-                    println!("No teams found.");
-                } else {
-                    println!("👥 Teams:");
-                    for team in teams {
-                        println!(
-                            "  • {} - {}",
-                            team.name,
-                            team.description.unwrap_or("No description".to_string())
-                        );
+        match serde_json::from_str::<ApiResponse<Vec<Team>>>(&response_text) {
+            Ok(api_response) => {
+                if api_response.success {
+                    if let Some(teams) = api_response.data {
+                        if teams.is_empty() {
+                            println!("No teams found.");
+                        } else {
+                            println!("👥 Teams:");
+                            for team in teams {
+                                println!(
+                                    "  • {} - {}",
+                                    team.name,
+                                    team.description.unwrap_or("No description".to_string())
+                                );
+                            }
+                        }
+                    } else {
+                        anyhow::bail!("Server response was successful but contained no data.");
                     }
+                } else {
+                    anyhow::bail!("Server reported an error: {}", api_response.error.unwrap_or_else(|| "Unknown error".to_string()));
                 }
             }
-            Err(_e) => {
+            Err(_) => {
                 // Attempt to parse as a generic JSON value to provide a better error message
                 match serde_json::from_str::<serde_json::Value>(&response_text) {
                     Ok(json) => {
@@ -1296,33 +1355,24 @@ pub async fn team_info(name: &str) -> Result<()> {
 
     if response.status().is_success() {
         let response_text = response.text().await?;
-        match serde_json::from_str::<Team>(&response_text) {
-            Ok(team) => {
-                println!("👥 Team: {}", team.name);
-                if let Some(desc) = team.description {
-                    println!("   Description: {}", desc);
-                }
-                println!("   Created: {}", team.created_at);
-
-                // Get team members
-                let members_url = format!("{}/api/teams/{}/members", base_url, name);
-                let members_response = client.get(&members_url).send().await?;
-
-                if members_response.status().is_success() {
-                    let members_text = members_response.text().await?;
-                    match serde_json::from_str::<Vec<serde_json::Value>>(&members_text) {
-                        Ok(members) => {
-                            println!("   Members:");
-                            for member in members {
-                                let role = member["role"].as_str().unwrap_or("unknown");
-                                let username = member["user"]["username"].as_str().unwrap_or("unknown");
-                                println!("     • {} ({})", username, role);
-                            }
+        match serde_json::from_str::<ApiResponse<Team>>(&response_text) {
+            Ok(api_response) => {
+                if api_response.success {
+                    if let Some(team) = api_response.data {
+                        println!("👥 Team: {}", team.name);
+                        if let Some(desc) = team.description {
+                            println!("   Description: {}", desc);
                         }
-                        Err(_) => {
-                            anyhow::bail!("Failed to parse team members from server response.");
+                        println!("   Created: {}", team.created_at);
+                        println!("   Members:");
+                        for member in team.members {
+                            println!("     • {} ({})", member.user.username, member.role);
                         }
+                    } else {
+                        anyhow::bail!("Server response was successful but contained no data.");
                     }
+                } else {
+                    anyhow::bail!("Server reported an error: {}", api_response.error.unwrap_or_else(|| "Unknown error".to_string()));
                 }
             }
             Err(_) => {
