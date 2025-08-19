@@ -24,8 +24,7 @@ RUN bun run build
 FROM oven/bun
 
 # Create app user
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nextjs -u 1001
+RUN addgroup --gid 1001 --system nodejs &&     adduser --system --uid 1001 nextjs
 
 # Set working directory
 WORKDIR /app
