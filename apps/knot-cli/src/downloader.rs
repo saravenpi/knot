@@ -47,8 +47,8 @@ impl PackageDownloader {
         let base_url = get_knot_space_url();
         
         // Strip @ prefix for API calls - the API expects package names without @
-        let api_package_name = if package_name.starts_with('@') {
-            &package_name[1..]
+        let api_package_name = if let Some(stripped) = package_name.strip_prefix('@') {
+            stripped
         } else {
             package_name
         };

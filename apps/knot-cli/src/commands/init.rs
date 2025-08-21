@@ -109,9 +109,7 @@ pub fn init_package(name: Option<&str>, team: Option<&str>, version: Option<&str
         Some(t) => Some(t.to_string()),
         None if interactive => {
             let team = prompt_for_input("👥 Team name (optional, for namespaced packages)", None).ok();
-            if let Some(t) = team {
-                if t.trim().is_empty() { None } else { Some(t) }
-            } else { None }
+            team.filter(|t| !t.trim().is_empty())
         },
         None => None,
     };

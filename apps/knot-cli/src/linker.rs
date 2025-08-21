@@ -70,9 +70,8 @@ impl<'a> Linker<'a> {
         knot_packages_dir: &Path,
         use_symlinks: bool,
     ) -> Result<()> {
-        if dependency.starts_with('@') {
+        if let Some(folder_name) = dependency.strip_prefix('@') {
             // Remove @ prefix for folder name, but keep it for package identification
-            let folder_name = &dependency[1..];
             let link_target = knot_packages_dir.join(folder_name);
             PackageDownloader::download_package(dependency, &link_target)
                 .await

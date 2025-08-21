@@ -244,8 +244,7 @@ impl<'a> TypeScriptManager<'a> {
                 // For other patterns, do exact match or directory prefix match
                 normalized == pattern_base || 
                 (normalized.starts_with(&format!("{}/", pattern_base)) && 
-                 !normalized.starts_with(&format!("{}_", pattern_base)) &&
-                 normalized != pattern_base)
+                 !normalized.starts_with(&format!("{}_", pattern_base)))
             }
         }
     }

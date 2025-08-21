@@ -114,9 +114,8 @@ impl KnotIgnore {
             return true;
         }
         
-        if pattern.starts_with("*.") {
+        if let Some(ext) = pattern.strip_prefix("*.") {
             // Extension matching (e.g., "*.txt")
-            let ext = &pattern[2..];
             return text.ends_with(ext);
         } 
         
