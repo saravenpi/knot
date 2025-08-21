@@ -2362,20 +2362,9 @@ async fn update_binary_with_animation() -> Result<()> {
     let current_dir = current_exe.parent()
         .ok_or_else(|| anyhow::anyhow!("Could not determine current binary directory"))?;
 
-    // Try fast binary download first, fallback to source compilation
-    let result = match try_binary_download(&current_dir).await {
-        Ok(()) => {
-            println!("🚀 Successfully updated using pre-built binary!");
-            Ok(())
-        }
-        Err(e) => {
-            println!("⚠️  Binary download failed: {}", e);
-            println!("📦 Falling back to source compilation...");
-
-            // Fallback to source compilation
-            compile_from_source(&current_dir).await
-        }
-    };
+    // Use incremental compilation directly (faster and more reliable)
+    println!("📦 Using incremental compilation...");
+    let result = compile_from_source(&current_dir).await;
 
     // Stop the animation
     let _ = animation_sender.send(()).await;
