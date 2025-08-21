@@ -122,16 +122,6 @@ impl<'a> Linker<'a> {
         Ok(())
     }
 
-    #[cfg(windows)]
-    fn create_symlink(&self, source: &Path, target: &Path) -> Result<()> {
-        if source.is_dir() {
-            std::os::windows::fs::symlink_dir(source, target)?;
-        } else {
-            std::os::windows::fs::symlink_file(source, target)?;
-        }
-        Ok(())
-    }
-
     fn copy_package(&self, source: &Path, target: &Path) -> Result<()> {
         Self::copy_dir_recursively(source, target)?;
         Ok(())

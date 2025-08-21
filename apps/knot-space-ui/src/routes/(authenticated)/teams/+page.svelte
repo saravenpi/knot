@@ -23,7 +23,7 @@
 	let showDeleteConfirm = false;
 	let deleteTeamId = '';
 	let deleteError = '';
-	let showManageModal = false;
+	let showManageDrawer = false;
 	let manageTeamId = '';
 
 	// Member management state
@@ -170,7 +170,7 @@
 
 	function openManageTeam(teamId: string) {
 		manageTeamId = teamId;
-		showManageModal = true;
+		showManageDrawer = true;
 	}
 
 	async function handleRemoveMember(teamId: string, userId: string) {
@@ -542,7 +542,7 @@
 
 <!-- Team Management Drawer -->
 <Drawer
-	bind:open={showManageModal}
+	bind:open={showManageDrawer}
 	title="Manage Team"
 	description="View and manage team members and settings"
 	side="right"
@@ -584,7 +584,7 @@
 							on:click={() => {
 								addMemberTeamId = managedTeam.id;
 								showAddMember = true;
-								showManageModal = false;
+								showManageDrawer = false;
 							}}
 							size="sm"
 						>
@@ -648,7 +648,7 @@
 			<div class="flex justify-end gap-3 pt-4 border-t border-border">
 				<Button
 					on:click={() => { 
-						showManageModal = false; 
+						showManageDrawer = false; 
 						manageTeamId = ''; 
 					}}
 					variant="outline"

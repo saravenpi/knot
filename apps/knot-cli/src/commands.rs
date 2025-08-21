@@ -15,7 +15,6 @@ use console::style;
 
 // Check if running in interactive environment
 fn is_interactive() -> bool {
-    use std::io::IsTerminal;
     std::io::IsTerminal::is_terminal(&std::io::stdin())
 }
 
@@ -29,13 +28,13 @@ fn prompt_for_input(prompt: &str, default: Option<&str>) -> Result<String> {
             anyhow::bail!("Interactive input required but running in non-interactive environment. Please provide values via command line arguments.");
         }
     }
-    
+
     let mut text_prompt = Text::new(prompt);
-    
+
     if let Some(default_val) = default {
         text_prompt = text_prompt.with_default(default_val);
     }
-    
+
     let is_required = default.is_none();
     text_prompt = text_prompt.with_validator(move |input: &str| {
         if input.trim().is_empty() && is_required {
@@ -46,7 +45,7 @@ fn prompt_for_input(prompt: &str, default: Option<&str>) -> Result<String> {
             Ok(inquire::validator::Validation::Valid)
         }
     });
-    
+
     Ok(text_prompt.prompt()?)
 }
 
@@ -60,13 +59,13 @@ fn prompt_for_description(prompt: &str, default: Option<&str>) -> Result<String>
             return Ok(String::new()); // Optional descriptions can be empty
         }
     }
-    
+
     let mut text_prompt = Text::new(prompt);
-    
+
     if let Some(default_val) = default {
         text_prompt = text_prompt.with_default(default_val);
     }
-    
+
     Ok(text_prompt.prompt()?)
 }
 
@@ -76,7 +75,7 @@ fn prompt_for_select(prompt: &str, options: Vec<&str>) -> Result<String> {
     if !is_interactive() {
         return Ok(options.first().unwrap_or(&"basic").to_string());
     }
-    
+
     let selection = Select::new(prompt, options).prompt()?;
     Ok(selection.to_string())
 }
@@ -91,13 +90,13 @@ fn prompt_for_confirm(prompt: &str, default: Option<bool>) -> Result<bool> {
             return Ok(false); // Default to false if no default provided
         }
     }
-    
+
     let mut confirm_prompt = Confirm::new(prompt);
-    
+
     if let Some(default_val) = default {
         confirm_prompt = confirm_prompt.with_default(default_val);
     }
-    
+
     Ok(confirm_prompt.prompt()?)
 }
 
@@ -113,13 +112,13 @@ fn determine_target_directory(current_dir: &Path, item_type: &str) -> Result<(Pa
                 "apps" => project_root.join("apps"),
                 _ => current_dir.to_path_buf(),
             };
-            
+
             let context = if project_root == *current_dir {
                 format!("in project root, will create in {}/ directory", item_type)
             } else {
                 format!("in Knot project, will create in {}/ directory relative to project root", item_type)
             };
-            
+
             Ok((target_dir, context, true))
         },
         Err(_) => {
@@ -143,7 +142,7 @@ fn format_api_error(status: reqwest::StatusCode, response_text: &str) -> String 
     } else {
         response_text.to_string()
     };
-    
+
     // Provide user-friendly context based on status code and add appropriate emoji
     match status.as_u16() {
         400 => format!("❌ {}", error_message),
@@ -305,11 +304,11 @@ pub fn init_package(name: Option<&str>, team: Option<&str>, version: Option<&str
         } else {
             Path::new(custom_path).to_path_buf()
         };
-        
+
         if !target_path.exists() {
             anyhow::bail!("Specified path '{}' does not exist", custom_path);
         }
-        
+
         (target_path, format!("using custom path '{}'", custom_path), false)
     } else if here {
         (current_dir.clone(), "in current directory".to_string(), false)
@@ -362,7 +361,7 @@ pub fn init_package(name: Option<&str>, team: Option<&str>, version: Option<&str
         if let Some(template) = templates.get(template_name) {
             let pkg_version = version.unwrap_or("0.1.0");
             let pkg_description = description.unwrap_or("Package description");
-            
+
             TemplateManager::create_from_template(
                 template,
                 &package_dir,
@@ -370,7 +369,7 @@ pub fn init_package(name: Option<&str>, team: Option<&str>, version: Option<&str
                 pkg_version,
                 pkg_description,
             )?;
-            
+
             println!("✅ Initialized new {} package: {}", template_name, package_name);
             println!("📁 Created at: {}", package_dir.display());
             println!("🎯 Template: {} - {}", template.name, template.description);
@@ -391,12 +390,12 @@ pub fn init_package(name: Option<&str>, team: Option<&str>, version: Option<&str
 
         let yaml_content = serde_yaml::to_string(&config)?;
         fs::write(&package_yml_path, yaml_content).context("Failed to create package.yml")?;
-        
+
         println!("✅ Initialized new package: {}", package_name);
         println!("📁 Created at: {}", package_dir.display());
         println!("💡 Use '--template typescript' or '--template react' for structured templates");
     }
-    
+
     Ok(())
 }
 
@@ -418,11 +417,11 @@ pub fn init_app(name: Option<&str>, template: Option<&str>, description: Option<
         } else {
             Path::new(custom_path).to_path_buf()
         };
-        
+
         if !target_path.exists() {
             anyhow::bail!("Specified path '{}' does not exist", custom_path);
         }
-        
+
         (target_path, format!("using custom path '{}'", custom_path), false)
     } else if here {
         (current_dir.clone(), "in current directory".to_string(), false)
@@ -475,7 +474,7 @@ pub fn init_app(name: Option<&str>, template: Option<&str>, description: Option<
         if let Some(template) = templates.get(template_name) {
             let app_version = "0.1.0";
             let app_description = description.unwrap_or("App description");
-            
+
             TemplateManager::create_from_template(
                 template,
                 &app_dir,
@@ -483,14 +482,14 @@ pub fn init_app(name: Option<&str>, template: Option<&str>, description: Option<
                 app_version,
                 app_description,
             )?;
-            
+
             // Create app.yml for Knot configuration
             let build_cmd = match template_name {
                 "react" => Some("npm run build".to_string()),
                 "svelte" => Some("npm run build".to_string()),
                 _ => Some("npm run build".to_string()),
             };
-            
+
             let config = AppConfig {
                 name: app_name.clone(),
                 description: description.map(|s| s.to_string()),
@@ -502,11 +501,11 @@ pub fn init_app(name: Option<&str>, template: Option<&str>, description: Option<
 
             let yaml_content = serde_yaml::to_string(&config)?;
             fs::write(&app_yml_path, yaml_content).context("Failed to create app.yml")?;
-            
+
             println!("✅ Initialized new {} app: {}", template_name, app_name);
             println!("📁 Created at: {}", app_dir.display());
             println!("🎯 Template: {} - {}", template.name, template.description);
-            
+
             if !here && path.map(|p| p == ".").unwrap_or(false) == false {
                 println!("💡 Run 'cd {}' then 'npm install' to get started", app_name);
             } else {
@@ -543,7 +542,7 @@ pub fn init_app(name: Option<&str>, template: Option<&str>, description: Option<
 
 pub async fn link_packages(use_symlinks: bool) -> Result<()> {
     let start_time = std::time::Instant::now();
-    
+
     let current_dir = std::env::current_dir()?;
     let project = match Project::find_and_load(&current_dir) {
         Ok(project) => project,
@@ -1159,13 +1158,13 @@ fn get_auth_token() -> Result<Option<String>> {
     if let Ok(token) = env::var("KNOT_TOKEN") {
         return Ok(Some(token));
     }
-    
+
     // Try config file
     let home_dir = match dirs::home_dir() {
         Some(dir) => dir,
         None => return Ok(None),
     };
-    
+
     let config_file = home_dir.join(".knot").join("config");
     if config_file.exists() {
         let content = fs::read_to_string(config_file)?;
@@ -1175,7 +1174,7 @@ fn get_auth_token() -> Result<Option<String>> {
             }
         }
     }
-    
+
     Ok(None)
 }
 
@@ -1192,7 +1191,7 @@ pub async fn auth_status() -> Result<()> {
             // Verify token by making a request to the profile endpoint
             let base_url = get_knot_space_url();
             let url = format!("{}/api/auth/profile", base_url);
-            
+
             let client = reqwest::Client::new();
             let response = client
                 .get(&url)
@@ -1205,10 +1204,10 @@ pub async fn auth_status() -> Result<()> {
                 if let Some(auth_data) = api_response.data {
                     println!("✅ Authenticated as: {}", auth_data.user.username);
                     println!("📧 Email: {}", auth_data.user.email);
-                    println!("🔑 Token: {}", if token.len() > 20 { 
-                        format!("{}...{}", &token[..8], &token[token.len()-8..]) 
-                    } else { 
-                        token 
+                    println!("🔑 Token: {}", if token.len() > 20 {
+                        format!("{}...{}", &token[..8], &token[token.len()-8..])
+                    } else {
+                        token
                     });
                     println!("🌐 Server: {}", base_url);
                 } else {
@@ -1228,7 +1227,7 @@ pub async fn auth_status() -> Result<()> {
             println!("   3. Set the token: export KNOT_TOKEN=<your-token>");
         }
     }
-    
+
     Ok(())
 }
 
@@ -1533,16 +1532,41 @@ pub async fn team_info(name: &str) -> Result<()> {
     Ok(())
 }
 
-pub async fn add_team_member(team: &str, username: &str, role: &str) -> Result<()> {
+pub async fn add_team_member(team: Option<&str>, username: Option<&str>, role: &str) -> Result<()> {
     let token = require_auth_token()?;
 
+    // Interactive prompts for missing arguments
+    let team_name = match team {
+        Some(t) => t.to_string(),
+        None => {
+            if is_interactive() {
+                prompt_for_input("🏢 Team name", None)?
+            } else {
+                anyhow::bail!("Team name is required. Use: knot team add-member <team> <username>");
+            }
+        }
+    };
+
+    let username_str = match username {
+        Some(u) => u.to_string(),
+        None => {
+            if is_interactive() {
+                prompt_for_input("👤 Username to add", None)?
+            } else {
+                anyhow::bail!("Username is required. Use: knot team add-member <team> <username>");
+            }
+        }
+    };
+
     let request = AddTeamMemberRequest {
-        username: username.to_string(),
+        username: username_str.clone(),
         role: role.to_string(),
     };
 
     let base_url = get_knot_space_url();
-    let url = format!("{}/api/teams/{}/members", base_url, team);
+    // URL encode the team name to handle special characters
+    let encoded_team = urlencoding::encode(&team_name);
+    let url = format!("{}/api/teams/{}/members", base_url, encoded_team);
 
     let client = reqwest::Client::new();
     let response = client
@@ -1553,7 +1577,7 @@ pub async fn add_team_member(team: &str, username: &str, role: &str) -> Result<(
         .await?;
 
     if response.status().is_success() {
-        println!("✅ Added {} to team {} as {}", username, team, role);
+        println!("✅ Added {} to team {} as {}", username_str, team_name, role);
     } else {
         let status = response.status();
         let text = response.text().await.unwrap_or_default();
@@ -1564,11 +1588,37 @@ pub async fn add_team_member(team: &str, username: &str, role: &str) -> Result<(
     Ok(())
 }
 
-pub async fn remove_team_member(team: &str, username: &str) -> Result<()> {
+pub async fn remove_team_member(team: Option<&str>, username: Option<&str>) -> Result<()> {
     let token = require_auth_token()?;
 
+    // Interactive prompts for missing arguments
+    let team_name = match team {
+        Some(t) => t.to_string(),
+        None => {
+            if is_interactive() {
+                prompt_for_input("🏢 Team name", None)?
+            } else {
+                anyhow::bail!("Team name is required. Use: knot team remove-member <team> <username>");
+            }
+        }
+    };
+
+    let username_str = match username {
+        Some(u) => u.to_string(),
+        None => {
+            if is_interactive() {
+                prompt_for_input("👤 Username to remove", None)?
+            } else {
+                anyhow::bail!("Username is required. Use: knot team remove-member <team> <username>");
+            }
+        }
+    };
+
     let base_url = get_knot_space_url();
-    let url = format!("{}/api/teams/{}/members/{}", base_url, team, username);
+    // URL encode the team name and username to handle special characters
+    let encoded_team = urlencoding::encode(&team_name);
+    let encoded_username = urlencoding::encode(&username_str);
+    let url = format!("{}/api/teams/{}/members/{}", base_url, encoded_team, encoded_username);
 
     let client = reqwest::Client::new();
     let response = client
@@ -1578,7 +1628,7 @@ pub async fn remove_team_member(team: &str, username: &str) -> Result<()> {
         .await?;
 
     if response.status().is_success() {
-        println!("✅ Removed {} from team {}", username, team);
+        println!("✅ Removed {} from team {}", username_str, team_name);
     } else {
         let status = response.status();
         let text = response.text().await.unwrap_or_default();
@@ -1591,7 +1641,7 @@ pub async fn remove_team_member(team: &str, username: &str) -> Result<()> {
 
 pub async fn add_package(package_name: &str, auto_link: bool) -> Result<()> {
     let current_dir = std::env::current_dir()?;
-    
+
     // Check if we're in an app directory
     let app_yml_path = current_dir.join("app.yml");
     if !app_yml_path.exists() {
@@ -1602,7 +1652,7 @@ pub async fn add_package(package_name: &str, auto_link: bool) -> Result<()> {
                 anyhow::bail!("❌ Not in an app directory or project root. Run 'knot add' from an app directory.");
             }
         };
-        
+
         // List available apps for user reference
         if !project.apps.is_empty() {
             println!("📋 Available apps:");
@@ -1618,33 +1668,33 @@ pub async fn add_package(package_name: &str, auto_link: bool) -> Result<()> {
 
     // Load current app config
     let mut app_config = AppConfig::from_file(&app_yml_path)?;
-    
+
     // Validate package name
     app_config.validate_package_name(package_name)?;
-    
+
     // Initialize packages vector if it doesn't exist
     if app_config.packages.is_none() {
         app_config.packages = Some(Vec::new());
     }
-    
+
     let packages = app_config.packages.as_mut().unwrap();
-    
+
     // Check if package is already added
     if packages.contains(&package_name.to_string()) {
         println!("📦 Package '{}' is already added to app '{}'", package_name, app_config.name);
         return Ok(());
     }
-    
+
     // Add the package
     packages.push(package_name.to_string());
-    
+
     // Save updated config
     let yaml_content = serde_yaml::to_string(&app_config)?;
     fs::write(&app_yml_path, yaml_content)
         .context("Failed to update app.yml")?;
-    
+
     println!("✅ Added package '{}' to app '{}'", package_name, app_config.name);
-    
+
     // Auto-link if requested
     if auto_link {
         println!("🔗 Linking packages...");
@@ -1652,26 +1702,26 @@ pub async fn add_package(package_name: &str, auto_link: bool) -> Result<()> {
     } else {
         println!("💡 Run 'knot link' to apply the changes");
     }
-    
+
     Ok(())
 }
 
 pub async fn install_dependencies() -> Result<()> {
     let current_dir = std::env::current_dir()?;
-    
+
     // Check if we're in an app directory
     let app_yml_path = current_dir.join("app.yml");
     if app_yml_path.exists() {
         // Install dependencies for current app
         let app_config = AppConfig::from_file(&app_yml_path)?;
         println!("📦 Installing dependencies for app '{}'...", app_config.name);
-        
+
         if let Some(packages) = &app_config.packages {
             if packages.is_empty() {
                 println!("✅ No dependencies to install");
                 return Ok(());
             }
-            
+
             println!("📋 Dependencies: {}", packages.join(", "));
             link_packages(false).await?;
         } else {
@@ -1679,7 +1729,7 @@ pub async fn install_dependencies() -> Result<()> {
         }
         return Ok(());
     }
-    
+
     // Check if we're in project root
     let project = match Project::find_and_load(&current_dir) {
         Ok(project) => project,
@@ -1687,13 +1737,13 @@ pub async fn install_dependencies() -> Result<()> {
             anyhow::bail!("❌ Not in an app directory or project root");
         }
     };
-    
+
     // Install dependencies for all apps
     println!("📦 Installing dependencies for all apps in project '{}'...", project.config.name);
-    
+
     let mut apps_with_deps = 0;
     let mut total_deps = 0;
-    
+
     for (app_name, app_config) in &project.apps {
         if let Some(packages) = &app_config.packages {
             if !packages.is_empty() {
@@ -1703,15 +1753,15 @@ pub async fn install_dependencies() -> Result<()> {
             }
         }
     }
-    
+
     if apps_with_deps == 0 {
         println!("✅ No dependencies configured in any app");
         return Ok(());
     }
-    
+
     println!("📊 Total: {} dependencies across {} apps", total_deps, apps_with_deps);
     link_packages(false).await?;
-    
+
     Ok(())
 }
 
@@ -1726,7 +1776,7 @@ fn create_package_tarball(_package_name: &str, output_path: &str) -> Result<()> 
 
     let current_dir = std::env::current_dir()?;
     let knotignore_path = current_dir.join(".knotignore");
-    
+
     // Load ignore patterns from .knotignore file or use defaults
     let ignore = match KnotIgnore::from_file(&knotignore_path) {
         Ok(ignore) => {
@@ -1746,7 +1796,7 @@ fn create_package_tarball(_package_name: &str, output_path: &str) -> Result<()> 
 
     // Walk through directory and add files that don't match ignore patterns
     add_directory_to_tar(&mut tar, &current_dir, ".", &ignore)?;
-    
+
     tar.finish()?;
 
     println!("📦 Created package tarball: {}", output_path);
@@ -1760,23 +1810,23 @@ fn add_directory_to_tar(
     ignore: &KnotIgnore,
 ) -> Result<()> {
     let dir_path = base_path.join(relative_path);
-    
+
     for entry in std::fs::read_dir(&dir_path)? {
         let entry = entry?;
         let file_name = entry.file_name().to_string_lossy().to_string();
         let file_path = entry.path();
-        
+
         let entry_relative_path = if relative_path == "." {
             file_name.to_string()
         } else {
             format!("{}/{}", relative_path, file_name)
         };
-        
+
         // Check if this file/directory should be ignored
         if ignore.is_ignored(&entry_relative_path) || ignore.is_ignored(&file_name) {
             continue;
         }
-        
+
         if file_path.is_dir() {
             // Recursively add directory contents
             add_directory_to_tar(tar, base_path, &entry_relative_path, ignore)?;
@@ -1784,21 +1834,21 @@ fn add_directory_to_tar(
             // Add file to tarball with better error handling
             let file = std::fs::File::open(&file_path)
                 .with_context(|| format!("Failed to open file: {}", file_path.display()))?;
-            
+
             // Get file metadata for proper tar entry
             let metadata = file.metadata()
                 .with_context(|| format!("Failed to get metadata for file: {}", file_path.display()))?;
-            
+
             let mut header = tar::Header::new_gnu();
             header.set_size(metadata.len());
             header.set_mode(0o644); // Standard file permissions
             header.set_cksum();
-            
+
             tar.append_data(&mut header, &entry_relative_path, file)
                 .with_context(|| format!("Failed to add file to archive: {}", entry_relative_path))?;
         }
     }
-    
+
     Ok(())
 }
 
@@ -1925,91 +1975,91 @@ mod tests {
 // Version management commands
 pub async fn version_bump(bump_type: &str) -> Result<()> {
     let current_dir = std::env::current_dir()?;
-    
+
     // Look for package.yml first (we're in a package)
     let package_yml_path = current_dir.join("package.yml");
     if package_yml_path.exists() {
         let mut config: PackageConfig = serde_yaml::from_str(
             &fs::read_to_string(&package_yml_path)?
         ).map_err(|e| anyhow::anyhow!("{}", parse_yaml_error_to_user_friendly(&e)))?;
-        
+
         let new_version = bump_version(&config.version, bump_type)?;
         config.version = new_version.clone();
-        
+
         let yaml_content = serde_yaml::to_string(&config)?;
         fs::write(&package_yml_path, yaml_content)?;
-        
+
         println!("📈 Bumped {} version to {}", bump_type, new_version);
         return Ok(());
     }
-    
+
     // Look for package.json as fallback
     let package_json_path = current_dir.join("package.json");
     if package_json_path.exists() {
         let content = fs::read_to_string(&package_json_path)?;
         let mut package_json: serde_json::Value = serde_json::from_str(&content)?;
-        
+
         if let Some(current_version) = package_json.get("version").and_then(|v| v.as_str()) {
             let new_version = bump_version(current_version, bump_type)?;
             package_json["version"] = serde_json::Value::String(new_version.clone());
-            
+
             let json_content = serde_json::to_string_pretty(&package_json)?;
             fs::write(&package_json_path, json_content)?;
-            
+
             println!("📈 Bumped {} version to {}", bump_type, new_version);
             return Ok(());
         }
     }
-    
+
     anyhow::bail!("No package.yml or package.json found in current directory");
 }
 
 pub async fn version_prerelease(preid: Option<&str>) -> Result<()> {
     let current_dir = std::env::current_dir()?;
     let preid = preid.unwrap_or("alpha");
-    
+
     let package_yml_path = current_dir.join("package.yml");
     if package_yml_path.exists() {
         let mut config: PackageConfig = serde_yaml::from_str(
             &fs::read_to_string(&package_yml_path)?
         ).map_err(|e| anyhow::anyhow!("{}", parse_yaml_error_to_user_friendly(&e)))?;
-        
+
         let new_version = bump_prerelease(&config.version, preid)?;
         config.version = new_version.clone();
-        
+
         let yaml_content = serde_yaml::to_string(&config)?;
         fs::write(&package_yml_path, yaml_content)?;
-        
+
         println!("📈 Bumped prerelease version to {} ({})", new_version, preid);
         return Ok(());
     }
-    
+
     anyhow::bail!("No package.yml found in current directory");
 }
 
 pub async fn version_set(version: &str) -> Result<()> {
     let current_dir = std::env::current_dir()?;
-    
+
     // Validate version format
     if !is_valid_semver(version) {
         anyhow::bail!("Invalid version format. Please use semantic versioning (e.g., 1.2.3)");
     }
-    
+
     let package_yml_path = current_dir.join("package.yml");
     if package_yml_path.exists() {
         let mut config: PackageConfig = serde_yaml::from_str(
             &fs::read_to_string(&package_yml_path)?
         ).map_err(|e| anyhow::anyhow!("{}", parse_yaml_error_to_user_friendly(&e)))?;
-        
+
         config.version = version.to_string();
-        
+
         let yaml_content = serde_yaml::to_string(&config)?;
         fs::write(&package_yml_path, yaml_content)?;
-        
+
         println!("📌 Set version to {}", version);
         return Ok(());
     }
-    
+
     anyhow::bail!("No package.yml found in current directory");
 }
 
@@ -2021,11 +2071,11 @@ fn bump_version(current: &str, bump_type: &str) -> Result<String> {
     if parts.len() != 3 {
         anyhow::bail!("Invalid version format: {}", current);
     }
-    
+
     let mut major: u32 = parts[0].parse().context("Invalid major version")?;
     let mut minor: u32 = parts[1].parse().context("Invalid minor version")?;
     let mut patch: u32 = parts[2].parse().context("Invalid patch version")?;
-    
+
     match bump_type {
         "major" => {
             major += 1;
@@ -2041,7 +2091,7 @@ fn bump_version(current: &str, bump_type: &str) -> Result<String> {
         }
         _ => anyhow::bail!("Invalid bump type: {}", bump_type),
     }
-    
+
     Ok(format!("{}.{}.{}", major, minor, patch))
 }
 
@@ -2053,7 +2103,7 @@ fn bump_prerelease(current: &str, preid: &str) -> Result<String> {
         if parts.len() >= 2 {
             let version_part = parts[0];
             let prerelease_part = parts[1];
-            
+
             if prerelease_part.starts_with(preid) {
                 // Extract number and increment
                 let number_part = prerelease_part.strip_prefix(preid).unwrap_or("0");
@@ -2062,7 +2112,7 @@ fn bump_prerelease(current: &str, preid: &str) -> Result<String> {
             }
         }
     }
-    
+
     // Create new prerelease from current version
     Ok(format!("{}-{}1", current, preid))
 }
@@ -2074,41 +2124,41 @@ fn is_valid_semver(version: &str) -> bool {
     } else {
         version
     };
-    
+
     let parts: Vec<&str> = version_main.split('.').collect();
     if parts.len() != 3 {
         return false;
     }
-    
+
     // Check that each part is a valid number and doesn't have leading zeros (except for "0")
     for part in &parts {
         if part.is_empty() {
             return false;
         }
-        
+
         // Check for leading zeros (except for "0" itself)
         if part.len() > 1 && part.starts_with('0') {
             return false;
         }
-        
+
         if part.parse::<u32>().is_err() {
             return false;
         }
     }
-    
+
     // If there's a prerelease part, validate it's not empty
     if let Some(hyphen_pos) = version.find('-') {
         let prerelease = &version[hyphen_pos + 1..];
         if prerelease.is_empty() {
             return false;
         }
-        
+
         // Prerelease can contain alphanumeric characters, hyphens, and dots
         if !prerelease.chars().all(|c| c.is_ascii_alphanumeric() || c == '.' || c == '-') {
             return false;
         }
     }
-    
+
     true
 }
 
@@ -2128,7 +2178,7 @@ fn validate_publish_version(version: &str) -> Result<()> {
     // Check for development versions - warn user about publishing prerelease versions
     if version.contains("-dev") || version.contains("-development") {
         anyhow::bail!(
-            "Cannot publish development version '{}'. \n💡 Use 'knot version set <version>' to set a proper release version first.", 
+            "Cannot publish development version '{}'. \n💡 Use 'knot version set <version>' to set a proper release version first.",
             version
         );
     }
@@ -2184,10 +2234,10 @@ async fn check_version_exists(package_name: &str, version: &str, token: &str) ->
 // CLI Self-Update
 pub async fn update_cli(force: bool) -> Result<()> {
     println!("🔄 Checking for Knot CLI updates...");
-    
+
     let current_version = env!("CARGO_PKG_VERSION");
     println!("📦 Current version: {}", current_version);
-    
+
     // Check for latest version from GitHub releases or repository
     match check_latest_version().await {
         Ok(latest_version) => {
@@ -2195,7 +2245,7 @@ pub async fn update_cli(force: bool) -> Result<()> {
                 println!("✅ You already have the latest version ({})", current_version);
                 return Ok(());
             }
-            
+
             if !force {
                 if latest_version == "latest" {
                     println!("🎯 Updating to latest development version from main branch");
@@ -2211,7 +2261,7 @@ pub async fn update_cli(force: bool) -> Result<()> {
                     println!("🔄 Force updating to {}...", latest_version);
                 }
             }
-            
+
             update_binary_with_animation().await?;
             println!("✅ Update completed successfully!");
             println!("🎉 Run 'knot info' to verify the new version");
@@ -2222,7 +2272,7 @@ pub async fn update_cli(force: bool) -> Result<()> {
             println!("   curl -fsSL https://raw.githubusercontent.com/saravenpi/knot/main/install.sh | bash");
         }
     }
-    
+
     Ok(())
 }
 
@@ -2234,17 +2284,17 @@ async fn check_latest_version() -> Result<String> {
         .header("User-Agent", "knot-cli")
         .send()
         .await?;
-    
+
     if !response.status().is_success() {
         // Fallback to tags if no releases found
         return check_latest_tag().await;
     }
-    
+
     let release: serde_json::Value = response.json().await?;
     let version_name = release["tag_name"]
         .as_str()
         .ok_or_else(|| anyhow::anyhow!("Invalid release format"))?;
-    
+
     // Remove 'v' prefix if present
     let version = version_name.strip_prefix('v').unwrap_or(version_name);
     Ok(version.to_string())
@@ -2257,26 +2307,26 @@ async fn check_latest_tag() -> Result<String> {
         .header("User-Agent", "knot-cli")
         .send()
         .await?;
-    
+
     if !response.status().is_success() {
         anyhow::bail!("Failed to fetch version information from GitHub");
     }
-    
+
     let tags: serde_json::Value = response.json().await?;
     let tags_array = tags.as_array().ok_or_else(|| anyhow::anyhow!("Invalid response format"))?;
-    
+
     if tags_array.is_empty() {
         // No tags/releases found, assume latest development version available
         println!("ℹ️  No tagged releases found, will update to latest development version");
         return Ok("latest".to_string());
     }
-    
+
     // Get the latest version (first in the list)
     let latest_tag = &tags_array[0];
     let version_name = latest_tag["name"]
         .as_str()
         .ok_or_else(|| anyhow::anyhow!("Invalid tag format"))?;
-    
+
     // Remove 'v' prefix if present
     let version = version_name.strip_prefix('v').unwrap_or(version_name);
     Ok(version.to_string())
@@ -2285,13 +2335,13 @@ async fn check_latest_tag() -> Result<String> {
 async fn update_binary_with_animation() -> Result<()> {
     use std::env;
     use std::time::Duration;
-    
+
     // Start the loading animation in the background
     let (animation_sender, mut animation_receiver) = tokio::sync::mpsc::channel(1);
     let animation_task = tokio::spawn(async move {
         let frames = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
         let mut frame_index = 0;
-        
+
         loop {
             tokio::select! {
                 _ = animation_receiver.recv() => break,
@@ -2305,12 +2355,12 @@ async fn update_binary_with_animation() -> Result<()> {
         print!("\r✅ Downloaded and installed latest version          \n");
         std::io::Write::flush(&mut std::io::stdout()).unwrap_or(());
     });
-    
+
     // Get current binary path
     let current_exe = env::current_exe()?;
     let current_dir = current_exe.parent()
         .ok_or_else(|| anyhow::anyhow!("Could not determine current binary directory"))?;
-    
+
     // Try fast binary download first, fallback to source compilation
     let result = match try_binary_download(&current_dir).await {
         Ok(()) => {
@@ -2320,16 +2370,16 @@ async fn update_binary_with_animation() -> Result<()> {
         Err(e) => {
             println!("⚠️  Binary download failed: {}", e);
             println!("📦 Falling back to source compilation...");
-            
+
             // Fallback to source compilation
             compile_from_source(&current_dir).await
         }
     };
-    
+
     // Stop the animation
     let _ = animation_sender.send(()).await;
     let _ = animation_task.await;
-    
+
     result
 }
 
@@ -2337,11 +2387,11 @@ async fn try_binary_download(target_dir: &std::path::Path) -> Result<()> {
     // Detect current platform
     let os = env::consts::OS;
     let arch = env::consts::ARCH;
-    
+
     // Map to GitHub release asset names
     let platform_name = match (os, arch) {
         ("macos", "x86_64") => "knot-macos-x86_64",
-        ("macos", "aarch64") => "knot-macos-aarch64", 
+        ("macos", "aarch64") => "knot-macos-aarch64",
         ("linux", "x86_64") => "knot-linux-x86_64",
         ("linux", "aarch64") => "knot-linux-aarch64",
         ("windows", "x86_64") => "knot-windows-x86_64.exe",
@@ -2349,7 +2399,7 @@ async fn try_binary_download(target_dir: &std::path::Path) -> Result<()> {
             anyhow::bail!("No pre-built binary available for {}-{}", os, arch);
         }
     };
-    
+
     // Get latest release info
     let client = reqwest::Client::new();
     let response = client
@@ -2357,16 +2407,16 @@ async fn try_binary_download(target_dir: &std::path::Path) -> Result<()> {
         .header("User-Agent", "knot-cli")
         .send()
         .await?;
-    
+
     if !response.status().is_success() {
         anyhow::bail!("Failed to fetch latest release information");
     }
-    
+
     let release: serde_json::Value = response.json().await?;
     let assets = release["assets"]
         .as_array()
         .ok_or_else(|| anyhow::anyhow!("No assets found in release"))?;
-    
+
     // Find matching asset for current platform
     let asset = assets
         .iter()
@@ -2377,34 +2427,34 @@ async fn try_binary_download(target_dir: &std::path::Path) -> Result<()> {
                 .unwrap_or(false)
         })
         .ok_or_else(|| anyhow::anyhow!("No binary found for platform: {}", platform_name))?;
-    
+
     let download_url = asset["browser_download_url"]
         .as_str()
         .ok_or_else(|| anyhow::anyhow!("Invalid download URL"))?;
-    
+
     println!("📦 Downloading pre-built binary for {}-{}...", os, arch);
-    
+
     // Download the binary
     let response = client.get(download_url).send().await?;
     if !response.status().is_success() {
         anyhow::bail!("Failed to download binary from {}", download_url);
     }
-    
+
     let binary_data = response.bytes().await?;
-    
+
     // Create backup and write new binary
     let current_binary = target_dir.join("knot");
     let backup_binary = target_dir.join("knot.backup");
     let temp_binary = target_dir.join("knot.new");
-    
+
     // Backup current binary
     if current_binary.exists() {
         std::fs::copy(&current_binary, &backup_binary)?;
     }
-    
+
     // Write new binary
     std::fs::write(&temp_binary, &binary_data)?;
-    
+
     // Make executable (Unix only)
     #[cfg(unix)]
     {
@@ -2413,24 +2463,24 @@ async fn try_binary_download(target_dir: &std::path::Path) -> Result<()> {
         perms.set_mode(0o755);
         std::fs::set_permissions(&temp_binary, perms)?;
     }
-    
+
     // Test new binary
     let test_output = tokio::process::Command::new(&temp_binary)
         .arg("--version")
         .output()
         .await?;
-    
+
     if !test_output.status.success() {
         let _ = std::fs::remove_file(&temp_binary);
         anyhow::bail!("Downloaded binary failed verification test");
     }
-    
+
     // Replace current binary with new one
     std::fs::rename(&temp_binary, &current_binary)?;
-    
+
     // Clean up backup
     let _ = std::fs::remove_file(&backup_binary);
-    
+
     Ok(())
 }
 
@@ -2440,24 +2490,24 @@ async fn compile_from_source(target_dir: &std::path::Path) -> Result<()> {
         .ok_or_else(|| anyhow::anyhow!("Could not find home directory"))?
         .join(".knot")
         .join("build-cache");
-    
+
     // Create cache directory if it doesn't exist
     std::fs::create_dir_all(&cache_dir)?;
-    
+
     let src_dir = cache_dir.join("src");
     let build_dir = cache_dir.join("build");
-    
+
     // Clone or update source
     if src_dir.exists() {
         println!("🔄 Updating existing source cache...");
-        
+
         // Update existing repository
         let output = tokio::process::Command::new("git")
             .args(&["pull", "origin", "main"])
             .current_dir(&src_dir)
             .output()
             .await?;
-            
+
         if !output.status.success() {
             println!("⚠️  Git pull failed, re-cloning...");
             std::fs::remove_dir_all(&src_dir)?;
@@ -2467,10 +2517,10 @@ async fn compile_from_source(target_dir: &std::path::Path) -> Result<()> {
         println!("📦 Cloning source to cache...");
         clone_source(&src_dir).await?;
     }
-    
+
     // Build with cache
     println!("🔨 Building (using incremental compilation)...");
-    
+
     let knot_cli_dir = src_dir.join("apps").join("knot-cli");
     let output = tokio::process::Command::new("cargo")
         .args(&["build", "--release"])
@@ -2478,27 +2528,27 @@ async fn compile_from_source(target_dir: &std::path::Path) -> Result<()> {
         .current_dir(&knot_cli_dir)
         .output()
         .await?;
-    
+
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
         anyhow::bail!("Build failed: {}", stderr);
     }
-    
+
     // Copy binary to target location
     let built_binary = build_dir.join("release").join("knot");
     let current_binary = target_dir.join("knot");
     let backup_binary = target_dir.join("knot.backup");
-    
+
     // Backup and replace
     if current_binary.exists() {
         std::fs::copy(&current_binary, &backup_binary)?;
     }
-    
+
     std::fs::copy(&built_binary, &current_binary)?;
-    
+
     // Clean up backup
     let _ = std::fs::remove_file(&backup_binary);
-    
+
     println!("🎉 Successfully compiled and installed from source!");
     Ok(())
 }
@@ -2506,18 +2556,18 @@ async fn compile_from_source(target_dir: &std::path::Path) -> Result<()> {
 async fn clone_source(target_dir: &std::path::Path) -> Result<()> {
     let output = tokio::process::Command::new("git")
         .args(&[
-            "clone", 
-            "--depth", "1", 
+            "clone",
+            "--depth", "1",
             "https://github.com/saravenpi/knot.git",
             target_dir.to_str().unwrap()
         ])
         .output()
         .await?;
-    
+
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
         anyhow::bail!("Git clone failed: {}", stderr);
     }
-    
+
     Ok(())
 }

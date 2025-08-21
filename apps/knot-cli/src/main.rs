@@ -15,8 +15,9 @@ async fn main() -> Result<()> {
     let matches = Command::new("knot")
         .version(env!("CARGO_PKG_VERSION"))
         .about("Knot - Monorepo package manager")
-        .subcommand_required(true)
-        .arg_required_else_help(true)
+        .subcommand_required(false)
+        .arg_required_else_help(false)
+        .allow_external_subcommands(true)
         .subcommand(
             Command::new("init")
                 .about("Initialize a new Knot project")
@@ -260,11 +261,11 @@ async fn main() -> Result<()> {
                 .subcommand(
                     Command::new("add-member")
                         .about("Add member to team")
-                        .arg(Arg::new("team").help("Team name").required(true).index(1))
+                        .arg(Arg::new("team").help("Team name").required(false).index(1))
                         .arg(
                             Arg::new("username")
                                 .help("Username to add")
-                                .required(true)
+                                .required(false)
                                 .index(2),
                         )
                         .arg(
@@ -280,11 +281,11 @@ async fn main() -> Result<()> {
                 .subcommand(
                     Command::new("remove-member")
                         .about("Remove member from team")
-                        .arg(Arg::new("team").help("Team name").required(true).index(1))
+                        .arg(Arg::new("team").help("Team name").required(false).index(1))
                         .arg(
                             Arg::new("username")
                                 .help("Username to remove")
-                                .required(true)
+                                .required(false)
                                 .index(2),
                         ),
                 ),
@@ -409,15 +410,22 @@ async fn main() -> Result<()> {
                 commands::team_info(name).await?;
             }
             Some(("add-member", team_sub)) => {
-                let team = team_sub.get_one::<String>("team").unwrap();
-                let username = team_sub.get_one::<String>("username").unwrap();
+                let team = team_sub.get_one::<String>("team");
+                let username = team_sub.get_one::<String>("username");
                 let role = team_sub.get_one::<String>("role").unwrap();
-                commands::add_team_member(team, username, role).await?;
+                commands::add_team_member(
+                    team.map(|s| s.as_str()),
+                    username.map(|s| s.as_str()),
+                    role
+                ).await?;
             }
             Some(("remove-member", team_sub)) => {
-                let team = team_sub.get_one::<String>("team").unwrap();
-                let username = team_sub.get_one::<String>("username").unwrap();
-                commands::remove_team_member(team, username).await?;
+                let team = team_sub.get_one::<String>("team");
+                let username = team_sub.get_one::<String>("username");
+                commands::remove_team_member(
+                    team.map(|s| s.as_str()),
+                    username.map(|s| s.as_str())
+                ).await?;
             }
             _ => unreachable!(),
         },
@@ -425,7 +433,17 @@ async fn main() -> Result<()> {
             let force = sub_matches.get_flag("force");
             commands::update_cli(force).await?;
         }
-        _ => unreachable!(),
+        Some((script_name, _)) => {
+            // Try to run as a script if it's not a built-in command
+            commands::run_script(script_name).await?;
+        }
+        None => {
+            // No subcommand provided, show help
+            Command::new("knot")
+                .version(env!("CARGO_PKG_VERSION"))
+                .about("Knot - Monorepo package manager")
+                .print_help()?;
+        }
     }
 
     Ok(())
