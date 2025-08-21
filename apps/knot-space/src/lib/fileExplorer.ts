@@ -1,7 +1,8 @@
-import * as fs from 'fs/promises';
+import * as fs from 'fs';
 import * as path from 'path';
 import * as tar from 'tar';
 import * as zlib from 'zlib';
+import type { ReadEntry } from 'tar';
 import { logger } from './logger';
 
 export interface FileEntry {
@@ -19,11 +20,10 @@ export interface FileContent {
 }
 
 export class FileExplorerService {
-  private packageStorePath: string;
-
-  constructor(packageStorePath: string) {
-    this.packageStorePath = packageStorePath;
-  }
+  constructor(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    private readonly packageStorePath: string = process.env.UPLOAD_DIR || './uploads'
+  ) {}
 
   /**
    * Extract and list files from a .tgz package
@@ -33,17 +33,14 @@ export class FileExplorerService {
       const files: FileEntry[] = [];
       const fileMap = new Map<string, FileEntry>();
 
-      // Extract tar.gz file and get file list
       await new Promise<void>((resolve, reject) => {
-        const stream = fs.createReadStream(packagePath)
-          .pipe(zlib.createGunzip())
-          .pipe(tar.list());
+        const stream = fs.createReadStream(packagePath).pipe(zlib.createGunzip()).pipe(tar.list());
 
-        stream.on('entry', (entry) => {
+        (stream as unknown as NodeJS.EventEmitter).on('entry', (entry: ReadEntry) => {
           // Skip the root package directory if it exists
           let relativePath = entry.path;
           const pathParts = relativePath.split('/');
-          
+
           // If first part looks like package name, remove it
           if (pathParts.length > 1 && pathParts[0].match(/^[^/]*$/)) {
             relativePath = pathParts.slice(1).join('/');
@@ -68,7 +65,7 @@ export class FileExplorerService {
             if (!fileMap.has(parentPath)) {
               this.ensureParentDirectories(parentPath, fileMap);
             }
-            
+
             const parent = fileMap.get(parentPath);
             if (parent && parent.type === 'directory') {
               if (!parent.children) parent.children = [];
@@ -81,12 +78,14 @@ export class FileExplorerService {
         });
 
         stream.on('error', reject);
+        // some tar streams emit 'close' at the end of processing
         stream.on('end', () => resolve());
+        stream.on('close', () => resolve());
       });
 
       // Sort files and directories
       this.sortFileEntries(files);
-      fileMap.forEach(entry => {
+      fileMap.forEach((entry) => {
         if (entry.children) {
           this.sortFileEntries(entry.children);
         }
@@ -104,33 +103,38 @@ export class FileExplorerService {
    */
   async getFileContent(packagePath: string, filePath: string): Promise<FileContent> {
     try {
-      let content: Buffer | null = null;
+      let content: Buffer | undefined;
 
       await new Promise<void>((resolve, reject) => {
-        const stream = fs.createReadStream(packagePath)
+        const stream = fs
+          .createReadStream(packagePath)
           .pipe(zlib.createGunzip())
           .pipe(tar.extract());
 
-        stream.on('entry', (entry) => {
+        (stream as unknown as NodeJS.EventEmitter).on('entry', (entry: ReadEntry) => {
           // Skip the root package directory if it exists
           let relativePath = entry.path;
           const pathParts = relativePath.split('/');
-          
+
           if (pathParts.length > 1 && pathParts[0].match(/^[^/]*$/)) {
             relativePath = pathParts.slice(1).join('/');
           }
 
           if (relativePath === filePath && entry.type === 'File') {
             const chunks: Buffer[] = [];
-            entry.on('data', (chunk) => chunks.push(chunk));
+            entry.on('data', (chunk: Buffer) => chunks.push(chunk));
             entry.on('end', () => {
               content = Buffer.concat(chunks);
             });
+          } else {
+            // drain other entries to keep the stream flowing
+            entry.resume();
           }
         });
 
         stream.on('error', reject);
         stream.on('end', () => resolve());
+        stream.on('close', () => resolve());
       });
 
       if (!content) {
@@ -138,15 +142,20 @@ export class FileExplorerService {
       }
 
       const mimeType = this.getMimeType(filePath);
-      const encoding = this.isTextFile(mimeType) ? 'utf-8' : 'base64';
+      const encoding: FileContent['encoding'] = this.isTextFile(mimeType) ? 'utf-8' : 'base64';
 
+      const buf = content; // narrowed to Buffer
       return {
-        content: encoding === 'utf-8' ? content.toString('utf-8') : content.toString('base64'),
+        content: encoding === 'utf-8' ? buf.toString('utf-8') : buf.toString('base64'),
         encoding,
-        mimeType
+        mimeType,
       };
     } catch (error) {
-      logger.error('Failed to get file content', { packagePath, filePath, error });
+      logger.error('Failed to get file content', {
+        packagePath,
+        filePath,
+        error,
+      });
       throw new Error('Failed to get file content');
     }
   }
@@ -164,7 +173,7 @@ export class FileExplorerService {
           name: part,
           path: currentPath,
           type: 'directory',
-          children: []
+          children: [],
         };
         fileMap.set(currentPath, dirEntry);
 
@@ -191,9 +200,19 @@ export class FileExplorerService {
     });
   }
 
-  private getMimeType(filePath: string): string {
-    const ext = path.extname(filePath).toLowerCase();
-    
+  private getMimeType(filePathStr: string): string {
+    const ext = path.extname(filePathStr).toLowerCase();
+    const base = path.basename(filePathStr).toLowerCase();
+
+    // special dotfiles without extension
+    const specialText: Record<string, true> = {
+      '.gitignore': true,
+      dockerfile: true,
+    };
+
+    if (specialText[base]) return 'text/plain';
+    if (base === 'dockerfile') return 'text/x-dockerfile';
+
     const mimeTypes: { [key: string]: string } = {
       '.js': 'application/javascript',
       '.ts': 'application/typescript',
@@ -222,9 +241,6 @@ export class FileExplorerService {
       '.rb': 'text/x-ruby',
       '.sh': 'application/x-sh',
       '.bat': 'application/x-bat',
-      '.dockerfile': 'text/x-dockerfile',
-      '.gitignore': 'text/plain',
-      '.env': 'text/plain',
       '.log': 'text/plain',
     };
 
@@ -232,14 +248,18 @@ export class FileExplorerService {
   }
 
   private isTextFile(mimeType: string): boolean {
-    return mimeType.startsWith('text/') || 
-           mimeType.startsWith('application/json') ||
-           mimeType.startsWith('application/javascript') ||
-           mimeType.startsWith('application/typescript') ||
-           mimeType.startsWith('application/xml') ||
-           mimeType.startsWith('application/x-yaml') ||
-           mimeType.startsWith('application/x-sh');
+    return (
+      mimeType.startsWith('text/') ||
+      mimeType === 'application/json' ||
+      mimeType === 'application/javascript' ||
+      mimeType === 'application/typescript' ||
+      mimeType === 'application/xml' ||
+      mimeType === 'application/x-yaml' ||
+      mimeType === 'application/x-sh' ||
+      mimeType === 'application/x-bat'
+    );
   }
 }
 
 export const fileExplorerService = new FileExplorerService(process.env.UPLOAD_DIR || './uploads');
+
