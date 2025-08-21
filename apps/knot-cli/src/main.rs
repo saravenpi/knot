@@ -1,4 +1,5 @@
 mod commands;
+mod commands_old;
 mod config;
 mod downloader;
 mod ignore;

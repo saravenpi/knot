@@ -1,3 +1,4 @@
+#![allow(dead_code, unused_imports, clippy::all)]
 use crate::config::{AppConfig, KnotConfig, PackageConfig, parse_yaml_error_to_user_friendly};
 use crate::ignore::KnotIgnore;
 use crate::linker::Linker;
