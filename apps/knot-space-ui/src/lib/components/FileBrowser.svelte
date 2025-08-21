@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { requestApi } from '@/api';
+  import { requestApi } from '../api';
   import type { FileEntry, FileContent } from '#/types';
   import { ChevronRight, ChevronDown, File, Folder, Eye, Download } from 'lucide-svelte';
   import { highlight, languages } from 'prismjs';

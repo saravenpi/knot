@@ -40,7 +40,8 @@ export class PackagesController {
         offset: query.offset ? parseInt(query.offset) : 0,
       };
 
-      const packages = await packagesService.listPackages(filters);
+      const user = c.get('user');
+      const packages = await packagesService.listPackages(filters, user?.id);
       
       return c.json({
         success: true,
@@ -89,7 +90,8 @@ export class PackagesController {
         }, 400);
       }
 
-      const pkg = await packagesService.getPackage(name, version);
+      const user = c.get('user');
+      const pkg = await packagesService.getPackage(name, version, user?.id);
       
       return c.json({
         success: true,
@@ -116,7 +118,8 @@ export class PackagesController {
         }, 400);
       }
 
-      const downloadInfo = await packagesService.downloadPackage(name, version);
+      const user = c.get('user');
+      const downloadInfo = await packagesService.downloadPackage(name, version, user?.id);
       
       // Check if the package has a valid download URL (not a placeholder)
       if (!downloadInfo.downloadUrl || downloadInfo.downloadUrl.includes('example.com')) {

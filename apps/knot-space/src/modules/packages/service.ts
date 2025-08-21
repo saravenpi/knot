@@ -100,7 +100,7 @@ class PackagesService {
     });
   }
 
-  async listPackages(filters: PackageFilters) {
+  async listPackages(filters: PackageFilters, userId?: string) {
     const whereClause: any = {};
 
     if (filters.search) {
@@ -130,6 +130,24 @@ class PackagesService {
           }
         }
       };
+    }
+
+    // Filter by package visibility - if no user, only show public packages (no team)
+    if (!userId) {
+      whereClause.teamId = null; // Only public packages
+    } else if (!filters.team) {
+      // If user is authenticated but no specific team filter, show public + user's team packages
+      whereClause.OR = [
+        { teamId: null }, // Public packages
+        { 
+          team: {
+            members: {
+              some: { userId }
+            }
+          }
+        }, // Packages in user's teams
+        { ownerId: userId } // User's own packages
+      ];
     }
 
     // First, get all packages with their names
@@ -229,7 +247,7 @@ class PackagesService {
     }));
   }
 
-  async getPackage(name: string, version: string) {
+  async getPackage(name: string, version: string, userId?: string) {
     const pkg = await prisma.package.findUnique({
       where: {
         name_version: { name, version }
@@ -243,13 +261,31 @@ class PackagesService {
             createdAt: true,
           }
         },
-        team: true,
+        team: {
+          include: {
+            members: {
+              where: userId ? { userId } : undefined
+            }
+          }
+        },
         tags: true,
       }
     });
 
     if (!pkg) {
       throw new Error('Package not found');
+    }
+
+    // Check if package is in a team (private) and user has access
+    if (pkg.team) {
+      if (!userId) {
+        throw new Error('Package not found'); // Don't reveal it exists if unauthenticated
+      }
+      
+      const userMembership = pkg.team.members.find(member => member.userId === userId);
+      if (!userMembership && pkg.ownerId !== userId) {
+        throw new Error('Package not found'); // Don't reveal it exists if no access
+      }
     }
 
     // Calculate total downloads across all versions of this package
@@ -267,17 +303,27 @@ class PackagesService {
       downloadsCount: pkg.downloadsCount.toString(),
       totalDownloadsCount: totalDownloadsCount.toString(),
       tags: pkg.tags.map(tag => tag.tag), // Transform from {tag: string}[] to string[]
+      team: pkg.team ? { 
+        id: pkg.team.id, 
+        name: pkg.team.name, 
+        description: pkg.team.description 
+      } : null, // Don't include sensitive team member data
     };
   }
 
-  async downloadPackage(name: string, version: string) {
+  async downloadPackage(name: string, version: string, userId?: string) {
     const pkg = await prisma.package.findUnique({
       where: {
         name_version: { name, version }
       },
-      select: {
-        downloadUrl: true,
-        filePath: true,
+      include: {
+        team: {
+          include: {
+            members: {
+              where: userId ? { userId } : undefined
+            }
+          }
+        },
       }
     });
 
@@ -285,7 +331,22 @@ class PackagesService {
       throw new Error('Package not found');
     }
 
-    return pkg;
+    // Check if package is in a team (private) and user has access
+    if (pkg.team) {
+      if (!userId) {
+        throw new Error('Package not found'); // Don't reveal it exists if unauthenticated
+      }
+      
+      const userMembership = pkg.team.members.find(member => member.userId === userId);
+      if (!userMembership && pkg.ownerId !== userId) {
+        throw new Error('Package not found'); // Don't reveal it exists if no access
+      }
+    }
+
+    return {
+      downloadUrl: pkg.downloadUrl,
+      filePath: pkg.filePath,
+    };
   }
 
   async incrementDownloadCount(name: string, version: string, ipAddress?: string, userAgent?: string) {
