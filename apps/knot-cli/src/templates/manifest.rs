@@ -37,7 +37,7 @@ pub fn get_package_templates() -> HashMap<String, TemplateManifest> {
     // TypeScript package template
     templates.insert("typescript".to_string(), TemplateManifest {
         name: "typescript".to_string(),
-        description: "TypeScript package with build configuration".to_string(),
+        description: "TypeScript package".to_string(),
         category: TemplateCategory::Package,
         files: vec![
             TemplateFile {

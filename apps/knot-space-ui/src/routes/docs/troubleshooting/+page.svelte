@@ -231,8 +231,8 @@
 						<div class="text-muted-foreground">Detailed publishing output</div>
 					</div>
 					<div>
-						<div class="font-medium"><code>knot build --verbose</code></div>
-						<div class="text-muted-foreground">Detailed build output</div>
+						<div class="font-medium"><code>knot run build --verbose</code></div>
+						<div class="text-muted-foreground">Detailed build output via scripts</div>
 					</div>
 				</div>
 			</div>

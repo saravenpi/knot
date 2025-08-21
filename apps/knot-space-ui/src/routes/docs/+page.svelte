@@ -98,7 +98,7 @@ knot init:app frontend
 knot link
 
 # Build everything
-knot build
+knot run build
 
 # Publish packages
 knot publish</code></pre>

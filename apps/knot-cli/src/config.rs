@@ -119,7 +119,6 @@ pub struct AppConfig {
     #[serde(rename = "tsAlias")]
     pub ts_alias: Option<TsAlias>,
     pub packages: Option<Vec<String>>,
-    pub build: Option<String>,
     pub scripts: Option<HashMap<String, String>>,
 }
 
@@ -328,12 +327,6 @@ impl AppConfig {
         // Validate app name for path safety
         self.validate_safe_name(&self.name, "App name")?;
 
-        // Validate build command
-        if let Some(build_cmd) = &self.build {
-            if build_cmd.trim().is_empty() {
-                anyhow::bail!("Build command cannot be empty if specified");
-            }
-        }
 
         // Validate scripts
         if let Some(scripts) = &self.scripts {

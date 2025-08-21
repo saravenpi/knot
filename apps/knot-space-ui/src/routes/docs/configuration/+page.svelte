@@ -91,7 +91,7 @@
   <span class="text-blue-400">setup:</span> <span class="text-green-400">"npm install && knot link"</span>
   <span class="text-blue-400">test-all:</span> <span class="text-green-400">"knot run test --all"</span>
   <span class="text-blue-400">lint-all:</span> <span class="text-green-400">"knot run lint --all"</span>
-  <span class="text-blue-400">build-all:</span> <span class="text-green-400">"knot build"</span>
+  <span class="text-blue-400">build-all:</span> <span class="text-green-400">"knot run build --all"</span>
   <span class="text-blue-400">clean:</span> <span class="text-green-400">"rm -rf */dist */knot_packages"</span>
 
 <span class="text-gray-400"># App-specific configurations</span>

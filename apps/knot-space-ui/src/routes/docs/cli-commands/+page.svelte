@@ -79,12 +79,11 @@
 				<div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
 					<Icon icon="solar:sledgehammer-bold-duotone" class="w-6 h-6 text-orange-600" />
 				</div>
-				<h3 class="font-semibold mb-2">Build & Scripts</h3>
+				<h3 class="font-semibold mb-2">Scripts</h3>
 				<p class="text-sm text-muted-foreground mb-3">
-					Execute builds and run scripts across your applications.
+					Run scripts across your applications and packages.
 				</p>
 				<div class="text-xs space-y-1">
-					<div><code>knot build</code></div>
 					<div><code>knot run</code></div>
 				</div>
 			</div>
@@ -494,73 +493,11 @@
 		</div>
 	</section>
 
-	<!-- Build & Scripts -->
+	<!-- Scripts -->
 	<section class="mb-12">
-		<h2 class="text-2xl font-bold mb-6">Build & Scripts</h2>
+		<h2 class="text-2xl font-bold mb-6">Scripts</h2>
 
 		<div class="space-y-8">
-			<!-- knot build -->
-			<div class="border rounded-lg p-6">
-				<h3 class="text-lg font-semibold mb-3">knot build</h3>
-				<p class="text-muted-foreground mb-4">
-					Build all applications using their configured build commands in parallel.
-				</p>
-
-				<div class="space-y-4">
-					<div>
-						<h4 class="font-medium mb-2">Basic Usage</h4>
-						<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
-							<code>knot build</code>
-							<button
-								class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
-								on:click={() => copyToClipboard('knot build')}
-							>
-								{#if showCopied && copyText === 'knot build'}
-									<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
-								{:else}
-									<Icon icon="solar:copy-bold" class="w-4 h-4" />
-								{/if}
-							</button>
-						</div>
-					</div>
-
-					<div>
-						<h4 class="font-medium mb-2">Build Specific App</h4>
-						<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
-							<code>knot build --app frontend</code>
-							<button
-								class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
-								on:click={() => copyToClipboard('knot build --app frontend')}
-							>
-								{#if showCopied && copyText === 'knot build --app frontend'}
-									<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
-								{:else}
-									<Icon icon="solar:copy-bold" class="w-4 h-4" />
-								{/if}
-							</button>
-						</div>
-					</div>
-
-					<div>
-						<h4 class="font-medium mb-2">Options</h4>
-						<div class="text-sm space-y-2">
-							<div class="flex items-start space-x-3">
-								<code class="bg-muted px-2 py-1 rounded">--app</code>
-								<span class="text-muted-foreground">Build specific application only</span>
-							</div>
-							<div class="flex items-start space-x-3">
-								<code class="bg-muted px-2 py-1 rounded">--production</code>
-								<span class="text-muted-foreground">Build in production mode</span>
-							</div>
-							<div class="flex items-start space-x-3">
-								<code class="bg-muted px-2 py-1 rounded">--parallel</code>
-								<span class="text-muted-foreground">Build apps in parallel (default: true)</span>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-
 			<!-- knot run -->
 			<div class="border rounded-lg p-6">
 				<h3 class="text-lg font-semibold mb-3">knot run</h3>
@@ -721,7 +658,7 @@
 					<div><code>knot link --symlink</code></div>
 					<div><code>knot run dev</code></div>
 					<div><code>knot run test --all</code></div>
-					<div><code>knot build</code></div>
+					<div><code>knot run build</code></div>
 				</div>
 			</div>
 

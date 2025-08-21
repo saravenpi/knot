@@ -329,12 +329,12 @@
 			<div>
 				<h3 class="text-lg font-semibold mb-3">Build for production</h3>
 				<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
-					<code>knot build</code>
+					<code>knot run build</code>
 					<button 
 						class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
-						on:click={() => copyToClipboard('knot build')}
+						on:click={() => copyToClipboard('knot run build')}
 					>
-						{#if showCopied && copyText === 'knot build'}
+						{#if showCopied && copyText === 'knot run build'}
 							<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
 						{:else}
 							<Icon icon="solar:copy-bold" class="w-4 h-4" />

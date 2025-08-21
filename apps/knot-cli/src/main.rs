@@ -127,9 +127,6 @@ async fn main() -> Result<()> {
                 ),
         )
         .subcommand(
-            Command::new("build").about("Build app(s) using their configured build commands"),
-        )
-        .subcommand(
             Command::new("run")
                 .about("Run a script from knot.yml, app.yml, or package.yml")
                 .arg(
@@ -194,10 +191,6 @@ async fn main() -> Result<()> {
                         .long("link")
                         .action(clap::ArgAction::SetTrue),
                 ),
-        )
-        .subcommand(
-            Command::new("install")
-                .about("Install all dependencies (equivalent to 'knot link' but more intuitive)")
         )
         .subcommand(
             Command::new("version")
@@ -338,9 +331,6 @@ async fn main() -> Result<()> {
             let use_symlinks = sub_matches.get_flag("symlink");
             commands::link_packages(use_symlinks).await?;
         }
-        Some(("build", _)) => {
-            commands::build_apps().await?;
-        }
         Some(("run", sub_matches)) => {
             let script_name = sub_matches.get_one::<String>("script").unwrap();
             commands::run_script(script_name).await?;
@@ -370,9 +360,6 @@ async fn main() -> Result<()> {
             let package = sub_matches.get_one::<String>("package").unwrap();
             let auto_link = sub_matches.get_flag("link");
             commands::add_package(package, auto_link).await?;
-        }
-        Some(("install", _)) => {
-            commands::install_dependencies().await?;
         }
         Some(("version", sub_matches)) => match sub_matches.subcommand() {
             Some(("patch", _)) => {
