@@ -19,6 +19,7 @@ export interface Package {
   version: string;
   description?: string;
   downloadsCount: number | string; // API returns as string due to BigInt serialization
+  totalDownloadsCount?: number | string; // Total downloads across all versions
   owner: User;
   team?: { 
     id: string;
@@ -29,6 +30,21 @@ export interface Package {
   updatedAt: string;
   publishedAt?: string;
   fileSize?: number | string; // API returns as string due to BigInt serialization
+  files?: FileEntry[]; // File structure for browsing
+}
+
+export interface FileEntry {
+  name: string;
+  path: string;
+  type: 'file' | 'directory';
+  size?: number;
+  children?: FileEntry[];
+}
+
+export interface FileContent {
+  content: string;
+  encoding: 'utf-8' | 'base64';
+  mimeType: string;
 }
 
 export interface Team {

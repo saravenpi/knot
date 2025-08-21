@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { requestApi } from '$lib/api';
+  import { requestApi } from '@/api';
   import type { FileEntry, FileContent } from '#/types';
   import { ChevronRight, ChevronDown, File, Folder, Eye, Download } from 'lucide-svelte';
   import { highlight, languages } from 'prismjs';
@@ -42,11 +42,11 @@
 
   async function loadFileContent(filePath: string) {
     if (selectedFile === filePath && fileContent) return;
-    
+
     loading = true;
     selectedFile = filePath;
     fileContent = null;
-    
+
     try {
       const response = await requestApi<{ success: boolean; data: FileContent }>('GET', `/api/packages/${encodeURIComponent(packageName)}/${encodeURIComponent(packageVersion)}/file?path=${encodeURIComponent(filePath)}`);
       fileContent = response.data;
@@ -104,19 +104,19 @@
 
   async function downloadFile() {
     if (!selectedFile) return;
-    
+
     try {
       const response = await fetch(`/api/packages/${encodeURIComponent(packageName)}/${encodeURIComponent(packageVersion)}/file?path=${encodeURIComponent(selectedFile)}`);
       if (!response.ok) throw new Error('Failed to download file');
-      
+
       const data = await response.json();
       if (!data.success) throw new Error(data.error);
-      
+
       const fileContent = data.data;
-      const blob = fileContent.encoding === 'base64' 
+      const blob = fileContent.encoding === 'base64'
         ? new Blob([Uint8Array.from(atob(fileContent.content), c => c.charCodeAt(0))], { type: fileContent.mimeType })
         : new Blob([fileContent.content], { type: fileContent.mimeType || 'text/plain' });
-      
+
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -148,14 +148,14 @@
 
   function viewFile() {
     if (!selectedFile || !fileContent) return;
-    
+
     const blob = fileContent.encoding === 'base64'
       ? new Blob([Uint8Array.from(atob(fileContent.content), c => c.charCodeAt(0))], { type: fileContent.mimeType })
       : new Blob([fileContent.content], { type: fileContent.mimeType || 'text/plain' });
-    
+
     const url = URL.createObjectURL(blob);
     window.open(url, '_blank');
-    
+
     // Clean up the URL after a delay to allow the browser to open it
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
@@ -188,11 +188,11 @@
           <Folder class="w-4 h-4" />
           Package Files
         </h3>
-        
+
         {#each renderFileTree(files) as file}
           <div class="file-item" style="margin-left: {file.path.split('/').length - 1}rem">
             {#if file.type === 'directory'}
-              <button 
+              <button
                 class="dir-toggle"
                 on:click={() => toggleDirectory(file.path)}
               >
@@ -204,11 +204,11 @@
                 <Folder class="w-4 h-4 text-blue-500" />
                 <span class="file-name">{file.name}</span>
               </button>
-              
+
               {#if expandedDirs.has(file.path) && file.children}
                 {#each renderFileTree(file.children) as child}
                   <div class="file-item nested" style="margin-left: {(file.path.split('/').length)}rem">
-                    <button 
+                    <button
                       class="file-button {selectedFile === child.path ? 'selected' : ''}"
                       on:click={() => loadFileContent(child.path)}
                     >
@@ -222,7 +222,7 @@
                 {/each}
               {/if}
             {:else}
-              <button 
+              <button
                 class="file-button {selectedFile === file.path ? 'selected' : ''}"
                 on:click={() => loadFileContent(file.path)}
               >
@@ -245,7 +245,7 @@
               <span class="file-path">{selectedFile}</span>
             </div>
             <div class="content-actions">
-              <button 
+              <button
                 class="inline-flex items-center px-3 py-1 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors"
                 on:click={viewFile}
                 title="Open file in new tab"
@@ -253,7 +253,7 @@
                 <Eye class="w-4 h-4 mr-1" />
                 View
               </button>
-              <button 
+              <button
                 class="inline-flex items-center px-3 py-1 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors"
                 on:click={downloadFile}
                 title="Download this file"
@@ -261,7 +261,7 @@
                 <Download class="w-4 h-4 mr-1" />
                 Download
               </button>
-              <button 
+              <button
                 class="inline-flex items-center px-3 py-1 border border-blue-500 text-sm font-medium rounded-md text-blue-700 bg-blue-50 hover:bg-blue-100 transition-colors"
                 on:click={downloadPackage}
                 title="Download entire package"
@@ -283,8 +283,8 @@
               </div>
             {:else if fileContent.mimeType.startsWith('image/')}
               <div class="image-file">
-                <img 
-                  src="data:{fileContent.mimeType};base64,{fileContent.content}" 
+                <img
+                  src="data:{fileContent.mimeType};base64,{fileContent.content}"
                   alt={selectedFile}
                   class="max-w-full h-auto"
                 />

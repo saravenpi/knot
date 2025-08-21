@@ -8,6 +8,9 @@
     "paths": {
       "#/*": [
         "./knot_packages/*"
+      ],
+      "@/*": [
+        "./src/lib/*"
       ]
     },
     "resolveJsonModule": true,
