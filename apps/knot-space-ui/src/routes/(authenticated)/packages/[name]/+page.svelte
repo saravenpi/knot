@@ -6,6 +6,7 @@
 	import Icon from '@iconify/svelte';
 	import Chart from '../../../../lib/components/ui/chart.svelte';
 	import Drawer from '../../../../lib/components/ui/drawer.svelte';
+	import FileBrowser from '../../../../lib/components/FileBrowser.svelte';
 	import { requestApi } from '../../../../lib/api';
 
 	$: packageName = $page.params.name;
@@ -276,6 +277,15 @@
 				</div>
 				<code class="text-sm">knot add @{selectedPackage.name}</code>
 			</div>
+		</div>
+
+		<!-- File Browser -->
+		<div class="space-y-4">
+			<h3 class="text-xl font-semibold">Package Files</h3>
+			<FileBrowser 
+				packageName={selectedPackage.name} 
+				packageVersion={selectedPackage.version} 
+			/>
 		</div>
 
 		<!-- Download Statistics -->

@@ -1,6 +1,7 @@
 import { Context } from 'hono';
 import { packagesService } from './service';
 import { PublishPackageRequest } from '../../types';
+import { fileExplorerService } from '../../lib/fileExplorer';
 
 export class PackagesController {
   static async publishPackage(c: Context) {
@@ -255,6 +256,65 @@ export class PackagesController {
       return c.json({
         success: false,
         error: error instanceof Error ? error.message : 'Failed to get global statistics'
+      }, 500);
+    }
+  }
+
+  static async getPackageFiles(c: Context) {
+    try {
+      const name = c.req.param('name');
+      const version = c.req.param('version');
+
+      if (!name || !version) {
+        return c.json({ success: false, error: 'Package name and version are required' }, 400);
+      }
+
+      const packageInfo = await packagesService.downloadPackage(name, version);
+      if (!packageInfo) {
+        return c.json({ success: false, error: 'Package not found' }, 404);
+      }
+
+      const files = await fileExplorerService.listPackageFiles(packageInfo.filePath);
+      
+      return c.json({
+        success: true,
+        data: files
+      });
+    } catch (error) {
+      console.error('Get package files error:', error);
+      return c.json({
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to get package files'
+      }, 500);
+    }
+  }
+
+  static async getPackageFile(c: Context) {
+    try {
+      const name = c.req.param('name');
+      const version = c.req.param('version');
+      const filePath = c.req.query('path');
+
+      if (!name || !version || !filePath) {
+        return c.json({ success: false, error: 'Package name, version, and file path are required' }, 400);
+      }
+
+      const packageInfo = await packagesService.downloadPackage(name, version);
+      if (!packageInfo) {
+        return c.json({ success: false, error: 'Package not found' }, 404);
+      }
+
+      const fileContent = await fileExplorerService.getFileContent(packageInfo.filePath, filePath);
+      
+      return c.json({
+        success: true,
+        data: fileContent
+      });
+    } catch (error) {
+      console.error('Get package file error:', error);
+      return c.json({
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to get file content'
       }, 500);
     }
   }

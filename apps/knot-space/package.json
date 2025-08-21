@@ -23,11 +23,13 @@
     "@hono/zod-openapi": "^0.16.0",
     "@hono/zod-validator": "^0.2.2",
     "@prisma/client": "^5.19.1",
+    "@types/tar": "^6.1.13",
     "bcryptjs": "^2.4.3",
     "clsx": "^2.1.1",
     "hono": "^4.6.2",
     "jsonwebtoken": "^9.0.2",
     "multer": "^1.4.5-lts.1",
+    "tar": "^7.4.3",
     "tsconfig-paths": "^4.2.0",
     "uuid": "^10.0.0",
     "zod": "^3.23.8"
