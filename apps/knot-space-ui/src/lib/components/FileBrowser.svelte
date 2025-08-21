@@ -149,15 +149,57 @@
   function viewFile() {
     if (!selectedFile || !fileContent) return;
 
-    const blob = fileContent.encoding === 'base64'
-      ? new Blob([Uint8Array.from(atob(fileContent.content), c => c.charCodeAt(0))], { type: fileContent.mimeType })
-      : new Blob([fileContent.content], { type: fileContent.mimeType || 'text/plain' });
+    // For text files, create a new window and display the content directly
+    if (fileContent.encoding !== 'base64' && fileContent.mimeType.startsWith('text/')) {
+      const newWindow = window.open('', '_blank');
+      if (newWindow) {
+        newWindow.document.write(`
+          <!DOCTYPE html>
+          <html>
+            <head>
+              <title>${selectedFile}</title>
+              <style>
+                body { 
+                  font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace; 
+                  margin: 20px; 
+                  background: #1e1e1e; 
+                  color: #d4d4d4; 
+                  line-height: 1.5; 
+                }
+                pre { 
+                  white-space: pre-wrap; 
+                  word-wrap: break-word; 
+                  margin: 0; 
+                }
+                h1 { 
+                  font-size: 16px; 
+                  margin-bottom: 20px; 
+                  color: #569cd6; 
+                  border-bottom: 1px solid #404040; 
+                  padding-bottom: 10px; 
+                }
+              </style>
+            </head>
+            <body>
+              <h1>${selectedFile}</h1>
+              <pre>${fileContent.content.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</pre>
+            </body>
+          </html>
+        `);
+        newWindow.document.close();
+      }
+    } else {
+      // For binary files or images, use blob URL
+      const blob = fileContent.encoding === 'base64'
+        ? new Blob([Uint8Array.from(atob(fileContent.content), c => c.charCodeAt(0))], { type: fileContent.mimeType })
+        : new Blob([fileContent.content], { type: fileContent.mimeType || 'text/plain' });
 
-    const url = URL.createObjectURL(blob);
-    window.open(url, '_blank');
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
 
-    // Clean up the URL after a delay to allow the browser to open it
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
+      // Clean up the URL after a delay to allow the browser to open it
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
   }
 
   function renderFileTree(fileList: FileEntry[], depth = 0): FileEntry[] {

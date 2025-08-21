@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
-	import { packagesStore, authStore } from '../../../../lib/stores';
-	import { formatDownloadCount, formatFileSize, formatDateTime, formatTimeAgo, formatDate } from '../../../../lib/utils/format';
+	import { packagesStore, authStore } from '../../../lib/stores';
+	import { formatDownloadCount, formatFileSize, formatDateTime, formatTimeAgo, formatDate } from '../../../lib/utils/format';
 	import Icon from '@iconify/svelte';
-	import Chart from '../../../../lib/components/ui/chart.svelte';
-	import Drawer from '../../../../lib/components/ui/drawer.svelte';
-	import FileBrowser from '../../../../lib/components/FileBrowser.svelte';
-	import { requestApi } from '../../../../lib/api';
+	import Chart from '../../../lib/components/ui/chart.svelte';
+	import Drawer from '../../../lib/components/ui/drawer.svelte';
+	import FileBrowser from '../../../lib/components/FileBrowser.svelte';
+	import { requestApi } from '../../../lib/api';
 
 	$: packageName = $page.params.name;
 	$: selectedPackage = $packagesStore.selectedPackage;

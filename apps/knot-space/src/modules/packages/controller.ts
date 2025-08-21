@@ -125,6 +125,20 @@ export class PackagesController {
           error: 'Package file not available. The package may not have been uploaded yet.'
         }, 404);
       }
+
+      // Increment download count (works without authentication)
+      try {
+        const clientIp = c.req.header('x-forwarded-for')?.split(',')[0] || 
+                        c.req.header('x-real-ip') || 
+                        c.env?.ip || 
+                        'unknown';
+        const userAgent = c.req.header('user-agent');
+        
+        await packagesService.incrementDownloadCount(name, version, clientIp, userAgent);
+      } catch (countError) {
+        // Don't fail the download if count increment fails
+        console.error('Failed to increment download count:', countError);
+      }
       
       return c.redirect(downloadInfo.downloadUrl);
     } catch (error) {
