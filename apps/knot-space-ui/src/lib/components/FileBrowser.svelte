@@ -102,6 +102,64 @@
     return `${(size / (1024 * 1024)).toFixed(1)} MB`;
   }
 
+  async function downloadFile() {
+    if (!selectedFile) return;
+    
+    try {
+      const response = await fetch(`/api/packages/${encodeURIComponent(packageName)}/${encodeURIComponent(packageVersion)}/file?path=${encodeURIComponent(selectedFile)}`);
+      if (!response.ok) throw new Error('Failed to download file');
+      
+      const data = await response.json();
+      if (!data.success) throw new Error(data.error);
+      
+      const fileContent = data.data;
+      const blob = fileContent.encoding === 'base64' 
+        ? new Blob([Uint8Array.from(atob(fileContent.content), c => c.charCodeAt(0))], { type: fileContent.mimeType })
+        : new Blob([fileContent.content], { type: fileContent.mimeType || 'text/plain' });
+      
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = selectedFile.split('/').pop() || 'download';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Failed to download file:', error);
+      alert('Failed to download file. Please try again.');
+    }
+  }
+
+  async function downloadPackage() {
+    try {
+      const url = `/api/packages/${encodeURIComponent(packageName)}/${encodeURIComponent(packageVersion)}/download`;
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${packageName}-${packageVersion}.tar.gz`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error('Failed to download package:', error);
+      alert('Failed to download package. Please try again.');
+    }
+  }
+
+  function viewFile() {
+    if (!selectedFile || !fileContent) return;
+    
+    const blob = fileContent.encoding === 'base64'
+      ? new Blob([Uint8Array.from(atob(fileContent.content), c => c.charCodeAt(0))], { type: fileContent.mimeType })
+      : new Blob([fileContent.content], { type: fileContent.mimeType || 'text/plain' });
+    
+    const url = URL.createObjectURL(blob);
+    window.open(url, '_blank');
+    
+    // Clean up the URL after a delay to allow the browser to open it
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
   function renderFileTree(fileList: FileEntry[], depth = 0): FileEntry[] {
     return fileList.sort((a, b) => {
       if (a.type !== b.type) {
@@ -187,13 +245,29 @@
               <span class="file-path">{selectedFile}</span>
             </div>
             <div class="content-actions">
-              <button class="inline-flex items-center px-3 py-1 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+              <button 
+                class="inline-flex items-center px-3 py-1 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+                on:click={viewFile}
+                title="Open file in new tab"
+              >
                 <Eye class="w-4 h-4 mr-1" />
                 View
               </button>
-              <button class="inline-flex items-center px-3 py-1 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+              <button 
+                class="inline-flex items-center px-3 py-1 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+                on:click={downloadFile}
+                title="Download this file"
+              >
                 <Download class="w-4 h-4 mr-1" />
                 Download
+              </button>
+              <button 
+                class="inline-flex items-center px-3 py-1 border border-blue-500 text-sm font-medium rounded-md text-blue-700 bg-blue-50 hover:bg-blue-100 transition-colors"
+                on:click={downloadPackage}
+                title="Download entire package"
+              >
+                <Download class="w-4 h-4 mr-1" />
+                Download Package
               </button>
             </div>
           </div>
