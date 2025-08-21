@@ -274,7 +274,10 @@ export class PackagesController {
         return c.json({ success: false, error: 'Package not found' }, 404);
       }
 
-      const files = await fileExplorerService.listPackageFiles(packageInfo.filePath);
+      // Convert relative path to absolute path
+      const path = require('path');
+      const absoluteFilePath = path.resolve(process.cwd(), packageInfo.filePath.replace(/^\//, ''));
+      const files = await fileExplorerService.listPackageFiles(absoluteFilePath);
       
       return c.json({
         success: true,
@@ -304,7 +307,10 @@ export class PackagesController {
         return c.json({ success: false, error: 'Package not found' }, 404);
       }
 
-      const fileContent = await fileExplorerService.getFileContent(packageInfo.filePath, filePath);
+      // Convert relative path to absolute path
+      const path = require('path');
+      const absoluteFilePath = path.resolve(process.cwd(), packageInfo.filePath.replace(/^\//, ''));
+      const fileContent = await fileExplorerService.getFileContent(absoluteFilePath, filePath);
       
       return c.json({
         success: true,

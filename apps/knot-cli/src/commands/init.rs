@@ -4,7 +4,7 @@ use std::fs;
 use std::path::PathBuf;
 
 use crate::config::{KnotConfig, AppConfig, PackageConfig};
-use crate::templates::TemplateManager;
+use crate::templates::{TemplateManager, TemplateCategory};
 use super::common::*;
 
 pub fn init_project(name: Option<&str>, path: Option<&str>, description: Option<&str>) -> Result<()> {
@@ -202,19 +202,14 @@ pub fn init_package(name: Option<&str>, team: Option<&str>, version: Option<&str
     fs::write(&package_yml_path, yaml_content).context("Failed to create package.yml")?;
 
     // Generate package files using templates
-    let templates = TemplateManager::get_package_templates();
-    if let Some(template) = templates.get(&package_template) {
-        TemplateManager::create_from_template(
-            template,
-            &target_dir,
-            &package_name,
-            &package_version,
-            &package_description.unwrap_or_else(|| "A new Knot package".to_string())
-        )?;
-    } else {
-        let available = TemplateManager::list_package_templates();
-        anyhow::bail!("Template '{}' not found. Available templates: {}", package_template, available.join(", "));
-    }
+    TemplateManager::create_from_template(
+        &package_name,
+        &package_version,
+        &package_description.unwrap_or_else(|| "A new Knot package".to_string()),
+        &package_template,
+        TemplateCategory::Package,
+        &target_dir,
+    )?;
 
     let display_name = if let Some(team) = &team_name {
         format!("@{}/{}", team, package_name)
@@ -330,19 +325,14 @@ pub fn init_app(name: Option<&str>, template: Option<&str>, description: Option<
     fs::write(&app_yml_path, yaml_content).context("Failed to create app.yml")?;
 
     // Generate app files using templates
-    let templates = TemplateManager::get_app_templates();
-    if let Some(template) = templates.get(&app_template) {
-        TemplateManager::create_from_template(
-            template,
-            &target_dir,
-            &app_name,
-            "1.0.0",
-            &app_description.unwrap_or_else(|| "A new Knot app".to_string())
-        )?;
-    } else {
-        let available = TemplateManager::list_app_templates();
-        anyhow::bail!("Template '{}' not found. Available templates: {}", app_template, available.join(", "));
-    }
+    TemplateManager::create_from_template(
+        &app_name,
+        "1.0.0",
+        &app_description.unwrap_or_else(|| "A new Knot app".to_string()),
+        &app_template,
+        TemplateCategory::App,
+        &target_dir,
+    )?;
 
     println!("✅ Created app: {}", app_name);
     println!("📁 Location: {}", target_dir.display());

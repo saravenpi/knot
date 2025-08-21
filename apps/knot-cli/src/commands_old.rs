@@ -3,7 +3,7 @@ use crate::config::{AppConfig, KnotConfig, PackageConfig, parse_yaml_error_to_us
 use crate::ignore::KnotIgnore;
 use crate::linker::Linker;
 use crate::project::Project;
-use crate::templates::TemplateManager;
+use crate::templates::{TemplateManager, TemplateCategory};
 use crate::typescript::TypeScriptManager;
 use anyhow::{Context, Result};
 use reqwest::multipart;
@@ -358,25 +358,23 @@ pub fn init_package(name: Option<&str>, team: Option<&str>, version: Option<&str
 
     // Use template if specified
     if let Some(template_name) = template {
-        let templates = TemplateManager::get_package_templates();
-        if let Some(template) = templates.get(template_name) {
-            let pkg_version = version.unwrap_or("0.1.0");
-            let pkg_description = description.unwrap_or("Package description");
+        let pkg_version = version.unwrap_or("0.1.0");
+        let pkg_description = description.unwrap_or("Package description");
 
-            TemplateManager::create_from_template(
-                template,
-                &package_dir,
-                &package_name,
-                pkg_version,
-                pkg_description,
-            )?;
+        TemplateManager::create_from_template(
+            &package_name,
+            pkg_version,
+            pkg_description,
+            template_name,
+            TemplateCategory::Package,
+            &package_dir,
+        )?;
 
-            println!("✅ Initialized new {} package: {}", template_name, package_name);
-            println!("📁 Created at: {}", package_dir.display());
-            println!("🎯 Template: {} - {}", template.name, template.description);
-        } else {
-            let available = TemplateManager::list_package_templates();
-            anyhow::bail!("Unknown template '{}'. Available templates: {}", template_name, available.join(", "));
+        println!("✅ Initialized new {} package: {}", template_name, package_name);
+        println!("📁 Created at: {}", package_dir.display());
+        
+        if let Some(template_info) = TemplateManager::get_package_template_info(template_name) {
+            println!("🎯 Template: {} - {}", template_info.name, template_info.description);
         }
     } else {
         // Create basic package without template
@@ -471,50 +469,48 @@ pub fn init_app(name: Option<&str>, template: Option<&str>, description: Option<
 
     // Use template if specified
     if let Some(template_name) = template {
-        let templates = TemplateManager::get_app_templates();
-        if let Some(template) = templates.get(template_name) {
-            let app_version = "0.1.0";
-            let app_description = description.unwrap_or("App description");
+        let app_version = "0.1.0";
+        let app_description = description.unwrap_or("App description");
 
-            TemplateManager::create_from_template(
-                template,
-                &app_dir,
-                &app_name,
-                app_version,
-                app_description,
-            )?;
+        TemplateManager::create_from_template(
+            &app_name,
+            app_version,
+            app_description,
+            template_name,
+            TemplateCategory::App,
+            &app_dir,
+        )?;
 
-            // Create app.yml for Knot configuration
-            let build_cmd = match template_name {
-                "react" => Some("npm run build".to_string()),
-                "svelte" => Some("npm run build".to_string()),
-                _ => Some("npm run build".to_string()),
-            };
+        // Create app.yml for Knot configuration
+        let build_cmd = match template_name {
+            "react" => Some("npm run build".to_string()),
+            "svelte" => Some("npm run build".to_string()),
+            _ => Some("npm run build".to_string()),
+        };
 
-            let config = AppConfig {
-                name: app_name.clone(),
-                description: description.map(|s| s.to_string()),
-                ts_alias: None,
-                packages: None,
-                build: build_cmd,
-                scripts: None,
-            };
+        let config = AppConfig {
+            name: app_name.clone(),
+            description: description.map(|s| s.to_string()),
+            ts_alias: None,
+            packages: None,
+            build: build_cmd,
+            scripts: None,
+        };
 
-            let yaml_content = serde_yaml::to_string(&config)?;
-            fs::write(&app_yml_path, yaml_content).context("Failed to create app.yml")?;
+        let yaml_content = serde_yaml::to_string(&config)?;
+        fs::write(&app_yml_path, yaml_content).context("Failed to create app.yml")?;
 
-            println!("✅ Initialized new {} app: {}", template_name, app_name);
-            println!("📁 Created at: {}", app_dir.display());
-            println!("🎯 Template: {} - {}", template.name, template.description);
+        println!("✅ Initialized new {} app: {}", template_name, app_name);
+        println!("📁 Created at: {}", app_dir.display());
+        
+        if let Some(template_info) = TemplateManager::get_app_template_info(template_name) {
+            println!("🎯 Template: {} - {}", template_info.name, template_info.description);
+        }
 
-            if !here && path.map(|p| p == ".").unwrap_or(false) == false {
-                println!("💡 Run 'cd {}' then 'npm install' to get started", app_name);
-            } else {
-                println!("💡 Run 'npm install' to get started");
-            }
+        if !here && path.map(|p| p == ".").unwrap_or(false) == false {
+            println!("💡 Run 'cd {}' then 'npm install' to get started", app_name);
         } else {
-            let available = TemplateManager::list_app_templates();
-            anyhow::bail!("Unknown template '{}'. Available templates: {}", template_name, available.join(", "));
+            println!("💡 Run 'npm install' to get started");
         }
     } else {
         // Create basic app without template
