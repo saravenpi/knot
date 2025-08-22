@@ -19,6 +19,12 @@
 	onMount(async () => {
 		await authStore.initialize();
 
+		// If user is authenticated, redirect to dashboard
+		if ($authStore.isAuthenticated) {
+			goto('/dashboard');
+			return;
+		}
+
 		// Set up periodic token validation (every 15 minutes)
 		const interval = setInterval(async () => {
 			if ($authStore.isAuthenticated && !$authStore.loading) {

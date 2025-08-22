@@ -163,10 +163,10 @@
 						You can control cookies through your browser settings:
 					</p>
 					<ul class="text-sm space-y-2">
-						<li>• <a href="#" class="text-blue-600 hover:text-blue-800">Chrome Cookie Settings</a></li>
-						<li>• <a href="#" class="text-blue-600 hover:text-blue-800">Firefox Cookie Settings</a></li>
-						<li>• <a href="#" class="text-blue-600 hover:text-blue-800">Safari Cookie Settings</a></li>
-						<li>• <a href="#" class="text-blue-600 hover:text-blue-800">Edge Cookie Settings</a></li>
+						<li>• <a href="javascript:void(0)" class="text-blue-600 hover:text-blue-800">Chrome Cookie Settings</a></li>
+						<li>• <a href="javascript:void(0)" class="text-blue-600 hover:text-blue-800">Firefox Cookie Settings</a></li>
+						<li>• <a href="javascript:void(0)" class="text-blue-600 hover:text-blue-800">Safari Cookie Settings</a></li>
+						<li>• <a href="javascript:void(0)" class="text-blue-600 hover:text-blue-800">Edge Cookie Settings</a></li>
 					</ul>
 				</div>
 

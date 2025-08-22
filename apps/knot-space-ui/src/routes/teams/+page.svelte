@@ -3,10 +3,10 @@
 	import { teamsStore, authStore } from '../../../lib/stores';
 	import { usersApi } from '../../../lib/api';
 	import Icon from '@iconify/svelte';
-	import Drawer from '../../../lib/components/ui/drawer.svelte';
-	import Input from '../../../lib/components/ui/input.svelte';
-	import Button from '../../../lib/components/ui/button.svelte';
-	import Textarea from '../../../lib/components/ui/textarea.svelte';
+	import Drawer from '../../lib/components/ui/drawer.svelte';
+	import Input from '../../lib/components/ui/input.svelte';
+	import Button from '../../lib/components/ui/button.svelte';
+	import Textarea from '../../lib/components/ui/textarea.svelte';
 	import type { User } from '#/types';
 
 	$: teams = $teamsStore.teams;
