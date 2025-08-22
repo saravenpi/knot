@@ -96,12 +96,12 @@
 					<div>
 						<h4 class="font-medium mb-2">Login to Knot Space</h4>
 						<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
-							<code>knot login</code>
+							<code>knot auth</code>
 							<button 
 								class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
-								on:click={() => copyToClipboard('knot login')}
+								on:click={() => copyToClipboard('knot auth')}
 							>
-								{#if showCopied && copyText === 'knot login'}
+								{#if showCopied && copyText === 'knot auth'}
 									<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
 								{:else}
 									<Icon icon="solar:copy-bold" class="w-4 h-4" />
@@ -114,34 +114,14 @@
 					</div>
 
 					<div>
-						<h4 class="font-medium mb-2">Login with Token</h4>
-						<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
-							<code>knot login --token your-auth-token</code>
-							<button 
-								class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
-								on:click={() => copyToClipboard('knot login --token your-auth-token')}
-							>
-								{#if showCopied && copyText.includes('--token')}
-									<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
-								{:else}
-									<Icon icon="solar:copy-bold" class="w-4 h-4" />
-								{/if}
-							</button>
-						</div>
-						<p class="text-sm text-muted-foreground mt-2">
-							Use for CI/CD environments or programmatic access.
-						</p>
-					</div>
-
-					<div>
 						<h4 class="font-medium mb-2">Verify Authentication</h4>
 						<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
-							<code>knot whoami</code>
+							<code>knot auth</code>
 							<button 
 								class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
-								on:click={() => copyToClipboard('knot whoami')}
+								on:click={() => copyToClipboard('knot auth')}
 							>
-								{#if showCopied && copyText === 'knot whoami'}
+								{#if showCopied && copyText === 'knot auth'}
 									<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
 								{:else}
 									<Icon icon="solar:copy-bold" class="w-4 h-4" />
@@ -630,111 +610,7 @@ git tag v1.3.0 && git push --tags`)}
 		</div>
 	</section>
 
-	<!-- Unpublishing -->
-	<section class="mb-12">
-		<h2 class="text-2xl font-bold mb-6">Package Management</h2>
-		
-		<div class="space-y-8">
-			<div>
-				<h3 class="text-lg font-semibold mb-4">Unpublishing Packages</h3>
-				<p class="text-muted-foreground mb-4">
-					Remove packages or specific versions from the registry when necessary.
-				</p>
-
-				<div class="space-y-4">
-					<div>
-						<h4 class="font-medium mb-2">Unpublish Specific Version</h4>
-						<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
-							<code>knot unpublish utils@1.2.0</code>
-							<button 
-								class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
-								on:click={() => copyToClipboard('knot unpublish utils@1.2.0')}
-							>
-								{#if showCopied && copyText === 'knot unpublish utils@1.2.0'}
-									<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
-								{:else}
-									<Icon icon="solar:copy-bold" class="w-4 h-4" />
-								{/if}
-							</button>
-						</div>
-					</div>
-
-					<div>
-						<h4 class="font-medium mb-2">Unpublish Entire Package</h4>
-						<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
-							<code>knot unpublish utils --force</code>
-							<button 
-								class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
-								on:click={() => copyToClipboard('knot unpublish utils --force')}
-							>
-								{#if showCopied && copyText === 'knot unpublish utils --force'}
-									<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
-								{:else}
-									<Icon icon="solar:copy-bold" class="w-4 h-4" />
-								{/if}
-							</button>
-						</div>
-					</div>
-
-					<div class="bg-red-50 border border-red-200 rounded-lg p-6">
-						<div class="flex items-start space-x-3">
-							<Icon icon="solar:danger-triangle-bold" class="w-6 h-6 text-red-600 mt-1 flex-shrink-0" />
-							<div>
-								<h4 class="font-semibold text-red-900 mb-2">Unpublishing Warning</h4>
-								<p class="text-sm text-red-700">
-									Unpublishing packages can break projects that depend on them. Only unpublish in emergency 
-									situations or for packages with no external dependencies. Consider deprecation instead.
-								</p>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-
-			<div>
-				<h3 class="text-lg font-semibold mb-4">Package Deprecation</h3>
-				<p class="text-muted-foreground mb-4">
-					Mark packages as deprecated to discourage new usage while preserving existing installations.
-				</p>
-
-				<div class="space-y-4">
-					<div>
-						<h4 class="font-medium mb-2">Deprecate Package</h4>
-						<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
-							<code>knot deprecate utils "This package is deprecated. Use @myteam/new-utils instead."</code>
-							<button 
-								class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
-								on:click={() => copyToClipboard('knot deprecate utils "This package is deprecated. Use @myteam/new-utils instead."')}
-							>
-								{#if showCopied && copyText.includes('deprecated')}
-									<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
-								{:else}
-									<Icon icon="solar:copy-bold" class="w-4 h-4" />
-								{/if}
-							</button>
-						</div>
-					</div>
-
-					<div>
-						<h4 class="font-medium mb-2">Remove Deprecation</h4>
-						<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
-							<code>knot undeprecate utils</code>
-							<button 
-								class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
-								on:click={() => copyToClipboard('knot undeprecate utils')}
-							>
-								{#if showCopied && copyText === 'knot undeprecate utils'}
-									<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
-								{:else}
-									<Icon icon="solar:copy-bold" class="w-4 h-4" />
-								{/if}
-							</button>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</section>
+	
 
 	<!-- Next Steps -->
 	<section class="mb-12">
