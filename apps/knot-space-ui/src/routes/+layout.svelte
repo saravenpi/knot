@@ -3,6 +3,7 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import { authStore } from '../lib/stores';
+	import Icon from '@iconify/svelte';
 
 	$: user = $authStore.user;
 	$: isLoggedIn = $authStore.isAuthenticated;
@@ -13,6 +14,7 @@
 	// Pages that should use public layout even when authenticated (docs has its own layout)
 	$: isPublicPage = currentPath === '/login' || currentPath === '/register' || currentPath === '/';
 	$: isDocsPage = currentPath.startsWith('/docs');
+	$: isPackagesPage = currentPath.startsWith('/packages');
 
 	onMount(async () => {
 		await authStore.initialize();
@@ -47,9 +49,134 @@
 		{#if isDocsPage}
 			<!-- Docs pages get their own layout -->
 			<slot />
-		{:else if isLoggedIn && !isPublicPage}
-			<!-- Authenticated users get sidebar layout (except for public pages) -->
-			<slot />
+		{:else if isLoggedIn && (!isPublicPage || isPackagesPage)}
+			<div class="min-h-screen bg-background">
+  <!-- Desktop Sidebar -->
+  <aside class="hidden lg:block fixed left-0 top-0 w-64 h-screen bg-card border-r border-border overflow-y-auto z-10">
+    <div class="p-6">
+      <!-- Logo -->
+      <div class="flex items-center space-x-2 mb-8">
+        <div class="w-8 h-8 bg-black rounded-md flex items-center justify-center">
+          <span class="text-white font-bold text-sm">K</span>
+        </div>
+        <span class="font-semibold text-xl">Knot Space</span>
+      </div>
+
+      <!-- User info -->
+      {#if user}
+        <div class="mb-8 p-3 bg-muted/50 rounded-lg">
+          <div class="flex items-center gap-3">
+            <!-- Profile avatar matching the profile page design -->
+            <div class="w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center text-primary-foreground text-sm font-bold flex-shrink-0">
+              {user.username.charAt(0).toUpperCase()}
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="text-sm font-medium truncate">{user.username}</div>
+              <div class="text-xs text-muted-foreground truncate">{user.email}</div>
+            </div>
+          </div>
+        </div>
+      {/if}
+
+      <!-- Navigation -->
+      <nav class="space-y-2">
+        <a 
+          href="/" 
+          class="flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {currentPath === '/' ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'}"
+        >
+          <Icon icon="solar:home-2-bold" class="w-5 h-5" />
+          <span>Dashboard</span>
+        </a>
+
+        <a 
+          href="/users" 
+          class="flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {currentPath === '/users' ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'}"
+        >
+          <Icon icon="solar:user-bold" class="w-5 h-5" />
+          <span>Users</span>
+        </a>
+
+        <a 
+          href="/teams" 
+          class="flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {currentPath === '/teams' ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'}"
+        >
+          <Icon icon="solar:users-group-two-rounded-bold" class="w-5 h-5" />
+          <span>Teams</span>
+        </a>
+      </nav>
+    </div>
+
+    <!-- Bottom actions -->
+    <div class="absolute bottom-6 left-6 right-6 space-y-2">
+      <a 
+        href="/docs" 
+        class="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+      >
+        <Icon icon="solar:book-2-bold" class="w-4 h-4" />
+        <span>Documentation</span>
+      </a>
+      
+      <a 
+        href="/settings" 
+        class="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {currentPath === '/settings' ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'}"
+      >
+        <Icon icon="solar:settings-bold" class="w-5 h-5" />
+        <span>Settings</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- Mobile Floating Docs Button -->
+  <a 
+    href="/docs"
+    class="lg:hidden fixed bottom-20 right-4 z-40 bg-primary text-primary-foreground p-3 rounded-full shadow-lg hover:bg-primary/90 transition-all duration-200 {currentPath.startsWith('/docs') ? 'ring-2 ring-primary ring-offset-2' : ''}"
+    title="Documentation"
+  >
+    <Icon icon="solar:book-2-bold" class="w-5 h-5" />
+  </a>
+
+  <!-- Main content -->
+  <main class="lg:ml-64 p-4 lg:p-8 pb-20 lg:pb-8 pt-16 lg:pt-8">
+    <slot />
+  </main>
+
+  <!-- Mobile Bottom Navigation -->
+  <nav class="lg:hidden fixed bottom-0 left-0 right-0 bg-card border-t border-border z-50">
+    <div class="flex items-center justify-around py-2">
+      <a 
+        href="/" 
+        class="flex flex-col items-center py-2 px-4 min-w-0 flex-1 text-center transition-colors {currentPath === '/' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}"
+      >
+        <Icon icon="solar:home-2-bold" class="w-6 h-6 mb-1" />
+        <span class="text-xs font-medium truncate">Dashboard</span>
+      </a>
+
+      <a 
+        href="/users" 
+        class="flex flex-col items-center py-2 px-4 min-w-0 flex-1 text-center transition-colors {currentPath === '/users' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}"
+      >
+        <Icon icon="solar:user-bold" class="w-6 h-6 mb-1" />
+        <span class="text-xs font-medium truncate">Users</span>
+      </a>
+
+      <a 
+        href="/teams" 
+        class="flex flex-col items-center py-2 px-4 min-w-0 flex-1 text-center transition-colors {currentPath === '/teams' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}"
+      >
+        <Icon icon="solar:users-group-two-rounded-bold" class="w-6 h-6 mb-1" />
+        <span class="text-xs font-medium truncate">Teams</span>
+      </a>
+
+      <a 
+        href="/settings" 
+        class="flex flex-col items-center py-2 px-4 min-w-0 flex-1 text-center transition-colors {currentPath === '/settings' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}"
+      >
+        <Icon icon="solar:settings-bold" class="w-6 h-6 mb-1" />
+        <span class="text-xs font-medium truncate">Settings</span>
+      </a>
+    </div>
+  </nav>
+</div>
 		{:else}
 			<!-- Public layout for unauthenticated users OR public pages -->
 			<nav class="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex-shrink-0">
@@ -73,7 +200,7 @@
 							</a>
 							{#if isLoggedIn}
 								<!-- Authenticated user options -->
-								<a href="/packages" class="text-sm font-medium hover:text-primary transition-colors">
+								<a href="/dashboard" class="text-sm font-medium hover:text-primary transition-colors">
 									Dashboard
 								</a>
 								<button

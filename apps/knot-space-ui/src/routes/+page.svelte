@@ -30,18 +30,12 @@
 
 		document.addEventListener('mousemove', handleMouseMove);
 
-		return () => {
-			document.removeEventListener('mousemove', handleMouseMove);
-		};
-	});
-
-	onMount(async () => {
 		// Initialize auth first to check if user is logged in
 		await authStore.initialize();
 
-		// If user is authenticated, redirect to packages
+		// If user is authenticated, redirect to dashboard
 		if ($authStore.isAuthenticated) {
-			goto('/packages');
+			goto('/dashboard');
 			return;
 		}
 
@@ -68,6 +62,10 @@
 			};
 			statsLoading = false;
 		}
+
+		return () => {
+			document.removeEventListener('mousemove', handleMouseMove);
+		};
 	});
 </script>
 
