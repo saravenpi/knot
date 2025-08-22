@@ -482,18 +482,11 @@ pub fn init_app(name: Option<&str>, template: Option<&str>, description: Option<
         )?;
 
         // Create app.yml for Knot configuration
-        let build_cmd = match template_name {
-            "react" => Some("npm run build".to_string()),
-            "svelte" => Some("npm run build".to_string()),
-            _ => Some("npm run build".to_string()),
-        };
-
         let config = AppConfig {
             name: app_name.clone(),
             description: description.map(|s| s.to_string()),
             ts_alias: None,
             packages: None,
-            build: build_cmd,
             scripts: None,
         };
 
@@ -519,7 +512,6 @@ pub fn init_app(name: Option<&str>, template: Option<&str>, description: Option<
             description: description.map(|s| s.to_string()),
             ts_alias: None,
             packages: None,
-            build: None,
             scripts: None,
         };
 
@@ -623,208 +615,12 @@ pub fn show_status() -> Result<()> {
         if let Some(alias) = project.get_app_ts_alias(name) {
             println!("    TypeScript alias: {}", alias);
         }
-        if let Some(build_cmd) = &config.build {
-            println!("    Build command: {}", build_cmd);
-        }
     }
 
     Ok(())
 }
 
 
-pub async fn build_apps() -> Result<()> {
-    let current_dir = std::env::current_dir()?;
-
-    // Check if we're in an app directory (has app.yml)
-    let app_yml_path = current_dir.join("app.yml");
-    if app_yml_path.exists() {
-        // Build single app
-        build_single_app(&current_dir).await
-    } else {
-        // Check if we're in a project directory (has knot.yml)
-        let project = match Project::find_and_load(&current_dir) {
-            Ok(project) => project,
-            Err(_) => {
-                println!("❌ No knot.yml or app.yml found");
-                println!("💡 Run from project root to build all apps, or from app directory to build single app");
-                return Ok(());
-            }
-        };
-
-        // Build all apps
-        build_all_apps(&project).await
-    }
-}
-
-async fn build_single_app(app_dir: &Path) -> Result<()> {
-    let app_yml_path = app_dir.join("app.yml");
-    let app_config = AppConfig::from_file(&app_yml_path).context("Failed to load app.yml")?;
-
-    match &app_config.build {
-        Some(build_command) => {
-            if build_command.is_empty() {
-                println!("⚠️  Empty build command for app '{}'", app_config.name);
-                return Ok(());
-            }
-
-            println!("🔨 Building app '{}'...", app_config.name);
-            println!("📝 Running: {}", build_command);
-
-            // Use shell execution for complex commands
-            let shell = if cfg!(target_os = "windows") {
-                "cmd"
-            } else {
-                "sh"
-            };
-
-            let shell_flag = if cfg!(target_os = "windows") {
-                "/C"
-            } else {
-                "-c"
-            };
-
-            let mut cmd = tokio::process::Command::new(shell);
-            cmd.arg(shell_flag);
-            cmd.arg(build_command);
-            cmd.current_dir(app_dir);
-            cmd.stdin(std::process::Stdio::inherit());
-            cmd.stdout(std::process::Stdio::inherit());
-            cmd.stderr(std::process::Stdio::inherit());
-
-            let status = cmd
-                .status()
-                .await
-                .with_context(|| format!("Failed to execute build command: {}", build_command))?;
-
-            if status.success() {
-                println!("✅ Successfully built app '{}'", app_config.name);
-            } else {
-                let exit_code = status.code().unwrap_or(-1);
-                anyhow::bail!(
-                    "Build failed for app '{}' with exit code: {}",
-                    app_config.name,
-                    exit_code
-                );
-            }
-        }
-        None => {
-            println!(
-                "⚠️  No build command configured for app '{}'",
-                app_config.name
-            );
-            println!("💡 Add a 'build' field to app.yml to configure the build command");
-        }
-    }
-
-    Ok(())
-}
-
-async fn build_all_apps(project: &Project) -> Result<()> {
-    println!(
-        "🔨 Building all apps for project '{}'...",
-        project.config.name
-    );
-
-    let apps_with_builds: Vec<_> = project
-        .apps
-        .iter()
-        .filter(|(_, config)| config.build.is_some())
-        .collect();
-
-    if apps_with_builds.is_empty() {
-        println!("⚠️  No apps have build commands configured");
-        println!("💡 Add 'build' fields to app.yml files to configure build commands");
-        return Ok(());
-    }
-
-    println!(
-        "📋 Found {} app(s) with build commands",
-        apps_with_builds.len()
-    );
-
-    let mut success_count = 0;
-    let mut total_count = 0;
-
-    for (app_name, app_config) in &apps_with_builds {
-        total_count += 1;
-
-        if let Some(build_command) = &app_config.build {
-            if build_command.is_empty() {
-                println!("\n⚠️  Empty build command for app '{}'", app_name);
-                continue;
-            }
-
-            println!("\n🔨 Building app '{}'...", app_name);
-            println!("📝 Running: {}", build_command);
-
-            let app_dir = project.root.join("apps").join(app_name);
-
-            if !app_dir.exists() {
-                println!("❌ App directory does not exist: {}", app_dir.display());
-                continue;
-            }
-
-            // Use shell execution for complex commands
-            let shell = if cfg!(target_os = "windows") {
-                "cmd"
-            } else {
-                "sh"
-            };
-
-            let shell_flag = if cfg!(target_os = "windows") {
-                "/C"
-            } else {
-                "-c"
-            };
-
-            let mut cmd = tokio::process::Command::new(shell);
-            cmd.arg(shell_flag);
-            cmd.arg(build_command);
-            cmd.current_dir(&app_dir);
-            cmd.stdin(std::process::Stdio::inherit());
-            cmd.stdout(std::process::Stdio::inherit());
-            cmd.stderr(std::process::Stdio::inherit());
-
-            match cmd.status().await {
-                Ok(status) if status.success() => {
-                    println!("✅ Successfully built app '{}'", app_name);
-                    success_count += 1;
-                }
-                Ok(status) => {
-                    let exit_code = status.code().unwrap_or(-1);
-                    println!(
-                        "❌ Build failed for app '{}' with exit code: {}",
-                        app_name, exit_code
-                    );
-                }
-                Err(e) => {
-                    println!(
-                        "❌ Failed to execute build command for app '{}': {}",
-                        app_name, e
-                    );
-                }
-            }
-        }
-    }
-
-    println!("\n📊 Build Summary:");
-    println!(
-        "✅ Successfully built: {}/{} apps",
-        success_count, total_count
-    );
-
-    if success_count == total_count {
-        println!("🎉 All apps built successfully!");
-    } else {
-        anyhow::bail!(
-            "Some apps failed to build ({}/{} failed)",
-            total_count - success_count,
-            total_count
-        );
-    }
-
-    Ok(())
-}
 
 pub async fn run_script(script_name: &str) -> Result<()> {
     let current_dir = std::env::current_dir()?;

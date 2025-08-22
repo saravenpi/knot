@@ -317,7 +317,6 @@ pub fn init_app(name: Option<&str>, template: Option<&str>, description: Option<
         description: app_description.clone(),
         ts_alias: None,
         packages: None,
-        build: None,
         scripts: None,
     };
 

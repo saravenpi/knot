@@ -6,7 +6,7 @@ use std::collections::HashMap;
 use std::path::Path;
 
 pub use engine::TemplateEngine;
-pub use manifest::{TemplateManifest, TemplateCategory, TemplateFile, TemplateVariable};
+pub use manifest::{TemplateManifest, TemplateCategory};
 
 pub struct TemplateManager;
 
