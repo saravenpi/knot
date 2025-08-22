@@ -161,9 +161,9 @@
 							Without Aliases
 						</h4>
 						<div class="bg-black/90 text-white font-mono text-sm p-4 rounded-lg">
-							<pre><code><span class="text-purple-400">import</span> { <span class="text-yellow-400">User</span> } <span class="text-purple-400">from</span> <span class="text-green-400">'../../packages/types'</span>;
-<span class="text-purple-400">import</span> { <span class="text-yellow-400">formatDate</span> } <span class="text-purple-400">from</span> <span class="text-green-400">'../../packages/utils'</span>;
-<span class="text-purple-400">import</span> { <span class="text-yellow-400">Button</span> } <span class="text-purple-400">from</span> <span class="text-green-400">'../../../packages/ui-components'</span>;</code></pre>
+							<pre><code><span class="text-purple-400">import</span> {"{"} <span class="text-yellow-400">User</span> {"}"} <span class="text-purple-400">from</span> <span class="text-green-400">&apos;../../packages/types&apos;</span>;
+<span class="text-purple-400">import</span> {"{"} <span class="text-yellow-400">formatDate</span> {"}"} <span class="text-purple-400">from</span> <span class="text-green-400">&apos;../../packages/utils&apos;</span>;
+<span class="text-purple-400">import</span> {"{"} <span class="text-yellow-400">Button</span> {"}"} <span class="text-purple-400">from</span> <span class="text-green-400">&apos;../../../packages/ui-components&apos;</span>;</code></pre>
 						</div>
 					</div>
 
@@ -173,9 +173,9 @@
 							With Aliases
 						</h4>
 						<div class="bg-black/90 text-white font-mono text-sm p-4 rounded-lg">
-							<pre><code><span class="text-purple-400">import</span> { <span class="text-yellow-400">User</span> } <span class="text-purple-400">from</span> <span class="text-green-400">'@/types'</span>;
-<span class="text-purple-400">import</span> { <span class="text-yellow-400">formatDate</span> } <span class="text-purple-400">from</span> <span class="text-green-400">'@/utils'</span>;
-<span class="text-purple-400">import</span> { <span class="text-yellow-400">Button</span> } <span class="text-purple-400">from</span> <span class="text-green-400">'@/ui-components'</span>;</code></pre>
+							<pre><code><span class="text-purple-400">import</span> {"{"} <span class="text-yellow-400">User</span> {"}"} <span class="text-purple-400">from</span> <span class="text-green-400">&apos;@/types&apos;</span>;
+<span class="text-purple-400">import</span> {"{"} <span class="text-yellow-400">formatDate</span> {"}"} <span class="text-purple-400">from</span> <span class="text-green-400">&apos;@/utils&apos;</span>;
+<span class="text-purple-400">import</span> {"{"} <span class="text-yellow-400">Button</span> {"}"} <span class="text-purple-400">from</span> <span class="text-green-400">&apos;@/ui-components&apos;</span>;</code></pre>
 						</div>
 					</div>
 				</div>
@@ -192,27 +192,27 @@
 					<div>
 						<h4 class="font-medium mb-2">@ Prefix</h4>
 						<div class="bg-black/90 text-white font-mono text-sm p-4 rounded-lg">
-							<pre><code><span class="text-purple-400">import</span> <span class="text-green-400">'@/types'</span>
-<span class="text-purple-400">import</span> <span class="text-green-400">'@/utils'</span>
-<span class="text-purple-400">import</span> <span class="text-green-400">'@/components'</span></code></pre>
+							<pre><code><span class="text-purple-400">import</span> <span class="text-green-400">&apos;@/types&apos;</span>
+<span class="text-purple-400">import</span> <span class="text-green-400">&apos;@/utils&apos;</span>
+<span class="text-purple-400">import</span> <span class="text-green-400">&apos;@/components&apos;</span></code></pre>
 						</div>
 					</div>
 
 					<div>
 						<h4 class="font-medium mb-2"># Prefix</h4>
 						<div class="bg-black/90 text-white font-mono text-sm p-4 rounded-lg">
-							<pre><code><span class="text-purple-400">import</span> <span class="text-green-400">'#/types'</span>
-<span class="text-purple-400">import</span> <span class="text-green-400">'#/utils'</span>
-<span class="text-purple-400">import</span> <span class="text-green-400">'#/components'</span></code></pre>
+							<pre><code><span class="text-purple-400">import</span> <span class="text-green-400">&apos;#/types&apos;</span>
+<span class="text-purple-400">import</span> <span class="text-green-400">&apos;#/utils&apos;</span>
+<span class="text-purple-400">import</span> <span class="text-green-400">&apos;#/components&apos;</span></code></pre>
 						</div>
 					</div>
 
 					<div>
 						<h4 class="font-medium mb-2">~ Prefix</h4>
 						<div class="bg-black/90 text-white font-mono text-sm p-4 rounded-lg">
-							<pre><code><span class="text-purple-400">import</span> <span class="text-green-400">'~/types'</span>
-<span class="text-purple-400">import</span> <span class="text-green-400">'~/utils'</span>
-<span class="text-purple-400">import</span> <span class="text-green-400">'~/components'</span></code></pre>
+							<pre><code><span class="text-purple-400">import</span> <span class="text-green-400">&apos;~/types&apos;</span>
+<span class="text-purple-400">import</span> <span class="text-green-400">&apos;~/utils&apos;</span>
+<span class="text-purple-400">import</span> <span class="text-green-400">&apos;~/components&apos;</span></code></pre>
 						</div>
 					</div>
 				</div>
@@ -236,16 +236,7 @@
 					<div>
 						<h4 class="font-medium mb-2">Generated tsconfig.json paths</h4>
 						<div class="bg-black/90 text-white font-mono text-sm p-4 rounded-lg">
-							<pre><code>{
-  <span class="text-blue-400">"compilerOptions"</span>: {
-    <span class="text-blue-400">"baseUrl"</span>: <span class="text-green-400">"."</span>,
-    <span class="text-blue-400">"paths"</span>: {
-      <span class="text-green-400">"@/types"</span>: [<span class="text-green-400">"./knot_packages/types"</span>],
-      <span class="text-green-400">"@/utils"</span>: [<span class="text-green-400">"./knot_packages/utils"</span>],
-      <span class="text-green-400">"@/ui-components"</span>: [<span class="text-green-400">"./knot_packages/ui-components"</span>]
-    }
-  }
-}</code></pre>
+							<pre><code>{"{"}<br/>  <span class="text-blue-400">&quot;compilerOptions&quot;</span>: {"{"}<br/>    <span class="text-blue-400">&quot;baseUrl&quot;</span>: <span class="text-green-400">&quot;.&quot;</span>,<br/>    <span class="text-blue-400">&quot;paths&quot;</span>: {"{"}<br/>      <span class="text-green-400">&quot;@/types&quot;</span>: [<span class="text-green-400">&quot;./knot_packages/types&quot;</span>],<br/>      <span class="text-green-400">&quot;@/utils&quot;</span>: [<span class="text-green-400">&quot;./knot_packages/utils&quot;</span>],<br/>      <span class="text-green-400">&quot;@/ui-components&quot;</span>: [<span class="text-green-400">&quot;./knot_packages/ui-components&quot;</span>]<br/>    {"}"}<br/>  {"}"}<br/>{"}"}</code></pre>
 						</div>
 					</div>
 
@@ -324,8 +315,8 @@
 				</p>
 				<div class="bg-black/90 text-white font-mono text-sm p-4 rounded-lg">
 					<pre><code><span class="text-gray-500">// Works out of the box</span>
-<span class="text-purple-400">import</span> { <span class="text-yellow-400">UserCard</span> } <span class="text-purple-400">from</span> <span class="text-green-400">'@/ui-components'</span>;
-<span class="text-purple-400">import</span> { <span class="text-yellow-400">api</span> } <span class="text-purple-400">from</span> <span class="text-green-400">'@/utils'</span>;</code></pre>
+<span class="text-purple-400">import</span> {"{ "}<span class="text-yellow-400">UserCard</span> {"} "}<span class="text-purple-400">from</span> <span class="text-green-400">&apos;@/ui-components&apos;</span>;
+<span class="text-purple-400">import</span> {"{ "}<span class="text-yellow-400">api</span> {"} "}<span class="text-purple-400">from</span> <span class="text-green-400">&apos;@/utils&apos;</span>;</code></pre>
 				</div>
 			</div>
 
@@ -336,16 +327,10 @@
 					For Vite projects, you may need to add alias configuration to <code>vite.config.js</code>.
 				</p>
 				<div class="bg-black/90 text-white font-mono text-sm p-4 rounded-lg">
-					<pre><code><span class="text-purple-400">import</span> { <span class="text-yellow-400">defineConfig</span> } <span class="text-purple-400">from</span> <span class="text-green-400">'vite'</span>;
-<span class="text-purple-400">import</span> <span class="text-yellow-400">path</span> <span class="text-purple-400">from</span> <span class="text-green-400">'path'</span>;
+					<pre><code><span class="text-purple-400">import</span> {"{ "}<span class="text-yellow-400">defineConfig</span> {"} "}<span class="text-purple-400">from</span> <span class="text-green-400">&apos;vite&apos;</span>;
+<span class="text-purple-400">import</span> <span class="text-yellow-400">path</span> <span class="text-purple-400">from</span> <span class="text-green-400">&apos;path&apos;</span>;
 
-<span class="text-purple-400">export default</span> <span class="text-yellow-400">defineConfig</span>({
-  <span class="text-blue-400">resolve:</span> {
-    <span class="text-blue-400">alias:</span> {
-      <span class="text-green-400">'@'</span>: <span class="text-yellow-400">path.resolve</span>(__dirname, <span class="text-green-400">'./knot_packages'</span>)
-    }
-  }
-});</code></pre>
+<span class="text-purple-400">export default</span> <span class="text-yellow-400">defineConfig</span>({"{"}<br/>  <span class="text-blue-400">resolve:</span> {"{"}<br/>    <span class="text-blue-400">alias:</span> {"{"}<br/>      <span class="text-green-400">&apos;@&apos;</span>: <span class="text-yellow-400">path.resolve</span>(__dirname, <span class="text-green-400">&apos;./knot_packages&apos;</span>)<br/>    {"}"}<br/>  {"}"}<br/>{"}"});</code></pre>
 				</div>
 			</div>
 
@@ -356,18 +341,10 @@
 					Configure aliases in <code>svelte.config.js</code> for SvelteKit projects.
 				</p>
 				<div class="bg-black/90 text-white font-mono text-sm p-4 rounded-lg">
-					<pre><code><span class="text-purple-400">import</span> <span class="text-yellow-400">adapter</span> <span class="text-purple-400">from</span> <span class="text-green-400">'@sveltejs/adapter-auto'</span>;
-<span class="text-purple-400">import</span> { <span class="text-yellow-400">vitePreprocess</span> } <span class="text-purple-400">from</span> <span class="text-green-400">'@sveltejs/kit/vite'</span>;
+					<pre><code><span class="text-purple-400">import</span> <span class="text-yellow-400">adapter</span> <span class="text-purple-400">from</span> <span class="text-green-400">&apos;@sveltejs/adapter-auto&apos;</span>;
+<span class="text-purple-400">import</span> {"{ "}<span class="text-yellow-400">vitePreprocess</span> {"} "}<span class="text-purple-400">from</span> <span class="text-green-400">&apos;@sveltejs/kit/vite&apos;</span>;
 
-<span class="text-purple-400">export default</span> {
-  <span class="text-blue-400">kit:</span> {
-    <span class="text-blue-400">adapter:</span> <span class="text-yellow-400">adapter</span>(),
-    <span class="text-blue-400">alias:</span> {
-      <span class="text-green-400">'@/*'</span>: <span class="text-green-400">'./knot_packages/*'</span>
-    }
-  },
-  <span class="text-blue-400">preprocess:</span> <span class="text-yellow-400">vitePreprocess</span>()
-};</code></pre>
+<span class="text-purple-400">export default</span> {"{"}<br/>  <span class="text-blue-400">kit:</span> {"{"}<br/>    <span class="text-blue-400">adapter:</span> <span class="text-yellow-400">adapter</span>(),<br/>    <span class="text-blue-400">alias:</span> {"{"}<br/>      <span class="text-green-400">&apos;@/*&apos;</span>: <span class="text-green-400">&apos;./knot_packages/*&apos;</span><br/>    {"}"}<br/>  {"}"},<br/>  <span class="text-blue-400">preprocess:</span> <span class="text-yellow-400">vitePreprocess</span>()<br/>{"};"};</code></pre>
 				</div>
 			</div>
 		</div>
