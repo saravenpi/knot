@@ -91,7 +91,7 @@ export const authApi = {
 // Packages API
 export const packagesApi = {
   async getAll(): Promise<Package[]> {
-    const response = await requestApi<{ success: boolean; data: { packages: Package[] } }>('GET', '/api/packages');
+    const response = await requestApi<{ success: boolean; data: { packages: Package[]; pagination: any } }>('GET', '/api/packages');
     return response.data.packages;
   },
 

@@ -293,7 +293,44 @@ export class PackagesController {
 
       // Convert relative path to absolute path
       const path = require('path');
-      const absoluteFilePath = path.resolve(process.cwd(), packageInfo.filePath.replace(/^\//, ''));
+      const fs = require('fs');
+      
+      // The filePath from DB is like "/uploads/checksum.tar.gz"
+      // We need to convert it to an absolute path
+      let absoluteFilePath: string;
+      
+      if (packageInfo.filePath.startsWith('/uploads/')) {
+        // Remove leading slash and join with process.cwd()
+        const relativePath = packageInfo.filePath.substring(1); // Remove leading /
+        absoluteFilePath = path.join(process.cwd(), relativePath);
+      } else if (packageInfo.filePath.startsWith('uploads/')) {
+        // Already relative, just join with cwd
+        absoluteFilePath = path.join(process.cwd(), packageInfo.filePath);
+      } else {
+        // Try as-is first
+        absoluteFilePath = packageInfo.filePath;
+      }
+      
+      // Check if file exists
+      if (!fs.existsSync(absoluteFilePath)) {
+        console.error('Package file not found at:', absoluteFilePath);
+        console.error('Original path from DB:', packageInfo.filePath);
+        console.error('Current working directory:', process.cwd());
+        
+        // Try one more time with just the filename in uploads directory
+        const filename = path.basename(packageInfo.filePath);
+        const fallbackPath = path.join(process.cwd(), 'uploads', filename);
+        if (fs.existsSync(fallbackPath)) {
+          console.log('Found file at fallback path:', fallbackPath);
+          absoluteFilePath = fallbackPath;
+        } else {
+          return c.json({ 
+            success: false, 
+            error: 'Package file not found on server. It may have been deleted or moved.' 
+          }, 404);
+        }
+      }
+
       const files = await fileExplorerService.listPackageFiles(absoluteFilePath);
       
       return c.json({
@@ -302,6 +339,7 @@ export class PackagesController {
       });
     } catch (error) {
       console.error('Get package files error:', error);
+      console.error('Stack trace:', error instanceof Error ? error.stack : '');
       return c.json({
         success: false,
         error: error instanceof Error ? error.message : 'Failed to get package files'
@@ -326,7 +364,44 @@ export class PackagesController {
 
       // Convert relative path to absolute path
       const path = require('path');
-      const absoluteFilePath = path.resolve(process.cwd(), packageInfo.filePath.replace(/^\//, ''));
+      const fs = require('fs');
+      
+      // The filePath from DB is like "/uploads/checksum.tar.gz"
+      // We need to convert it to an absolute path
+      let absoluteFilePath: string;
+      
+      if (packageInfo.filePath.startsWith('/uploads/')) {
+        // Remove leading slash and join with process.cwd()
+        const relativePath = packageInfo.filePath.substring(1); // Remove leading /
+        absoluteFilePath = path.join(process.cwd(), relativePath);
+      } else if (packageInfo.filePath.startsWith('uploads/')) {
+        // Already relative, just join with cwd
+        absoluteFilePath = path.join(process.cwd(), packageInfo.filePath);
+      } else {
+        // Try as-is first
+        absoluteFilePath = packageInfo.filePath;
+      }
+      
+      // Check if file exists
+      if (!fs.existsSync(absoluteFilePath)) {
+        console.error('Package file not found at:', absoluteFilePath);
+        console.error('Original path from DB:', packageInfo.filePath);
+        console.error('Current working directory:', process.cwd());
+        
+        // Try one more time with just the filename in uploads directory
+        const filename = path.basename(packageInfo.filePath);
+        const fallbackPath = path.join(process.cwd(), 'uploads', filename);
+        if (fs.existsSync(fallbackPath)) {
+          console.log('Found file at fallback path:', fallbackPath);
+          absoluteFilePath = fallbackPath;
+        } else {
+          return c.json({ 
+            success: false, 
+            error: 'Package file not found on server. It may have been deleted or moved.' 
+          }, 404);
+        }
+      }
+
       const fileContent = await fileExplorerService.getFileContent(absoluteFilePath, filePath);
       
       return c.json({
@@ -335,6 +410,7 @@ export class PackagesController {
       });
     } catch (error) {
       console.error('Get package file error:', error);
+      console.error('Stack trace:', error instanceof Error ? error.stack : '');
       return c.json({
         success: false,
         error: error instanceof Error ? error.message : 'Failed to get file content'
