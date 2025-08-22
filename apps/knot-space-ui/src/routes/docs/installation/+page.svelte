@@ -158,13 +158,13 @@
 				<h3 class="text-lg font-semibold mb-3">Test basic functionality</h3>
 				<div class="bg-black/90 text-green-400 font-mono text-sm rounded-lg relative group w-full max-w-full">
 					<div class="overflow-x-auto overflow-y-hidden p-4 pr-12 max-w-full">
-						<pre class="whitespace-nowrap m-0 min-w-max"><code>knot info</code></pre>
+						<pre class="whitespace-nowrap m-0 min-w-max"><code>knot --version</code></pre>
 					</div>
 					<button
 						class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100 z-10"
-						on:click={() => copyToClipboard('knot info')}
+						on:click={() => copyToClipboard('knot --version')}
 					>
-						{#if showCopied && copyText === 'knot info'}
+						{#if showCopied && copyText === 'knot --version'}
 							<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
 						{:else}
 							<Icon icon="solar:copy-bold" class="w-4 h-4" />

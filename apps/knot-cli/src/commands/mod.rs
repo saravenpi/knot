@@ -12,7 +12,7 @@ pub use package::{link_packages, add_package};
 
 // For now, re-export everything else from the old commands
 pub use crate::commands_old::{
-    show_status, show_info, auth_status, publish_package, delete_package,
+    show_status, auth_status, publish_package, delete_package,
     create_team, list_teams, team_info, add_team_member, remove_team_member,
     version_bump, version_prerelease, version_set, update_cli, run_script
 };

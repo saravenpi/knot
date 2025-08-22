@@ -137,7 +137,6 @@ async fn main() -> Result<()> {
                 ),
         )
         .subcommand(Command::new("status").about("Show project status"))
-        .subcommand(Command::new("info").about("Show information about Knot"))
         .subcommand(
             Command::new("auth")
                 .about("Check authentication status")
@@ -337,9 +336,6 @@ async fn main() -> Result<()> {
         }
         Some(("status", _)) => {
             commands::show_status()?;
-        }
-        Some(("info", _)) => {
-            commands::show_info()?;
         }
         Some(("auth", _)) => {
             commands::auth_status().await?;

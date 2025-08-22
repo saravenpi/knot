@@ -43,7 +43,6 @@
 				<div class="text-xs space-y-1">
 					<div><code>knot init</code></div>
 					<div><code>knot status</code></div>
-					<div><code>knot info</code></div>
 				</div>
 			</div>
 
@@ -245,40 +244,6 @@
 				</div>
 			</div>
 
-			<!-- knot info -->
-			<div class="border rounded-lg p-6">
-				<h3 class="text-lg font-semibold mb-3">knot info</h3>
-				<p class="text-muted-foreground mb-4">
-					Display help information, version details, and available commands.
-				</p>
-
-				<div class="space-y-4">
-					<div>
-						<h4 class="font-medium mb-2">Basic Usage</h4>
-						<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
-							<code>knot info</code>
-							<button
-								class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
-								on:click={() => copyToClipboard('knot info')}
-							>
-								{#if showCopied && copyText === 'knot info'}
-									<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
-								{:else}
-									<Icon icon="solar:copy-bold" class="w-4 h-4" />
-								{/if}
-							</button>
-						</div>
-					</div>
-
-					<div>
-						<h4 class="font-medium mb-2">Alternative Commands</h4>
-						<div class="text-sm space-y-2">
-							<div><code class="bg-muted px-2 py-1 rounded">knot --help</code> - Show help information</div>
-							<div><code class="bg-muted px-2 py-1 rounded">knot --version</code> - Show version only</div>
-						</div>
-					</div>
-				</div>
-			</div>
 		</div>
 	</section>
 
@@ -684,7 +649,7 @@
 					<div><code>knot status --verbose</code></div>
 					<div><code>knot link --force</code></div>
 					<div><code>knot run typecheck --all</code></div>
-					<div><code>knot info</code></div>
+					<div><code>knot --help</code></div>
 				</div>
 			</div>
 		</div>

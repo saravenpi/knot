@@ -206,10 +206,6 @@
 						<div class="text-muted-foreground">Show project and linking status</div>
 					</div>
 					<div>
-						<div class="font-medium"><code>knot info</code></div>
-						<div class="text-muted-foreground">Display version and system info</div>
-					</div>
-					<div>
 						<div class="font-medium"><code>knot --version</code></div>
 						<div class="text-muted-foreground">Show CLI version</div>
 					</div>

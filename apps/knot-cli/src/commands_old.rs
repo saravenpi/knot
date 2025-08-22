@@ -631,43 +631,6 @@ pub fn show_status() -> Result<()> {
     Ok(())
 }
 
-pub fn show_info() -> Result<()> {
-    println!("🪢 Knot - Monorepo package manager");
-    println!("📦 Version: {}", env!("CARGO_PKG_VERSION"));
-    println!();
-    println!("📋 Commands:");
-    println!("  🆕 init <name>              Initialize a new project");
-    println!("  📦 init:package <name>      Initialize a new package");
-    println!("  🚀 init:app <name>          Initialize a new app");
-    println!("  ➕ add <package> [--link]   Add package dependency to current app");
-    println!("  📥 install                  Install all dependencies (link packages)");
-    println!("  🔗 link [--symlink]         Copy packages to apps (use --symlink for symlinks)");
-    println!("  🔨 build                    Build app(s) using configured build commands");
-    println!("  ▶️  run <script>            Run a script from config files");
-    println!("  📦 publish [--team <name>]  Publish package to Knot Space");
-    println!("  🗑️  delete <name> <version> Delete package from Knot Space");
-    println!("  👥 team <subcommand>        Team management");
-    println!("  🔑 auth                     Check authentication status");
-    println!("  📊 status                   Show project status");
-    println!("  ℹ️  info                     Show this information");
-    println!("  🔄 update [--force]         Update Knot CLI to latest version");
-    println!("  ❓ help                     Show help for commands");
-    println!();
-    println!("📖 Examples:");
-    println!("  knot init MyProject");
-    println!("  knot init:package utils --team myteam");
-    println!("  knot init:app frontend --description 'Frontend app'");
-    println!("  knot add utils                    # Add local package dependency");
-    println!("  knot add @jwt --link              # Add online package and auto-link");
-    println!("  knot add @team/package            # Add team package");
-    println!("  knot install                      # Install all dependencies");
-    println!("  knot link                         # Copy packages (default)");
-    println!("  knot link --symlink              # Use symlinks instead");
-    println!("  knot build                        # Build all apps from project root");
-    println!("  knot run test                     # Run test script");
-    println!("  knot run dev                      # Run development script");
-    Ok(())
-}
 
 pub async fn build_apps() -> Result<()> {
     let current_dir = std::env::current_dir()?;
