@@ -6,15 +6,11 @@ use std::collections::HashMap;
 use std::path::Path;
 
 pub use engine::TemplateEngine;
-pub use manifest::{TemplateManifest, TemplateCategory};
+pub use manifest::TemplateCategory;
 
 pub struct TemplateManager;
 
 impl TemplateManager {
-    pub fn new() -> TemplateEngine {
-        TemplateEngine::new()
-    }
-
     pub fn create_from_template(
         name: &str,
         version: &str,
@@ -43,25 +39,5 @@ impl TemplateManager {
                 }, template_name))?;
         
         Ok(())
-    }
-    
-    pub fn list_package_templates() -> Vec<String> {
-        let engine = TemplateEngine::new();
-        engine.list_templates(TemplateCategory::Package)
-    }
-    
-    pub fn list_app_templates() -> Vec<String> {
-        let engine = TemplateEngine::new();
-        engine.list_templates(TemplateCategory::App)
-    }
-    
-    pub fn get_package_template_info(name: &str) -> Option<TemplateManifest> {
-        let engine = TemplateEngine::new();
-        engine.get_template(name, TemplateCategory::Package)
-    }
-    
-    pub fn get_app_template_info(name: &str) -> Option<TemplateManifest> {
-        let engine = TemplateEngine::new();
-        engine.get_template(name, TemplateCategory::App)
     }
 }

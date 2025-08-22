@@ -1,13 +1,12 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { teamsStore, authStore } from '../../../lib/stores';
-	import { usersApi } from '../../../lib/api';
+	import { teamsStore, authStore } from '$lib/stores/index';
+	import { usersApi, type User } from '$lib/api';
 	import Icon from '@iconify/svelte';
-	import Drawer from '../../lib/components/ui/drawer.svelte';
-	import Input from '../../lib/components/ui/input.svelte';
-	import Button from '../../lib/components/ui/button.svelte';
-	import Textarea from '../../lib/components/ui/textarea.svelte';
-	import type { User } from '#/types';
+	import Drawer from '$lib/components/ui/drawer.svelte';
+	import Input from '$lib/components/ui/input.svelte';
+	import Button from '$lib/components/ui/button.svelte';
+	import Textarea from '$lib/components/ui/textarea.svelte';
 
 	$: teams = $teamsStore.teams;
 	$: loading = $teamsStore.loading;

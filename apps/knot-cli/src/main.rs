@@ -1,5 +1,4 @@
 mod commands;
-mod commands_old;
 mod config;
 mod downloader;
 mod ignore;
@@ -131,8 +130,8 @@ async fn main() -> Result<()> {
                 .about("Run a script from knot.yml, app.yml, or package.yml")
                 .arg(
                     Arg::new("script")
-                        .help("Script name to run")
-                        .required(true)
+                        .help("Script name to run (optional - will show interactive selection if omitted)")
+                        .required(false)
                         .index(1),
                 ),
         )
@@ -331,8 +330,11 @@ async fn main() -> Result<()> {
             commands::link_packages(use_symlinks).await?;
         }
         Some(("run", sub_matches)) => {
-            let script_name = sub_matches.get_one::<String>("script").unwrap();
-            commands::run_script(script_name).await?;
+            if let Some(script_name) = sub_matches.get_one::<String>("script") {
+                commands::run_script(script_name).await?;
+            } else {
+                commands::run_script_interactive().await?;
+            }
         }
         Some(("status", _)) => {
             commands::show_status()?;

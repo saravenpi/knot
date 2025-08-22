@@ -2,7 +2,8 @@
 	import '../app.css';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { authStore } from '../lib/stores';
+	import { goto } from '$app/navigation';
+	import { authStore } from '$lib/stores';
 	import Icon from '@iconify/svelte';
 
 	$: user = $authStore.user;
@@ -12,15 +13,15 @@
 	$: currentPath = $page.url.pathname;
 
 	// Pages that should use public layout even when authenticated (docs has its own layout)
-	$: isPublicPage = currentPath === '/login' || currentPath === '/register' || currentPath === '/';
+	$: isPublicPage = currentPath === '/login' || currentPath === '/register' || (currentPath === '/' && !isLoggedIn);
 	$: isDocsPage = currentPath.startsWith('/docs');
 	$: isPackagesPage = currentPath.startsWith('/packages');
 
 	onMount(async () => {
 		await authStore.initialize();
 
-		// If user is authenticated, redirect to dashboard
-		if ($authStore.isAuthenticated) {
+		// If user is authenticated and on root page, redirect to dashboard
+		if ($authStore.isAuthenticated && currentPath === '/') {
 			goto('/dashboard');
 			return;
 		}
@@ -87,8 +88,8 @@
       <!-- Navigation -->
       <nav class="space-y-2">
         <a 
-          href="/" 
-          class="flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {currentPath === '/' ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'}"
+          href="/dashboard" 
+          class="flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {currentPath === '/dashboard' ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'}"
         >
           <Icon icon="solar:home-2-bold" class="w-5 h-5" />
           <span>Dashboard</span>
@@ -150,8 +151,8 @@
   <nav class="lg:hidden fixed bottom-0 left-0 right-0 bg-card border-t border-border z-50">
     <div class="flex items-center justify-around py-2">
       <a 
-        href="/" 
-        class="flex flex-col items-center py-2 px-4 min-w-0 flex-1 text-center transition-colors {currentPath === '/' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}"
+        href="/dashboard" 
+        class="flex flex-col items-center py-2 px-4 min-w-0 flex-1 text-center transition-colors {currentPath === '/dashboard' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}"
       >
         <Icon icon="solar:home-2-bold" class="w-6 h-6 mb-1" />
         <span class="text-xs font-medium truncate">Dashboard</span>

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import { authStore } from '../../lib/stores';
+	import { authStore } from '$lib/stores';
 	import Icon from '@iconify/svelte';
 	import Input from '../../lib/components/ui/input.svelte';
 	import Button from '../../lib/components/ui/button.svelte';

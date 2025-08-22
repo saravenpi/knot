@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { packagesStore } from '../../lib/stores';
-	import { formatDownloadCount, formatFileSize, formatDate, formatTimeAgo } from '../../lib/utils/format';
-	import PackageCard from '../../lib/components/PackageCard.svelte';
+	import { packagesStore } from '$lib/stores';
+	import { formatDownloadCount, formatFileSize, formatDate, formatTimeAgo } from '$lib/utils/format';
+	import PackageCard from '$lib/components/PackageCard.svelte';
 
 	$: packages = $packagesStore.packages;
 	$: loading = $packagesStore.loading;

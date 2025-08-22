@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { packagesStore, authStore } from '../../lib/stores';
+	import { packagesStore, authStore } from '$lib/stores';
 	import { packagesApi } from '../../lib/api';
 	import { formatLargeNumber } from '../../lib/utils/format';
 

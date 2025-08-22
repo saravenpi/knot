@@ -77,17 +77,6 @@ impl TemplateEngine {
         result
     }
 
-    pub fn list_templates(&self, category: TemplateCategory) -> Vec<String> {
-        match category {
-            TemplateCategory::Package => {
-                super::manifest::get_package_templates().keys().cloned().collect()
-            }
-            TemplateCategory::App => {
-                super::manifest::get_app_templates().keys().cloned().collect()
-            }
-        }
-    }
-
     pub fn get_template(&self, name: &str, category: TemplateCategory) -> Option<TemplateManifest> {
         match category {
             TemplateCategory::Package => {

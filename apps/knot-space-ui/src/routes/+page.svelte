@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { packagesStore, authStore } from '../lib/stores';
+	import { packagesStore, authStore } from '$lib/stores';
 	import { packagesApi } from '../lib/api';
 	import { formatDownloadCount, formatLargeNumber } from '../lib/utils/format';
 	import Icon from '@iconify/svelte';

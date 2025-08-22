@@ -7,7 +7,7 @@ A modern monorepo package manager for TypeScript/JavaScript projects that simpli
 - **🔗 Smart Package Linking** - Automatic symlinking of local packages
 - **☁️ Online Package Support** - Download packages from knot space (`@package`, `@team/package`)
 - **⚡ TypeScript Integration** - Per-app TypeScript alias configuration
-- **🔨 Build Management** - Execute build commands across apps or individually  
+- **🔨 Build Management** - Execute build commands across apps or individually
 - **▶️ Script Runner** - Run scripts from any config file with `knot run`
 - **📦 Flexible Configuration** - YAML-based configuration with multiple syntax options
 
@@ -27,7 +27,6 @@ curl -fsSL https://raw.githubusercontent.com/saravenpi/knot/main/install.sh | ba
 ```bash
 knot init <name> [--description <desc>]    # Initialize a new project
 knot status                                # Show project status
-knot info                                  # Show help and version
 ```
 
 ### Package & App Management
@@ -36,7 +35,7 @@ knot init:package <name> [--team <team>]   # Create a new package
 knot init:app <name> [--description <desc>] # Create a new app
 ```
 
-### Linking & Building  
+### Linking & Building
 ```bash
 knot link                                  # Link packages to apps
 knot build                                 # Build apps (context-aware)
@@ -62,13 +61,13 @@ knot init:package utils --team myteam
 knot init:package types --team myteam
 cd ..
 
-# 3. Create applications  
+# 3. Create applications
 cd apps
 knot init:app frontend --description "React frontend"
 knot init:app backend --description "Node.js API"
 cd ..
 
-# 4. Configure dependencies and scripts in knot.yml  
+# 4. Configure dependencies and scripts in knot.yml
 # 5. Link packages and build
 knot link
 knot build
@@ -101,7 +100,7 @@ apps:
       - utils
       - "@jwt"
   backend:
-    tsAlias: "#"  
+    tsAlias: "#"
     packages:
       - types
       - "@klysium/logger"
@@ -115,7 +114,7 @@ description: React frontend app
 tsAlias: "~"                    # Optional: Override project tsAlias
 build: "npm run build"          # Build command
 
-# App-specific scripts  
+# App-specific scripts
 scripts:
   dev: "vite dev --port 3000"
   test: "vitest run"
@@ -138,7 +137,7 @@ version: 1.0.0
 # Package scripts
 scripts:
   build: "tsc && rollup -c"
-  test: "vitest run --coverage"  
+  test: "vitest run --coverage"
   docs: "typedoc --out docs src/"
   benchmark: "node benchmarks/performance.js"
 ```
@@ -170,14 +169,14 @@ build: "npm run build"          # Simple command
 # Build all apps from project root
 cd my-monorepo
 knot build
-# Output: 
+# Output:
 # 🔨 Building all apps for project 'MyProject'...
 # 📋 Found 2 app(s) with build commands
 # 🔨 Building app 'frontend'...
 # 🔨 Building app 'backend'...
 # 🎉 All apps built successfully!
 
-# Build single app from app directory  
+# Build single app from app directory
 cd apps/frontend
 knot build
 # Output:
@@ -194,7 +193,7 @@ Knot provides a powerful script runner similar to npm scripts, with context-awar
 
 Scripts are resolved in priority order:
 1. **App directory** (`app.yml`) - Highest priority
-2. **Package directory** (`package.yml`) - Medium priority  
+2. **Package directory** (`package.yml`) - Medium priority
 3. **Project root** (`knot.yml`) - Lowest priority
 
 ### Usage Examples
@@ -202,7 +201,7 @@ Scripts are resolved in priority order:
 ```bash
 # Run scripts from different contexts
 cd apps/frontend && knot run dev     # Runs frontend dev script
-cd packages/utils && knot run test   # Runs utils test script  
+cd packages/utils && knot run test   # Runs utils test script
 cd project-root && knot run setup    # Runs project setup script
 
 # Script not found shows available options
@@ -214,7 +213,7 @@ knot run invalid-script
 #     • dev - vite dev --port 3000
 #     • test - vitest run
 #     • lint - eslint src/ --ext .ts,.tsx
-#   🏗️ Project scripts (MyProject)  
+#   🏗️ Project scripts (MyProject)
 #     • setup - npm install && echo 'Setup complete'
 #     • clean - rm -rf */dist */build
 ```
@@ -235,7 +234,7 @@ scripts:
   dev-server: "nodemon --exec ts-node src/server.ts"
   dev-client: "vite dev --port 3000"
 
-# Testing pipeline  
+# Testing pipeline
 scripts:
   test: "jest --coverage"
   test-watch: "jest --watch"
@@ -277,7 +276,7 @@ apps:
 
 ### Priority Order
 1. `app.yml` `tsAlias` (highest priority)
-2. `knot.yml` app-specific `tsAlias`  
+2. `knot.yml` app-specific `tsAlias`
 3. `knot.yml` global `tsAlias`
 
 ### Generated TypeScript Configuration
@@ -341,7 +340,7 @@ apps:
   frontend:
     packages:
       - types              # Local package
-      - utils              # Local package  
+      - utils              # Local package
       - "@jwt"            # Public online package
       - "@myteam/logger"  # Team online package
 ```

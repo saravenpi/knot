@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
-	import { packagesStore, authStore } from '../../../lib/stores';
+	import { packagesStore, authStore } from '$lib/stores';
 	import { formatDownloadCount, formatFileSize, formatDateTime, formatTimeAgo, formatDate } from '../../../lib/utils/format';
 	import Icon from '@iconify/svelte';
 	import Chart from '../../../lib/components/ui/chart.svelte';

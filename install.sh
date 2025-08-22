@@ -41,7 +41,7 @@ command_exists() {
 # Check if this is an update vs fresh install
 check_existing_installation() {
     if command_exists knot; then
-        CURRENT_VERSION=$(knot info 2>/dev/null | grep "Version:" | sed 's/.*Version: //' | head -1 || echo "unknown")
+        CURRENT_VERSION=$(knot --version 2>/dev/null | sed 's/knot //' || echo "unknown")
         INSTALL_PATH=$(which knot)
         IS_UPDATE=true
         print_step "Found existing Knot installation"
@@ -56,10 +56,10 @@ check_existing_installation() {
 # Get latest version from GitHub
 get_latest_version() {
     print_step "Checking latest version..."
-    
+
     # Try to get latest release version
     LATEST_VERSION=$(curl -s https://api.github.com/repos/saravenpi/knot/releases/latest | grep '"tag_name"' | sed 's/.*"tag_name": "\([^"]*\)".*/\1/' | sed 's/^v//')
-    
+
     if [ -z "$LATEST_VERSION" ] || [ "$LATEST_VERSION" = "null" ]; then
         LATEST_VERSION="development"
         print_step "Latest version: development (from main branch)"
@@ -73,17 +73,17 @@ should_update() {
     if [ "$IS_UPDATE" = false ]; then
         return 0  # Fresh install needed
     fi
-    
+
     if [ "$LATEST_VERSION" = "development" ]; then
         print_step "Development version available, will update"
         return 0  # Update to latest development
     fi
-    
+
     if [ "$CURRENT_VERSION" != "$LATEST_VERSION" ]; then
         print_step "Update available: $CURRENT_VERSION → $LATEST_VERSION"
         return 0  # Update needed
     fi
-    
+
     print_success "Already on latest version ($CURRENT_VERSION)"
     print_step "Use --force to reinstall anyway"
     return 1  # No update needed
@@ -92,7 +92,7 @@ should_update() {
 # Try to download pre-built binary
 try_binary_download() {
     print_step "Attempting to download pre-built binary..."
-    
+
     # Map OS and ARCH to GitHub release naming
     case "$OS-$ARCH" in
         "linux-x86_64")
@@ -112,19 +112,19 @@ try_binary_download() {
             return 1
             ;;
     esac
-    
+
     if [ "$LATEST_VERSION" = "development" ]; then
         print_warning "Pre-built binaries not available for development version"
         return 1
     fi
-    
+
     # Download the binary
     DOWNLOAD_URL="https://github.com/saravenpi/knot/releases/download/v$LATEST_VERSION/$BINARY_NAME"
     print_step "Downloading: $DOWNLOAD_URL"
-    
+
     if curl -fL "$DOWNLOAD_URL" -o "$TEMP_DIR/knot-binary"; then
         chmod +x "$TEMP_DIR/knot-binary"
-        
+
         # Test the binary
         if "$TEMP_DIR/knot-binary" --version >/dev/null 2>&1; then
             print_success "Downloaded and verified pre-built binary"
@@ -144,11 +144,11 @@ try_binary_download() {
 use_cached_source() {
     CACHE_DIR="$HOME/.knot-build-cache"
     SRC_DIR="$CACHE_DIR/src"
-    
+
     if [ -d "$SRC_DIR" ]; then
         print_step "Found cached source, updating..."
         cd "$SRC_DIR"
-        
+
         # Update the repository
         if git pull origin main >/dev/null 2>&1; then
             print_success "Updated cached source"
@@ -167,7 +167,7 @@ use_cached_source() {
 detect_system() {
     OS=$(uname -s | tr '[:upper:]' '[:lower:]')
     ARCH=$(uname -m)
-    
+
     case $ARCH in
         x86_64)
             ARCH="x86_64"
@@ -183,33 +183,33 @@ detect_system() {
             exit 1
             ;;
     esac
-    
+
     print_step "Detected system: $OS-$ARCH"
 }
 
 # Check prerequisites
 check_prerequisites() {
     print_step "Checking prerequisites..."
-    
+
     if ! command_exists git; then
         print_error "Git is required but not installed."
         print_error "Please install git and try again."
         exit 1
     fi
-    
+
     if ! command_exists rustc; then
         print_error "Rust is required but not installed."
         print_error "Install Rust from https://rustup.rs/ and try again."
         print_error "Or run: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh"
         exit 1
     fi
-    
+
     if ! command_exists cargo; then
         print_error "Cargo is required but not installed."
         print_error "Please install Rust/Cargo and try again."
         exit 1
     fi
-    
+
     print_success "All prerequisites found"
 }
 
@@ -217,7 +217,7 @@ check_prerequisites() {
 create_temp_dir() {
     TEMP_DIR=$(mktemp -d)
     print_step "Created temporary directory: $TEMP_DIR"
-    
+
     # Cleanup on exit
     trap 'rm -rf "$TEMP_DIR"' EXIT
 }
@@ -225,9 +225,9 @@ create_temp_dir() {
 # Clone repository
 clone_repository() {
     print_step "Cloning Knot repository..."
-    
+
     REPO_URL="${KNOT_REPO_URL:-https://github.com/saravenpi/knot.git}"
-    
+
     # If running locally for testing, check for monorepo structure
     if [[ -f "$(dirname "$0")/apps/knot-cli/Cargo.toml" ]]; then
         print_warning "Using local development version"
@@ -243,17 +243,17 @@ clone_repository() {
             exit 1
         fi
     fi
-    
+
     print_success "Repository cloned successfully"
 }
 
 # Build the project with caching
 build_project() {
     print_step "Building Knot..."
-    
+
     local src_dir
     local use_cache=false
-    
+
     # Try to use cached source first
     if use_cached_source; then
         src_dir="$HOME/.knot-build-cache/src"
@@ -262,40 +262,40 @@ build_project() {
     else
         src_dir="$TEMP_DIR/knot"
         print_step "Using fresh source"
-        
+
         # Setup cache for next time
         CACHE_DIR="$HOME/.knot-build-cache"
         mkdir -p "$CACHE_DIR"
-        
+
         # Copy source to cache for future builds
         if [ -d "$src_dir" ]; then
             print_step "Caching source for future updates..."
             cp -r "$src_dir" "$CACHE_DIR/src" 2>/dev/null || true
         fi
     fi
-    
+
     cd "$src_dir/apps/knot-cli"
-    
+
     # Use cached build directory if available
     if [ "$use_cache" = true ]; then
         export CARGO_TARGET_DIR="$HOME/.knot-build-cache/target"
         mkdir -p "$CARGO_TARGET_DIR"
         print_step "Using cached build artifacts for faster compilation"
     fi
-    
+
     # Build in release mode for optimal performance
     if ! cargo build --release; then
         print_error "Failed to build Knot"
         exit 1
     fi
-    
+
     # Set binary path based on build location
     if [ "$use_cache" = true ]; then
         BINARY_PATH="$HOME/.knot-build-cache/target/release/knot"
     else
         BINARY_PATH="$src_dir/apps/knot-cli/target/release/knot"
     fi
-    
+
     print_success "Build completed successfully"
 }
 
@@ -312,11 +312,11 @@ determine_install_dir() {
         # Create ~/.local/bin if it doesn't exist
         INSTALL_DIR="$HOME/.local/bin"
         mkdir -p "$INSTALL_DIR"
-        
+
         # Add to PATH if not already there
         if [[ ":$PATH:" != *":$INSTALL_DIR:"* ]]; then
             print_warning "Adding $INSTALL_DIR to your PATH"
-            
+
             # Detect shell and add to appropriate config file
             if [[ -n "$ZSH_VERSION" ]] || [[ "$SHELL" == *"zsh"* ]]; then
                 SHELL_CONFIG="$HOME/.zshrc"
@@ -328,25 +328,25 @@ determine_install_dir() {
             else
                 SHELL_CONFIG="$HOME/.bashrc"
             fi
-            
+
             echo "export PATH=\"$INSTALL_DIR:\$PATH\"" >> "$SHELL_CONFIG"
             print_warning "Added to $SHELL_CONFIG. Please restart your shell or run: source $SHELL_CONFIG"
         fi
     fi
-    
+
     print_step "Installing to: $INSTALL_DIR"
 }
 
 # Install binary
 install_binary() {
     print_step "Installing Knot binary..."
-    
+
     # BINARY_PATH should be set by either try_binary_download or build_project
     if [[ ! -f "$BINARY_PATH" ]]; then
         print_error "Binary not found at $BINARY_PATH"
         exit 1
     fi
-    
+
     # If updating existing installation, preserve the location
     if [ "$IS_UPDATE" = true ] && [ -n "$INSTALL_PATH" ]; then
         TARGET_PATH="$INSTALL_PATH"
@@ -356,18 +356,18 @@ install_binary() {
         TARGET_PATH="$INSTALL_DIR/knot"
         print_step "Installing to $TARGET_PATH"
     fi
-    
+
     # Create backup for updates
     if [ "$IS_UPDATE" = true ] && [ -f "$TARGET_PATH" ]; then
         cp "$TARGET_PATH" "$TARGET_PATH.backup" 2>/dev/null || true
         print_step "Created backup: $TARGET_PATH.backup"
     fi
-    
+
     # Copy binary to install directory
     if ! cp "$BINARY_PATH" "$TARGET_PATH"; then
         print_error "Failed to copy binary to $INSTALL_DIR"
         print_error "Make sure you have write permissions to $INSTALL_DIR"
-        
+
         # Restore backup if update failed
         if [ "$IS_UPDATE" = true ] && [ -f "$TARGET_PATH.backup" ]; then
             mv "$TARGET_PATH.backup" "$TARGET_PATH" 2>/dev/null || true
@@ -375,15 +375,15 @@ install_binary() {
         fi
         exit 1
     fi
-    
+
     # Make it executable
     chmod +x "$TARGET_PATH"
-    
+
     # Remove backup if successful
     if [ "$IS_UPDATE" = true ] && [ -f "$TARGET_PATH.backup" ]; then
         rm -f "$TARGET_PATH.backup"
     fi
-    
+
     if [ "$IS_UPDATE" = true ]; then
         print_success "Knot updated successfully at $TARGET_PATH"
     else
@@ -394,9 +394,9 @@ install_binary() {
 # Verify installation
 verify_installation() {
     print_step "Verifying installation..."
-    
+
     if command_exists knot; then
-        VERSION=$(knot info 2>/dev/null | grep "Version:" | head -1 || echo "Version: 0.1.0")
+        VERSION=$(knot --version 2>/dev/null || echo "knot 0.1.0")
         print_success "Knot is installed and working!"
         print_success "$VERSION"
         print_success "Location: $(which knot)"
@@ -416,7 +416,7 @@ show_usage() {
     echo "  knot init:app my-app          # Create a new app"
     echo "  knot link                     # Link packages to apps"
     echo "  knot status                   # Show project status"
-    echo "  knot info                     # Show help information"
+    echo "  knot --help                   # Show help information"
     echo ""
     print_step "Documentation: https://github.com/saravenpi/knot"
 }
@@ -433,21 +433,21 @@ main() {
                 ;;
         esac
     done
-    
+
     print_header
-    
+
     detect_system
     check_existing_installation
     get_latest_version
-    
+
     # Check if update is needed (unless forced)
     if [ "$FORCE_INSTALL" = false ] && ! should_update; then
         return 0
     fi
-    
+
     check_prerequisites
     create_temp_dir
-    
+
     # Try fast binary download first
     if try_binary_download; then
         print_step "Using pre-built binary for fast installation"
@@ -456,18 +456,18 @@ main() {
         clone_repository
         build_project
     fi
-    
+
     # Only determine install dir for fresh installs
     if [ "$IS_UPDATE" = false ]; then
         determine_install_dir
     fi
-    
+
     install_binary
     verify_installation
-    
+
     if [ "$IS_UPDATE" = true ]; then
         print_success "Update completed successfully! 🎉"
-        NEW_VERSION=$(knot info 2>/dev/null | grep "Version:" | sed 's/.*Version: //' | head -1 || echo "unknown")
+        NEW_VERSION=$(knot --version 2>/dev/null | sed 's/knot //' || echo "unknown")
         print_success "Updated from $CURRENT_VERSION to $NEW_VERSION"
     else
         show_usage

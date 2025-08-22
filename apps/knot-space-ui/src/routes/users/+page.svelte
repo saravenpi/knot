@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { usersApi, type User } from '../../../lib/api';
-	import { formatDate } from '../../../lib/utils/format';
+	import { usersApi, type User } from '$lib/api';
+	import { formatDate } from '$lib/utils/format';
 	import Icon from '@iconify/svelte';
 
 	let allUsers: User[] = [];

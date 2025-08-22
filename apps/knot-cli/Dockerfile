@@ -30,8 +30,8 @@ USER knot
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD knot info || exit 1
+    CMD knot --version || exit 1
 
 # Default command
 ENTRYPOINT ["knot"]
-CMD ["info"]
+CMD ["--help"]
