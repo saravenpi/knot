@@ -128,7 +128,7 @@
 		</a>
 	</div>
 {:else}
-	<div class="space-y-6" on:click={handleClickOutside}>
+	<div class="space-y-6" on:click={handleClickOutside} on:keydown={handleClickOutside} role="button" tabindex="0">
 		<!-- Header -->
 		<div class="flex items-start justify-between gap-4">
 			<div class="flex-1 min-w-0">
