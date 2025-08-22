@@ -75,27 +75,27 @@
 
 	<!-- Update Command -->
 	<section class="mb-12">
-		<h2 class="text-2xl font-bold mb-6">Keeping Knot Updated</h2>
+		<h2 class="text-2xl font-bold mb-6">Keeping Knot Up to Date</h2>
 		<div class="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-lg p-6">
 			<div class="flex items-start space-x-3">
 				<Icon icon="solar:refresh-circle-bold" class="w-6 h-6 text-purple-600 mt-1 flex-shrink-0" />
 				<div class="flex-1 min-w-0">
-					<h3 class="font-semibold text-purple-900 mb-2">Self-Update Command</h3>
+					<h3 class="font-semibold text-purple-900 mb-2">Self-Upgrade Command</h3>
 					<p class="text-sm text-purple-700 mb-4">
-						Knot can update itself to the latest version automatically. No need to reinstall!
+						Knot can upgrade itself to the latest version automatically. No need to reinstall!
 					</p>
 					<div class="space-y-3">
 						<div>
-							<div class="text-sm font-medium text-purple-900 mb-1">Update to latest version</div>
+							<div class="text-sm font-medium text-purple-900 mb-1">Upgrade to latest version</div>
 							<div class="bg-black/90 text-green-400 font-mono text-sm rounded-lg relative group w-full max-w-full">
 								<div class="overflow-x-auto overflow-y-hidden p-4 pr-12 max-w-full">
-									<pre class="whitespace-nowrap m-0 min-w-max"><code>knot update</code></pre>
+									<pre class="whitespace-nowrap m-0 min-w-max"><code>knot upgrade</code></pre>
 								</div>
 								<button
 									class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100 z-10"
-									on:click={() => copyToClipboard('knot update')}
+									on:click={() => copyToClipboard('knot upgrade')}
 								>
-									{#if showCopied && copyText === 'knot update'}
+									{#if showCopied && copyText === 'knot upgrade'}
 										<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
 									{:else}
 										<Icon icon="solar:copy-bold" class="w-4 h-4" />
@@ -104,16 +104,16 @@
 							</div>
 						</div>
 						<div>
-							<div class="text-sm font-medium text-purple-900 mb-1">Force update (reinstall current version)</div>
+							<div class="text-sm font-medium text-purple-900 mb-1">Force upgrade (reinstall current version)</div>
 							<div class="bg-black/90 text-green-400 font-mono text-sm rounded-lg relative group w-full max-w-full">
 								<div class="overflow-x-auto overflow-y-hidden p-4 pr-12 max-w-full">
-									<pre class="whitespace-nowrap m-0 min-w-max"><code>knot update --force</code></pre>
+									<pre class="whitespace-nowrap m-0 min-w-max"><code>knot upgrade --force</code></pre>
 								</div>
 								<button
 									class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100 z-10"
-									on:click={() => copyToClipboard('knot update --force')}
+									on:click={() => copyToClipboard('knot upgrade --force')}
 								>
-									{#if showCopied && copyText === 'knot update --force'}
+									{#if showCopied && copyText === 'knot upgrade --force'}
 										<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
 									{:else}
 										<Icon icon="solar:copy-bold" class="w-4 h-4" />

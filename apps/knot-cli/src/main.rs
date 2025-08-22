@@ -284,11 +284,11 @@ async fn main() -> Result<()> {
                 ),
         )
         .subcommand(
-            Command::new("update")
-                .about("Update Knot CLI to the latest version")
+            Command::new("upgrade")
+                .about("Upgrade Knot CLI to the latest version")
                 .arg(
                     Arg::new("force")
-                        .help("Force update even if already on latest version")
+                        .help("Force upgrade even if already on latest version")
                         .long("force")
                         .action(clap::ArgAction::SetTrue),
                 )
@@ -413,7 +413,7 @@ async fn main() -> Result<()> {
             }
             _ => unreachable!(),
         },
-        Some(("update", sub_matches)) => {
+        Some(("upgrade", sub_matches)) => {
             let force = sub_matches.get_flag("force");
             commands::update_cli(force).await?;
         }
