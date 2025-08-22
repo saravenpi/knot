@@ -1,5 +1,5 @@
 use anyhow::Result;
-use inquire::Text;
+use inquire::{Text, Select};
 use serde::{Deserialize, Serialize};
 use std::env;
 use std::io::IsTerminal;
@@ -147,13 +147,122 @@ fn prompt_for_input(prompt: &str, default: Option<&str>) -> Result<String> {
     Ok(text_prompt.prompt()?)
 }
 
+// Helper function to fetch teams and allow interactive selection
+async fn select_team_interactively(prompt_message: &str) -> Result<String> {
+    if !is_interactive() {
+        anyhow::bail!("Interactive mode required but running in non-interactive environment");
+    }
+
+    // Fetch available teams
+    let base_url = get_knot_space_url();
+    let url = format!("{}/api/teams", base_url);
+
+    let client = reqwest::Client::new();
+    let response = client.get(&url).send().await?;
+
+    if !response.status().is_success() {
+        anyhow::bail!("Failed to fetch teams list");
+    }
+
+    let response_text = response.text().await?;
+    let api_response: ApiResponse<Vec<Team>> = match serde_json::from_str(&response_text) {
+        Ok(resp) => resp,
+        Err(_) => anyhow::bail!("Failed to parse teams response"),
+    };
+
+    if !api_response.success {
+        anyhow::bail!("Server error: {}", api_response.error.unwrap_or_else(|| "Unknown error".to_string()));
+    }
+
+    let teams = api_response.data.unwrap_or_default();
+
+    if teams.is_empty() {
+        anyhow::bail!("No teams found. Create a team first with 'knot team create'");
+    }
+
+    // Create selection options
+    let team_options: Vec<String> = teams
+        .iter()
+        .map(|team| {
+            if let Some(desc) = &team.description {
+                format!("{} - {}", team.name, desc)
+            } else {
+                team.name.clone()
+            }
+        })
+        .collect();
+
+    println!("🔍 Available teams:");
+    let selection = Select::new(prompt_message, team_options.clone())
+        .with_help_message("Use arrow keys to navigate, Enter to select, Esc to cancel")
+        .prompt();
+
+    match selection {
+        Ok(selected_text) => {
+            // Find the team name from the selected option
+            let selected_index = team_options
+                .iter()
+                .position(|opt| opt == &selected_text)
+                .unwrap_or(0);
+            Ok(teams[selected_index].name.clone())
+        }
+        Err(_) => {
+            anyhow::bail!("Team selection cancelled");
+        }
+    }
+}
+
+// Helper function to get username with validation
+fn prompt_for_username(prompt_message: &str) -> Result<String> {
+    let text_prompt = Text::new(prompt_message)
+        .with_validator(|input: &str| {
+            if input.trim().is_empty() {
+                Ok(inquire::validator::Validation::Invalid("Username is required".into()))
+            } else if !input.chars().all(|c| c.is_ascii_alphanumeric() || c == '-' || c == '_') {
+                Ok(inquire::validator::Validation::Invalid("Username can only contain letters, numbers, hyphens, and underscores".into()))
+            } else {
+                Ok(inquire::validator::Validation::Valid)
+            }
+        });
+
+    Ok(text_prompt.prompt()?)
+}
+
 // Public commands
-pub async fn create_team(name: &str, description: Option<&str>) -> Result<()> {
+pub async fn create_team(name: Option<&str>, description: Option<&str>) -> Result<()> {
     let token = require_auth_token()?;
 
+    // Interactive prompts for missing arguments
+    let team_name = match name {
+        Some(n) => n.to_string(),
+        None => {
+            if is_interactive() {
+                println!("🎉 Creating a new team!");
+                println!();
+                prompt_for_input("💼 Team name", None)?
+            } else {
+                anyhow::bail!("Team name is required. Use: knot team create <name>");
+            }
+        }
+    };
+
+    let team_description = match description {
+        Some(d) => Some(d.to_string()),
+        None => {
+            if is_interactive() {
+                match prompt_for_input("📝 Team description (optional)", Some("")) {
+                    Ok(desc) if !desc.trim().is_empty() => Some(desc),
+                    _ => None,
+                }
+            } else {
+                None
+            }
+        }
+    };
+
     let request = CreateTeamRequest {
-        name: name.to_string(),
-        description: description.map(|s| s.to_string()),
+        name: team_name,
+        description: team_description,
     };
 
     let base_url = get_knot_space_url();
@@ -272,9 +381,23 @@ pub async fn list_teams() -> Result<()> {
     Ok(())
 }
 
-pub async fn team_info(name: &str) -> Result<()> {
+pub async fn team_info(name: Option<&str>) -> Result<()> {
+    // Get team name either from argument or interactive selection
+    let team_name = match name {
+        Some(n) => n.to_string(),
+        None => {
+            if is_interactive() {
+                println!("🔍 Select a team to view information:");
+                println!();
+                select_team_interactively("Select team").await?
+            } else {
+                anyhow::bail!("Team name is required. Use: knot team info <name>");
+            }
+        }
+    };
+
     let base_url = get_knot_space_url();
-    let url = format!("{}/api/teams/{}", base_url, name);
+    let url = format!("{}/api/teams/{}", base_url, team_name);
 
     let client = reqwest::Client::new();
     let response = client.get(&url).send().await?;
@@ -336,7 +459,9 @@ pub async fn add_team_member(team: Option<&str>, username: Option<&str>, role: &
         Some(t) => t.to_string(),
         None => {
             if is_interactive() {
-                prompt_for_input("🏢 Team name", None)?
+                println!("➕ Adding member to team");
+                println!();
+                select_team_interactively("Select team to add member to").await?
             } else {
                 anyhow::bail!("Team name is required. Use: knot team add-member <team> <username>");
             }
@@ -347,16 +472,47 @@ pub async fn add_team_member(team: Option<&str>, username: Option<&str>, role: &
         Some(u) => u.to_string(),
         None => {
             if is_interactive() {
-                prompt_for_input("👤 Username to add", None)?
+                prompt_for_username("👤 Username to add to team")?
             } else {
                 anyhow::bail!("Username is required. Use: knot team add-member <team> <username>");
             }
         }
     };
 
+    // Interactive role selection if in interactive mode and default role is being used
+    let selected_role = if is_interactive() && team.is_none() && username.is_none() {
+        let role_options = vec!["member".to_string(), "admin".to_string()];
+        let role_descriptions = vec![
+            "member - Can view team packages and participate in team activities",
+            "admin - Can manage team members and settings"
+        ];
+        
+        println!();
+        println!("🎭 Select role for the new team member:");
+        let selection = Select::new("Select role", role_descriptions.clone())
+            .with_help_message("Use arrow keys to navigate, Enter to select")
+            .prompt();
+
+        match selection {
+            Ok(selected_desc) => {
+                let selected_index = role_descriptions
+                    .iter()
+                    .position(|desc| desc == &selected_desc)
+                    .unwrap_or(0);
+                role_options[selected_index].clone()
+            }
+            Err(_) => {
+                println!("❌ Role selection cancelled, using default role: member");
+                "member".to_string()
+            }
+        }
+    } else {
+        role.to_string()
+    };
+
     let request = AddTeamMemberRequest {
         username: username_str.clone(),
-        role: role.to_string(),
+        role: selected_role,
     };
 
     let base_url = get_knot_space_url();
@@ -392,7 +548,9 @@ pub async fn remove_team_member(team: Option<&str>, username: Option<&str>) -> R
         Some(t) => t.to_string(),
         None => {
             if is_interactive() {
-                prompt_for_input("🏢 Team name", None)?
+                println!("➖ Removing member from team");
+                println!();
+                select_team_interactively("Select team to remove member from").await?
             } else {
                 anyhow::bail!("Team name is required. Use: knot team remove-member <team> <username>");
             }
@@ -403,7 +561,10 @@ pub async fn remove_team_member(team: Option<&str>, username: Option<&str>) -> R
         Some(u) => u.to_string(),
         None => {
             if is_interactive() {
-                prompt_for_input("👤 Username to remove", None)?
+                // If we're in interactive mode and no username provided, 
+                // we could potentially fetch team members and let user select
+                // For now, just prompt for username
+                prompt_for_username("👤 Username to remove from team")?
             } else {
                 anyhow::bail!("Username is required. Use: knot team remove-member <team> <username>");
             }

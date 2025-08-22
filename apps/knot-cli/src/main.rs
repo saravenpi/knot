@@ -235,7 +235,7 @@ async fn main() -> Result<()> {
                 .subcommand(
                     Command::new("create")
                         .about("Create a new team")
-                        .arg(Arg::new("name").help("Team name").required(true).index(1))
+                        .arg(Arg::new("name").help("Team name (optional - will prompt if not provided)").required(false).index(1))
                         .arg(
                             Arg::new("description")
                                 .help("Team description")
@@ -248,7 +248,7 @@ async fn main() -> Result<()> {
                 .subcommand(
                     Command::new("info")
                         .about("Show team information")
-                        .arg(Arg::new("name").help("Team name").required(true).index(1)),
+                        .arg(Arg::new("name").help("Team name (optional - will show selection if not provided)").required(false).index(1)),
                 )
                 .subcommand(
                     Command::new("add-member")
@@ -382,7 +382,7 @@ async fn main() -> Result<()> {
         
         Some(("team", sub_matches)) => match sub_matches.subcommand() {
             Some(("create", team_sub)) => {
-                let name = team_sub.get_one::<String>("name").unwrap();
+                let name = team_sub.get_one::<String>("name").map(|s| s.as_str());
                 let description = team_sub
                     .get_one::<String>("description")
                     .map(|s| s.as_str());
@@ -392,7 +392,7 @@ async fn main() -> Result<()> {
                 commands::list_teams().await?;
             }
             Some(("info", team_sub)) => {
-                let name = team_sub.get_one::<String>("name").unwrap();
+                let name = team_sub.get_one::<String>("name").map(|s| s.as_str());
                 commands::team_info(name).await?;
             }
             Some(("add-member", team_sub)) => {
