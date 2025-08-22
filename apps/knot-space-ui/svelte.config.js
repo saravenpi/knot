@@ -8,7 +8,8 @@ const config = {
     adapter: adapter(),
     alias: {
       '#': './knot_packages',
-      '#/*': './knot_packages/*'
+      '#/*': './knot_packages/*',
+      '$lib': './src/lib'
     }
   },
 };

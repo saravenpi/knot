@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
-	import { usersApi, type User, type Package } from '../../../../lib/api';
-	import { formatDownloadCount, formatFileSize, formatDate, formatLargeNumber } from '../../../../lib/utils/format';
+	import { usersApi, type User, type Package } from '../../../lib/api';
+	import { formatDownloadCount, formatFileSize, formatDate, formatLargeNumber } from '../../../lib/utils/format';
 	import Icon from '@iconify/svelte';
-	import PackageCard from '../../../../lib/components/PackageCard.svelte';
+	import PackageCard from '../../../lib/components/PackageCard.svelte';
 
 	$: username = $page.params.username;
 	

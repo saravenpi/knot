@@ -128,7 +128,7 @@
 		</a>
 	</div>
 {:else}
-	<div class="space-y-6" on:click={handleClickOutside} role="button" tabindex="0">
+	<div class="space-y-6" on:click={handleClickOutside}>
 		<!-- Header -->
 		<div class="flex items-start justify-between gap-4">
 			<div class="flex-1 min-w-0">
