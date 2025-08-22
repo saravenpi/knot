@@ -1,4 +1,3 @@
-
 <script lang="ts">
 	import Icon from '@iconify/svelte';
 
@@ -83,45 +82,22 @@
 				<div class="flex-1 min-w-0">
 					<h3 class="font-semibold text-purple-900 mb-2">Dockerize your apps</h3>
 					<p class="text-sm text-purple-700 mb-4">
-						Knot can automatically generate a Dockerfile for your apps.
+						A `Dockerfile` is provided in the `knot-space` app to containerize your application.
 					</p>
-					<div class="space-y-3">
-						<div>
-							<div class="text-sm font-medium text-purple-900 mb-1">Generate a Dockerfile</div>
-							<div class="bg-black/90 text-green-400 font-mono text-sm rounded-lg relative group w-full max-w-full">
-								<div class="overflow-x-auto overflow-y-hidden p-4 pr-12 max-w-full">
-									<pre class="whitespace-nowrap m-0 min-w-max"><code>knot docker:init my-app</code></pre>
-								</div>
-								<button
-									class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100 z-10"
-									on:click={() => copyToClipboard('knot docker:init my-app')}
-								>
-									{#if showCopied && copyText === 'knot docker:init my-app'}
-										<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
-									{:else}
-										<Icon icon="solar:copy-bold" class="w-4 h-4" />
-									{/if}
-								</button>
-							</div>
+					<div class="bg-black/90 text-green-400 font-mono text-sm rounded-lg relative group w-full max-w-full">
+						<div class="overflow-x-auto overflow-y-hidden p-4 pr-12 max-w-full">
+							<pre class="whitespace-nowrap m-0 min-w-max"><code>docker build -t my-app ./apps/knot-space</code></pre>
 						</div>
-						<div>
-							<div class="text-sm font-medium text-purple-900 mb-1">Build the Docker image</div>
-							<div class="bg-black/90 text-green-400 font-mono text-sm rounded-lg relative group w-full max-w-full">
-								<div class="overflow-x-auto overflow-y-hidden p-4 pr-12 max-w-full">
-									<pre class="whitespace-nowrap m-0 min-w-max"><code>docker build -t my-app .</code></pre>
-								</div>
-								<button
-									class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100 z-10"
-									on:click={() => copyToClipboard('docker build -t my-app .')}
-								>
-									{#if showCopied && copyText === 'docker build -t my-app .'}
-										<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
-									{:else}
-										<Icon icon="solar:copy-bold" class="w-4 h-4" />
-									{/if}
-								</button>
-							</div>
-						</div>
+						<button
+							class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100 z-10"
+							on:click={() => copyToClipboard('docker build -t my-app ./apps/knot-space')}
+						>
+							{#if showCopied && copyText === 'docker build -t my-app ./apps/knot-space'}
+								<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+							{:else}
+								<Icon icon="solar:copy-bold" class="w-4 h-4" />
+							{/if}
+						</button>
 					</div>
 				</div>
 			</div>
@@ -144,7 +120,7 @@
 					<ul class="space-y-1 ml-4">
 						<li>• Connect your Git repository to Vercel.</li>
 						<li>• Configure the build command to be `knot build`.</li>
-						<li>• Set the output directory to `apps/my-app/dist`.</li>
+						<li>• Set the output directory to `apps/knot-space-ui/build`.</li>
 					</ul>
 				</div>
 			</div>

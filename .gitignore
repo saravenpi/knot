@@ -123,3 +123,7 @@ Desktop.ini
 
 # Tailwind CSS
 .tailwindcache
+
+# AI FILES
+CLAUDE.md
+GEMINI.md

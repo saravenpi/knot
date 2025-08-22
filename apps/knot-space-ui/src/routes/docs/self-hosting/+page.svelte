@@ -1,3 +1,4 @@
+
 <script lang="ts">
 	import Icon from '@iconify/svelte';
 
@@ -50,8 +51,9 @@
 				<div>
 					<h3 class="font-semibold text-blue-900 mb-2">Before you start</h3>
 					<ul class="text-sm text-blue-700 space-y-1">
-						<li>• A server with Docker and Docker Compose installed.</li>
+						<li>• A server with Docker installed.</li>
 						<li>• A domain name pointing to your server's IP address.</li>
+						<li>• A running PostgreSQL database.</li>
 						<li>• Basic knowledge of the command line and Docker.</li>
 					</ul>
 				</div>
@@ -93,7 +95,7 @@
 			<h2 class="text-2xl font-bold">Configure Your Environment</h2>
 		</div>
 		<p class="text-muted-foreground mb-3">
-			Navigate to the `knot-space` directory and create a `.env` file from the example.
+			Navigate to the `apps/knot-space` directory and create a `.env` file from the example.
 		</p>
 		<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
 			<code>cp .env.example .env</code>
@@ -109,34 +111,52 @@
 			</button>
 		</div>
 		<p class="text-muted-foreground mt-3">
-			Edit the `.env` file and set the required variables, such as `DATABASE_URL`, `JWT_SECRET`, and your domain name.
+			Edit the `.env` file and set the `DATABASE_URL` to your PostgreSQL database, and `JWT_SECRET` to a secret of your choice.
 		</p>
 	</section>
 
-	<!-- Step 3: Start the services -->
+	<!-- Step 3: Build and Run the Docker Image -->
 	<section class="mb-12">
 		<div class="flex items-center space-x-3 mb-6">
 			<div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
 				<span class="text-purple-600 font-bold text-sm">3</span>
 			</div>
-			<h2 class="text-2xl font-bold">Start the Services</h2>
+			<h2 class="text-2xl font-bold">Build and Run the Docker Image</h2>
 		</div>
-		<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
-			<code>docker-compose up -d</code>
-			<button 
-				class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
-				on:click={() => copyToClipboard('docker-compose up -d')}
-			>
-				{#if showCopied && copyText === 'docker-compose up -d'}
-					<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
-				{:else}
-					<Icon icon="solar:copy-bold" class="w-4 h-4" />
-				{/if}
-			</button>
+		<div class="space-y-6">
+			<div>
+				<h3 class="text-lg font-semibold mb-3">Build the image</h3>
+				<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
+					<code>docker build -t knot-space .</code>
+					<button 
+						class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
+						on:click={() => copyToClipboard('docker build -t knot-space .')}
+					>
+						{#if showCopied && copyText === 'docker build -t knot-space .'}
+							<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+						{:else}
+							<Icon icon="solar:copy-bold" class="w-4 h-4" />
+						{/if}
+					</button>
+				</div>
+			</div>
+			<div>
+				<h3 class="text-lg font-semibold mb-3">Run the container</h3>
+				<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
+					<code>docker run -d -p 3000:3000 --env-file .env knot-space</code>
+					<button 
+						class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
+						on:click={() => copyToClipboard('docker run -d -p 3000:3000 --env-file .env knot-space')}
+					>
+						{#if showCopied && copyText === 'docker run -d -p 3000:3000 --env-file .env knot-space'}
+							<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+						{:else}
+							<Icon icon="solar:copy-bold" class="w-4 h-4" />
+						{/if}
+					</button>
+				</div>
+			</div>
 		</div>
-		<p class="text-sm text-muted-foreground mt-2">
-			This will start the Knot Space API, database, and UI in the background.
-		</p>
 	</section>
 
 	<!-- Next Steps -->
