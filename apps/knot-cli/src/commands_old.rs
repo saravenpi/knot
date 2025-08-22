@@ -2020,7 +2020,7 @@ pub async fn update_cli(force: bool) -> Result<()> {
 
             update_binary_with_animation().await?;
             println!("✅ Update completed successfully!");
-            println!("🎉 Run 'knot info' to verify the new version");
+            println!("🎉 Run 'knot --version' to verify the new version");
         }
         Err(e) => {
             println!("❌ Failed to check for updates: {}", e);
