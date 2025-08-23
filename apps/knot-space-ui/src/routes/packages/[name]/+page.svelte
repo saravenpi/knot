@@ -21,7 +21,7 @@
 	let loadingStats = false;
 	let statsLoaded = false;
 	let copySuccess = false;
-	let availableVersions: Array<{version: string, publishedAt: string}> = [];
+	let availableVersions: Package[] = [];
 	let loadingVersions = false;
 	let showVersionSelector = false;
 
@@ -92,8 +92,8 @@
 		
 		loadingVersions = true;
 		try {
-			const versions = await requestApi<{ success: boolean; data: Array<{version: string, publishedAt: string}> }>('GET', `/api/packages/${encodeURIComponent(selectedPackage.name)}/versions`);
-			availableVersions = versions.data.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
+			const versions = await requestApi<{ success: boolean; data: Package[] }>('GET', `/api/packages/${encodeURIComponent(selectedPackage.name)}/versions`);
+			availableVersions = versions.data.sort((a, b) => new Date(b.publishedAt || b.createdAt).getTime() - new Date(a.publishedAt || a.createdAt).getTime());
 		} catch (error) {
 			console.error('Failed to fetch versions:', error);
 		} finally {
@@ -226,7 +226,7 @@
 											>
 												<span>v{versionInfo.version}</span>
 												<span class="text-xs text-muted-foreground">
-													{new Date(versionInfo.publishedAt).toLocaleDateString()}
+													{new Date(versionInfo.publishedAt || versionInfo.createdAt).toLocaleDateString()}
 												</span>
 											</button>
 										{/each}
