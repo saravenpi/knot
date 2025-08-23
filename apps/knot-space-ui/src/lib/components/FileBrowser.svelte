@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import { requestApi } from '../api';
   import type { FileEntry, FileContent } from '#/types';
-  import { ChevronRight, ChevronDown, File, Folder, Eye, Download } from 'lucide-svelte';
+  import { ChevronRight, ChevronDown, ChevronLeft, File, Folder, Eye, Download, Menu, X } from 'lucide-svelte';
   import { highlight, languages } from 'prismjs';
   import 'prismjs/components/prism-typescript';
   import 'prismjs/components/prism-javascript';
@@ -23,6 +23,8 @@
   let fileContent: FileContent | null = null;
   let loading = false;
   let expandedDirs = new Set<string>();
+  let sidebarOpen = false;
+  let desktopSidebarCollapsed = false;
 
   onMount(async () => {
     await loadFiles();
@@ -239,6 +241,18 @@
       return a.name.localeCompare(b.name);
     });
   }
+
+  function toggleSidebar() {
+    sidebarOpen = !sidebarOpen;
+  }
+
+  function closeSidebar() {
+    sidebarOpen = false;
+  }
+
+  function toggleDesktopSidebar() {
+    desktopSidebarCollapsed = !desktopSidebarCollapsed;
+  }
 </script>
 
 <div class="file-browser">
@@ -253,59 +267,98 @@
       <p class="text-gray-500">No files found in this package</p>
     </div>
   {:else}
-    <div class="file-explorer">
-      <div class="file-tree">
-        <h3 class="tree-header">
-          <Folder class="w-4 h-4" />
-          Package Files
-        </h3>
+    <div class="file-explorer {desktopSidebarCollapsed ? 'sidebar-collapsed' : ''}">
+      <!-- Mobile sidebar toggle -->
+      <button
+        class="mobile-sidebar-toggle md:hidden"
+        on:click={toggleSidebar}
+        aria-label="Toggle file tree"
+      >
+        <Menu class="w-5 h-5" />
+      </button>
 
-        {#each renderFileTree(files) as file}
-          <div class="file-item" style="margin-left: {file.path.split('/').length - 1}rem">
-            {#if file.type === 'directory'}
-              <button
-                class="dir-toggle"
-                on:click={() => toggleDirectory(file.path)}
-              >
-                {#if expandedDirs.has(file.path)}
-                  <ChevronDown class="w-4 h-4" />
-                {:else}
-                  <ChevronRight class="w-4 h-4" />
-                {/if}
-                <Folder class="w-4 h-4 text-blue-500" />
-                <span class="file-name">{file.name}</span>
-              </button>
+      <!-- Desktop sidebar toggle -->
+      <button
+        class="desktop-sidebar-toggle hidden md:flex"
+        on:click={toggleDesktopSidebar}
+        aria-label="{desktopSidebarCollapsed ? 'Show' : 'Hide'} file tree"
+      >
+        {#if desktopSidebarCollapsed}
+          <ChevronRight class="w-4 h-4" />
+        {:else}
+          <ChevronLeft class="w-4 h-4" />
+        {/if}
+      </button>
 
-              {#if expandedDirs.has(file.path) && file.children}
-                {#each renderFileTree(file.children) as child}
-                  <div class="file-item nested" style="margin-left: {(file.path.split('/').length)}rem">
-                    <button
-                      class="file-button {selectedFile === child.path ? 'selected' : ''}"
-                      on:click={() => loadFileContent(child.path)}
-                    >
-                      <File class="w-4 h-4 text-gray-500" />
-                      <span class="file-name">{child.name}</span>
-                      {#if child.size}
-                        <span class="file-size">{formatFileSize(child.size)}</span>
-                      {/if}
-                    </button>
-                  </div>
-                {/each}
-              {/if}
-            {:else}
-              <button
-                class="file-button {selectedFile === file.path ? 'selected' : ''}"
-                on:click={() => loadFileContent(file.path)}
-              >
-                <File class="w-4 h-4 text-gray-500" />
-                <span class="file-name">{file.name}</span>
-                {#if file.size}
-                  <span class="file-size">{formatFileSize(file.size)}</span>
-                {/if}
-              </button>
-            {/if}
+      <!-- Sidebar overlay for mobile -->
+      {#if sidebarOpen}
+        <div class="sidebar-overlay md:hidden" on:click={closeSidebar}></div>
+      {/if}
+
+      <!-- File tree sidebar -->
+      <div class="file-tree {sidebarOpen ? 'sidebar-open' : ''}">
+        <div class="tree-header">
+          <div class="tree-header-content">
+            <Folder class="w-4 h-4" />
+            <span>Package Files</span>
           </div>
-        {/each}
+          <button
+            class="sidebar-close md:hidden"
+            on:click={closeSidebar}
+            aria-label="Close file tree"
+          >
+            <X class="w-5 h-5" />
+          </button>
+        </div>
+
+        <div class="tree-content">
+          {#each renderFileTree(files) as file}
+            <div class="file-item" style="margin-left: {file.path.split('/').length - 1}rem">
+              {#if file.type === 'directory'}
+                <button
+                  class="dir-toggle"
+                  on:click={() => toggleDirectory(file.path)}
+                >
+                  {#if expandedDirs.has(file.path)}
+                    <ChevronDown class="w-4 h-4" />
+                  {:else}
+                    <ChevronRight class="w-4 h-4" />
+                  {/if}
+                  <Folder class="w-4 h-4 text-blue-500" />
+                  <span class="file-name">{file.name}</span>
+                </button>
+
+                {#if expandedDirs.has(file.path) && file.children}
+                  {#each renderFileTree(file.children) as child}
+                    <div class="file-item nested" style="margin-left: {(file.path.split('/').length)}rem">
+                      <button
+                        class="file-button {selectedFile === child.path ? 'selected' : ''}"
+                        on:click={() => { loadFileContent(child.path); closeSidebar(); }}
+                      >
+                        <File class="w-4 h-4 text-gray-500" />
+                        <span class="file-name">{child.name}</span>
+                        {#if child.size}
+                          <span class="file-size">{formatFileSize(child.size)}</span>
+                        {/if}
+                      </button>
+                    </div>
+                  {/each}
+                {/if}
+              {:else}
+                <button
+                  class="file-button {selectedFile === file.path ? 'selected' : ''}"
+                  on:click={() => { loadFileContent(file.path); closeSidebar(); }}
+                >
+                  <File class="w-4 h-4 text-gray-500" />
+                  <span class="file-name">{file.name}</span>
+                  {#if file.size}
+                    <span class="file-size">{formatFileSize(file.size)}</span>
+                  {/if}
+                </button>
+              {/if}
+            </div>
+          {/each}
+        </div>
       </div>
 
       <div class="file-content">
@@ -423,23 +476,137 @@
     display: grid;
     grid-template-columns: 300px 1fr;
     height: 100%;
+    position: relative;
+    transition: grid-template-columns 0.3s ease-in-out;
+  }
+
+  .file-explorer.sidebar-collapsed {
+    grid-template-columns: 0px 1fr;
+  }
+
+  @media (max-width: 767px) {
+    .file-explorer,
+    .file-explorer.sidebar-collapsed {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .mobile-sidebar-toggle {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 30;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 8px;
+    cursor: pointer;
+    transition: background-color 0.15s;
+  }
+
+  .mobile-sidebar-toggle:hover {
+    background: #f9fafb;
+  }
+
+  .desktop-sidebar-toggle {
+    position: absolute;
+    top: 12px;
+    left: 260px;
+    z-index: 30;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .sidebar-collapsed .desktop-sidebar-toggle {
+    left: 12px;
+  }
+
+  .desktop-sidebar-toggle:hover {
+    background: #f9fafb;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 40;
   }
 
   .file-tree {
     border-right: 1px solid #e5e7eb;
     overflow-y: auto;
     background: #f9fafb;
+    transition: transform 0.3s ease-in-out;
+  }
+
+  .sidebar-collapsed .file-tree {
+    overflow: hidden;
+  }
+
+  @media (max-width: 767px) {
+    .file-tree {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 280px;
+      max-width: 80vw;
+      z-index: 50;
+      transform: translateX(-100%);
+      border-right: none;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .file-tree.sidebar-open {
+      transform: translateX(0);
+    }
   }
 
   .tree-header {
     display: flex;
     align-items: center;
-    gap: 8px;
+    justify-content: space-between;
     padding: 12px 16px;
     font-weight: 600;
     border-bottom: 1px solid #e5e7eb;
     background: white;
     margin: 0;
+  }
+
+  .tree-header-content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .sidebar-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    color: #6b7280;
+    transition: background-color 0.15s;
+  }
+
+  .sidebar-close:hover {
+    background: #f3f4f6;
+    color: #374151;
+  }
+
+  .tree-content {
+    overflow-y: auto;
+    height: calc(100% - 60px);
   }
 
   .file-item {
@@ -489,6 +656,12 @@
     flex-direction: column;
   }
 
+  @media (max-width: 767px) {
+    .file-content {
+      padding-top: 52px; /* Space for mobile toggle button */
+    }
+  }
+
   .content-header {
     display: flex;
     align-items: center;
@@ -496,6 +669,26 @@
     padding: 12px 16px;
     border-bottom: 1px solid #e5e7eb;
     background: white;
+    gap: 12px;
+  }
+
+  @media (max-width: 640px) {
+    .content-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 12px 16px 16px 16px;
+    }
+
+    .file-info {
+      order: 1;
+    }
+
+    .content-actions {
+      order: 2;
+      width: 100%;
+      justify-content: flex-start;
+    }
   }
 
   .file-info {
@@ -513,6 +706,18 @@
   .content-actions {
     display: flex;
     gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  @media (max-width: 480px) {
+    .content-actions {
+      gap: 4px;
+    }
+
+    .content-actions button {
+      font-size: 12px;
+      padding: 6px 8px;
+    }
   }
 
   .content-body {
