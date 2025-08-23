@@ -24,6 +24,7 @@
 	let availableVersions: Package[] = [];
 	let loadingVersions = false;
 	let showVersionSelector = false;
+	let switchingVersion = false;
 
 	$: isOwner = currentUser && selectedPackage && (
 		selectedPackage.owner.id === currentUser.id ||
@@ -35,17 +36,29 @@
 	onMount(async () => {
 		if (packageName) {
 			try {
-				await packagesStore.fetchByName(decodeURIComponent(packageName));
+				// Check if version is specified in URL params
+				const urlParams = new URLSearchParams(window.location.search);
+				const versionParam = urlParams.get('version');
+				
+				if (versionParam) {
+					await packagesStore.fetchByName(decodeURIComponent(packageName), versionParam);
+				} else {
+					await packagesStore.fetchByName(decodeURIComponent(packageName));
+				}
 			} catch (error) {
 				console.error('Failed to fetch package:', error);
 			}
 		}
 	});
 
-	// Reset stats when package changes
+	// Reset all data when package changes (version switching)
 	$: if (selectedPackage) {
 		statsLoaded = false;
 		downloadStats = null;
+		// Reset versions so they get refetched for the new package version
+		if (availableVersions.length === 0) {
+			loadingVersions = false;
+		}
 	}
 
 	// Fetch download statistics when package is loaded
@@ -102,18 +115,35 @@
 	}
 
 	async function switchToVersion(version: string) {
-		if (!packageName || version === selectedPackage?.version) return;
+		if (!packageName || version === selectedPackage?.version || switchingVersion) return;
+		
+		switchingVersion = true;
 		
 		try {
-			// Update the URL and fetch the new version
-			window.history.pushState({}, '', `/packages/${encodeURIComponent(packageName)}?version=${encodeURIComponent(version)}`);
-			await packagesStore.fetchByName(packageName, version);
-			// Reset stats and versions for new package version
+			// Update the URL first
+			const newUrl = `/packages/${encodeURIComponent(packageName)}?version=${encodeURIComponent(version)}`;
+			window.history.pushState({}, '', newUrl);
+			
+			// Fetch the new version data - this completely replaces the current package state
+			await packagesStore.fetchByName(decodeURIComponent(packageName), version);
+			
+			// Reset all dependent data that needs to reload for the new version
 			statsLoaded = false;
 			downloadStats = null;
+			
+			// Reset versions array so it gets refetched (in case the API returns different version lists)
+			availableVersions = [];
+			loadingVersions = false;
+			
+			// Close the version selector
 			showVersionSelector = false;
 		} catch (error) {
 			console.error('Failed to switch version:', error);
+			// Revert URL on error
+			const currentUrl = `/packages/${encodeURIComponent(packageName)}`;
+			window.history.replaceState({}, '', selectedPackage ? `${currentUrl}?version=${selectedPackage.version}` : currentUrl);
+		} finally {
+			switchingVersion = false;
 		}
 	}
 
@@ -147,11 +177,13 @@
 	<meta name="description" content="View package details and manage your packages" />
 </svelte:head>
 
-{#if loading}
+{#if loading || switchingVersion}
 	<div class="flex items-center justify-center py-16">
 		<div class="text-center">
 			<div class="animate-spin rounded-full h-8 w-8 border-b-2 border-black mx-auto mb-4"></div>
-			<p class="text-muted-foreground">Loading package...</p>
+			<p class="text-muted-foreground">
+				{switchingVersion ? 'Switching to version...' : 'Loading package...'}
+			</p>
 		</div>
 	</div>
 {:else if !selectedPackage}
@@ -208,10 +240,14 @@
 							<button
 								on:click={() => showVersionSelector = !showVersionSelector}
 								class="text-sm sm:text-base text-muted-foreground bg-secondary hover:bg-secondary/80 px-2 sm:px-3 py-1 rounded-full transition-colors flex items-center gap-2"
-								disabled={loadingVersions}
+								class:opacity-50={switchingVersion}
+								disabled={loadingVersions || switchingVersion}
 							>
+								{#if switchingVersion}
+									<div class="animate-spin rounded-full h-3 w-3 border-b border-current mr-1"></div>
+								{/if}
 								v{selectedPackage.version}
-								{#if availableVersions.length > 1}
+								{#if availableVersions.length > 1 && !switchingVersion}
 									<Icon icon="solar:alt-arrow-down-bold" class="w-3 h-3" />
 								{/if}
 							</button>
@@ -332,7 +368,7 @@
 					<span class="text-sm font-medium">Knot CLI</span>
 					<button 
 						on:click={async () => {
-							await navigator.clipboard.writeText(`knot install @${selectedPackage.name}`);
+							await navigator.clipboard.writeText(`knot install ${selectedPackage.name}@${selectedPackage.version}`);
 							copySuccess = true;
 							setTimeout(() => copySuccess = false, 2000);
 						}}
@@ -347,7 +383,7 @@
 						{/if}
 					</button>
 				</div>
-				<code class="text-sm">knot install @{selectedPackage.name}</code>
+				<code class="text-sm">knot install {selectedPackage.name}@{selectedPackage.version}</code>
 			</div>
 		</div>
 
