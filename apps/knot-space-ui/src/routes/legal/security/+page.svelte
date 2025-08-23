@@ -34,11 +34,11 @@
 
 		<section class="mb-12">
 			<h2 class="text-2xl font-semibold mb-4">Our Security Approach</h2>
-			
+
 			<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 				<div class="text-center">
 					<div class="w-16 h-16 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-						<Icon icon="solar:security-safe-bold" class="w-8 h-8 text-blue-600" />
+						<Icon icon="solar:shield-minimalistic-bold-duotone" class="w-8 h-8 text-blue-600" />
 					</div>
 					<h3 class="font-semibold text-lg mb-2">Defense in Depth</h3>
 					<p class="text-muted-foreground text-sm">
@@ -70,7 +70,7 @@
 
 		<section class="mb-12">
 			<h2 class="text-2xl font-semibold mb-4">Data Protection</h2>
-			
+
 			<div class="space-y-6">
 				<div class="border rounded-lg p-6">
 					<div class="flex items-center gap-3 mb-4">
@@ -126,7 +126,7 @@
 
 		<section class="mb-12">
 			<h2 class="text-2xl font-semibold mb-4">Infrastructure Security</h2>
-			
+
 			<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 				<div class="border rounded-lg p-6">
 					<div class="flex items-center gap-3 mb-3">
@@ -158,7 +158,7 @@
 
 		<section class="mb-12">
 			<h2 class="text-2xl font-semibold mb-4">Package Security</h2>
-			
+
 			<div class="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
 				<h3 class="text-lg font-medium text-blue-800 mb-3">Package Integrity</h3>
 				<p class="text-blue-700 text-sm mb-4">
@@ -187,7 +187,7 @@
 
 		<section class="mb-12">
 			<h2 class="text-2xl font-semibold mb-4">Incident Response</h2>
-			
+
 			<div class="space-y-6">
 				<div class="border-l-4 border-red-400 pl-6">
 					<h3 class="text-lg font-medium mb-2">Detection</h3>
@@ -221,7 +221,7 @@
 
 		<section class="mb-12">
 			<h2 class="text-2xl font-semibold mb-4">Best Practices for Users</h2>
-			
+
 			<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 				<div class="border rounded-lg p-6">
 					<h3 class="text-lg font-medium mb-3">Account Security</h3>
@@ -247,7 +247,7 @@
 
 		<section class="mb-12">
 			<h2 class="text-2xl font-semibold mb-4">Compliance and Certifications</h2>
-			
+
 			<div class="bg-green-50 border border-green-200 rounded-lg p-6">
 				<h3 class="text-lg font-medium text-green-800 mb-3">Standards Compliance</h3>
 				<p class="text-green-700 text-sm mb-4">
@@ -284,13 +284,13 @@
 
 		<section class="mb-12">
 			<h2 class="text-2xl font-semibold mb-4">Responsible Disclosure</h2>
-			
+
 			<div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
 				<h3 class="text-lg font-medium text-yellow-800 mb-3">Security Research</h3>
 				<p class="text-yellow-700 text-sm mb-4">
 					We welcome security researchers to help us improve our security posture through responsible disclosure.
 				</p>
-				
+
 				<div class="space-y-4">
 					<div>
 						<h4 class="font-medium mb-2">What to Report</h4>
@@ -317,18 +317,18 @@
 
 		<section class="mb-12 bg-gray-50 rounded-lg p-6">
 			<h2 class="text-2xl font-semibold mb-4">Contact Our Security Team</h2>
-			
+
 			<p class="mb-4">
 				For security-related questions, concerns, or to report vulnerabilities:
 			</p>
-			
+
 			<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 				<div>
 					<h3 class="font-medium mb-2">Security Team</h3>
 					<a href="mailto:contact@klysium.com" class="text-blue-600 hover:text-blue-800">contact@klysium.com</a>
 					<p class="text-sm text-muted-foreground mt-1">For urgent security issues</p>
 				</div>
-				
+
 				<div>
 					<h3 class="font-medium mb-2">General Security Questions</h3>
 					<a href="https://github.com/saravenpi/knot/issues" class="text-blue-600 hover:text-blue-800">GitHub Issues</a>
