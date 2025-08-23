@@ -524,7 +524,7 @@
 
 					<div>
 						<h4 class="font-medium mb-2">Script Resolution Priority</h4>
-						<div class="bg-gradient-to-r from-red-50 to-blue-50 border border-blue-200 rounded-lg p-4">
+						<div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
 							<div class="space-y-2 text-sm">
 								<div class="flex items-center space-x-2">
 									<span class="w-6 h-6 bg-red-100 rounded-full flex items-center justify-center text-red-600 text-xs font-bold">1</span>

@@ -2,13 +2,12 @@
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 	import { packagesStore, authStore } from '$lib/stores';
-	import type { Package } from '$lib/api';
 	import { formatDownloadCount, formatFileSize, formatDateTime, formatTimeAgo, formatDate } from '../../../lib/utils/format';
 	import Icon from '@iconify/svelte';
 	import Chart from '../../../lib/components/ui/chart.svelte';
 	import Drawer from '../../../lib/components/ui/drawer.svelte';
 	import FileBrowser from '../../../lib/components/FileBrowser.svelte';
-	import { packagesApi, requestApi } from '../../../lib/api';
+	import { requestApi } from '../../../lib/api';
 
 	$: packageName = $page.params.name;
 	$: selectedPackage = $packagesStore.selectedPackage;
@@ -22,10 +21,6 @@
 	let loadingStats = false;
 	let statsLoaded = false;
 	let copySuccess = false;
-	let availableVersions: Package[] = [];
-	let loadingVersions = false;
-	let showVersionSelector = false;
-	let switchingVersion = false;
 
 	$: isOwner = currentUser && selectedPackage && (
 		selectedPackage.owner.id === currentUser.id ||
@@ -52,14 +47,10 @@
 		}
 	});
 
-	// Reset all data when package changes (version switching)
+	// Reset stats when package changes
 	$: if (selectedPackage) {
 		statsLoaded = false;
 		downloadStats = null;
-		// Reset versions so they get refetched for the new package version
-		if (availableVersions.length === 0) {
-			loadingVersions = false;
-		}
 	}
 
 	// Fetch download statistics when package is loaded
@@ -67,14 +58,6 @@
 		fetchDownloadStats();
 	}
 
-	// Fetch available versions when package is loaded
-	$: if (selectedPackage && selectedPackage.name && !loadingVersions && availableVersions.length === 0) {
-		console.log('Fetching versions for:', selectedPackage.name, 'loadingVersions:', loadingVersions, 'availableVersions.length:', availableVersions.length);
-		fetchAvailableVersions();
-	}
-
-	// Debug reactive statement
-	$: console.log('Reactive debug - selectedPackage:', selectedPackage?.name, 'availableVersions:', availableVersions.length, 'showVersionSelector:', showVersionSelector);
 
 	async function fetchDownloadStats() {
 		if (!selectedPackage) return;
@@ -105,53 +88,6 @@
 		}
 	}
 
-	async function fetchAvailableVersions() {
-		if (!selectedPackage || loadingVersions) return;
-		
-		console.log('Starting to fetch versions for:', selectedPackage.name);
-		loadingVersions = true;
-		try {
-			const versions = await packagesApi.getVersions(selectedPackage.name);
-			console.log('Received versions response:', versions);
-			availableVersions = versions.sort((a, b) => new Date(b.publishedAt || b.createdAt).getTime() - new Date(a.publishedAt || a.createdAt).getTime());
-			console.log('Sorted available versions:', availableVersions);
-		} catch (error) {
-			console.error('Failed to fetch versions:', error);
-		} finally {
-			loadingVersions = false;
-		}
-	}
-
-	async function switchToVersion(version: string) {
-		if (!packageName || version === selectedPackage?.version || switchingVersion) return;
-		
-		switchingVersion = true;
-		
-		try {
-			// Update the URL first
-			const newUrl = `/packages/${encodeURIComponent(packageName)}?version=${encodeURIComponent(version)}`;
-			window.history.pushState({}, '', newUrl);
-			
-			// Fetch the new version data - this completely replaces the current package state
-			await packagesStore.fetchByName(decodeURIComponent(packageName), version);
-			
-			// Reset all dependent data that needs to reload for the new version
-			statsLoaded = false;
-			downloadStats = null;
-			
-			// Don't reset versions array - keep the existing version list
-			
-			// Close the version selector
-			showVersionSelector = false;
-		} catch (error) {
-			console.error('Failed to switch version:', error);
-			// Revert URL on error
-			const currentUrl = `/packages/${encodeURIComponent(packageName)}`;
-			window.history.replaceState({}, '', selectedPackage ? `${currentUrl}?version=${selectedPackage.version}` : currentUrl);
-		} finally {
-			switchingVersion = false;
-		}
-	}
 
 	async function handleDeletePackage() {
 		if (!selectedPackage) return;
@@ -171,9 +107,6 @@
 		if (!target.closest('[data-options-menu]')) {
 			showOptionsMenu = false;
 		}
-		if (!target.closest('[data-version-selector]')) {
-			showVersionSelector = false;
-		}
 	}
 
 </script>
@@ -183,13 +116,11 @@
 	<meta name="description" content="View package details and manage your packages" />
 </svelte:head>
 
-{#if loading || switchingVersion}
+{#if loading}
 	<div class="flex items-center justify-center py-16">
 		<div class="text-center">
 			<div class="animate-spin rounded-full h-8 w-8 border-b-2 border-black mx-auto mb-4"></div>
-			<p class="text-muted-foreground">
-				{switchingVersion ? 'Switching to version...' : 'Loading package...'}
-			</p>
+			<p class="text-muted-foreground">Loading package...</p>
 		</div>
 	</div>
 {:else if !selectedPackage}
@@ -242,44 +173,9 @@
 						{/if}
 					</div>
 					<div class="flex items-center gap-3">
-						<div class="relative">
-							<button
-								on:click={() => showVersionSelector = !showVersionSelector}
-								class="text-sm sm:text-base text-muted-foreground bg-secondary hover:bg-secondary/80 px-2 sm:px-3 py-1 rounded-full transition-colors flex items-center gap-2"
-								class:opacity-50={switchingVersion}
-								disabled={loadingVersions || switchingVersion}
-							>
-								{#if switchingVersion}
-									<div class="animate-spin rounded-full h-3 w-3 border-b border-current mr-1"></div>
-								{/if}
-								v{selectedPackage.version}
-								{#if availableVersions.length > 0 && !switchingVersion}
-									<Icon icon="solar:alt-arrow-down-bold" class="w-3 h-3" />
-								{/if}
-							</button>
-							
-							{#if showVersionSelector && availableVersions.length > 0}
-								<div class="absolute top-full left-0 mt-1 bg-background border border-border rounded-lg shadow-lg z-10 min-w-48 max-h-60 overflow-y-auto" data-version-selector>
-									<div class="py-1">
-										{#each availableVersions as versionInfo}
-											<button
-												on:click={() => switchToVersion(versionInfo.version)}
-												class="w-full text-left px-3 py-2 text-sm hover:bg-muted flex items-center justify-between {versionInfo.version === selectedPackage.version ? 'bg-muted font-medium' : ''}"
-											>
-												<span>v{versionInfo.version}</span>
-												<span class="text-xs text-muted-foreground">
-													{new Date(versionInfo.publishedAt || versionInfo.createdAt).toLocaleDateString()}
-												</span>
-											</button>
-										{/each}
-									</div>
-								</div>
-							{/if}
-						</div>
-						
-						{#if loadingVersions}
-							<div class="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
-						{/if}
+						<span class="text-sm sm:text-base text-muted-foreground bg-secondary px-2 sm:px-3 py-1 rounded-full">
+							v{selectedPackage.version}
+						</span>
 					</div>
 				</div>
 				

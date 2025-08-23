@@ -372,7 +372,7 @@
 				Knot uses a hierarchical script resolution system when you run <code>knot run &lt;script&gt;</code>.
 			</p>
 
-			<div class="bg-gradient-to-r from-red-50 to-blue-50 border border-blue-200 rounded-lg p-6">
+			<div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
 				<h3 class="font-semibold mb-4">Priority Order (Highest to Lowest)</h3>
 				<div class="space-y-3">
 					<div class="flex items-center space-x-3">

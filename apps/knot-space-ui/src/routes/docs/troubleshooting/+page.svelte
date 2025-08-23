@@ -1,6 +1,33 @@
 <script lang="ts">
 	import Icon from '@iconify/svelte';
+
+	let copyText = '';
+	let showCopied = false;
+
+	async function copyToClipboard(text: string) {
+		try {
+			await navigator.clipboard.writeText(text);
+			copyText = text;
+			showCopied = true;
+			setTimeout(() => {
+				showCopied = false;
+			}, 2000);
+		} catch (err) {
+			console.error('Failed to copy text: ', err);
+		}
+	}
 </script>
+
+<svelte:head>
+	<title>Troubleshooting - Knot CLI Documentation</title>
+	<meta name="description" content="Common issues and solutions for Knot CLI, package linking, authentication, builds, and publishing. Debug commands and support resources." />
+	<meta property="og:title" content="Troubleshooting - Knot CLI" />
+	<meta property="og:description" content="Common issues and solutions for Knot CLI, package linking, authentication, builds, and publishing. Debug commands and support resources." />
+	<meta property="og:url" content="https://knot-space.com/docs/troubleshooting" />
+	<meta name="twitter:title" content="Troubleshooting - Knot CLI" />
+	<meta name="twitter:description" content="Common issues and solutions for Knot CLI, package linking, authentication, builds, and publishing. Debug commands and support resources." />
+	<link rel="canonical" href="https://knot-space.com/docs/troubleshooting" />
+</svelte:head>
 
 <div class="max-w-4xl mx-auto py-8 px-4 sm:px-6">
 	<div class="mb-8">
@@ -68,8 +95,20 @@
 						<li>• For remote packages, check authentication</li>
 						<li>• Run <code>knot status</code> to see available packages</li>
 					</ul>
-					<div class="bg-black/90 text-green-400 font-mono text-xs p-3 rounded mt-3">
-						<code>knot link --verbose</code>
+					<div class="bg-black/90 text-green-400 font-mono text-sm rounded-lg relative group mt-3">
+						<div class="overflow-x-auto p-4 pr-12">
+							<code class="whitespace-nowrap block">knot link --verbose</code>
+						</div>
+						<button 
+							class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100 z-10"
+							on:click={() => copyToClipboard('knot link --verbose')}
+						>
+							{#if showCopied && copyText === 'knot link --verbose'}
+								<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+							{:else}
+								<Icon icon="solar:copy-bold" class="w-4 h-4" />
+							{/if}
+						</button>
 					</div>
 				</div>
 			</div>
@@ -87,8 +126,20 @@
 						<li>• Run <code>knot link --force</code> to refresh all links</li>
 						<li>• Restart your IDE/TypeScript service</li>
 					</ul>
-					<div class="bg-black/90 text-green-400 font-mono text-xs p-3 rounded mt-3">
-						<code>knot link --force</code>
+					<div class="bg-black/90 text-green-400 font-mono text-sm rounded-lg relative group mt-3">
+						<div class="overflow-x-auto p-4 pr-12">
+							<code class="whitespace-nowrap block">knot link --force</code>
+						</div>
+						<button 
+							class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100 z-10"
+							on:click={() => copyToClipboard('knot link --force')}
+						>
+							{#if showCopied && copyText === 'knot link --force'}
+								<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+							{:else}
+								<Icon icon="solar:copy-bold" class="w-4 h-4" />
+							{/if}
+						</button>
 					</div>
 				</div>
 			</div>
@@ -113,8 +164,20 @@
 						<li>• Verify the environment variable is set correctly</li>
 						<li>• Test with <code>knot auth</code> command</li>
 					</ul>
-					<div class="bg-black/90 text-green-400 font-mono text-xs p-3 rounded mt-3">
-						<code>knot auth</code>
+					<div class="bg-black/90 text-green-400 font-mono text-sm rounded-lg relative group mt-3">
+						<div class="overflow-x-auto p-4 pr-12">
+							<code class="whitespace-nowrap block">knot auth</code>
+						</div>
+						<button 
+							class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100 z-10"
+							on:click={() => copyToClipboard('knot auth')}
+						>
+							{#if showCopied && copyText === 'knot auth'}
+								<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+							{:else}
+								<Icon icon="solar:copy-bold" class="w-4 h-4" />
+							{/if}
+						</button>
 					</div>
 				</div>
 			</div>
@@ -155,8 +218,20 @@
 						<li>• Run build command manually to see detailed error</li>
 						<li>• Check for missing TypeScript types</li>
 					</ul>
-					<div class="bg-black/90 text-green-400 font-mono text-xs p-3 rounded mt-3">
-						<code>knot run build --verbose</code>
+					<div class="bg-black/90 text-green-400 font-mono text-sm rounded-lg relative group mt-3">
+						<div class="overflow-x-auto p-4 pr-12">
+							<code class="whitespace-nowrap block">knot run build --verbose</code>
+						</div>
+						<button 
+							class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100 z-10"
+							on:click={() => copyToClipboard('knot run build --verbose')}
+						>
+							{#if showCopied && copyText === 'knot run build --verbose'}
+								<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+							{:else}
+								<Icon icon="solar:copy-bold" class="w-4 h-4" />
+							{/if}
+						</button>
 					</div>
 				</div>
 			</div>
@@ -182,8 +257,20 @@
 						<li>• Check if version already exists</li>
 						<li>• Use <code>--dry-run</code> to test before publishing</li>
 					</ul>
-					<div class="bg-black/90 text-green-400 font-mono text-xs p-3 rounded mt-3">
-						<code>knot publish --dry-run</code>
+					<div class="bg-black/90 text-green-400 font-mono text-sm rounded-lg relative group mt-3">
+						<div class="overflow-x-auto p-4 pr-12">
+							<code class="whitespace-nowrap block">knot publish --dry-run</code>
+						</div>
+						<button 
+							class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100 z-10"
+							on:click={() => copyToClipboard('knot publish --dry-run')}
+						>
+							{#if showCopied && copyText === 'knot publish --dry-run'}
+								<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+							{:else}
+								<Icon icon="solar:copy-bold" class="w-4 h-4" />
+							{/if}
+						</button>
 					</div>
 				</div>
 			</div>

@@ -44,7 +44,7 @@
 	<!-- Overview -->
 	<section class="mb-12">
 		<h2 class="text-2xl font-bold mb-6">Overview</h2>
-		<div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6">
+		<div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
 			<div class="flex items-start space-x-3">
 				<Icon icon="solar:users-group-two-rounded-bold" class="w-6 h-6 text-blue-600 mt-1 flex-shrink-0" />
 				<div>

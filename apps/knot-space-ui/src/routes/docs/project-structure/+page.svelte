@@ -1,6 +1,33 @@
 <script lang="ts">
 	import Icon from '@iconify/svelte';
+
+	let copyText = '';
+	let showCopied = false;
+
+	async function copyToClipboard(text: string) {
+		try {
+			await navigator.clipboard.writeText(text);
+			copyText = text;
+			showCopied = true;
+			setTimeout(() => {
+				showCopied = false;
+			}, 2000);
+		} catch (err) {
+			console.error('Failed to copy text: ', err);
+		}
+	}
 </script>
+
+<svelte:head>
+	<title>Project Structure - Knot CLI Documentation</title>
+	<meta name="description" content="Understanding how Knot organizes monorepo projects, packages, and applications with clear structure and best practices." />
+	<meta property="og:title" content="Project Structure - Knot CLI" />
+	<meta property="og:description" content="Understanding how Knot organizes monorepo projects, packages, and applications with clear structure and best practices." />
+	<meta property="og:url" content="https://knot-space.com/docs/project-structure" />
+	<meta name="twitter:title" content="Project Structure - Knot CLI" />
+	<meta name="twitter:description" content="Understanding how Knot organizes monorepo projects, packages, and applications with clear structure and best practices." />
+	<link rel="canonical" href="https://knot-space.com/docs/project-structure" />
+</svelte:head>
 
 <div class="max-w-4xl mx-auto py-8 px-4 sm:px-6">
 	<div class="mb-8">

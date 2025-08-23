@@ -44,7 +44,7 @@
 	<!-- Quick Install -->
 	<section class="mb-12">
 		<h2 class="text-2xl font-bold mb-6">Quick Install (Recommended)</h2>
-		<div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6">
+		<div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
 			<div class="flex items-start space-x-3">
 				<Icon icon="solar:rocket-2-bold" class="w-6 h-6 text-blue-600 mt-1 flex-shrink-0" />
 				<div class="flex-1 min-w-0">
@@ -76,7 +76,7 @@
 	<!-- Update Command -->
 	<section class="mb-12">
 		<h2 class="text-2xl font-bold mb-6">Keeping Knot Up to Date</h2>
-		<div class="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-lg p-6">
+		<div class="bg-purple-50 border border-purple-200 rounded-lg p-6">
 			<div class="flex items-start space-x-3">
 				<Icon icon="solar:refresh-circle-bold" class="w-6 h-6 text-purple-600 mt-1 flex-shrink-0" />
 				<div class="flex-1 min-w-0">
