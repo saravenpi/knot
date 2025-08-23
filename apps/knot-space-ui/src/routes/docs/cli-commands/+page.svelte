@@ -132,7 +132,7 @@
 				<div class="space-y-4">
 					<div>
 						<h4 class="font-medium mb-2">Basic Usage</h4>
-						<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
+						<div class="bg-black/90 text-green-400 font-mono text-sm rounded-lg relative group w-full max-w-full">
 							<code>knot init my-project</code>
 							<button
 								class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
@@ -167,7 +167,7 @@
 
 					<div>
 						<h4 class="font-medium mb-2">Example with Options</h4>
-						<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
+						<div class="bg-black/90 text-green-400 font-mono text-sm rounded-lg relative group w-full max-w-full">
 							<code>knot init my-project --description "A modern web application" --author "Jane Doe"</code>
 							<button
 								class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
@@ -194,7 +194,7 @@
 				<div class="space-y-4">
 					<div>
 						<h4 class="font-medium mb-2">Basic Usage</h4>
-						<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
+						<div class="bg-black/90 text-green-400 font-mono text-sm rounded-lg relative group w-full max-w-full">
 							<code>knot status</code>
 							<button
 								class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
@@ -262,7 +262,7 @@
 				<div class="space-y-4">
 					<div>
 						<h4 class="font-medium mb-2">Basic Usage</h4>
-						<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
+						<div class="bg-black/90 text-green-400 font-mono text-sm rounded-lg relative group w-full max-w-full">
 							<code>knot init:package utils</code>
 							<button
 								class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
@@ -279,7 +279,7 @@
 
 					<div>
 						<h4 class="font-medium mb-2">With Team Namespace</h4>
-						<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
+						<div class="bg-black/90 text-green-400 font-mono text-sm rounded-lg relative group w-full max-w-full">
 							<code>knot init:package shared-lib --team myteam</code>
 							<button
 								class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
@@ -324,7 +324,7 @@
 				<div class="space-y-4">
 					<div>
 						<h4 class="font-medium mb-2">Basic Usage</h4>
-						<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
+						<div class="bg-black/90 text-green-400 font-mono text-sm rounded-lg relative group w-full max-w-full">
 							<code>knot init:app frontend</code>
 							<button
 								class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
@@ -341,7 +341,7 @@
 
 					<div>
 						<h4 class="font-medium mb-2">With Framework Template</h4>
-						<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
+						<div class="bg-black/90 text-green-400 font-mono text-sm rounded-lg relative group w-full max-w-full">
 							<code>knot init:app api --template fastify</code>
 							<button
 								class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
@@ -387,7 +387,7 @@
 				<div class="space-y-4">
 					<div>
 						<h4 class="font-medium mb-2">Basic Usage (Copy Mode)</h4>
-						<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
+						<div class="bg-black/90 text-green-400 font-mono text-sm rounded-lg relative group w-full max-w-full">
 							<code>knot link</code>
 							<button
 								class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
@@ -404,7 +404,7 @@
 
 					<div>
 						<h4 class="font-medium mb-2">Symlink Mode (Development)</h4>
-						<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
+						<div class="bg-black/90 text-green-400 font-mono text-sm rounded-lg relative group w-full max-w-full">
 							<code>knot link --symlink</code>
 							<button
 								class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
@@ -439,7 +439,7 @@
 
 					<div>
 						<h4 class="font-medium mb-2">Link Specific App</h4>
-						<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
+						<div class="bg-black/90 text-green-400 font-mono text-sm rounded-lg relative group w-full max-w-full">
 							<code>knot link --app frontend</code>
 							<button
 								class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
@@ -473,7 +473,7 @@
 				<div class="space-y-4">
 					<div>
 						<h4 class="font-medium mb-2">Basic Usage</h4>
-						<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
+						<div class="bg-black/90 text-green-400 font-mono text-sm rounded-lg relative group w-full max-w-full">
 							<code>knot run dev</code>
 							<button
 								class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
@@ -490,7 +490,7 @@
 
 					<div>
 						<h4 class="font-medium mb-2">Run Across All Apps</h4>
-						<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
+						<div class="bg-black/90 text-green-400 font-mono text-sm rounded-lg relative group w-full max-w-full">
 							<code>knot run test --all</code>
 							<button
 								class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
@@ -507,7 +507,7 @@
 
 					<div>
 						<h4 class="font-medium mb-2">Run in Specific App</h4>
-						<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
+						<div class="bg-black/90 text-green-400 font-mono text-sm rounded-lg relative group w-full max-w-full">
 							<code>knot run lint --app frontend</code>
 							<button
 								class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
