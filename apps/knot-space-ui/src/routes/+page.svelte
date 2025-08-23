@@ -53,27 +53,27 @@
 </script>
 
 <svelte:head>
-	<title>Knot Space - Modern Package Registry for TypeScript/JavaScript Monorepos</title>
-	<meta name="description" content="The modern package registry for Knot monorepo packages. Publish, share, and manage your TypeScript/JavaScript packages with teams. Fast publishing, team collaboration, and secure infrastructure." />
-	<meta name="keywords" content="package registry, monorepo, typescript, javascript, npm, knot, package manager, team collaboration, private packages" />
+	<title>Knot Space - Modern Package Registry for Monorepo Development</title>
+	<meta name="description" content="The modern package registry for Knot monorepo packages. Publish, share, and manage packages for any programming language with teams. Fast publishing, team collaboration, and secure infrastructure." />
+	<meta name="keywords" content="package registry, monorepo, package manager, team collaboration, private packages, multi-language, development tools, knot" />
 	<meta name="author" content="Knot Space" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	
 	<!-- Open Graph / Facebook -->
 	<meta property="og:type" content="website" />
 	<meta property="og:url" content="https://knot.klysium.com/" />
-	<meta property="og:title" content="Knot Space - Modern Package Registry for TypeScript/JavaScript Monorepos" />
-	<meta property="og:description" content="The modern package registry for Knot monorepo packages. Publish, share, and manage your TypeScript/JavaScript packages with teams. Fast publishing, team collaboration, and secure infrastructure." />
+	<meta property="og:title" content="Knot Space - Modern Package Registry for Monorepo Development" />
+	<meta property="og:description" content="The modern package registry for Knot monorepo packages. Publish, share, and manage packages for any programming language with teams. Fast publishing, team collaboration, and secure infrastructure." />
 	<meta property="og:image" content="https://knot.klysium.com/images/og/home.png" />
-	<meta property="og:image:alt" content="Knot Space - Modern Package Registry for TypeScript/JavaScript" />
+	<meta property="og:image:alt" content="Knot Space - Modern Package Registry for Multi-Language Development" />
 	<meta property="og:site_name" content="Knot Space" />
 	<meta property="og:locale" content="en_US" />
 
 	<!-- Twitter -->
 	<meta name="twitter:card" content="summary_large_image" />
 	<meta name="twitter:url" content="https://knot.klysium.com/" />
-	<meta name="twitter:title" content="Knot Space - Modern Package Registry for TypeScript/JavaScript Monorepos" />
-	<meta name="twitter:description" content="The modern package registry for Knot monorepo packages. Publish, share, and manage your TypeScript/JavaScript packages with teams." />
+	<meta name="twitter:title" content="Knot Space - Modern Package Registry for Monorepo Development" />
+	<meta name="twitter:description" content="The modern package registry for Knot monorepo packages. Publish, share, and manage packages for any programming language with teams." />
 	<meta name="twitter:image" content="https://knot.klysium.com/images/og/home.png" />
 	<meta name="twitter:image:alt" content="Knot Space - Modern Package Registry" />
 	<meta name="twitter:creator" content="@knotspace" />
@@ -90,7 +90,7 @@
 		"@context": "https://schema.org",
 		"@type": "WebSite",
 		"name": "Knot Space",
-		"description": "The modern package registry for Knot monorepo packages. Publish, share, and manage your TypeScript/JavaScript packages with teams.",
+		"description": "The modern package registry for Knot monorepo packages. Publish, share, and manage packages for any programming language with teams.",
 		"url": "https://knot.klysium.com",
 		"potentialAction": {
 			"@type": "SearchAction",
@@ -132,7 +132,7 @@
 		Welcome to <span class="text-black">Knot Space</span>
 	</h1>
 	<p class="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
-		The modern package registry for Knot monorepo packages. Publish, share, and manage your TypeScript/JavaScript packages with teams.
+		The modern package registry for Knot monorepo packages. Publish, share, and manage packages for any programming language with teams.
 	</p>
 	<div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
 		<a

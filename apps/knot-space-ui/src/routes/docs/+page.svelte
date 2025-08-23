@@ -19,7 +19,7 @@
 			Introduction to Knot
 		</h1>
 		<p class="text-xl text-muted-foreground">
-			A modern monorepo package manager for TypeScript/JavaScript projects
+			A modern monorepo package manager for any programming language
 		</p>
 	</div>
 

@@ -53,7 +53,7 @@
 						<li>• Node.js 18+ installed on your system</li>
 						<li>• Knot CLI installed (<a href="/docs/installation" class="underline hover:no-underline">installation guide</a>)</li>
 						<li>• A text editor or IDE (VS Code recommended)</li>
-						<li>• Basic knowledge of TypeScript/JavaScript</li>
+						<li>• Basic knowledge of command-line tools</li>
 					</ul>
 				</div>
 			</div>

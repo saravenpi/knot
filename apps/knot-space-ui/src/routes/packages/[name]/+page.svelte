@@ -115,7 +115,7 @@
 	{#if selectedPackage}
 		<title>{selectedPackage.name} v{selectedPackage.version} - Knot Space Package</title>
 		<meta name="description" content="{selectedPackage.description || `${selectedPackage.name} - A package in the Knot Space registry`}. Version {selectedPackage.version} by {selectedPackage.owner.username}{selectedPackage.team ? ` (${selectedPackage.team.name} team)` : ''}. {formatDownloadCount(selectedPackage.totalDownloadsCount || selectedPackage.downloadsCount)} downloads." />
-		<meta name="keywords" content="package, {selectedPackage.name}, knot space, typescript, javascript, monorepo, {selectedPackage.tags ? selectedPackage.tags.join(', ') : ''}" />
+		<meta name="keywords" content="package, {selectedPackage.name}, knot space, monorepo, programming, development, {selectedPackage.tags ? selectedPackage.tags.join(', ') : ''}" />
 		<meta name="author" content="{selectedPackage.owner.username}" />
 		
 		<!-- Open Graph / Facebook -->

@@ -251,7 +251,7 @@
 								<span class="text-xl font-bold">Knot Space</span>
 							</div>
 							<p class="text-gray-400 text-sm leading-relaxed">
-								The modern package registry for Knot monorepo packages. Build, publish, and manage your TypeScript/JavaScript packages with ease.
+								The modern package registry for Knot monorepo packages. Build, publish, and manage packages for any programming language with ease.
 							</p>
 							<div class="flex space-x-4">
 								<a href="https://github.com/saravenpi/knot" class="text-gray-400 hover:text-white transition-colors" aria-label="GitHub">

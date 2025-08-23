@@ -373,7 +373,7 @@
 					</div>
 
 					<div>
-						<h4 class="font-medium mb-2">In TypeScript/JavaScript</h4>
+						<h4 class="font-medium mb-2">Example Usage</h4>
 						<div class="bg-black/90 text-white font-mono text-sm p-4 rounded-lg">
 							<pre><code><span class="text-purple-400">import</span> {"{ "}<span class="text-yellow-400">helpers</span> {"} "}<span class="text-purple-400">from</span> <span class="text-green-400">&apos;@myteam/shared-utils&apos;</span>;</code></pre>
 						</div>
