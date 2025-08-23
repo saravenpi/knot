@@ -153,12 +153,60 @@ pub async fn add_package(package_spec: &str, auto_link: bool) -> Result<()> {
 
 // Parse package specification into name and version
 fn parse_package_spec(package_spec: &str) -> (String, Option<String>) {
-    if let Some(at_pos) = package_spec.rfind('@') {
-        let name = package_spec[..at_pos].to_string();
-        let version = package_spec[at_pos + 1..].to_string();
-        (name, Some(version))
+    if package_spec.starts_with('@') {
+        // Handle scoped packages like @hono-modules-loader@0.2.5
+        if let Some(at_pos) = package_spec[1..].find('@') {
+            // Found a second @ after the first one
+            let at_pos = at_pos + 1; // Adjust for the skipped first character
+            let name = package_spec[..at_pos].to_string();
+            let version = package_spec[at_pos + 1..].to_string();
+            (name, Some(version))
+        } else {
+            // No version specified, just the scoped package name
+            (package_spec.to_string(), None)
+        }
     } else {
-        (package_spec.to_string(), None)
+        // Handle regular packages like package-name@1.0.0
+        if let Some(at_pos) = package_spec.rfind('@') {
+            let name = package_spec[..at_pos].to_string();
+            let version = package_spec[at_pos + 1..].to_string();
+            (name, Some(version))
+        } else {
+            (package_spec.to_string(), None)
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_parse_package_spec() {
+        // Test scoped packages with version
+        let (name, version) = parse_package_spec("@hono-modules-loader@0.2.5");
+        assert_eq!(name, "@hono-modules-loader");
+        assert_eq!(version, Some("0.2.5".to_string()));
+
+        // Test scoped packages without version
+        let (name, version) = parse_package_spec("@hono-modules-loader");
+        assert_eq!(name, "@hono-modules-loader");
+        assert_eq!(version, None);
+
+        // Test regular packages with version
+        let (name, version) = parse_package_spec("lodash@4.17.21");
+        assert_eq!(name, "lodash");
+        assert_eq!(version, Some("4.17.21".to_string()));
+
+        // Test regular packages without version
+        let (name, version) = parse_package_spec("lodash");
+        assert_eq!(name, "lodash");
+        assert_eq!(version, None);
+
+        // Test complex scoped package names
+        let (name, version) = parse_package_spec("@types/node@18.0.0");
+        assert_eq!(name, "@types/node");
+        assert_eq!(version, Some("18.0.0".to_string()));
     }
 }
 

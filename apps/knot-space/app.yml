@@ -1,23 +1,22 @@
 name: knot-space
 description: Online repository server for Knot packages
-build: 'bun run build'
-
-# Server-specific scripts
+tsAlias: null
+packages:
+- '@hono-modules-loader'
 scripts:
-  dev: 'cargo run'
-  test: 'cargo test'
-  check: 'cargo check'
-  lint: 'cargo clippy -- -D warnings'
-  fmt: 'cargo fmt'
-  fmt-check: 'cargo fmt -- --check'
-  build-debug: 'cargo build'
-  build-release: 'cargo build --release'
-  clean: 'cargo clean'
-  doc: 'cargo doc --open'
-  serve: 'cargo run --release'
-  watch: 'cargo watch -x run'
-  integration-test: "cargo test --test '*'"
-  load-test: "echo 'Load testing not implemented yet'"
-  docker-build: 'docker build -t knot-space .'
-  docker-run: 'docker run -p 8000:8000 knot-space'
-
+  build-debug: cargo build
+  build-release: cargo build --release
+  clean: cargo clean
+  fmt-check: cargo fmt -- --check
+  docker-build: docker build -t knot-space .
+  fmt: cargo fmt
+  doc: cargo doc --open
+  check: cargo check
+  serve: cargo run --release
+  docker-run: docker run -p 8000:8000 knot-space
+  lint: cargo clippy -- -D warnings
+  load-test: echo 'Load testing not implemented yet'
+  test: cargo test
+  integration-test: cargo test --test '*'
+  watch: cargo watch -x run
+  dev: cargo run
