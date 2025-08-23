@@ -1,15 +1,16 @@
 # Knot 🪢
 
-A modern monorepo package manager for TypeScript/JavaScript projects that simplifies dependency management and builds across multiple apps and packages.
+A modern monorepo package manager for any programming language that simplifies dependency management and builds across multiple apps and packages.
 
 ## ✨ Features
 
 - **🔗 Smart Package Linking** - Automatic symlinking of local packages
 - **☁️ Online Package Support** - Download packages from knot space (`@package`, `@team/package`)
-- **⚡ TypeScript Integration** - Per-app TypeScript alias configuration
+- **⚡ Language Integration** - Per-app configuration with special TypeScript support
 - **🔨 Build Management** - Execute build commands across apps or individually
 - **▶️ Script Runner** - Run scripts from any config file with `knot run`
 - **📦 Flexible Configuration** - YAML-based configuration with multiple syntax options
+- **🌍 Multi-Language Support** - Works with any programming language (Rust, Go, Python, Java, etc.)
 
 ## 🚀 Quick Install
 
@@ -63,8 +64,8 @@ cd ..
 
 # 3. Create applications
 cd apps
-knot init:app frontend --description "React frontend"
-knot init:app backend --description "Node.js API"
+knot init:app frontend --description "Web frontend"
+knot init:app backend --description "API server"
 cd ..
 
 # 4. Configure dependencies and scripts in knot.yml
@@ -110,16 +111,16 @@ apps:
 
 ```yaml
 name: frontend
-description: React frontend app
-tsAlias: "~"                    # Optional: Override project tsAlias
+description: Web frontend app
+tsAlias: "~"                    # Optional: Override project tsAlias (TypeScript projects)
 build: "npm run build"          # Build command
 
 # App-specific scripts
 scripts:
-  dev: "vite dev --port 3000"
-  test: "vitest run"
-  lint: "eslint src/ --ext .ts,.tsx"
-  storybook: "storybook dev -p 6006"
+  dev: "npm run dev"
+  test: "npm run test"
+  lint: "npm run lint"
+  serve: "npm run serve"
 
 packages:                       # Optional: Additional packages
   - types
@@ -136,10 +137,10 @@ version: 1.0.0
 
 # Package scripts
 scripts:
-  build: "tsc && rollup -c"
-  test: "vitest run --coverage"
-  docs: "typedoc --out docs src/"
-  benchmark: "node benchmarks/performance.js"
+  build: "npm run build"
+  test: "npm run test"
+  docs: "npm run docs"
+  benchmark: "npm run benchmark"
 ```
 
 ## 🔨 Build Commands
@@ -157,10 +158,12 @@ Add build commands to your `app.yml` files:
 
 ```yaml
 name: frontend
-description: React frontend
+description: Web frontend
 build: "npm run build"          # Simple command
-# build: "pnpm build --prod"    # Alternative build tools
+# build: "pnpm build --prod"    # Alternative build tools  
 # build: "./build.sh"           # Custom scripts
+# build: "cargo build --release" # Rust projects
+# build: "go build -o bin/app"  # Go projects
 ```
 
 ### Examples
@@ -210,9 +213,9 @@ knot run invalid-script
 # ❌ Script 'invalid-script' not found
 # 💡 Available scripts:
 #   📱 App scripts (frontend)
-#     • dev - vite dev --port 3000
-#     • test - vitest run
-#     • lint - eslint src/ --ext .ts,.tsx
+#     • dev - npm run dev
+#     • test - npm run test
+#     • lint - npm run lint
 #   🏗️ Project scripts (MyProject)
 #     • setup - npm install && echo 'Setup complete'
 #     • clean - rm -rf */dist */build
@@ -231,20 +234,20 @@ knot run invalid-script
 # Development workflow
 scripts:
   dev: "concurrently 'knot run dev-server' 'knot run dev-client'"
-  dev-server: "nodemon --exec ts-node src/server.ts"
-  dev-client: "vite dev --port 3000"
+  dev-server: "npm run start:dev"
+  dev-client: "npm run dev"
 
 # Testing pipeline
 scripts:
-  test: "jest --coverage"
-  test-watch: "jest --watch"
-  test-e2e: "playwright test"
+  test: "npm run test"
+  test-watch: "npm run test:watch"
+  test-e2e: "npm run test:e2e"
   test-all: "knot run test && knot run test-e2e"
 
 # Build pipeline
 scripts:
   prebuild: "knot run lint && knot run test"
-  build: "tsc && rollup -c"
+  build: "npm run build"
   postbuild: "cp README.md dist/"
 ```
 
@@ -260,7 +263,9 @@ scripts:
 - **Team packages**: `@team/package-name`
 - Downloaded to `knot_packages/` in apps
 
-## 🎨 TypeScript Integration
+## 🎨 TypeScript Integration (Optional)
+
+Knot works with any programming language, but provides special integration features for TypeScript projects.
 
 ### Per-App Aliases
 Configure TypeScript path aliases per app:
@@ -301,14 +306,14 @@ my-monorepo/
 ├── packages/               # Local packages
 │   ├── types/
 │   │   ├── package.yml
-│   │   └── index.ts
+│   │   └── src/           # Source files (any language)
 │   └── utils/
 │       ├── package.yml
-│       └── index.ts
+│       └── src/           # Source files (any language)
 └── apps/                   # Applications
     ├── frontend/
     │   ├── app.yml         # App configuration
-    │   ├── tsconfig.json   # Auto-updated
+    │   ├── tsconfig.json   # Auto-updated (TypeScript projects only)
     │   ├── knot_packages/  # Linked packages
     │   │   ├── types -> ../../packages/types
     │   │   ├── utils -> ../../packages/utils
@@ -316,7 +321,7 @@ my-monorepo/
     │   └── src/
     └── backend/
         ├── app.yml
-        ├── tsconfig.json
+        ├── tsconfig.json       # (TypeScript projects only)
         ├── knot_packages/
         └── src/
 ```
@@ -357,9 +362,9 @@ build: "./scripts/build.sh"    # Custom build script
 #!/bin/bash
 # scripts/build.sh
 echo "🔨 Building with custom script..."
-npm run lint
-npm run test
-npm run build:prod
+npm run lint                    # Or: cargo clippy, go fmt, etc.
+npm run test                    # Or: cargo test, go test, etc.  
+npm run build:prod              # Or: cargo build --release, go build, etc.
 echo "✅ Build complete!"
 ```
 
