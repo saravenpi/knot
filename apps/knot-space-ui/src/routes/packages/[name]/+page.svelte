@@ -2,12 +2,13 @@
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 	import { packagesStore, authStore } from '$lib/stores';
+	import type { Package } from '$lib/api';
 	import { formatDownloadCount, formatFileSize, formatDateTime, formatTimeAgo, formatDate } from '../../../lib/utils/format';
 	import Icon from '@iconify/svelte';
 	import Chart from '../../../lib/components/ui/chart.svelte';
 	import Drawer from '../../../lib/components/ui/drawer.svelte';
 	import FileBrowser from '../../../lib/components/FileBrowser.svelte';
-	import { requestApi } from '../../../lib/api';
+	import { packagesApi, requestApi } from '../../../lib/api';
 
 	$: packageName = $page.params.name;
 	$: selectedPackage = $packagesStore.selectedPackage;
@@ -68,8 +69,12 @@
 
 	// Fetch available versions when package is loaded
 	$: if (selectedPackage && selectedPackage.name && !loadingVersions && availableVersions.length === 0) {
+		console.log('Fetching versions for:', selectedPackage.name, 'loadingVersions:', loadingVersions, 'availableVersions.length:', availableVersions.length);
 		fetchAvailableVersions();
 	}
+
+	// Debug reactive statement
+	$: console.log('Reactive debug - selectedPackage:', selectedPackage?.name, 'availableVersions:', availableVersions.length, 'showVersionSelector:', showVersionSelector);
 
 	async function fetchDownloadStats() {
 		if (!selectedPackage) return;
@@ -103,10 +108,13 @@
 	async function fetchAvailableVersions() {
 		if (!selectedPackage || loadingVersions) return;
 		
+		console.log('Starting to fetch versions for:', selectedPackage.name);
 		loadingVersions = true;
 		try {
-			const versions = await requestApi<{ success: boolean; data: Package[] }>('GET', `/api/packages/${encodeURIComponent(selectedPackage.name)}/versions`);
-			availableVersions = versions.data.sort((a, b) => new Date(b.publishedAt || b.createdAt).getTime() - new Date(a.publishedAt || a.createdAt).getTime());
+			const versions = await packagesApi.getVersions(selectedPackage.name);
+			console.log('Received versions response:', versions);
+			availableVersions = versions.sort((a, b) => new Date(b.publishedAt || b.createdAt).getTime() - new Date(a.publishedAt || a.createdAt).getTime());
+			console.log('Sorted available versions:', availableVersions);
 		} catch (error) {
 			console.error('Failed to fetch versions:', error);
 		} finally {
@@ -131,9 +139,7 @@
 			statsLoaded = false;
 			downloadStats = null;
 			
-			// Reset versions array so it gets refetched (in case the API returns different version lists)
-			availableVersions = [];
-			loadingVersions = false;
+			// Don't reset versions array - keep the existing version list
 			
 			// Close the version selector
 			showVersionSelector = false;
@@ -247,12 +253,12 @@
 									<div class="animate-spin rounded-full h-3 w-3 border-b border-current mr-1"></div>
 								{/if}
 								v{selectedPackage.version}
-								{#if availableVersions.length > 1 && !switchingVersion}
+								{#if availableVersions.length > 0 && !switchingVersion}
 									<Icon icon="solar:alt-arrow-down-bold" class="w-3 h-3" />
 								{/if}
 							</button>
 							
-							{#if showVersionSelector && availableVersions.length > 1}
+							{#if showVersionSelector && availableVersions.length > 0}
 								<div class="absolute top-full left-0 mt-1 bg-background border border-border rounded-lg shadow-lg z-10 min-w-48 max-h-60 overflow-y-auto" data-version-selector>
 									<div class="py-1">
 										{#each availableVersions as versionInfo}

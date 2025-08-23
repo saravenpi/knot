@@ -57,12 +57,12 @@
   <aside class="hidden lg:block fixed left-0 top-0 w-64 h-screen bg-card border-r border-border overflow-y-auto z-10">
     <div class="p-6">
       <!-- Logo -->
-      <div class="flex items-center space-x-2 mb-8">
+      <a href="/" class="flex items-center space-x-2 mb-8 hover:opacity-80 transition-opacity">
         <div class="w-8 h-8 bg-black rounded-md flex items-center justify-center">
           <span class="text-white font-bold text-sm">K</span>
         </div>
         <span class="font-semibold text-xl">Knot Space</span>
-      </div>
+      </a>
 
       <!-- User info -->
       {#if user}
