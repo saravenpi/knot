@@ -7,10 +7,10 @@
 	<meta name="description" content="Knot is a modern package manager designed for TypeScript and JavaScript monorepos. Learn about smart package linking, TypeScript integration, and team collaboration." />
 	<meta property="og:title" content="Introduction to Knot - Modern Monorepo Package Manager" />
 	<meta property="og:description" content="Knot is a modern package manager designed for TypeScript and JavaScript monorepos. Learn about smart package linking, TypeScript integration, and team collaboration." />
-	<meta property="og:url" content="https://knot-space.com/docs" />
+	<meta property="og:url" content="https://knot.klysium.com/docs" />
 	<meta name="twitter:title" content="Introduction to Knot - Modern Monorepo Package Manager" />
 	<meta name="twitter:description" content="Knot is a modern package manager designed for TypeScript and JavaScript monorepos. Learn about smart package linking, TypeScript integration, and team collaboration." />
-	<link rel="canonical" href="https://knot-space.com/docs" />
+	<link rel="canonical" href="https://knot.klysium.com/docs" />
 </svelte:head>
 
 <div class="max-w-4xl mx-auto py-8 px-4 sm:px-6">

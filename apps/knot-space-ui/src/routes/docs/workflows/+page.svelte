@@ -24,11 +24,11 @@
 	<meta property="og:title" content="Workflow Best Practices - Knot CLI" />
 	<meta property="og:description" content="Learn the best practices for working with Knot CLI to improve your development workflow." />
 	<meta property="og:image" content="/images/og/workflows.png" />
-	<meta property="og:url" content="https://knot-space.com/docs/workflows" />
+	<meta property="og:url" content="https://knot.klysium.com/docs/workflows" />
 	<meta name="twitter:title" content="Workflow Best Practices - Knot CLI" />
 	<meta name="twitter:description" content="Learn the best practices for working with Knot CLI to improve your development workflow." />
 	<meta name="twitter:image" content="/images/og/workflows.png" />
-	<link rel="canonical" href="https://knot-space.com/docs/workflows" />
+	<link rel="canonical" href="https://knot.klysium.com/docs/workflows" />
 </svelte:head>
 
 <div class="max-w-4xl mx-auto py-8 px-4 sm:px-6">

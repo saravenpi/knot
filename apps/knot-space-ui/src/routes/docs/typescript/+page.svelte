@@ -23,10 +23,10 @@
 	<meta name="description" content="Build and manage TypeScript and JavaScript packages with Knot. Learn about type definitions, builds, and best practices." />
 	<meta property="og:title" content="TypeScript & JavaScript - Knot CLI" />
 	<meta property="og:description" content="Build and manage TypeScript and JavaScript packages with Knot. Learn about type definitions, builds, and best practices." />
-	<meta property="og:url" content="https://knot-space.com/docs/typescript" />
+	<meta property="og:url" content="https://knot.klysium.com/docs/typescript" />
 	<meta name="twitter:title" content="TypeScript & JavaScript - Knot CLI" />
 	<meta name="twitter:description" content="Build and manage TypeScript and JavaScript packages with Knot. Learn about type definitions, builds, and best practices." />
-	<link rel="canonical" href="https://knot-space.com/docs/typescript" />
+	<link rel="canonical" href="https://knot.klysium.com/docs/typescript" />
 </svelte:head>
 
 <div class="max-w-4xl mx-auto py-8 px-4 sm:px-6">

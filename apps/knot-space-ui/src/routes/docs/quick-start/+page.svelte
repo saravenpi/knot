@@ -24,11 +24,11 @@
 	<meta property="og:title" content="Quick Start Guide - Knot CLI" />
 	<meta property="og:description" content="Get started with Knot CLI in under 5 minutes. Learn to initialize projects, create packages, and link dependencies for TypeScript monorepos." />
 	<meta property="og:image" content="/images/og/quick-start.png" />
-	<meta property="og:url" content="https://knot-space.com/docs/quick-start" />
+	<meta property="og:url" content="https://knot.klysium.com/docs/quick-start" />
 	<meta name="twitter:title" content="Quick Start Guide - Knot CLI" />
 	<meta name="twitter:description" content="Get started with Knot CLI in under 5 minutes. Learn to initialize projects, create packages, and link dependencies for TypeScript monorepos." />
 	<meta name="twitter:image" content="/images/og/quick-start.png" />
-	<link rel="canonical" href="https://knot-space.com/docs/quick-start" />
+	<link rel="canonical" href="https://knot.klysium.com/docs/quick-start" />
 </svelte:head>
 
 <div class="max-w-4xl mx-auto py-8 px-4 sm:px-6">

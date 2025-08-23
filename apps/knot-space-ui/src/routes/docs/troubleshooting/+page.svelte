@@ -23,10 +23,10 @@
 	<meta name="description" content="Common issues and solutions for Knot CLI, package linking, authentication, builds, and publishing. Debug commands and support resources." />
 	<meta property="og:title" content="Troubleshooting - Knot CLI" />
 	<meta property="og:description" content="Common issues and solutions for Knot CLI, package linking, authentication, builds, and publishing. Debug commands and support resources." />
-	<meta property="og:url" content="https://knot-space.com/docs/troubleshooting" />
+	<meta property="og:url" content="https://knot.klysium.com/docs/troubleshooting" />
 	<meta name="twitter:title" content="Troubleshooting - Knot CLI" />
 	<meta name="twitter:description" content="Common issues and solutions for Knot CLI, package linking, authentication, builds, and publishing. Debug commands and support resources." />
-	<link rel="canonical" href="https://knot-space.com/docs/troubleshooting" />
+	<link rel="canonical" href="https://knot.klysium.com/docs/troubleshooting" />
 </svelte:head>
 
 <div class="max-w-4xl mx-auto py-8 px-4 sm:px-6">

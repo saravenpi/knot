@@ -23,10 +23,10 @@
 	<meta name="description" content="Understanding how Knot organizes monorepo projects, packages, and applications with clear structure and best practices." />
 	<meta property="og:title" content="Project Structure - Knot CLI" />
 	<meta property="og:description" content="Understanding how Knot organizes monorepo projects, packages, and applications with clear structure and best practices." />
-	<meta property="og:url" content="https://knot-space.com/docs/project-structure" />
+	<meta property="og:url" content="https://knot.klysium.com/docs/project-structure" />
 	<meta name="twitter:title" content="Project Structure - Knot CLI" />
 	<meta name="twitter:description" content="Understanding how Knot organizes monorepo projects, packages, and applications with clear structure and best practices." />
-	<link rel="canonical" href="https://knot-space.com/docs/project-structure" />
+	<link rel="canonical" href="https://knot.klysium.com/docs/project-structure" />
 </svelte:head>
 
 <div class="max-w-4xl mx-auto py-8 px-4 sm:px-6">

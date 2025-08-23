@@ -91,7 +91,7 @@
 	<meta property="og:image:width" content="1200" />
 	<meta property="og:image:height" content="630" />
 	<meta property="og:image:alt" content="Knot CLI Documentation - Modern Monorepo Package Manager" />
-	<meta property="og:url" content="https://knot-space.com/docs" />
+	<meta property="og:url" content="https://knot.klysium.com/docs" />
 	<meta property="og:site_name" content="Knot Space" />
 	<meta property="og:locale" content="en_US" />
 
@@ -105,7 +105,7 @@
 	<meta name="twitter:image:alt" content="Knot CLI Documentation" />
 
 	<!-- Additional SEO Meta Tags -->
-	<link rel="canonical" href="https://knot-space.com/docs" />
+	<link rel="canonical" href="https://knot.klysium.com/docs" />
 	<meta name="format-detection" content="telephone=no" />
 	<meta name="HandheldFriendly" content="true" />
 
@@ -125,16 +125,16 @@
 			"name": "Knot Space",
 			"logo": {
 				"@type": "ImageObject",
-				"url": "https://knot-space.com/images/logo.png"
+				"url": "https://knot.klysium.com/images/logo.png"
 			}
 		},
 		"datePublished": "2025-01-01",
 		"dateModified": "2025-01-15",
 		"mainEntityOfPage": {
 			"@type": "WebPage",
-			"@id": "https://knot-space.com/docs"
+			"@id": "https://knot.klysium.com/docs"
 		},
-		"image": "https://knot-space.com/images/og/docs-main.png",
+		"image": "https://knot.klysium.com/images/og/docs-main.png",
 		"articleSection": "Documentation",
 		"keywords": ["monorepo", "package manager", "typescript", "cli tools", "build tools"]
 	}

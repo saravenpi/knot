@@ -24,11 +24,11 @@
 	<meta property="og:title" content="TypeScript Path Aliases - Knot CLI" />
 	<meta property="og:description" content="Learn how to configure and use TypeScript path aliases with Knot CLI for cleaner imports and better developer experience." />
 	<meta property="og:image" content="/images/og/typescript.png" />
-	<meta property="og:url" content="https://knot-space.com/docs/aliases" />
+	<meta property="og:url" content="https://knot.klysium.com/docs/aliases" />
 	<meta name="twitter:title" content="TypeScript Path Aliases - Knot CLI" />
 	<meta name="twitter:description" content="Learn how to configure and use TypeScript path aliases with Knot CLI for cleaner imports and better developer experience." />
 	<meta name="twitter:image" content="/images/og/typescript.png" />
-	<link rel="canonical" href="https://knot-space.com/docs/aliases" />
+	<link rel="canonical" href="https://knot.klysium.com/docs/aliases" />
 </svelte:head>
 
 <div class="max-w-4xl mx-auto py-8 px-4 sm:px-6">

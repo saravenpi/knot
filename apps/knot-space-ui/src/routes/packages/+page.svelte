@@ -101,8 +101,71 @@
 </script>
 
 <svelte:head>
-	<title>Packages - Knot Space</title>
-	<meta name="description" content="Browse all packages in the Knot Space registry" />
+	<title>Browse Packages - Knot Space Package Registry</title>
+	<meta name="description" content="Discover and explore TypeScript/JavaScript packages in the Knot Space registry. Find packages by tags, search by name or description, and explore the growing ecosystem of monorepo packages." />
+	<meta name="keywords" content="package registry, browse packages, typescript packages, javascript packages, monorepo packages, knot packages, npm alternative" />
+	<meta name="author" content="Knot Space" />
+	
+	<!-- Open Graph / Facebook -->
+	<meta property="og:type" content="website" />
+	<meta property="og:url" content="https://knot.klysium.com/packages" />
+	<meta property="og:title" content="Browse Packages - Knot Space Package Registry" />
+	<meta property="og:description" content="Discover and explore TypeScript/JavaScript packages in the Knot Space registry. Find packages by tags, search by name or description, and explore the growing ecosystem." />
+	<meta property="og:image" content="https://knot.klysium.com/images/og/packages.png" />
+	<meta property="og:image:alt" content="Browse Packages in Knot Space Registry" />
+	<meta property="og:site_name" content="Knot Space" />
+
+	<!-- Twitter -->
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:url" content="https://knot.klysium.com/packages" />
+	<meta name="twitter:title" content="Browse Packages - Knot Space Package Registry" />
+	<meta name="twitter:description" content="Discover and explore TypeScript/JavaScript packages in the Knot Space registry. Find packages by tags and search functionality." />
+	<meta name="twitter:image" content="https://knot.klysium.com/images/og/packages.png" />
+	<meta name="twitter:image:alt" content="Browse Packages in Knot Space Registry" />
+	<meta name="twitter:creator" content="@knotspace" />
+	<meta name="twitter:site" content="@knotspace" />
+
+	<!-- Additional SEO -->
+	<meta name="robots" content="index, follow" />
+	<link rel="canonical" href="https://knot.klysium.com/packages" />
+	
+	<!-- Schema.org structured data -->
+	<script type="application/ld+json">
+	{
+		"@context": "https://schema.org",
+		"@type": "CollectionPage",
+		"name": "Packages - Knot Space",
+		"description": "Discover and explore TypeScript/JavaScript packages in the Knot Space registry",
+		"url": "https://knot.klysium.com/packages",
+		"mainEntity": {
+			"@type": "ItemList",
+			"name": "Package Registry",
+			"description": "Collection of TypeScript/JavaScript packages for monorepo development"
+		},
+		"breadcrumb": {
+			"@type": "BreadcrumbList",
+			"itemListElement": [
+				{
+					"@type": "ListItem",
+					"position": 1,
+					"name": "Home",
+					"item": "https://knot.klysium.com"
+				},
+				{
+					"@type": "ListItem",
+					"position": 2,
+					"name": "Packages",
+					"item": "https://knot.klysium.com/packages"
+				}
+			]
+		},
+		"publisher": {
+			"@type": "Organization",
+			"name": "Knot Space",
+			"url": "https://knot.klysium.com"
+		}
+	}
+	</script>
 </svelte:head>
 
 <div class="space-y-6">

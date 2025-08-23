@@ -24,11 +24,11 @@
 	<meta property="og:title" content="Team Management - Knot CLI" />
 	<meta property="og:description" content="Learn how to create and manage teams for collaborative package development with Knot CLI." />
 	<meta property="og:image" content="/images/og/teams.png" />
-	<meta property="og:url" content="https://knot-space.com/docs/teams" />
+	<meta property="og:url" content="https://knot.klysium.com/docs/teams" />
 	<meta name="twitter:title" content="Team Management - Knot CLI" />
 	<meta name="twitter:description" content="Learn how to create and manage teams for collaborative package development with Knot CLI." />
 	<meta name="twitter:image" content="/images/og/teams.png" />
-	<link rel="canonical" href="https://knot-space.com/docs/teams" />
+	<link rel="canonical" href="https://knot.klysium.com/docs/teams" />
 </svelte:head>
 
 <div class="max-w-4xl mx-auto py-8 px-4 sm:px-6">

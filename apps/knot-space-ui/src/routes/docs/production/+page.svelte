@@ -24,11 +24,11 @@
 	<meta property="og:title" content="Production Deployment - Knot CLI" />
 	<meta property="og:description" content="Learn how to deploy your Knot projects to production. Covers building for production, containerizing with Docker, and deploying to common platforms." />
 	<meta property="og:image" content="/images/og/production.png" />
-	<meta property="og:url" content="https://knot-space.com/docs/production" />
+	<meta property="og:url" content="https://knot.klysium.com/docs/production" />
 	<meta name="twitter:title" content="Production Deployment - Knot CLI" />
 	<meta name="twitter:description" content="Learn how to deploy your Knot projects to production. Covers building for production, containerizing with Docker, and deploying to common platforms." />
 	<meta name="twitter:image" content="/images/og/production.png" />
-	<link rel="canonical" href="https://knot-space.com/docs/production" />
+	<link rel="canonical" href="https://knot.klysium.com/docs/production" />
 </svelte:head>
 
 <div class="max-w-4xl mx-auto py-8 px-4 sm:px-6">

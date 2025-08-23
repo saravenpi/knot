@@ -24,11 +24,11 @@
 	<meta property="og:title" content="Installation Guide - Knot CLI" />
 	<meta property="og:description" content="Install Knot CLI with our one-line installer script. Works on macOS, Linux, and Windows. Includes built-in self-update functionality." />
 	<meta property="og:image" content="/images/og/installation.png" />
-	<meta property="og:url" content="https://knot-space.com/docs/installation" />
+	<meta property="og:url" content="https://knot.klysium.com/docs/installation" />
 	<meta name="twitter:title" content="Installation Guide - Knot CLI" />
 	<meta name="twitter:description" content="Install Knot CLI with our one-line installer script. Works on macOS, Linux, and Windows. Includes built-in self-update functionality." />
 	<meta name="twitter:image" content="/images/og/installation.png" />
-	<link rel="canonical" href="https://knot-space.com/docs/installation" />
+	<link rel="canonical" href="https://knot.klysium.com/docs/installation" />
 </svelte:head>
 
 <div class="max-w-4xl mx-auto py-8 px-4 sm:px-6 overflow-x-hidden">

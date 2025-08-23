@@ -53,8 +53,57 @@
 </script>
 
 <svelte:head>
-	<title>Knot Space - Package Registry for TypeScript/JavaScript</title>
-	<meta name="description" content="A modern package registry for Knot monorepo packages" />
+	<title>Knot Space - Modern Package Registry for TypeScript/JavaScript Monorepos</title>
+	<meta name="description" content="The modern package registry for Knot monorepo packages. Publish, share, and manage your TypeScript/JavaScript packages with teams. Fast publishing, team collaboration, and secure infrastructure." />
+	<meta name="keywords" content="package registry, monorepo, typescript, javascript, npm, knot, package manager, team collaboration, private packages" />
+	<meta name="author" content="Knot Space" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	
+	<!-- Open Graph / Facebook -->
+	<meta property="og:type" content="website" />
+	<meta property="og:url" content="https://knot.klysium.com/" />
+	<meta property="og:title" content="Knot Space - Modern Package Registry for TypeScript/JavaScript Monorepos" />
+	<meta property="og:description" content="The modern package registry for Knot monorepo packages. Publish, share, and manage your TypeScript/JavaScript packages with teams. Fast publishing, team collaboration, and secure infrastructure." />
+	<meta property="og:image" content="https://knot.klysium.com/images/og/home.png" />
+	<meta property="og:image:alt" content="Knot Space - Modern Package Registry for TypeScript/JavaScript" />
+	<meta property="og:site_name" content="Knot Space" />
+	<meta property="og:locale" content="en_US" />
+
+	<!-- Twitter -->
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:url" content="https://knot.klysium.com/" />
+	<meta name="twitter:title" content="Knot Space - Modern Package Registry for TypeScript/JavaScript Monorepos" />
+	<meta name="twitter:description" content="The modern package registry for Knot monorepo packages. Publish, share, and manage your TypeScript/JavaScript packages with teams." />
+	<meta name="twitter:image" content="https://knot.klysium.com/images/og/home.png" />
+	<meta name="twitter:image:alt" content="Knot Space - Modern Package Registry" />
+	<meta name="twitter:creator" content="@knotspace" />
+	<meta name="twitter:site" content="@knotspace" />
+
+	<!-- Additional SEO -->
+	<meta name="robots" content="index, follow" />
+	<meta name="googlebot" content="index, follow" />
+	<link rel="canonical" href="https://knot.klysium.com/" />
+	
+	<!-- Schema.org structured data -->
+	<script type="application/ld+json">
+	{
+		"@context": "https://schema.org",
+		"@type": "WebSite",
+		"name": "Knot Space",
+		"description": "The modern package registry for Knot monorepo packages. Publish, share, and manage your TypeScript/JavaScript packages with teams.",
+		"url": "https://knot.klysium.com",
+		"potentialAction": {
+			"@type": "SearchAction",
+			"target": "https://knot.klysium.com/packages?search={search_term_string}",
+			"query-input": "required name=search_term_string"
+		},
+		"publisher": {
+			"@type": "Organization",
+			"name": "Knot Space",
+			"url": "https://knot.klysium.com"
+		}
+	}
+	</script>
 </svelte:head>
 
 {#if !initialized}

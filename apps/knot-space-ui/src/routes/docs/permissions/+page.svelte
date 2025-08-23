@@ -24,11 +24,11 @@
 	<meta property="og:title" content="Permissions - Knot CLI" />
 	<meta property="og:description" content="Learn how to manage permissions for your Knot projects and packages." />
 	<meta property="og:image" content="/images/og/permissions.png" />
-	<meta property="og:url" content="https://knot-space.com/docs/permissions" />
+	<meta property="og:url" content="https://knot.klysium.com/docs/permissions" />
 	<meta name="twitter:title" content="Permissions - Knot CLI" />
 	<meta name="twitter:description" content="Learn how to manage permissions for your Knot projects and packages." />
 	<meta name="twitter:image" content="/images/og/permissions.png" />
-	<link rel="canonical" href="https://knot-space.com/docs/permissions" />
+	<link rel="canonical" href="https://knot.klysium.com/docs/permissions" />
 </svelte:head>
 
 <div class="max-w-4xl mx-auto py-8 px-4 sm:px-6">

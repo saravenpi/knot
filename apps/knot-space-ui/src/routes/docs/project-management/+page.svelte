@@ -23,10 +23,10 @@
 	<meta name="description" content="Learn how to manage your Knot projects, from initialization to configuration and status checks." />
 	<meta property="og:title" content="Project Management - Knot CLI" />
 	<meta property="og:description" content="Learn how to manage your Knot projects, from initialization to configuration and status checks." />
-	<meta property="og:url" content="https://knot-space.com/docs/project-management" />
+	<meta property="og:url" content="https://knot.klysium.com/docs/project-management" />
 	<meta name="twitter:title" content="Project Management - Knot CLI" />
 	<meta name="twitter:description" content="Learn how to manage your Knot projects, from initialization to configuration and status checks." />
-	<link rel="canonical" href="https://knot-space.com/docs/project-management" />
+	<link rel="canonical" href="https://knot.klysium.com/docs/project-management" />
 </svelte:head>
 
 <div class="max-w-4xl mx-auto py-8 px-4 sm:px-6">

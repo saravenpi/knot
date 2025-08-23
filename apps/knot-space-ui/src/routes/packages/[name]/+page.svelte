@@ -112,8 +112,98 @@
 </script>
 
 <svelte:head>
-	<title>{packageName ? `${packageName} - Package` : 'Package'} - Knot Space</title>
-	<meta name="description" content="View package details and manage your packages" />
+	{#if selectedPackage}
+		<title>{selectedPackage.name} v{selectedPackage.version} - Knot Space Package</title>
+		<meta name="description" content="{selectedPackage.description || `${selectedPackage.name} - A package in the Knot Space registry`}. Version {selectedPackage.version} by {selectedPackage.owner.username}{selectedPackage.team ? ` (${selectedPackage.team.name} team)` : ''}. {formatDownloadCount(selectedPackage.totalDownloadsCount || selectedPackage.downloadsCount)} downloads." />
+		<meta name="keywords" content="package, {selectedPackage.name}, knot space, typescript, javascript, monorepo, {selectedPackage.tags ? selectedPackage.tags.join(', ') : ''}" />
+		<meta name="author" content="{selectedPackage.owner.username}" />
+		
+		<!-- Open Graph / Facebook -->
+		<meta property="og:type" content="article" />
+		<meta property="og:url" content="https://knot.klysium.com/packages/{encodeURIComponent(selectedPackage.name)}" />
+		<meta property="og:title" content="{selectedPackage.name} v{selectedPackage.version} - Knot Space Package" />
+		<meta property="og:description" content="{selectedPackage.description || `${selectedPackage.name} package in the Knot Space registry`}. Version {selectedPackage.version} by {selectedPackage.owner.username}." />
+		<meta property="og:image" content="https://knot.klysium.com/images/og/package.png" />
+		<meta property="og:image:alt" content="{selectedPackage.name} Package" />
+		<meta property="og:site_name" content="Knot Space" />
+		<meta property="article:author" content="{selectedPackage.owner.username}" />
+		<meta property="article:published_time" content="{selectedPackage.createdAt}" />
+		{#if selectedPackage.tags}
+			{#each selectedPackage.tags as tag}
+				<meta property="article:tag" content="{tag}" />
+			{/each}
+		{/if}
+
+		<!-- Twitter -->
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:url" content="https://knot.klysium.com/packages/{encodeURIComponent(selectedPackage.name)}" />
+		<meta name="twitter:title" content="{selectedPackage.name} v{selectedPackage.version} - Knot Space Package" />
+		<meta name="twitter:description" content="{selectedPackage.description || `${selectedPackage.name} package`}. By {selectedPackage.owner.username} • {formatDownloadCount(selectedPackage.totalDownloadsCount || selectedPackage.downloadsCount)} downloads" />
+		<meta name="twitter:image" content="https://knot.klysium.com/images/og/package.png" />
+		<meta name="twitter:image:alt" content="{selectedPackage.name} Package" />
+		<meta name="twitter:creator" content="@knotspace" />
+		<meta name="twitter:site" content="@knotspace" />
+
+		<!-- Additional SEO -->
+		<meta name="robots" content="index, follow" />
+		<link rel="canonical" href="https://knot.klysium.com/packages/{encodeURIComponent(selectedPackage.name)}" />
+		
+		<!-- Schema.org structured data -->
+		<script type="application/ld+json">
+		{
+			"@context": "https://schema.org",
+			"@type": "SoftwareApplication",
+			"name": "{selectedPackage.name}",
+			"description": "{selectedPackage.description || `${selectedPackage.name} package`}",
+			"version": "{selectedPackage.version}",
+			"url": "https://knot.klysium.com/packages/{encodeURIComponent(selectedPackage.name)}",
+			"author": {
+				"@type": "Person",
+				"name": "{selectedPackage.owner.username}"
+			},
+			"publisher": {
+				"@type": "Organization",
+				"name": "Knot Space",
+				"url": "https://knot.klysium.com"
+			},
+			"datePublished": "{selectedPackage.createdAt}",
+			"dateModified": "{selectedPackage.updatedAt}",
+			"downloadUrl": "https://knot.klysium.com/packages/{encodeURIComponent(selectedPackage.name)}",
+			"applicationCategory": "DeveloperApplication",
+			"operatingSystem": "Any",
+			{#if selectedPackage.tags && selectedPackage.tags.length > 0}
+			"keywords": "{selectedPackage.tags.join(', ')}",
+			{/if}
+			"breadcrumb": {
+				"@type": "BreadcrumbList",
+				"itemListElement": [
+					{
+						"@type": "ListItem",
+						"position": 1,
+						"name": "Home",
+						"item": "https://knot.klysium.com"
+					},
+					{
+						"@type": "ListItem",
+						"position": 2,
+						"name": "Packages",
+						"item": "https://knot.klysium.com/packages"
+					},
+					{
+						"@type": "ListItem",
+						"position": 3,
+						"name": "{selectedPackage.name}",
+						"item": "https://knot.klysium.com/packages/{encodeURIComponent(selectedPackage.name)}"
+					}
+				]
+			}
+		}
+		</script>
+	{:else}
+		<title>{packageName ? `${packageName} - Package` : 'Package'} - Knot Space</title>
+		<meta name="description" content="View package details in the Knot Space registry" />
+		<meta name="robots" content="noindex, follow" />
+	{/if}
 </svelte:head>
 
 {#if loading}

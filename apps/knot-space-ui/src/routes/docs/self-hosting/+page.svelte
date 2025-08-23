@@ -25,11 +25,11 @@
 	<meta property="og:title" content="Self-Hosting - Knot CLI" />
 	<meta property="og:description" content="Learn how to self-host your own Knot Space instance for complete control over your package registry." />
 	<meta property="og:image" content="/images/og/self-hosting.png" />
-	<meta property="og:url" content="https://knot-space.com/docs/self-hosting" />
+	<meta property="og:url" content="https://knot.klysium.com/docs/self-hosting" />
 	<meta name="twitter:title" content="Self-Hosting - Knot CLI" />
 	<meta name="twitter:description" content="Learn how to self-host your own Knot Space instance for complete control over your package registry." />
 	<meta name="twitter:image" content="/images/og/self-hosting.png" />
-	<link rel="canonical" href="https://knot-space.com/docs/self-hosting" />
+	<link rel="canonical" href="https://knot.klysium.com/docs/self-hosting" />
 </svelte:head>
 
 <div class="max-w-4xl mx-auto py-8 px-4 sm:px-6">
