@@ -17,42 +17,64 @@
 		</p>
 	</div>
 
-	<!-- Initializing a Project -->
-	<section class="mb-12">
-		<h2 class="text-2xl font-bold mb-6">Initializing a Project</h2>
-		<p class="text-muted-foreground leading-relaxed mb-6">
+	<div class="prose prose-slate max-w-none">
+		<h2 class="text-2xl font-bold mb-4">Initializing a Project</h2>
+		<p class="mb-6">
 			Start a new monorepo with a single command. Knot will set up the basic structure for you, including the root `knot.yml` configuration file.
 		</p>
-		<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
-			<code>knot init &lt;project-name&gt;</code>
+		
+		<div class="bg-muted rounded-lg p-4 mb-6">
+			<h3 class="font-semibold mb-2">Create a new project</h3>
+			<pre class="bg-background rounded p-3 overflow-x-auto"><code class="text-sm">knot init &lt;project-name&gt;</code></pre>
 		</div>
-	</section>
 
-	<!-- Project Configuration -->
-	<section class="mb-12">
-		<h2 class="text-2xl font-bold mb-6">Project Configuration</h2>
-		<p class="text-muted-foreground leading-relaxed mb-6">
+		<h2 class="text-2xl font-bold mb-4 mt-8">Project Configuration</h2>
+		<p class="mb-6">
 			The `knot.yml` file is the heart of your Knot project. It defines the project's name, description, and any scripts that can be run from the root.
 		</p>
-		<div class="bg-black/90 text-white font-mono text-sm p-4 rounded-lg">
-			<pre><code><span class="text-gray-400"># knot.yml</span>
-<span class="text-blue-400">name:</span> <span class="text-green-400">my-awesome-project</span>
-<span class="text-blue-400">description:</span> <span class="text-green-400">A description of my awesome project.</span>
-<span class="text-blue-400">scripts:</span>
-  <span class="text-blue-400">test:</span> <span class="text-green-400">echo "Error: no test specified" && exit 1</span>
-  <span class="text-blue-400">lint:</span> <span class="text-green-400">eslint .</span>
-</code></pre>
+		
+		<div class="bg-muted rounded-lg p-4 mb-6">
+			<h3 class="font-semibold mb-2">knot.yml structure</h3>
+			<pre class="bg-background rounded p-3 overflow-x-auto"><code class="text-sm">{`# knot.yml
+name: my-awesome-project
+description: A description of my awesome project.
+scripts:
+  test: echo "Error: no test specified" && exit 1
+  lint: eslint .`}</code></pre>
 		</div>
-	</section>
 
-	<!-- Checking Project Status -->
-	<section class="mb-12">
-		<h2 class="text-2xl font-bold mb-6">Checking Project Status</h2>
-		<p class="text-muted-foreground leading-relaxed mb-6">
+		<h2 class="text-2xl font-bold mb-4 mt-8">Checking Project Status</h2>
+		<p class="mb-6">
 			Get a quick overview of your project's status, including a list of all apps and packages and their dependencies.
 		</p>
-		<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
-			<code>knot status</code>
+		
+		<div class="bg-muted rounded-lg p-4 mb-6">
+			<h3 class="font-semibold mb-2">Project status command</h3>
+			<pre class="bg-background rounded p-3 overflow-x-auto"><code class="text-sm">knot status</code></pre>
 		</div>
-	</section>
+
+		<h2 class="text-2xl font-bold mb-4 mt-8">Next Steps</h2>
+		
+		<div class="grid gap-4 mt-6">
+			<a href="/docs/quick-start" class="group border rounded-lg p-4 hover:bg-muted transition-colors">
+				<div class="flex items-center justify-between">
+					<div>
+						<h3 class="font-semibold group-hover:text-primary">Quick Start Guide</h3>
+						<p class="text-sm text-muted-foreground">Get up and running with your first project</p>
+					</div>
+					<Icon icon="solar:arrow-right-bold" class="w-5 h-5 text-muted-foreground group-hover:text-primary" />
+				</div>
+			</a>
+
+			<a href="/docs/cli-commands" class="group border rounded-lg p-4 hover:bg-muted transition-colors">
+				<div class="flex items-center justify-between">
+					<div>
+						<h3 class="font-semibold group-hover:text-primary">CLI Commands</h3>
+						<p class="text-sm text-muted-foreground">Complete command reference</p>
+					</div>
+					<Icon icon="solar:arrow-right-bold" class="w-5 h-5 text-muted-foreground group-hover:text-primary" />
+				</div>
+			</a>
+		</div>
+	</div>
 </div>

@@ -33,11 +33,40 @@
     try {
       const response = await requestApi<{ success: boolean; data: FileEntry[] }>('GET', `/api/packages/${encodeURIComponent(packageName)}/${encodeURIComponent(packageVersion)}/files`);
       files = response.data || [];
+      
+      // Auto-select the first readable file
+      if (files.length > 0) {
+        const firstFile = findFirstReadableFile(files);
+        if (firstFile) {
+          await loadFileContent(firstFile);
+        }
+      }
     } catch (error) {
       console.error('Failed to load files:', error);
     } finally {
       loading = false;
     }
+  }
+
+  function findFirstReadableFile(fileList: FileEntry[]): string | null {
+    for (const file of fileList) {
+      if (file.type === 'file') {
+        // Prefer common files like README, index files, etc.
+        const fileName = file.name.toLowerCase();
+        if (fileName.includes('readme') || fileName.includes('index') || fileName.endsWith('.md') || fileName.endsWith('.ts') || fileName.endsWith('.js')) {
+          return file.path;
+        }
+      }
+    }
+    
+    // If no preferred file found, return the first file
+    for (const file of fileList) {
+      if (file.type === 'file') {
+        return file.path;
+      }
+    }
+    
+    return null;
   }
 
   async function loadFileContent(filePath: string) {

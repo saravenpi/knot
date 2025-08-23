@@ -207,19 +207,26 @@
 			</div>
 
 			<div>
-				<h3 class="text-lg font-semibold mb-3">Configure package dependencies</h3>
+				<h3 class="text-lg font-semibold mb-3">Install the package in your app</h3>
 				<p class="text-muted-foreground mb-3">
-					Edit <code>apps/frontend/app.yml</code> to include your utils package:
+					Navigate to your app directory and install the utils package:
 				</p>
-				<div class="bg-black/90 text-white font-mono text-sm p-4 rounded-lg">
-					<code><span class="text-blue-400">name:</span> <span class="text-green-400">frontend</span>
-<span class="text-blue-400">description:</span> <span class="text-green-400">My awesome React app</span>
-<span class="text-blue-400">packages:</span>
-  - <span class="text-yellow-400">utils</span>
-<span class="text-blue-400">scripts:</span>
-  <span class="text-blue-400">dev:</span> <span class="text-green-400">"npm run dev"</span>
-  <span class="text-blue-400">build:</span> <span class="text-green-400">"npm run build"</span></code>
+				<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
+					<code>cd apps/frontend && knot install utils</code>
+					<button 
+						class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
+						on:click={() => copyToClipboard('cd apps/frontend && knot install utils')}
+					>
+						{#if showCopied && copyText === 'cd apps/frontend && knot install utils'}
+							<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+						{:else}
+							<Icon icon="solar:copy-bold" class="w-4 h-4" />
+						{/if}
+					</button>
 				</div>
+				<p class="text-sm text-muted-foreground mt-2">
+					This adds the utils package to your app and links it automatically.
+				</p>
 			</div>
 		</div>
 	</section>

@@ -186,7 +186,7 @@ async fn main() -> Result<()> {
                 .about("Install a package dependency to the current app")
                 .arg(
                     Arg::new("package")
-                        .help("Package name to install (local: 'utils', online: '@jwt', team: '@team/package')")
+                        .help("Package name to install with optional version (examples: 'utils', '@jwt@1.2.3', '@team/package@latest')")
                         .required(true)
                         .index(1),
                 )

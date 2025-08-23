@@ -37,8 +37,16 @@ pub async fn link_packages(use_symlinks: bool) -> Result<()> {
     Ok(())
 }
 
-pub async fn add_package(package_name: &str, auto_link: bool) -> Result<()> {
+pub async fn add_package(package_spec: &str, auto_link: bool) -> Result<()> {
     let current_dir = std::env::current_dir()?;
+
+    // Parse package specification (name@version or name@latest or just name)
+    let (package_name, version) = parse_package_spec(package_spec);
+    let display_name = if let Some(v) = &version {
+        format!("{}@{}", package_name, v)
+    } else {
+        format!("{}@latest", package_name)
+    };
 
     // Check if we're in an app directory
     let app_yml_path = current_dir.join("app.yml");
@@ -67,8 +75,8 @@ pub async fn add_package(package_name: &str, auto_link: bool) -> Result<()> {
     // Load current app config
     let mut app_config = AppConfig::from_file(&app_yml_path)?;
 
-    // Validate package name
-    app_config.validate_package_name(package_name)?;
+    // Validate package name (without version)
+    app_config.validate_package_name(&package_name)?;
 
     // Initialize packages vector if it doesn't exist
     if app_config.packages.is_none() {
@@ -77,21 +85,24 @@ pub async fn add_package(package_name: &str, auto_link: bool) -> Result<()> {
 
     let packages = app_config.packages.as_mut().unwrap();
 
-    // Check if package is already added
-    if packages.contains(&package_name.to_string()) {
-        println!("📦 Package '{}' is already added to app '{}'", package_name, app_config.name);
+    // Check if package (with same version) is already added
+    if packages.contains(&package_spec.to_string()) {
+        println!("📦 Package '{}' is already added to app '{}'", display_name, app_config.name);
         return Ok(());
     }
 
-    // Add the package
-    packages.push(package_name.to_string());
+    // Remove any existing versions of the same package
+    packages.retain(|p| !p.starts_with(&format!("{}@", package_name)) && p != &package_name);
+
+    // Add the package with version specification
+    packages.push(package_spec.to_string());
 
     // Save updated config
     let yaml_content = serde_yaml::to_string(&app_config)?;
     fs::write(&app_yml_path, yaml_content)
         .context("Failed to update app.yml")?;
 
-    println!("✅ Added package '{}' to app '{}'", package_name, app_config.name);
+    println!("✅ Added package '{}' to app '{}'", display_name, app_config.name);
 
     // Auto-link if requested
     if auto_link {
@@ -102,4 +113,15 @@ pub async fn add_package(package_name: &str, auto_link: bool) -> Result<()> {
     }
 
     Ok(())
+}
+
+// Parse package specification into name and version
+fn parse_package_spec(package_spec: &str) -> (String, Option<String>) {
+    if let Some(at_pos) = package_spec.rfind('@') {
+        let name = package_spec[..at_pos].to_string();
+        let version = package_spec[at_pos + 1..].to_string();
+        (name, Some(version))
+    } else {
+        (package_spec.to_string(), None)
+    }
 }

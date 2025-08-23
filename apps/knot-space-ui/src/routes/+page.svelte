@@ -195,13 +195,11 @@
 	{:else}
 		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 			{#each packages.slice(0, 6) as pkg}
-				<div class="border rounded-lg p-6 hover:shadow-md transition-shadow">
+				<a href="/packages/{pkg.name}" class="block border rounded-lg p-6 hover:shadow-md hover:border-primary/50 transition-all cursor-pointer">
 					<div class="flex items-start justify-between mb-3">
 						<div>
-							<h3 class="font-semibold text-lg leading-none mb-1">
-								<a href="/packages/{pkg.name}" class="hover:text-black transition-colors">
-									{pkg.name}
-								</a>
+							<h3 class="font-semibold text-lg leading-none mb-1 hover:text-primary transition-colors">
+								{pkg.name}
 							</h3>
 							<p class="text-sm text-muted-foreground">v{pkg.version}</p>
 						</div>
@@ -222,7 +220,7 @@
 						<span>by {pkg.owner.username}</span>
 						<span>{formatDownloadCount(pkg.totalDownloadsCount || pkg.downloadsCount)} downloads</span>
 					</div>
-				</div>
+				</a>
 			{/each}
 		</div>
 	{/if}

@@ -37,17 +37,20 @@ knot publish --dry-run`}</code></pre>
 			<div class="bg-muted rounded-lg p-4">
 				<h3 class="font-semibold mb-2">knot install</h3>
 				<p class="text-sm text-muted-foreground mb-3">Install packages and dependencies</p>
-				<pre class="bg-background rounded p-3 overflow-x-auto"><code class="text-sm">{`# Install all dependencies
-knot install
-
-# Install specific package
+				<pre class="bg-background rounded p-3 overflow-x-auto"><code class="text-sm">{`# Install package (latest version by default)
 knot install @org/package-name
 
-# Install as dev dependency
-knot install --dev typescript
+# Install specific version
+knot install @org/package-name@1.2.3
 
-# Install exact version
-knot install @org/package@1.2.3`}</code></pre>
+# Install latest version explicitly
+knot install @org/package-name@latest
+
+# Install local package
+knot install utils
+
+# Install team package with version
+knot install @team/package@2.1.0`}</code></pre>
 			</div>
 
 			<div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">

@@ -2,6 +2,11 @@
 	import Icon from '@iconify/svelte';
 </script>
 
+<svelte:head>
+	<title>Build Optimization - Knot CLI Documentation</title>
+	<meta name="description" content="Optimize your builds for maximum performance and efficiency with Knot's build optimization features." />
+</svelte:head>
+
 <div class="max-w-4xl mx-auto py-8 px-4 sm:px-6">
 	<div class="mb-8">
 		<h1 class="text-3xl font-bold tracking-tight mb-4" style="font-family: 'Gambarino', 'Satoshi', sans-serif;">
