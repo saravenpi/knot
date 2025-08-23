@@ -149,32 +149,19 @@ pub async fn update_cli(force: bool) -> Result<()> {
     let current_version = env!("CARGO_PKG_VERSION");
     println!("📦 Current version: {}", current_version);
 
-    // Check for latest version from GitHub releases or repository
+    // Check if cargo is available
+    if !is_cargo_available() {
+        println!("❌ Cargo is not available in PATH");
+        println!("💡 Please install Rust and Cargo from https://rustup.rs/");
+        return Ok(());
+    }
+
+    // Check for latest version from GitHub API
     match check_latest_version().await {
         Ok(latest_version) => {
             if current_version != latest_version || force {
                 println!("🎉 New version available: {}", latest_version);
-                println!("📥 Downloading update...");
-                
-                // Check if we have curl and the install script
-                let install_result = std::process::Command::new("sh")
-                    .arg("-c")
-                    .arg("curl -fsSL https://raw.githubusercontent.com/saravenpi/knot/main/install.sh | sh")
-                    .status();
-
-                match install_result {
-                    Ok(status) if status.success() => {
-                        println!("✅ Successfully updated to version {}", latest_version);
-                        println!("🔄 Please restart your terminal or run 'source ~/.bashrc' to use the updated CLI");
-                    }
-                    _ => {
-                        println!("❌ Failed to update automatically");
-                        println!("💡 To update manually:");
-                        println!("   1. Visit https://github.com/saravenpi/knot/releases");
-                        println!("   2. Download the latest release for your platform");
-                        println!("   3. Or run: cargo install --git https://github.com/saravenpi/knot --bin knot");
-                    }
-                }
+                perform_cargo_update(&latest_version).await?;
             } else {
                 println!("✅ You are already on the latest version");
             }
@@ -183,23 +170,70 @@ pub async fn update_cli(force: bool) -> Result<()> {
             println!("⚠️  Could not check for updates: {}", e);
             if force {
                 println!("💡 Forcing update anyway...");
-                let install_result = std::process::Command::new("sh")
-                    .arg("-c")
-                    .arg("curl -fsSL https://raw.githubusercontent.com/saravenpi/knot/main/install.sh | sh")
-                    .status();
-
-                match install_result {
-                    Ok(status) if status.success() => {
-                        println!("✅ Successfully updated");
-                        println!("🔄 Please restart your terminal or run 'source ~/.bashrc' to use the updated CLI");
-                    }
-                    _ => {
-                        println!("❌ Failed to update");
-                        println!("💡 Try updating manually with: cargo install --git https://github.com/saravenpi/knot --bin knot");
-                    }
-                }
+                perform_cargo_update("latest").await?;
+            } else {
+                println!("💡 You can still force an update with: knot upgrade --force");
+                println!("   Or update manually with: cargo install --git https://github.com/saravenpi/knot --bin knot");
             }
         }
+    }
+
+    Ok(())
+}
+
+// Helper function to check if cargo is available
+fn is_cargo_available() -> bool {
+    std::process::Command::new("cargo")
+        .arg("--version")
+        .output()
+        .map(|output| output.status.success())
+        .unwrap_or(false)
+}
+
+// Perform incremental cargo update
+async fn perform_cargo_update(version: &str) -> Result<()> {
+    println!("📦 Building from source using cargo...");
+    println!("⏳ This may take a few minutes for incremental compilation...");
+    
+    let install_args = vec![
+        "install".to_string(),
+        "--git".to_string(),
+        "https://github.com/saravenpi/knot".to_string(),
+        "--bin".to_string(),
+        "knot".to_string(),
+    ];
+
+    // Add version tag if it's not "latest"
+    let final_args = if version != "latest" {
+        let mut args = install_args;
+        args.push("--tag".to_string());
+        args.push(format!("v{}", version));
+        args
+    } else {
+        install_args
+    };
+
+    println!("🔧 Running: cargo {}", final_args.join(" "));
+    
+    let mut cmd = std::process::Command::new("cargo");
+    cmd.args(&final_args);
+    cmd.stdin(std::process::Stdio::inherit());
+    cmd.stdout(std::process::Stdio::inherit());
+    cmd.stderr(std::process::Stdio::inherit());
+
+    let status = cmd.status()?;
+
+    if status.success() {
+        println!("✅ Successfully updated Knot CLI!");
+        println!("🎉 New version is now available");
+        println!("💡 You may need to restart your terminal or run 'hash -r' to refresh the command cache");
+    } else {
+        let exit_code = status.code().unwrap_or(-1);
+        anyhow::bail!(
+            "Failed to update Knot CLI. Cargo install exited with code: {}.\n💡 Try running the command manually: cargo {}",
+            exit_code,
+            final_args.join(" ")
+        );
     }
 
     Ok(())
