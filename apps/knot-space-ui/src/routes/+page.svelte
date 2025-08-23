@@ -65,8 +65,8 @@
 			<p class="text-muted-foreground">Loading...</p>
 		</div>
 	</div>
-{:else if !isAuthenticated}
-	<!-- Show home page only for unauthenticated users -->
+{:else}
+	<!-- Show home page for everyone -->
 
 <!-- Hero Section -->
 <div class="text-center py-12 md:py-20 relative overflow-hidden">

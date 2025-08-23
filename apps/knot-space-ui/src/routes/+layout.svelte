@@ -201,19 +201,21 @@
 								Docs
 							</a>
 							{#if isLoggedIn}
-								<!-- Authenticated user options -->
-								<a href="/packages" class="text-sm font-medium hover:text-primary transition-colors">
-									Packages
-								</a>
-								<button
-									on:click={async () => {
-										await authStore.logout();
-										window.location.href = '/';
-									}}
-									class="text-sm font-medium hover:text-primary transition-colors"
-								>
-									Sign Out
-								</button>
+								<!-- Authenticated user options on public pages -->
+								{#if currentPath !== '/'}
+									<a href="/packages" class="text-sm font-medium hover:text-primary transition-colors">
+										Packages
+									</a>
+									<button
+										on:click={async () => {
+											await authStore.logout();
+											window.location.href = '/';
+										}}
+										class="text-sm font-medium hover:text-primary transition-colors"
+									>
+										Sign Out
+									</button>
+								{/if}
 							{:else}
 								<!-- Unauthenticated user options -->
 								<a href="/login" class="text-sm font-medium hover:text-primary transition-colors">
