@@ -13,18 +13,13 @@
 	$: currentPath = $page.url.pathname;
 
 	// Pages that should use public layout even when authenticated (docs has its own layout)
-	$: isPublicPage = currentPath === '/login' || currentPath === '/register' || (currentPath === '/' && !isLoggedIn);
+	$: isPublicPage = currentPath === '/login' || currentPath === '/register' || currentPath === '/';
 	$: isDocsPage = currentPath.startsWith('/docs');
 	$: isPackagesPage = currentPath.startsWith('/packages');
 
 	onMount(async () => {
 		await authStore.initialize();
 
-		// If user is authenticated and on root page, redirect to packages
-		if ($authStore.isAuthenticated && currentPath === '/') {
-			goto('/packages');
-			return;
-		}
 
 		// Set up periodic token validation (every 15 minutes)
 		const interval = setInterval(async () => {

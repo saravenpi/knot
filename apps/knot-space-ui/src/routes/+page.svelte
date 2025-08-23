@@ -20,16 +20,10 @@
 
 	onMount(async () => {
 
-		// Initialize auth first to check if user is logged in
+		// Initialize auth first
 		await authStore.initialize();
 
-		// If user is authenticated, redirect to dashboard
-		if ($authStore.isAuthenticated) {
-			goto('/dashboard');
-			return;
-		}
-
-		// Load packages for public home page and global stats in parallel
+		// Load packages for home page and global stats in parallel
 		try {
 			const timeout = new Promise((_, reject) => {
 				setTimeout(() => reject(new Error('Request timeout')), 3000);
