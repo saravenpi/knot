@@ -17,18 +17,8 @@
 		totalUsers: 0
 	};
 	let statsLoading = true;
-	let mouseX = 0;
-	let mouseY = 0;
-	let cursorElement: HTMLElement;
 
 	onMount(async () => {
-		// Mouse cursor follower
-		const handleMouseMove = (e: MouseEvent) => {
-			mouseX = e.clientX;
-			mouseY = e.clientY;
-		};
-
-		document.addEventListener('mousemove', handleMouseMove);
 
 		// Initialize auth first to check if user is logged in
 		await authStore.initialize();
@@ -64,7 +54,6 @@
 		}
 
 		return () => {
-			document.removeEventListener('mousemove', handleMouseMove);
 		};
 	});
 </script>
@@ -415,13 +404,5 @@
 	</div>
 </div>
 
-<!-- Custom cursor follower (only show on landing page) -->
-{#if !isAuthenticated}
-	<div 
-		bind:this={cursorElement}
-		class="fixed w-3 h-3 bg-black rounded-full pointer-events-none z-50 transition-transform duration-500 ease-out"
-		style="left: {mouseX - 6}px; top: {mouseY - 6}px; transform: translate3d(0, 0, 0);"
-	></div>
-{/if}
 
 {/if}

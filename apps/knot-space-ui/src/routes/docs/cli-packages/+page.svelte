@@ -38,27 +38,41 @@ knot publish --dry-run`}</code></pre>
 				<h3 class="font-semibold mb-2">knot install</h3>
 				<p class="text-sm text-muted-foreground mb-3">Install packages and dependencies</p>
 				<pre class="bg-background rounded p-3 overflow-x-auto"><code class="text-sm">{`# Install package (latest version by default)
+knot install utils
 knot install @org/package-name
 
-# Install specific version
+# Install specific version (exact)
 knot install @org/package-name@1.2.3
 
-# Install latest version explicitly
-knot install @org/package-name@latest
-
-# Install local package
-knot install utils
+# Install with version ranges (npm-style)
+knot install @org/package-name@^1.0.0    # Compatible with 1.x.x
+knot install @org/package-name@~1.2.0    # Compatible with 1.2.x
+knot install @org/package-name@latest    # Latest version
 
 # Install team package with version
 knot install @team/package@2.1.0`}</code></pre>
+			</div>
+
+			<div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+				<div class="flex items-start space-x-3">
+					<Icon icon="solar:info-circle-bold" class="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+					<div class="text-sm text-blue-800">
+						<p class="font-semibold mb-1">Version Storage</p>
+						<p>Packages are saved with version specifications in <code class="bg-blue-100 px-1 rounded">app.yml</code>:</p>
+						<pre class="bg-blue-100 rounded p-2 mt-2 text-xs"><code>packages:
+  - utils@latest
+  - @org/ui@^2.0.0
+  - @team/lib@1.5.2</code></pre>
+					</div>
+				</div>
 			</div>
 
 			<div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
 				<div class="flex items-start space-x-3">
 					<Icon icon="solar:info-circle-bold" class="w-5 h-5 text-yellow-600 mt-0.5 flex-shrink-0" />
 					<div class="text-sm text-yellow-800">
-						<p class="font-semibold mb-1">Note: 'add' is an alias</p>
-						<p>The <code class="bg-yellow-100 px-1 rounded">knot add</code> command is an alias for <code class="bg-yellow-100 px-1 rounded">knot install</code> for compatibility.</p>
+						<p class="font-semibold mb-1">Backward Compatibility</p>
+						<p>The <code class="bg-yellow-100 px-1 rounded">knot add</code> command is an alias for <code class="bg-yellow-100 px-1 rounded">knot install</code>.</p>
 					</div>
 				</div>
 			</div>

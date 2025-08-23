@@ -21,6 +21,9 @@
 	let loadingStats = false;
 	let statsLoaded = false;
 	let copySuccess = false;
+	let availableVersions: Array<{version: string, publishedAt: string}> = [];
+	let loadingVersions = false;
+	let showVersionSelector = false;
 
 	$: isOwner = currentUser && selectedPackage && (
 		selectedPackage.owner.id === currentUser.id ||
@@ -48,6 +51,11 @@
 	// Fetch download statistics when package is loaded
 	$: if (selectedPackage && selectedPackage.version && !loadingStats && !statsLoaded) {
 		fetchDownloadStats();
+	}
+
+	// Fetch available versions when package is loaded
+	$: if (selectedPackage && selectedPackage.name && !loadingVersions && availableVersions.length === 0) {
+		fetchAvailableVersions();
 	}
 
 	async function fetchDownloadStats() {
@@ -79,6 +87,36 @@
 		}
 	}
 
+	async function fetchAvailableVersions() {
+		if (!selectedPackage || loadingVersions) return;
+		
+		loadingVersions = true;
+		try {
+			const versions = await requestApi<{ success: boolean; data: Array<{version: string, publishedAt: string}> }>('GET', `/api/packages/${encodeURIComponent(selectedPackage.name)}/versions`);
+			availableVersions = versions.data.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
+		} catch (error) {
+			console.error('Failed to fetch versions:', error);
+		} finally {
+			loadingVersions = false;
+		}
+	}
+
+	async function switchToVersion(version: string) {
+		if (!packageName || version === selectedPackage?.version) return;
+		
+		try {
+			// Update the URL and fetch the new version
+			window.history.pushState({}, '', `/packages/${encodeURIComponent(packageName)}?version=${encodeURIComponent(version)}`);
+			await packagesStore.fetchByName(packageName, version);
+			// Reset stats and versions for new package version
+			statsLoaded = false;
+			downloadStats = null;
+			showVersionSelector = false;
+		} catch (error) {
+			console.error('Failed to switch version:', error);
+		}
+	}
+
 	async function handleDeletePackage() {
 		if (!selectedPackage) return;
 
@@ -96,6 +134,9 @@
 		const target = event.target as Element;
 		if (!target.closest('[data-options-menu]')) {
 			showOptionsMenu = false;
+		}
+		if (!target.closest('[data-version-selector]')) {
+			showVersionSelector = false;
 		}
 	}
 
@@ -162,10 +203,41 @@
 							</div>
 						{/if}
 					</div>
-					<div>
-						<span class="text-sm sm:text-base text-muted-foreground bg-secondary px-2 sm:px-3 py-1 rounded-full">
-							v{selectedPackage.version}
-						</span>
+					<div class="flex items-center gap-3">
+						<div class="relative">
+							<button
+								on:click={() => showVersionSelector = !showVersionSelector}
+								class="text-sm sm:text-base text-muted-foreground bg-secondary hover:bg-secondary/80 px-2 sm:px-3 py-1 rounded-full transition-colors flex items-center gap-2"
+								disabled={loadingVersions}
+							>
+								v{selectedPackage.version}
+								{#if availableVersions.length > 1}
+									<Icon icon="solar:alt-arrow-down-bold" class="w-3 h-3" />
+								{/if}
+							</button>
+							
+							{#if showVersionSelector && availableVersions.length > 1}
+								<div class="absolute top-full left-0 mt-1 bg-background border border-border rounded-lg shadow-lg z-10 min-w-48 max-h-60 overflow-y-auto" data-version-selector>
+									<div class="py-1">
+										{#each availableVersions as versionInfo}
+											<button
+												on:click={() => switchToVersion(versionInfo.version)}
+												class="w-full text-left px-3 py-2 text-sm hover:bg-muted flex items-center justify-between {versionInfo.version === selectedPackage.version ? 'bg-muted font-medium' : ''}"
+											>
+												<span>v{versionInfo.version}</span>
+												<span class="text-xs text-muted-foreground">
+													{new Date(versionInfo.publishedAt).toLocaleDateString()}
+												</span>
+											</button>
+										{/each}
+									</div>
+								</div>
+							{/if}
+						</div>
+						
+						{#if loadingVersions}
+							<div class="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+						{/if}
 					</div>
 				</div>
 				
