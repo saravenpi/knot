@@ -77,7 +77,10 @@ pub fn prompt_for_select(prompt: &str, options: Vec<&str>) -> Result<String> {
         return Ok(options.first().unwrap_or(&"basic").to_string());
     }
 
-    let selection = Select::new(prompt, options).prompt()?;
+    let selection = Select::new(prompt, options)
+        .with_vim_mode(true)
+        .with_help_message("Use arrow keys or j/k to navigate, Enter to select, Esc to cancel")
+        .prompt()?;
     Ok(selection.to_string())
 }
 
