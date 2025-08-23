@@ -260,7 +260,7 @@
 					<span class="text-sm font-medium">Knot CLI</span>
 					<button 
 						on:click={async () => {
-							await navigator.clipboard.writeText(`knot add @${selectedPackage.name}`);
+							await navigator.clipboard.writeText(`knot install @${selectedPackage.name}`);
 							copySuccess = true;
 							setTimeout(() => copySuccess = false, 2000);
 						}}
@@ -275,7 +275,7 @@
 						{/if}
 					</button>
 				</div>
-				<code class="text-sm">knot add @{selectedPackage.name}</code>
+				<code class="text-sm">knot install @{selectedPackage.name}</code>
 			</div>
 		</div>
 

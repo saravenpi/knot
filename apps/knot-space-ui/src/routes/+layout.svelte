@@ -20,9 +20,9 @@
 	onMount(async () => {
 		await authStore.initialize();
 
-		// If user is authenticated and on root page, redirect to dashboard
+		// If user is authenticated and on root page, redirect to packages
 		if ($authStore.isAuthenticated && currentPath === '/') {
-			goto('/dashboard');
+			goto('/packages');
 			return;
 		}
 
@@ -88,11 +88,11 @@
       <!-- Navigation -->
       <nav class="space-y-2">
         <a 
-          href="/dashboard" 
-          class="flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {currentPath === '/dashboard' ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'}"
+          href="/packages" 
+          class="flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {currentPath === '/packages' ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'}"
         >
-          <Icon icon="solar:home-2-bold" class="w-5 h-5" />
-          <span>Dashboard</span>
+          <Icon icon="solar:box-bold" class="w-5 h-5" />
+          <span>Packages</span>
         </a>
 
         <a 
@@ -151,11 +151,11 @@
   <nav class="lg:hidden fixed bottom-0 left-0 right-0 bg-card border-t border-border z-50">
     <div class="flex items-center justify-around py-2">
       <a 
-        href="/dashboard" 
-        class="flex flex-col items-center py-2 px-4 min-w-0 flex-1 text-center transition-colors {currentPath === '/dashboard' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}"
+        href="/packages" 
+        class="flex flex-col items-center py-2 px-4 min-w-0 flex-1 text-center transition-colors {currentPath === '/packages' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}"
       >
-        <Icon icon="solar:home-2-bold" class="w-6 h-6 mb-1" />
-        <span class="text-xs font-medium truncate">Dashboard</span>
+        <Icon icon="solar:box-bold" class="w-6 h-6 mb-1" />
+        <span class="text-xs font-medium truncate">Packages</span>
       </a>
 
       <a 
@@ -207,8 +207,8 @@
 							</a>
 							{#if isLoggedIn}
 								<!-- Authenticated user options -->
-								<a href="/dashboard" class="text-sm font-medium hover:text-primary transition-colors">
-									Dashboard
+								<a href="/packages" class="text-sm font-medium hover:text-primary transition-colors">
+									Packages
 								</a>
 								<button
 									on:click={async () => {

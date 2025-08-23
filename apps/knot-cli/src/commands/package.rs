@@ -47,7 +47,7 @@ pub async fn add_package(package_name: &str, auto_link: bool) -> Result<()> {
         let project = match Project::find_and_load(&current_dir) {
             Ok(project) => project,
             Err(_) => {
-                anyhow::bail!("❌ Not in an app directory or project root. Run 'knot add' from an app directory.");
+                anyhow::bail!("❌ Not in an app directory or project root. Run 'knot install' from an app directory.");
             }
         };
 
@@ -57,7 +57,7 @@ pub async fn add_package(package_name: &str, auto_link: bool) -> Result<()> {
             for app_name in project.apps.keys() {
                 println!("  • {}", app_name);
             }
-            println!("💡 Navigate to an app directory and run 'knot add' there");
+            println!("💡 Navigate to an app directory and run 'knot install' there");
         } else {
             println!("💡 Create an app first with 'knot init:app <name>'");
         }

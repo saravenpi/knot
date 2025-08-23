@@ -335,7 +335,7 @@ pub fn init_app(name: Option<&str>, template: Option<&str>, description: Option<
 
     println!("✅ Created app: {}", app_name);
     println!("📁 Location: {}", target_dir.display());
-    println!("💡 Use 'knot add <package>' to add dependencies");
+    println!("💡 Use 'knot install <package>' to add dependencies");
     println!("💡 Use 'knot link' to install and link packages");
 
     Ok(())

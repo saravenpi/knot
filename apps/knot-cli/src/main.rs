@@ -20,6 +20,7 @@ async fn main() -> Result<()> {
         .allow_external_subcommands(true)
         .subcommand(
             Command::new("init")
+                .alias("i")
                 .about("Initialize a new Knot project")
                 .arg(
                     Arg::new("name")
@@ -117,6 +118,7 @@ async fn main() -> Result<()> {
         )
         .subcommand(
             Command::new("link")
+                .alias("l")
                 .about("Link packages to apps and setup TypeScript aliases")
                 .arg(
                     Arg::new("symlink")
@@ -127,6 +129,7 @@ async fn main() -> Result<()> {
         )
         .subcommand(
             Command::new("run")
+                .alias("r")
                 .about("Run a script from knot.yml, app.yml, or package.yml")
                 .arg(
                     Arg::new("script")
@@ -135,13 +138,15 @@ async fn main() -> Result<()> {
                         .index(1),
                 ),
         )
-        .subcommand(Command::new("status").about("Show project status"))
+        .subcommand(Command::new("status").alias("s").about("Show project status"))
         .subcommand(
             Command::new("auth")
+                .alias("a")
                 .about("Check authentication status")
         )
         .subcommand(
             Command::new("publish")
+                .alias("p")
                 .about("Publish a package to Knot Space")
                 .arg(
                     Arg::new("team")
@@ -160,6 +165,7 @@ async fn main() -> Result<()> {
         )
         .subcommand(
             Command::new("delete")
+                .alias("d")
                 .about("Delete a package from Knot Space")
                 .arg(
                     Arg::new("name")
@@ -175,23 +181,26 @@ async fn main() -> Result<()> {
                 ),
         )
         .subcommand(
-            Command::new("add")
-                .about("Add a package dependency to the current app")
+            Command::new("install")
+                .alias("i")
+                .alias("add")
+                .about("Install a package dependency to the current app")
                 .arg(
                     Arg::new("package")
-                        .help("Package name to add (local: 'utils', online: '@jwt', team: '@team/package')")
+                        .help("Package name to install (local: 'utils', online: '@jwt', team: '@team/package')")
                         .required(true)
                         .index(1),
                 )
                 .arg(
-                    Arg::new("link")
-                        .help("Automatically link packages after adding")
-                        .long("link")
+                    Arg::new("no-link")
+                        .help("Skip automatic linking after installing")
+                        .long("no-link")
                         .action(clap::ArgAction::SetTrue),
                 ),
         )
         .subcommand(
             Command::new("version")
+                .alias("v")
                 .about("Version management commands")
                 .subcommand_required(true)
                 .subcommand(
@@ -230,6 +239,7 @@ async fn main() -> Result<()> {
         
         .subcommand(
             Command::new("team")
+                .alias("t")
                 .about("Team management commands")
                 .subcommand_required(true)
                 .subcommand(
@@ -284,6 +294,7 @@ async fn main() -> Result<()> {
         )
         .subcommand(
             Command::new("upgrade")
+                .alias("u")
                 .about("Upgrade Knot CLI to the latest version")
                 .arg(
                     Arg::new("force")
@@ -354,9 +365,10 @@ async fn main() -> Result<()> {
             let version = sub_matches.get_one::<String>("version").unwrap();
             commands::delete_package(name, version).await?;
         }
-        Some(("add", sub_matches)) => {
+        Some(("install", sub_matches)) | Some(("add", sub_matches)) => {
             let package = sub_matches.get_one::<String>("package").unwrap();
-            let auto_link = sub_matches.get_flag("link");
+            let no_link = sub_matches.get_flag("no-link");
+            let auto_link = !no_link; // Auto-link by default unless --no-link is specified
             commands::add_package(package, auto_link).await?;
         }
         Some(("version", sub_matches)) => match sub_matches.subcommand() {

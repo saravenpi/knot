@@ -50,17 +50,14 @@ knot install --dev typescript
 knot install @org/package@1.2.3`}</code></pre>
 			</div>
 
-			<div class="bg-muted rounded-lg p-4">
-				<h3 class="font-semibold mb-2">knot add</h3>
-				<p class="text-sm text-muted-foreground mb-3">Add a package to your project</p>
-				<pre class="bg-background rounded p-3 overflow-x-auto"><code class="text-sm">{`# Add package
-knot add @org/package
-
-# Add multiple packages
-knot add react react-dom
-
-# Add to specific workspace
-knot add @org/utils --workspace @org/app`}</code></pre>
+			<div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+				<div class="flex items-start space-x-3">
+					<Icon icon="solar:info-circle-bold" class="w-5 h-5 text-yellow-600 mt-0.5 flex-shrink-0" />
+					<div class="text-sm text-yellow-800">
+						<p class="font-semibold mb-1">Note: 'add' is an alias</p>
+						<p>The <code class="bg-yellow-100 px-1 rounded">knot add</code> command is an alias for <code class="bg-yellow-100 px-1 rounded">knot install</code> for compatibility.</p>
+					</div>
+				</div>
 			</div>
 		</div>
 
