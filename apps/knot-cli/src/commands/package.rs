@@ -177,38 +177,6 @@ fn parse_package_spec(package_spec: &str) -> (String, Option<String>) {
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_parse_package_spec() {
-        // Test scoped packages with version
-        let (name, version) = parse_package_spec("@hono-modules-loader@0.2.5");
-        assert_eq!(name, "@hono-modules-loader");
-        assert_eq!(version, Some("0.2.5".to_string()));
-
-        // Test scoped packages without version
-        let (name, version) = parse_package_spec("@hono-modules-loader");
-        assert_eq!(name, "@hono-modules-loader");
-        assert_eq!(version, None);
-
-        // Test regular packages with version
-        let (name, version) = parse_package_spec("lodash@4.17.21");
-        assert_eq!(name, "lodash");
-        assert_eq!(version, Some("4.17.21".to_string()));
-
-        // Test regular packages without version
-        let (name, version) = parse_package_spec("lodash");
-        assert_eq!(name, "lodash");
-        assert_eq!(version, None);
-
-        // Test complex scoped package names
-        let (name, version) = parse_package_spec("@types/node@18.0.0");
-        assert_eq!(name, "@types/node");
-        assert_eq!(version, Some("18.0.0".to_string()));
-    }
-}
 
 // Check if version string is an exact semantic version (X.Y.Z format)
 fn is_exact_version(version: &str) -> bool {

@@ -14,35 +14,62 @@ fn get_knot_space_url() -> String {
 pub struct PackageDownloader;
 
 impl PackageDownloader {
-    pub async fn download_package(package_name: &str, destination: &Path) -> Result<()> {
-        if package_name.starts_with('@') {
-            Self::download_online_package(package_name, destination).await
+    pub async fn download_package(package_spec: &str, destination: &Path) -> Result<()> {
+        if package_spec.starts_with('@') {
+            Self::download_online_package(package_spec, destination).await
         } else {
-            anyhow::bail!("Package '{}' should be a local package", package_name)
+            anyhow::bail!("Package '{}' should be a local package", package_spec)
         }
     }
 
-    async fn download_online_package(package_name: &str, destination: &Path) -> Result<()> {
+    fn parse_package_spec(package_spec: &str) -> (String, Option<String>) {
+        if package_spec.starts_with('@') {
+            // Handle scoped packages like @hono-modules-loader@0.2.5
+            if let Some(at_pos) = package_spec[1..].find('@') {
+                // Found a second @ after the first one
+                let at_pos = at_pos + 1; // Adjust for the skipped first character
+                let name = package_spec[..at_pos].to_string();
+                let version = package_spec[at_pos + 1..].to_string();
+                (name, Some(version))
+            } else {
+                // No version specified, just the scoped package name
+                (package_spec.to_string(), None)
+            }
+        } else {
+            // Handle regular packages like package-name@1.0.0
+            if let Some(at_pos) = package_spec.rfind('@') {
+                let name = package_spec[..at_pos].to_string();
+                let version = package_spec[at_pos + 1..].to_string();
+                (name, Some(version))
+            } else {
+                (package_spec.to_string(), None)
+            }
+        }
+    }
+
+    async fn download_online_package(package_spec: &str, destination: &Path) -> Result<()> {
         println!(
             "📥 Downloading package '{}' from knot space...",
-            package_name
+            package_spec
         );
 
+        // Parse package spec to get name and version
+        let (package_name, version) = Self::parse_package_spec(package_spec);
+
         // Try to download from Knot Space backend
-        match Self::download_from_knot_space(package_name, destination).await {
+        match Self::download_from_knot_space(&package_name, version.as_deref(), destination).await {
             Ok(_) => {
-                println!("✅ Successfully downloaded '{}' from knot space", package_name);
+                println!("✅ Successfully downloaded '{}' from knot space", package_spec);
                 Ok(())
             }
             Err(e) => {
-                eprintln!("❌ Failed to download package '{}': {}", package_name, e);
+                eprintln!("❌ Failed to download package '{}': {}", package_spec, e);
                 anyhow::bail!("Package download failed");
             }
         }
     }
 
-    async fn download_from_knot_space(package_name: &str, destination: &Path) -> Result<()> {
-        // Get the latest version of the package
+    async fn download_from_knot_space(package_name: &str, requested_version: Option<&str>, destination: &Path) -> Result<()> {
         let client = reqwest::Client::new();
         let base_url = get_knot_space_url();
         
@@ -53,30 +80,61 @@ impl PackageDownloader {
             package_name
         };
         
-        // First, get the package versions to find the latest
-        let versions_url = format!("{}/api/packages/{}/versions", base_url, api_package_name);
-        let versions_response = client.get(&versions_url).send().await?;
-        
-        if !versions_response.status().is_success() {
-            anyhow::bail!("Package '{}' not found in knot space", package_name);
-        }
-        
-        let versions_data: serde_json::Value = versions_response.json().await?;
-        let versions = versions_data["data"]
-            .as_array()
-            .ok_or_else(|| anyhow::anyhow!("Invalid versions response format"))?;
+        // Determine which version to download
+        let version_to_download = if let Some(version) = requested_version {
+            if version == "latest" {
+                // Need to fetch latest version
+                let versions_url = format!("{}/api/packages/{}/versions", base_url, api_package_name);
+                let versions_response = client.get(&versions_url).send().await?;
+                
+                if !versions_response.status().is_success() {
+                    anyhow::bail!("Package '{}' not found in knot space", package_name);
+                }
+                
+                let versions_data: serde_json::Value = versions_response.json().await?;
+                let versions = versions_data["data"]
+                    .as_array()
+                    .ok_or_else(|| anyhow::anyhow!("Invalid versions response format"))?;
+                    
+                if versions.is_empty() {
+                    anyhow::bail!("No versions found for package '{}'", package_name);
+                }
+                
+                // Get the latest version (first in the array, sorted by publish date desc)
+                versions[0]["version"]
+                    .as_str()
+                    .ok_or_else(|| anyhow::anyhow!("Invalid version format"))?
+                    .to_string()
+            } else {
+                // Use the specific version requested
+                version.to_string()
+            }
+        } else {
+            // No version specified, fetch latest
+            let versions_url = format!("{}/api/packages/{}/versions", base_url, api_package_name);
+            let versions_response = client.get(&versions_url).send().await?;
             
-        if versions.is_empty() {
-            anyhow::bail!("No versions found for package '{}'", package_name);
-        }
-        
-        // Get the latest version (first in the array, sorted by publish date desc)
-        let latest_version = versions[0]["version"]
-            .as_str()
-            .ok_or_else(|| anyhow::anyhow!("Invalid version format"))?;
+            if !versions_response.status().is_success() {
+                anyhow::bail!("Package '{}' not found in knot space", package_name);
+            }
+            
+            let versions_data: serde_json::Value = versions_response.json().await?;
+            let versions = versions_data["data"]
+                .as_array()
+                .ok_or_else(|| anyhow::anyhow!("Invalid versions response format"))?;
+                
+            if versions.is_empty() {
+                anyhow::bail!("No versions found for package '{}'", package_name);
+            }
+            
+            versions[0]["version"]
+                .as_str()
+                .ok_or_else(|| anyhow::anyhow!("Invalid version format"))?
+                .to_string()
+        };
         
         // Download the package file
-        let download_url = format!("{}/api/packages/{}/{}/download", base_url, api_package_name, latest_version);
+        let download_url = format!("{}/api/packages/{}/{}/download", base_url, api_package_name, version_to_download);
         let download_response = client.get(&download_url).send().await?;
         
         if !download_response.status().is_success() {
