@@ -89,55 +89,10 @@ should_update() {
     return 1  # No update needed
 }
 
-# Try to download pre-built binary
-try_binary_download() {
-    print_step "Attempting to download pre-built binary..."
-
-    # Map OS and ARCH to GitHub release naming
-    case "$OS-$ARCH" in
-        "linux-x86_64")
-            BINARY_NAME="knot-linux-x86_64"
-            ;;
-        "linux-aarch64")
-            BINARY_NAME="knot-linux-aarch64"
-            ;;
-        "darwin-x86_64")
-            BINARY_NAME="knot-macos-x86_64"
-            ;;
-        "darwin-arm64"|"darwin-aarch64")
-            BINARY_NAME="knot-macos-aarch64"
-            ;;
-        *)
-            print_warning "No pre-built binary available for $OS-$ARCH"
-            return 1
-            ;;
-    esac
-
-    if [ "$LATEST_VERSION" = "development" ]; then
-        print_warning "Pre-built binaries not available for development version"
-        return 1
-    fi
-
-    # Download the binary
-    DOWNLOAD_URL="https://github.com/saravenpi/knot/releases/download/v$LATEST_VERSION/$BINARY_NAME"
-    print_step "Downloading: $DOWNLOAD_URL"
-
-    if curl -fL "$DOWNLOAD_URL" -o "$TEMP_DIR/knot-binary"; then
-        chmod +x "$TEMP_DIR/knot-binary"
-
-        # Test the binary
-        if "$TEMP_DIR/knot-binary" --version >/dev/null 2>&1; then
-            print_success "Downloaded and verified pre-built binary"
-            BINARY_PATH="$TEMP_DIR/knot-binary"
-            return 0
-        else
-            print_warning "Downloaded binary failed verification"
-            return 1
-        fi
-    else
-        print_warning "Failed to download pre-built binary"
-        return 1
-    fi
+# Build from source
+force_source_build() {
+    print_step "Building from source"
+    return 1  # Always build from source
 }
 
 # Use cached source if available for faster compilation
@@ -448,14 +403,10 @@ main() {
     check_prerequisites
     create_temp_dir
 
-    # Try fast binary download first
-    if try_binary_download; then
-        print_step "Using pre-built binary for fast installation"
-    else
-        print_step "Building from source..."
-        clone_repository
-        build_project
-    fi
+    # Build from source
+    print_step "Building from source..."
+    clone_repository
+    build_project
 
     # Only determine install dir for fresh installs
     if [ "$IS_UPDATE" = false ]; then

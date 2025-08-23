@@ -20,7 +20,6 @@ async fn main() -> Result<()> {
         .allow_external_subcommands(true)
         .subcommand(
             Command::new("init")
-                .alias("i")
                 .about("Initialize a new Knot project")
                 .arg(
                     Arg::new("name")
