@@ -71,7 +71,7 @@
 		</div>
 		<div class="bg-black/90 text-green-400 font-mono text-sm rounded-lg relative group">
 			<div class="overflow-x-auto p-4 pr-12">
-				<code class="whitespace-nowrap block">git clone https://github.com/saravenpi/knot.git</code>
+				<code class="whitespace-nowrap block">{@html `<span class="text-green-400">git</span> <span class="text-blue-400">clone</span> <span class="text-purple-400">https://github.com/saravenpi/knot.git</span>`}</code>
 			</div>
 			<button 
 				class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100 z-10"
@@ -98,7 +98,7 @@
 			Navigate to the `apps/knot-space` directory and create a `.env` file from the example.
 		</p>
 		<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
-			<code>cp .env.example .env</code>
+			<code>{@html `<span class="text-green-400">cp</span> <span class="text-purple-400">.env.example</span> <span class="text-purple-400">.env</span>`}</code>
 			<button 
 				class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
 				on:click={() => copyToClipboard('cp .env.example .env')}
@@ -127,7 +127,7 @@
 			<div>
 				<h3 class="text-lg font-semibold mb-3">Build the image</h3>
 				<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
-					<code>docker build -t knot-space .</code>
+					<code>{@html `<span class="text-green-400">docker</span> <span class="text-blue-400">build</span> <span class="text-yellow-400">-t</span> <span class="text-purple-400">knot-space</span> <span class="text-white">.</span>`}</code>
 					<button 
 						class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
 						on:click={() => copyToClipboard('docker build -t knot-space .')}
@@ -143,7 +143,7 @@
 			<div>
 				<h3 class="text-lg font-semibold mb-3">Run the container</h3>
 				<div class="bg-black/90 text-green-400 font-mono text-sm p-4 rounded-lg relative group">
-					<code>docker run -d -p 3000:3000 --env-file .env knot-space</code>
+					<code>{@html `<span class="text-green-400">docker</span> <span class="text-blue-400">run</span> <span class="text-yellow-400">-d</span> <span class="text-yellow-400">-p</span> <span class="text-purple-400">3000:3000</span> <span class="text-yellow-400">--env-file</span> <span class="text-purple-400">.env</span> <span class="text-purple-400">knot-space</span>`}</code>
 					<button 
 						class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
 						on:click={() => copyToClipboard('docker run -d -p 3000:3000 --env-file .env knot-space')}

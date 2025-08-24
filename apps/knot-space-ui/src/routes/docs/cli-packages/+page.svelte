@@ -18,17 +18,19 @@
 		<div class="bg-muted rounded-lg p-4 mb-6">
 			<h3 class="font-semibold mb-2">knot publish</h3>
 			<p class="text-sm text-muted-foreground mb-3">Publish a package to the registry</p>
-			<pre class="bg-background rounded p-3 overflow-x-auto"><code class="text-sm">{`# Publish current package
-knot publish
+			<div class="bg-black/90 text-white font-mono text-sm rounded-lg">
+				<pre class="overflow-x-auto p-4"><code>{@html `<span class="text-gray-400"># Publish current package</span>
+<span class="text-green-400">knot</span> <span class="text-blue-400">publish</span>
 
-# Publish with specific tag
-knot publish --tag beta
+<span class="text-gray-400"># Publish with specific tag</span>
+<span class="text-green-400">knot</span> <span class="text-blue-400">publish</span> <span class="text-yellow-400">--tag</span> <span class="text-purple-400">beta</span>
 
-# Publish with access level
-knot publish --access public
+<span class="text-gray-400"># Publish with access level</span>
+<span class="text-green-400">knot</span> <span class="text-blue-400">publish</span> <span class="text-yellow-400">--access</span> <span class="text-purple-400">public</span>
 
-# Dry run (simulate publish)
-knot publish --dry-run`}</code></pre>
+<span class="text-gray-400"># Dry run (simulate publish)</span>
+<span class="text-green-400">knot</span> <span class="text-blue-400">publish</span> <span class="text-yellow-400">--dry-run</span>`}</code></pre>
+			</div>
 		</div>
 
 		<h2 class="text-2xl font-bold mb-4 mt-8">Installing Packages</h2>
@@ -37,20 +39,22 @@ knot publish --dry-run`}</code></pre>
 			<div class="bg-muted rounded-lg p-4">
 				<h3 class="font-semibold mb-2">knot install</h3>
 				<p class="text-sm text-muted-foreground mb-3">Install packages and dependencies</p>
-				<pre class="bg-background rounded p-3 overflow-x-auto"><code class="text-sm">{`# Install package (latest version by default)
-knot install utils
-knot install @org/package-name
+				<div class="bg-black/90 text-white font-mono text-sm rounded-lg">
+					<pre class="overflow-x-auto p-4"><code>{@html `<span class="text-gray-400"># Install package (latest version by default)</span>
+<span class="text-green-400">knot</span> <span class="text-blue-400">install</span> <span class="text-purple-400">utils</span>
+<span class="text-green-400">knot</span> <span class="text-blue-400">install</span> <span class="text-purple-400">@org/package-name</span>
 
-# Install specific version (exact)
-knot install @org/package-name@1.2.3
+<span class="text-gray-400"># Install specific version (exact)</span>
+<span class="text-green-400">knot</span> <span class="text-blue-400">install</span> <span class="text-purple-400">@org/package-name</span><span class="text-yellow-400">@1.2.3</span>
 
-# Install with version ranges (npm-style)
-knot install @org/package-name@^1.0.0    # Compatible with 1.x.x
-knot install @org/package-name@~1.2.0    # Compatible with 1.2.x
-knot install @org/package-name@latest    # Latest version
+<span class="text-gray-400"># Install with version ranges (npm-style)</span>
+<span class="text-green-400">knot</span> <span class="text-blue-400">install</span> <span class="text-purple-400">@org/package-name</span><span class="text-yellow-400">@^1.0.0</span>    <span class="text-gray-400"># Compatible with 1.x.x</span>
+<span class="text-green-400">knot</span> <span class="text-blue-400">install</span> <span class="text-purple-400">@org/package-name</span><span class="text-yellow-400">@~1.2.0</span>    <span class="text-gray-400"># Compatible with 1.2.x</span>
+<span class="text-green-400">knot</span> <span class="text-blue-400">install</span> <span class="text-purple-400">@org/package-name</span><span class="text-yellow-400">@latest</span>    <span class="text-gray-400"># Latest version</span>
 
-# Install team package with version
-knot install @team/package@2.1.0`}</code></pre>
+<span class="text-gray-400"># Install team package with version</span>
+<span class="text-green-400">knot</span> <span class="text-blue-400">install</span> <span class="text-purple-400">@team/package</span><span class="text-yellow-400">@2.1.0</span>`}</code></pre>
+				</div>
 			</div>
 
 			<div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
@@ -59,10 +63,12 @@ knot install @team/package@2.1.0`}</code></pre>
 					<div class="text-sm text-blue-800">
 						<p class="font-semibold mb-1">Version Storage</p>
 						<p>Packages are saved with version specifications in <code class="bg-blue-100 px-1 rounded">app.yml</code>:</p>
-						<pre class="bg-blue-100 rounded p-2 mt-2 text-xs"><code>packages:
-  - utils@latest
-  - @org/ui@^2.0.0
-  - @team/lib@1.5.2</code></pre>
+						<div class="bg-blue-900/20 border border-blue-300/30 rounded-lg mt-2">
+							<pre class="overflow-x-auto p-3 text-xs"><code class="text-blue-800">{@html `<span class="text-blue-600">packages</span><span class="text-blue-500">:</span>
+  <span class="text-blue-500">-</span> <span class="text-blue-700">utils</span><span class="text-blue-500">@</span><span class="text-blue-600">latest</span>
+  <span class="text-blue-500">-</span> <span class="text-blue-700">@org/ui</span><span class="text-blue-500">@</span><span class="text-blue-600">^2.0.0</span>
+  <span class="text-blue-500">-</span> <span class="text-blue-700">@team/lib</span><span class="text-blue-500">@</span><span class="text-blue-600">1.5.2</span>`}</code></pre>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -84,46 +90,52 @@ knot install @team/package@2.1.0`}</code></pre>
 			<div class="bg-muted rounded-lg p-4">
 				<h3 class="font-semibold mb-2">knot update</h3>
 				<p class="text-sm text-muted-foreground mb-3">Update packages to latest versions</p>
-				<pre class="bg-background rounded p-3 overflow-x-auto"><code class="text-sm">{`# Update all packages
-knot update
+				<div class="bg-black/90 text-white font-mono text-sm rounded-lg">
+					<pre class="overflow-x-auto p-4"><code>{@html `<span class="text-gray-400"># Update all packages</span>
+<span class="text-green-400">knot</span> <span class="text-blue-400">update</span>
 
-# Update specific package
-knot update @org/package
+<span class="text-gray-400"># Update specific package</span>
+<span class="text-green-400">knot</span> <span class="text-blue-400">update</span> <span class="text-purple-400">@org/package</span>
 
-# Update to latest major version
-knot update @org/package --latest
+<span class="text-gray-400"># Update to latest major version</span>
+<span class="text-green-400">knot</span> <span class="text-blue-400">update</span> <span class="text-purple-400">@org/package</span> <span class="text-yellow-400">--latest</span>
 
-# Interactive update
-knot update --interactive`}</code></pre>
+<span class="text-gray-400"># Interactive update</span>
+<span class="text-green-400">knot</span> <span class="text-blue-400">update</span> <span class="text-yellow-400">--interactive</span>`}</code></pre>
+				</div>
 			</div>
 
 			<div class="bg-muted rounded-lg p-4">
 				<h3 class="font-semibold mb-2">knot remove</h3>
 				<p class="text-sm text-muted-foreground mb-3">Remove packages from your project</p>
-				<pre class="bg-background rounded p-3 overflow-x-auto"><code class="text-sm">{`# Remove package
-knot remove @org/package
+				<div class="bg-black/90 text-white font-mono text-sm rounded-lg">
+					<pre class="overflow-x-auto p-4"><code>{@html `<span class="text-gray-400"># Remove package</span>
+<span class="text-green-400">knot</span> <span class="text-red-400">remove</span> <span class="text-purple-400">@org/package</span>
 
-# Remove multiple packages
-knot remove package1 package2
+<span class="text-gray-400"># Remove multiple packages</span>
+<span class="text-green-400">knot</span> <span class="text-red-400">remove</span> <span class="text-purple-400">package1</span> <span class="text-purple-400">package2</span>
 
-# Remove from specific workspace
-knot remove @org/utils --workspace @org/app`}</code></pre>
+<span class="text-gray-400"># Remove from specific workspace</span>
+<span class="text-green-400">knot</span> <span class="text-red-400">remove</span> <span class="text-purple-400">@org/utils</span> <span class="text-yellow-400">--workspace</span> <span class="text-purple-400">@org/app</span>`}</code></pre>
+				</div>
 			</div>
 
 			<div class="bg-muted rounded-lg p-4">
 				<h3 class="font-semibold mb-2">knot list</h3>
 				<p class="text-sm text-muted-foreground mb-3">List installed packages</p>
-				<pre class="bg-background rounded p-3 overflow-x-auto"><code class="text-sm">{`# List all packages
-knot list
+				<div class="bg-black/90 text-white font-mono text-sm rounded-lg">
+					<pre class="overflow-x-auto p-4"><code>{@html `<span class="text-gray-400"># List all packages</span>
+<span class="text-green-400">knot</span> <span class="text-blue-400">list</span>
 
-# List with details
-knot list --long
+<span class="text-gray-400"># List with details</span>
+<span class="text-green-400">knot</span> <span class="text-blue-400">list</span> <span class="text-yellow-400">--long</span>
 
-# List only direct dependencies
-knot list --depth 0
+<span class="text-gray-400"># List only direct dependencies</span>
+<span class="text-green-400">knot</span> <span class="text-blue-400">list</span> <span class="text-yellow-400">--depth</span> <span class="text-purple-400">0</span>
 
-# List outdated packages
-knot list --outdated`}</code></pre>
+<span class="text-gray-400"># List outdated packages</span>
+<span class="text-green-400">knot</span> <span class="text-blue-400">list</span> <span class="text-yellow-400">--outdated</span>`}</code></pre>
+				</div>
 			</div>
 		</div>
 
@@ -133,33 +145,37 @@ knot list --outdated`}</code></pre>
 			<div class="bg-muted rounded-lg p-4">
 				<h3 class="font-semibold mb-2">knot show</h3>
 				<p class="text-sm text-muted-foreground mb-3">Display package information</p>
-				<pre class="bg-background rounded p-3 overflow-x-auto"><code class="text-sm">{`# Show package info
-knot show @org/package
+				<div class="bg-black/90 text-white font-mono text-sm rounded-lg">
+					<pre class="overflow-x-auto p-4"><code>{@html `<span class="text-gray-400"># Show package info</span>
+<span class="text-green-400">knot</span> <span class="text-blue-400">show</span> <span class="text-purple-400">@org/package</span>
 
-# Show specific version
-knot show @org/package@1.2.3
+<span class="text-gray-400"># Show specific version</span>
+<span class="text-green-400">knot</span> <span class="text-blue-400">show</span> <span class="text-purple-400">@org/package</span><span class="text-yellow-400">@1.2.3</span>
 
-# Show README
-knot show @org/package --readme
+<span class="text-gray-400"># Show README</span>
+<span class="text-green-400">knot</span> <span class="text-blue-400">show</span> <span class="text-purple-400">@org/package</span> <span class="text-yellow-400">--readme</span>
 
-# Show dependencies
-knot show @org/package --deps`}</code></pre>
+<span class="text-gray-400"># Show dependencies</span>
+<span class="text-green-400">knot</span> <span class="text-blue-400">show</span> <span class="text-purple-400">@org/package</span> <span class="text-yellow-400">--deps</span>`}</code></pre>
+				</div>
 			</div>
 
 			<div class="bg-muted rounded-lg p-4">
 				<h3 class="font-semibold mb-2">knot search</h3>
 				<p class="text-sm text-muted-foreground mb-3">Search for packages in the registry</p>
-				<pre class="bg-background rounded p-3 overflow-x-auto"><code class="text-sm">{`# Search for packages
-knot search react
+				<div class="bg-black/90 text-white font-mono text-sm rounded-lg">
+					<pre class="overflow-x-auto p-4"><code>{@html `<span class="text-gray-400"># Search for packages</span>
+<span class="text-green-400">knot</span> <span class="text-blue-400">search</span> <span class="text-purple-400">react</span>
 
-# Search with filters
-knot search --tag typescript
+<span class="text-gray-400"># Search with filters</span>
+<span class="text-green-400">knot</span> <span class="text-blue-400">search</span> <span class="text-yellow-400">--tag</span> <span class="text-purple-400">typescript</span>
 
-# Search by author
-knot search --author username
+<span class="text-gray-400"># Search by author</span>
+<span class="text-green-400">knot</span> <span class="text-blue-400">search</span> <span class="text-yellow-400">--author</span> <span class="text-purple-400">username</span>
 
-# Limit results
-knot search react --limit 10`}</code></pre>
+<span class="text-gray-400"># Limit results</span>
+<span class="text-green-400">knot</span> <span class="text-blue-400">search</span> <span class="text-purple-400">react</span> <span class="text-yellow-400">--limit</span> <span class="text-purple-400">10</span>`}</code></pre>
+				</div>
 			</div>
 		</div>
 
@@ -169,32 +185,36 @@ knot search react --limit 10`}</code></pre>
 			<div class="bg-muted rounded-lg p-4">
 				<h3 class="font-semibold mb-2">knot version</h3>
 				<p class="text-sm text-muted-foreground mb-3">Manage package versions</p>
-				<pre class="bg-background rounded p-3 overflow-x-auto"><code class="text-sm">{`# Bump version
-knot version patch
-knot version minor
-knot version major
+				<div class="bg-black/90 text-white font-mono text-sm rounded-lg">
+					<pre class="overflow-x-auto p-4"><code>{@html `<span class="text-gray-400"># Bump version</span>
+<span class="text-green-400">knot</span> <span class="text-blue-400">version</span> <span class="text-purple-400">patch</span>
+<span class="text-green-400">knot</span> <span class="text-blue-400">version</span> <span class="text-purple-400">minor</span>
+<span class="text-green-400">knot</span> <span class="text-blue-400">version</span> <span class="text-purple-400">major</span>
 
-# Set specific version
-knot version 2.0.0
+<span class="text-gray-400"># Set specific version</span>
+<span class="text-green-400">knot</span> <span class="text-blue-400">version</span> <span class="text-purple-400">2.0.0</span>
 
-# Prerelease versions
-knot version prerelease --preid beta
+<span class="text-gray-400"># Prerelease versions</span>
+<span class="text-green-400">knot</span> <span class="text-blue-400">version</span> <span class="text-purple-400">prerelease</span> <span class="text-yellow-400">--preid</span> <span class="text-purple-400">beta</span>
 
-# Tag a version
-knot version --tag latest`}</code></pre>
+<span class="text-gray-400"># Tag a version</span>
+<span class="text-green-400">knot</span> <span class="text-blue-400">version</span> <span class="text-yellow-400">--tag</span> <span class="text-purple-400">latest</span>`}</code></pre>
+				</div>
 			</div>
 
 			<div class="bg-muted rounded-lg p-4">
 				<h3 class="font-semibold mb-2">knot tag</h3>
 				<p class="text-sm text-muted-foreground mb-3">Manage package tags</p>
-				<pre class="bg-background rounded p-3 overflow-x-auto"><code class="text-sm">{`# Add tag to version
-knot tag @org/package@1.2.3 latest
+				<div class="bg-black/90 text-white font-mono text-sm rounded-lg">
+					<pre class="overflow-x-auto p-4"><code>{@html `<span class="text-gray-400"># Add tag to version</span>
+<span class="text-green-400">knot</span> <span class="text-blue-400">tag</span> <span class="text-purple-400">@org/package</span><span class="text-yellow-400">@1.2.3</span> <span class="text-purple-400">latest</span>
 
-# Remove tag
-knot tag --remove @org/package beta
+<span class="text-gray-400"># Remove tag</span>
+<span class="text-green-400">knot</span> <span class="text-blue-400">tag</span> <span class="text-yellow-400">--remove</span> <span class="text-purple-400">@org/package</span> <span class="text-purple-400">beta</span>
 
-# List tags
-knot tag --list @org/package`}</code></pre>
+<span class="text-gray-400"># List tags</span>
+<span class="text-green-400">knot</span> <span class="text-blue-400">tag</span> <span class="text-yellow-400">--list</span> <span class="text-purple-400">@org/package</span>`}</code></pre>
+				</div>
 			</div>
 		</div>
 
@@ -203,16 +223,18 @@ knot tag --list @org/package`}</code></pre>
 		<div class="bg-muted rounded-lg p-4 mb-6">
 			<h3 class="font-semibold mb-2">Lifecycle Scripts</h3>
 			<p class="text-sm text-muted-foreground mb-3">Scripts that run automatically during package operations</p>
-			<pre class="bg-background rounded p-3 overflow-x-auto"><code class="text-sm">{`{
-  "scripts": {
-    "prepublish": "knot test && knot build",
-    "postpublish": "echo 'Published successfully!'",
-    "preinstall": "echo 'Installing dependencies...'",
-    "postinstall": "knot build",
-    "preuninstall": "echo 'Removing package...'",
-    "postuninstall": "echo 'Cleanup complete'"
-  }
-}`}</code></pre>
+			<div class="bg-black/90 text-white font-mono text-sm rounded-lg">
+				<pre class="overflow-x-auto p-4"><code>{@html `<span class="text-white">{</span>
+  <span class="text-blue-400">"scripts"</span><span class="text-white">:</span> <span class="text-white">{</span>
+    <span class="text-blue-400">"prepublish"</span><span class="text-white">:</span> <span class="text-green-400">"knot test && knot build"</span><span class="text-white">,</span>
+    <span class="text-blue-400">"postpublish"</span><span class="text-white">:</span> <span class="text-green-400">"echo 'Published successfully!'"</span><span class="text-white">,</span>
+    <span class="text-blue-400">"preinstall"</span><span class="text-white">:</span> <span class="text-green-400">"echo 'Installing dependencies...'"</span><span class="text-white">,</span>
+    <span class="text-blue-400">"postinstall"</span><span class="text-white">:</span> <span class="text-green-400">"knot build"</span><span class="text-white">,</span>
+    <span class="text-blue-400">"preuninstall"</span><span class="text-white">:</span> <span class="text-green-400">"echo 'Removing package...'"</span><span class="text-white">,</span>
+    <span class="text-blue-400">"postuninstall"</span><span class="text-white">:</span> <span class="text-green-400">"echo 'Cleanup complete'"</span>
+  <span class="text-white">}</span>
+<span class="text-white">}</span>`}</code></pre>
+			</div>
 		</div>
 
 		<h2 class="text-2xl font-bold mb-4 mt-8">Authentication</h2>
@@ -221,34 +243,40 @@ knot tag --list @org/package`}</code></pre>
 			<div class="bg-muted rounded-lg p-4">
 				<h3 class="font-semibold mb-2">knot login</h3>
 				<p class="text-sm text-muted-foreground mb-3">Authenticate with the registry</p>
-				<pre class="bg-background rounded p-3 overflow-x-auto"><code class="text-sm">{`# Login interactively
-knot login
+				<div class="bg-black/90 text-white font-mono text-sm rounded-lg">
+					<pre class="overflow-x-auto p-4"><code>{@html `<span class="text-gray-400"># Login interactively</span>
+<span class="text-green-400">knot</span> <span class="text-blue-400">login</span>
 
-# Login with token
-knot login --token YOUR_TOKEN
+<span class="text-gray-400"># Login with token</span>
+<span class="text-green-400">knot</span> <span class="text-blue-400">login</span> <span class="text-yellow-400">--token</span> <span class="text-purple-400">YOUR_TOKEN</span>
 
-# Login to specific registry
-knot login --registry https://custom.registry.com`}</code></pre>
+<span class="text-gray-400"># Login to specific registry</span>
+<span class="text-green-400">knot</span> <span class="text-blue-400">login</span> <span class="text-yellow-400">--registry</span> <span class="text-purple-400">https://custom.registry.com</span>`}</code></pre>
+				</div>
 			</div>
 
 			<div class="bg-muted rounded-lg p-4">
 				<h3 class="font-semibold mb-2">knot logout</h3>
 				<p class="text-sm text-muted-foreground mb-3">Logout from the registry</p>
-				<pre class="bg-background rounded p-3 overflow-x-auto"><code class="text-sm">{`# Logout
-knot logout
+				<div class="bg-black/90 text-white font-mono text-sm rounded-lg">
+					<pre class="overflow-x-auto p-4"><code>{@html `<span class="text-gray-400"># Logout</span>
+<span class="text-green-400">knot</span> <span class="text-blue-400">logout</span>
 
-# Logout from specific registry
-knot logout --registry https://custom.registry.com`}</code></pre>
+<span class="text-gray-400"># Logout from specific registry</span>
+<span class="text-green-400">knot</span> <span class="text-blue-400">logout</span> <span class="text-yellow-400">--registry</span> <span class="text-purple-400">https://custom.registry.com</span>`}</code></pre>
+				</div>
 			</div>
 
 			<div class="bg-muted rounded-lg p-4">
 				<h3 class="font-semibold mb-2">knot whoami</h3>
 				<p class="text-sm text-muted-foreground mb-3">Display current authenticated user</p>
-				<pre class="bg-background rounded p-3 overflow-x-auto"><code class="text-sm">{`# Show current user
-knot whoami
+				<div class="bg-black/90 text-white font-mono text-sm rounded-lg">
+					<pre class="overflow-x-auto p-4"><code>{@html `<span class="text-gray-400"># Show current user</span>
+<span class="text-green-400">knot</span> <span class="text-blue-400">whoami</span>
 
-# Check specific registry
-knot whoami --registry https://custom.registry.com`}</code></pre>
+<span class="text-gray-400"># Check specific registry</span>
+<span class="text-green-400">knot</span> <span class="text-blue-400">whoami</span> <span class="text-yellow-400">--registry</span> <span class="text-purple-400">https://custom.registry.com</span>`}</code></pre>
+				</div>
 			</div>
 		</div>
 
