@@ -82,7 +82,6 @@
 │       ├── <span class="text-gray-400">package.json</span>          # NPM dependencies
 │       ├── <span class="text-purple-400">knot_packages/</span>       # Linked packages
 │       └── <span class="text-green-400">src/</span>                 # Backend source
-├── <span class="text-cyan-400">assets/</span>                     # Project assets (logos, etc.)
 ├── <span class="text-gray-400">README.md</span>                   # Project documentation
 └── <span class="text-gray-400">install.sh</span>                  # Installation script</code></pre>
 		</div>

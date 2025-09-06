@@ -46,7 +46,7 @@
 			icon: 'solar:server-bold',
 			items: [
 				{ title: 'Self-Hosting', href: '/docs/self-hosting' },
-				{ title: 'Docker Setup', href: '/docs/docker' },
+				{ title: 'Docker Integration', href: '/docs/docker' },
 				{ title: 'Production Deployment', href: '/docs/production' }
 			]
 		},
@@ -54,7 +54,7 @@
 			title: 'Advanced',
 			icon: 'solar:settings-bold',
 			items: [
-				{ title: 'Custom Aliases', href: '/docs/aliases' },
+				{ title: 'TypeScript Path Aliases', href: '/docs/aliases' },
 				{ title: 'Build Optimization', href: '/docs/build-optimization' },
 				{ title: 'Troubleshooting', href: '/docs/troubleshooting' }
 			]
