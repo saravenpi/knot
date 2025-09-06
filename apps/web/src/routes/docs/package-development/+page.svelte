@@ -53,7 +53,7 @@
 		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 			<div class="border rounded-lg p-6">
 				<div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
-					<Icon icon="solar:add-circle-bold" class="w-6 h-6 text-green-600" />
+					<Icon icon="lucide:plus-circle" class="w-6 h-6 text-green-600" />
 				</div>
 				<h3 class="font-semibold mb-2">Creation</h3>
 				<p class="text-sm text-muted-foreground">
@@ -62,7 +62,7 @@
 			</div>
 			<div class="border rounded-lg p-6">
 				<div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-					<Icon icon="solar:code-bold" class="w-6 h-6 text-blue-600" />
+					<Icon icon="lucide:code" class="w-6 h-6 text-blue-600" />
 				</div>
 				<h3 class="font-semibold mb-2">Development</h3>
 				<p class="text-sm text-muted-foreground">
@@ -71,7 +71,7 @@
 			</div>
 			<div class="border rounded-lg p-6">
 				<div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
-					<Icon icon="solar:upload-bold" class="w-6 h-6 text-purple-600" />
+					<Icon icon="lucide:upload" class="w-6 h-6 text-purple-600" />
 				</div>
 				<h3 class="font-semibold mb-2">Publishing</h3>
 				<p class="text-sm text-muted-foreground">
@@ -100,9 +100,9 @@
 						on:click={() => copyToClipboard('knot init:package utils')}
 					>
 						{#if showCopied && copyText === 'knot init:package utils'}
-							<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+							<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 						{:else}
-							<Icon icon="solar:copy-bold" class="w-4 h-4" />
+							<Icon icon="lucide:copy" class="w-4 h-4" />
 						{/if}
 					</button>
 				</div>
@@ -113,7 +113,7 @@
 
 			<div class="bg-muted/30 rounded-lg p-6">
 				<h4 class="font-semibold mb-3 flex items-center space-x-2">
-					<Icon icon="solar:folder-bold" class="w-5 h-5 text-blue-600" />
+					<Icon icon="lucide:folder" class="w-5 h-5 text-blue-600" />
 					<span>Generated Package Structure</span>
 				</h4>
 				<pre class="text-sm font-mono"><code>packages/utils/
@@ -134,7 +134,7 @@
 	<!-- Package Development -->
 	<section class="mb-12">
 		<div class="flex items-center space-x-3 mb-6">
-			<Icon icon="solar:code-bold" class="w-8 h-8 text-blue-600" />
+			<Icon icon="lucide:code" class="w-8 h-8 text-blue-600" />
 			<h2 class="text-2xl font-bold">Package Development</h2>
 		</div>
 
@@ -157,9 +157,9 @@
 								on:click={() => copyToClipboard('cd packages/utils && knot run build')}
 							>
 								{#if showCopied && copyText === 'cd packages/utils && knot run build'}
-									<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+									<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 								{:else}
-									<Icon icon="solar:copy-bold" class="w-4 h-4" />
+									<Icon icon="lucide:copy" class="w-4 h-4" />
 								{/if}
 							</button>
 						</div>
@@ -179,9 +179,9 @@
 								on:click={() => copyToClipboard('knot run build --watch')}
 							>
 								{#if showCopied && copyText === 'knot run build --watch'}
-									<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+									<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 								{:else}
-									<Icon icon="solar:copy-bold" class="w-4 h-4" />
+									<Icon icon="lucide:copy" class="w-4 h-4" />
 								{/if}
 							</button>
 						</div>
@@ -201,9 +201,9 @@
 								on:click={() => copyToClipboard('knot run test')}
 							>
 								{#if showCopied && copyText === 'knot run test'}
-									<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+									<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 								{:else}
-									<Icon icon="solar:copy-bold" class="w-4 h-4" />
+									<Icon icon="lucide:copy" class="w-4 h-4" />
 								{/if}
 							</button>
 						</div>
@@ -256,7 +256,7 @@
 			<div class="space-y-6">
 				<div class="border rounded-lg p-6">
 					<h3 class="font-semibold mb-3 flex items-center">
-						<Icon icon="solar:check-circle-bold" class="w-5 h-5 mr-2 text-green-600" />
+						<Icon icon="lucide:check-circle" class="w-5 h-5 mr-2 text-green-600" />
 						Package Design
 					</h3>
 					<ul class="text-sm text-muted-foreground space-y-2">
@@ -270,7 +270,7 @@
 
 				<div class="border rounded-lg p-6">
 					<h3 class="font-semibold mb-3 flex items-center">
-						<Icon icon="solar:code-bold" class="w-5 h-5 mr-2 text-blue-600" />
+						<Icon icon="lucide:code" class="w-5 h-5 mr-2 text-blue-600" />
 						Development
 					</h3>
 					<ul class="text-sm text-muted-foreground space-y-2">
@@ -286,7 +286,7 @@
 			<div class="space-y-6">
 				<div class="border rounded-lg p-6">
 					<h3 class="font-semibold mb-3 flex items-center">
-						<Icon icon="solar:upload-bold" class="w-5 h-5 mr-2 text-purple-600" />
+						<Icon icon="lucide:upload" class="w-5 h-5 mr-2 text-purple-600" />
 						Publishing
 					</h3>
 					<ul class="text-sm text-muted-foreground space-y-2">
@@ -300,7 +300,7 @@
 
 				<div class="border rounded-lg p-6">
 					<h3 class="font-semibold mb-3 flex items-center">
-						<Icon icon="solar:shield-warning-bold" class="w-5 h-5 mr-2 text-yellow-600" />
+						<Icon icon="lucide:shield-alert" class="w-5 h-5 mr-2 text-yellow-600" />
 						Common Pitfalls
 					</h3>
 					<ul class="text-sm text-muted-foreground space-y-2">
@@ -321,7 +321,7 @@
 		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 			<a href="/docs/publishing" class="block border rounded-lg p-6 hover:bg-accent transition-colors">
 				<div class="flex items-center space-x-3 mb-3">
-					<Icon icon="solar:upload-bold" class="w-6 h-6 text-red-600" />
+					<Icon icon="lucide:upload" class="w-6 h-6 text-red-600" />
 					<h3 class="font-semibold">Publishing Guide</h3>
 				</div>
 				<p class="text-sm text-muted-foreground">
@@ -331,7 +331,7 @@
 
 			<a href="/docs/package-linking" class="block border rounded-lg p-6 hover:bg-accent transition-colors">
 				<div class="flex items-center space-x-3 mb-3">
-					<Icon icon="solar:link-bold" class="w-6 h-6 text-purple-600" />
+					<Icon icon="lucide:link" class="w-6 h-6 text-purple-600" />
 					<h3 class="font-semibold">Package Linking</h3>
 				</div>
 				<p class="text-sm text-muted-foreground">
@@ -341,7 +341,7 @@
 
 			<a href="/docs/typescript" class="block border rounded-lg p-6 hover:bg-accent transition-colors">
 				<div class="flex items-center space-x-3 mb-3">
-					<Icon icon="solar:code-bold" class="w-6 h-6 text-orange-600" />
+					<Icon icon="lucide:code" class="w-6 h-6 text-orange-600" />
 					<h3 class="font-semibold">TypeScript Setup</h3>
 				</div>
 				<p class="text-sm text-muted-foreground">
@@ -351,7 +351,7 @@
 
 			<a href="/docs/project-management" class="block border rounded-lg p-6 hover:bg-accent transition-colors">
 				<div class="flex items-center space-x-3 mb-3">
-					<Icon icon="solar:settings-bold" class="w-6 h-6 text-blue-600" />
+					<Icon icon="lucide:settings" class="w-6 h-6 text-blue-600" />
 					<h3 class="font-semibold">Project Management</h3>
 				</div>
 				<p class="text-sm text-muted-foreground">
@@ -361,7 +361,7 @@
 
 			<a href="/docs/workflows" class="block border rounded-lg p-6 hover:bg-accent transition-colors">
 				<div class="flex items-center space-x-3 mb-3">
-					<Icon icon="solar:cpu-bolt-bold" class="w-6 h-6 text-green-600" />
+					<Icon icon="lucide:cpu" class="w-6 h-6 text-green-600" />
 					<h3 class="font-semibold">Workflow Best Practices</h3>
 				</div>
 				<p class="text-sm text-muted-foreground">
@@ -371,7 +371,7 @@
 
 			<a href="/docs/troubleshooting" class="block border rounded-lg p-6 hover:bg-accent transition-colors">
 				<div class="flex items-center space-x-3 mb-3">
-					<Icon icon="solar:shield-warning-bold" class="w-6 h-6 text-red-600" />
+					<Icon icon="lucide:shield-alert" class="w-6 h-6 text-red-600" />
 					<h3 class="font-semibold">Troubleshooting</h3>
 				</div>
 				<p class="text-sm text-muted-foreground">
