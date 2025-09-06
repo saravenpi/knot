@@ -393,10 +393,10 @@
 				<h3 class="text-lg font-semibold mb-3">Clean Import Syntax</h3>
 				<div class="bg-black/90 text-white font-mono text-sm p-4 rounded-lg">
 					<code><span class="text-gray-400">// Instead of relative paths:</span>
-<span class="text-blue-400">import</span> { validateEmail } <span class="text-blue-400">from</span> <span class="text-green-400">'../../knot_packages/utils'</span>;
+<span class="text-blue-400">import</span> { UserType } <span class="text-blue-400">from</span> <span class="text-green-400">'../../knot_packages/types'</span>;
 
 <span class="text-gray-400">// Use clean aliases:</span>
-<span class="text-blue-400">import</span> { validateEmail } <span class="text-blue-400">from</span> <span class="text-green-400">'@/utils'</span>;</code>
+<span class="text-blue-400">import</span> { UserType } <span class="text-blue-400">from</span> <span class="text-green-400">'@/types'</span>;</code>
 				</div>
 			</div>
 		</div>
