@@ -420,7 +420,7 @@
 				</p>
 			</a>
 
-			<a href="/docs/cli-project" class="block border rounded-lg p-6 hover:bg-accent transition-colors">
+			<a href="/docs/project-management" class="block border rounded-lg p-6 hover:bg-accent transition-colors">
 				<div class="flex items-center space-x-3 mb-3">
 					<Icon icon="solar:folder-bold" class="w-6 h-6 text-green-600" />
 					<h3 class="font-semibold">Project Structure</h3>

@@ -321,7 +321,7 @@ knot test --coverage`}</code></pre>
 				</p>
 			</a>
 
-			<a href="/docs/cli-packages" class="block border rounded-lg p-6 hover:bg-accent transition-colors">
+			<a href="/docs/package-development" class="block border rounded-lg p-6 hover:bg-accent transition-colors">
 				<div class="flex items-center space-x-3 mb-3">
 					<Icon icon="solar:terminal-bold" class="w-6 h-6 text-blue-600" />
 					<h3 class="font-semibold">Package Commands</h3>

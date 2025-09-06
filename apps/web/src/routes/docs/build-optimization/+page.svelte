@@ -264,7 +264,7 @@ jobs:
 				</div>
 			</a>
 
-			<a href="/docs/cli-project" class="group border rounded-lg p-4 hover:bg-muted transition-colors">
+			<a href="/docs/project-management" class="group border rounded-lg p-4 hover:bg-muted transition-colors">
 				<div class="flex items-center justify-between">
 					<div>
 						<h3 class="font-semibold group-hover:text-primary">Project Commands</h3>
