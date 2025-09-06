@@ -15,8 +15,6 @@ A modern monorepo package manager for any programming language that simplifies d
 
 ## 🚀 Quick Install
 
-![Installation Demo](./assets/install-quick.gif)
-
 ```bash
 curl -fsSL https://raw.githubusercontent.com/saravenpi/knot/main/install.sh | bash
 ```
@@ -57,8 +55,6 @@ knot update --force                        # Force reinstall current version
 ```
 
 ## 🎯 Quick Start
-
-![Quick Start Demo](./assets/demo-quick.gif)
 
 ```bash
 # 1. Initialize project
