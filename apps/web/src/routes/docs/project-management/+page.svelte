@@ -23,13 +23,15 @@
 	<meta name="description" content="Learn how to manage your Knot projects, from initialization to configuration and status checks." />
 	<meta property="og:title" content="Project Management - Knot CLI" />
 	<meta property="og:description" content="Learn how to manage your Knot projects, from initialization to configuration and status checks." />
+	<meta property="og:image" content="/images/og/project-management.png" />
 	<meta property="og:url" content="https://knot.klysium.com/docs/project-management" />
 	<meta name="twitter:title" content="Project Management - Knot CLI" />
 	<meta name="twitter:description" content="Learn how to manage your Knot projects, from initialization to configuration and status checks." />
+	<meta name="twitter:image" content="/images/og/project-management.png" />
 	<link rel="canonical" href="https://knot.klysium.com/docs/project-management" />
 </svelte:head>
 
-<div class="max-w-4xl mx-auto py-8 px-4 sm:px-6">
+<div class="max-w-4xl mx-auto py-8 px-4 sm:px-6 overflow-x-hidden">
 	<div class="mb-8">
 		<h1 class="text-3xl font-bold tracking-tight mb-4" style="font-family: 'Gambarino', 'Satoshi', sans-serif;">
 			Project Management
@@ -81,58 +83,33 @@
 	<!-- Initializing a Project -->
 	<section class="mb-12">
 		<h2 class="text-2xl font-bold mb-6">Initializing a Project</h2>
-		
-		<div class="space-y-6">
-			<p class="text-muted-foreground">
-				Start a new monorepo with a single command. Knot will set up the basic structure for you, including the root <code>knot.yml</code> configuration file.
-			</p>
-
-			<div>
-				<h3 class="text-lg font-semibold mb-3">Create a new project</h3>
-				<div class="bg-black/90 text-green-400 font-mono text-sm rounded-lg relative group w-full max-w-full">
-					<div class="overflow-x-auto overflow-y-hidden p-4 pr-12 max-w-full">
-						<pre class="whitespace-nowrap m-0 min-w-max"><code>knot init &lt;project-name&gt;</code></pre>
+		<div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+			<div class="flex items-start space-x-3">
+				<Icon icon="solar:rocket-2-bold" class="w-6 h-6 text-blue-600 mt-1 flex-shrink-0" />
+				<div class="flex-1 min-w-0">
+					<h3 class="font-semibold text-blue-900 mb-2">Create a new project</h3>
+					<p class="text-sm text-blue-700 mb-4">
+						Start a new monorepo with a single command. Knot will set up the basic structure for you, including the root knot.yml configuration file.
+					</p>
+					<div class="bg-black/90 text-green-400 font-mono text-sm rounded-lg relative group w-full max-w-full">
+						<div class="overflow-x-auto overflow-y-hidden p-4 pr-12 max-w-full">
+							<pre class="whitespace-nowrap m-0 min-w-max"><code>knot init &lt;project-name&gt;</code></pre>
+						</div>
+						<button
+							class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100 z-10"
+							on:click={() => copyToClipboard('knot init <project-name>')}
+							title="Copy to clipboard"
+						>
+							{#if showCopied && copyText === 'knot init <project-name>'}
+								<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+							{:else}
+								<Icon icon="solar:copy-bold" class="w-4 h-4" />
+							{/if}
+						</button>
 					</div>
-					<button
-						class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100 z-10"
-						on:click={() => copyToClipboard('knot init <project-name>')}
-						title="Copy to clipboard"
-					>
-						{#if showCopied && copyText === 'knot init <project-name>'}
-							<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
-						{:else}
-							<Icon icon="solar:copy-bold" class="w-4 h-4" />
-						{/if}
-					</button>
-				</div>
-				<div class="mt-2 text-sm text-muted-foreground">
-					This creates the project directory, basic configuration, and initializes git.
-				</div>
-			</div>
-
-			<div>
-				<h3 class="text-lg font-semibold mb-3">Example Output</h3>
-				<div class="bg-black/90 text-white font-mono text-sm p-4 rounded-lg">
-					<pre><code><span class="text-green-400">$</span> knot init my-app
-
-<span class="text-blue-400">✓</span> Created project directory: my-app/
-<span class="text-blue-400">✓</span> Generated knot.yml configuration
-<span class="text-blue-400">✓</span> Created packages/ directory
-<span class="text-blue-400">✓</span> Created apps/ directory
-<span class="text-blue-400">✓</span> Initialized git repository</code></pre>
-				</div>
-			</div>
-
-			<div>
-				<h3 class="text-lg font-semibold mb-3">Generated Structure</h3>
-				<div class="bg-black/90 text-white font-mono text-sm p-4 rounded-lg">
-					<pre><code>my-app/
-├── <span class="text-blue-400">knot.yml</span>          # Project configuration
-├── <span class="text-yellow-400">packages/</span>        # Reusable packages
-├── <span class="text-green-400">apps/</span>             # Applications
-├── <span class="text-gray-400">node_modules/</span>     # Dependencies
-├── <span class="text-purple-400">.gitignore</span>       # Git ignore rules
-└── <span class="text-orange-400">README.md</span>        # Project documentation</code></pre>
+					<div class="mt-2 text-sm text-blue-700">
+						This creates the project directory, basic configuration, and initializes git.
+					</div>
 				</div>
 			</div>
 		</div>
@@ -186,77 +163,35 @@
 					</button>
 				</div>
 			</div>
-
-			<div>
-				<h3 class="text-lg font-semibold mb-3">Configuration Options</h3>
-				<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-					<div class="border rounded-lg p-4">
-						<h4 class="font-semibold mb-2">Project Metadata</h4>
-						<div class="text-sm space-y-1">
-							<div><code class="bg-muted px-2 py-1 rounded">name</code> - Project name (required)</div>
-							<div><code class="bg-muted px-2 py-1 rounded">description</code> - Project description</div>
-							<div><code class="bg-muted px-2 py-1 rounded">version</code> - Project version</div>
-						</div>
-					</div>
-
-					<div class="border rounded-lg p-4">
-						<h4 class="font-semibold mb-2">Global Scripts</h4>
-						<div class="text-sm space-y-1">
-							<div><code class="bg-muted px-2 py-1 rounded">setup</code> - Initialize project</div>
-							<div><code class="bg-muted px-2 py-1 rounded">test-all</code> - Run all tests</div>
-							<div><code class="bg-muted px-2 py-1 rounded">build-all</code> - Build all apps</div>
-						</div>
-					</div>
-				</div>
-			</div>
 		</div>
 	</section>
 
 	<!-- Checking Project Status -->
 	<section class="mb-12">
 		<h2 class="text-2xl font-bold mb-6">Checking Project Status</h2>
-		
-		<div class="space-y-6">
-			<p class="text-muted-foreground">
-				Get a quick overview of your project's status, including a list of all apps and packages and their dependencies.
-			</p>
-
-			<div>
-				<h3 class="text-lg font-semibold mb-3">Project status command</h3>
-				<div class="bg-black/90 text-green-400 font-mono text-sm rounded-lg relative group w-full max-w-full">
-					<div class="overflow-x-auto overflow-y-hidden p-4 pr-12 max-w-full">
-						<pre class="whitespace-nowrap m-0 min-w-max"><code>knot status</code></pre>
+		<div class="bg-purple-50 border border-purple-200 rounded-lg p-6">
+			<div class="flex items-start space-x-3">
+				<Icon icon="solar:chart-bold" class="w-6 h-6 text-purple-600 mt-1 flex-shrink-0" />
+				<div class="flex-1 min-w-0">
+					<h3 class="font-semibold text-purple-900 mb-2">Project Status Overview</h3>
+					<p class="text-sm text-purple-700 mb-4">
+						Get a comprehensive overview of your project's status, including all apps, packages, and their dependencies.
+					</p>
+					<div class="bg-black/90 text-green-400 font-mono text-sm rounded-lg relative group w-full max-w-full">
+						<div class="overflow-x-auto overflow-y-hidden p-4 pr-12 max-w-full">
+							<pre class="whitespace-nowrap m-0 min-w-max"><code>knot status</code></pre>
+						</div>
+						<button
+							class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100 z-10"
+							on:click={() => copyToClipboard('knot status')}
+						>
+							{#if showCopied && copyText === 'knot status'}
+								<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+							{:else}
+								<Icon icon="solar:copy-bold" class="w-4 h-4" />
+							{/if}
+						</button>
 					</div>
-					<button 
-						class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100 z-10"
-						on:click={() => copyToClipboard('knot status')}
-					>
-						{#if showCopied && copyText === 'knot status'}
-							<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
-						{:else}
-							<Icon icon="solar:copy-bold" class="w-4 h-4" />
-						{/if}
-					</button>
-				</div>
-			</div>
-
-			<div>
-				<h3 class="text-lg font-semibold mb-3">Example Status Output</h3>
-				<div class="bg-black/90 text-white font-mono text-sm p-4 rounded-lg">
-					<pre><code><span class="text-blue-400">📦 Project:</span> <span class="text-white">my-awesome-project</span> <span class="text-gray-400">(v1.0.0)</span>
-<span class="text-green-400">✓</span> <span class="text-gray-400">Configuration valid</span>
-<span class="text-green-400">✓</span> <span class="text-gray-400">Git repository initialized</span>
-
-<span class="text-yellow-400">📱 Apps (2):</span>
-  <span class="text-blue-400">frontend</span> <span class="text-gray-400">- React application</span>
-    <span class="text-green-400">✓</span> <span class="text-gray-400">Linked: types, utils</span>
-  
-  <span class="text-blue-400">api</span> <span class="text-gray-400">- Node.js API server</span>
-    <span class="text-green-400">✓</span> <span class="text-gray-400">Linked: types, utils</span>
-
-<span class="text-purple-400">📚 Packages (2):</span>
-  <span class="text-blue-400">types</span> <span class="text-gray-400">(v1.0.0) - Shared TypeScript types</span>
-  <span class="text-blue-400">utils</span> <span class="text-gray-400">(v1.2.0) - Utility functions</span></code></pre>
 				</div>
 			</div>
 		</div>
@@ -338,24 +273,36 @@
 	<!-- Next Steps -->
 	<section class="mb-12">
 		<h2 class="text-2xl font-bold mb-6">Next Steps</h2>
-		<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-			<a href="/docs/quick-start" class="block border rounded-lg p-6 hover:bg-accent transition-colors">
-				<div class="flex items-center space-x-3 mb-3">
-					<Icon icon="solar:play-bold" class="w-6 h-6 text-green-600" />
-					<h3 class="font-semibold">Quick Start Guide</h3>
+		<div class="bg-green-50 border border-green-200 rounded-lg p-6">
+			<div class="flex items-start space-x-3">
+				<Icon icon="solar:check-circle-bold" class="w-6 h-6 text-green-600 mt-1 flex-shrink-0" />
+				<div>
+					<h3 class="font-semibold text-green-900 mb-2">Ready to manage your first project?</h3>
+					<p class="text-sm text-green-700 mb-4">
+						Now that you understand project management basics, explore related topics to master Knot's capabilities.
+					</p>
+					<div class="flex flex-wrap gap-3">
+						<a href="/docs/quick-start" class="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 transition-colors">
+							<Icon icon="solar:play-bold" class="w-4 h-4 mr-2" />
+							Quick Start Guide
+						</a>
+						<a href="/docs/configuration" class="inline-flex items-center px-4 py-2 border border-green-600 text-green-600 text-sm font-medium rounded-md hover:bg-green-50 transition-colors">
+							<Icon icon="solar:settings-bold" class="w-4 h-4 mr-2" />
+							Configuration Guide
+						</a>
+					</div>
 				</div>
-				<p class="text-sm text-muted-foreground">
-					Get started with your first Knot project and learn the basic workflow.
-				</p>
-			</a>
+			</div>
+		</div>
 
-			<a href="/docs/configuration" class="block border rounded-lg p-6 hover:bg-accent transition-colors">
+		<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+			<a href="/docs/cli-commands" class="block border rounded-lg p-6 hover:bg-accent transition-colors">
 				<div class="flex items-center space-x-3 mb-3">
-					<Icon icon="solar:settings-bold" class="w-6 h-6 text-blue-600" />
-					<h3 class="font-semibold">Configuration Files</h3>
+					<Icon icon="solar:terminal-bold" class="w-6 h-6 text-blue-600" />
+					<h3 class="font-semibold">CLI Commands Reference</h3>
 				</div>
 				<p class="text-sm text-muted-foreground">
-					Learn about all configuration options for projects, packages, and apps.
+					Complete command reference for all Knot CLI operations and advanced usage patterns.
 				</p>
 			</a>
 
@@ -365,17 +312,7 @@
 					<h3 class="font-semibold">Package Linking</h3>
 				</div>
 				<p class="text-sm text-muted-foreground">
-					Understand how Knot links packages and the different linking modes available.
-				</p>
-			</a>
-
-			<a href="/docs/cli-commands" class="block border rounded-lg p-6 hover:bg-accent transition-colors">
-				<div class="flex items-center space-x-3 mb-3">
-					<Icon icon="solar:terminal-bold" class="w-6 h-6 text-orange-600" />
-					<h3 class="font-semibold">CLI Commands Reference</h3>
-				</div>
-				<p class="text-sm text-muted-foreground">
-					Complete command reference for all Knot CLI operations.
+					Learn how Knot links packages and manages dependencies between apps and packages.
 				</p>
 			</a>
 		</div>
