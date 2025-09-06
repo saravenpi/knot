@@ -39,7 +39,7 @@
 		<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 			<div class="border rounded-lg p-6">
 				<div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-					<Icon icon="solar:folder-bold" class="w-6 h-6 text-blue-600" />
+					<Icon icon="lucide:folder" class="w-6 h-6 text-blue-600" />
 				</div>
 				<h3 class="font-semibold mb-2">knot.yml</h3>
 				<p class="text-sm text-muted-foreground">
@@ -48,7 +48,7 @@
 			</div>
 			<div class="border rounded-lg p-6">
 				<div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
-					<Icon icon="solar:box-bold" class="w-6 h-6 text-green-600" />
+					<Icon icon="lucide:box-bold" class="w-6 h-6 text-green-600" />
 				</div>
 				<h3 class="font-semibold mb-2">package.yml</h3>
 				<p class="text-sm text-muted-foreground">
@@ -57,7 +57,7 @@
 			</div>
 			<div class="border rounded-lg p-6">
 				<div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
-					<Icon icon="solar:programming-bold" class="w-6 h-6 text-purple-600" />
+					<Icon icon="lucide:programming-bold" class="w-6 h-6 text-purple-600" />
 				</div>
 				<h3 class="font-semibold mb-2">app.yml</h3>
 				<p class="text-sm text-muted-foreground">
@@ -118,9 +118,9 @@
 						on:click={() => copyToClipboard(document.querySelector('pre code').textContent)}
 					>
 						{#if showCopied}
-							<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+							<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 						{:else}
-							<Icon icon="solar:copy-bold" class="w-4 h-4" />
+							<Icon icon="lucide:copy" class="w-4 h-4" />
 						{/if}
 					</button>
 				</div>
@@ -213,9 +213,9 @@
 						on:click={() => copyToClipboard(document.querySelectorAll('pre code')[1].textContent)}
 					>
 						{#if showCopied}
-							<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+							<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 						{:else}
-							<Icon icon="solar:copy-bold" class="w-4 h-4" />
+							<Icon icon="lucide:copy" class="w-4 h-4" />
 						{/if}
 					</button>
 				</div>
@@ -313,9 +313,9 @@
 						on:click={() => copyToClipboard(document.querySelectorAll('pre code')[2].textContent)}
 					>
 						{#if showCopied}
-							<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+							<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 						{:else}
-							<Icon icon="solar:copy-bold" class="w-4 h-4" />
+							<Icon icon="lucide:copy" class="w-4 h-4" />
 						{/if}
 					</button>
 				</div>
@@ -472,7 +472,7 @@
 			<div class="space-y-6">
 				<div class="border rounded-lg p-6">
 					<h3 class="font-semibold mb-3 flex items-center">
-						<Icon icon="solar:check-circle-bold" class="w-5 h-5 mr-2 text-green-600" />
+						<Icon icon="lucide:check-circle" class="w-5 h-5 mr-2 text-green-600" />
 						Configuration Tips
 					</h3>
 					<ul class="text-sm text-muted-foreground space-y-2">
@@ -486,7 +486,7 @@
 
 				<div class="border rounded-lg p-6">
 					<h3 class="font-semibold mb-3 flex items-center">
-						<Icon icon="solar:settings-bold" class="w-5 h-5 mr-2 text-blue-600" />
+						<Icon icon="lucide:settings-bold" class="w-5 h-5 mr-2 text-blue-600" />
 						Organization
 					</h3>
 					<ul class="text-sm text-muted-foreground space-y-2">
@@ -501,7 +501,7 @@
 			<div class="space-y-6">
 				<div class="border rounded-lg p-6">
 					<h3 class="font-semibold mb-3 flex items-center">
-						<Icon icon="solar:shield-warning-bold" class="w-5 h-5 mr-2 text-yellow-600" />
+						<Icon icon="lucide:shield-warning-bold" class="w-5 h-5 mr-2 text-yellow-600" />
 						Common Pitfalls
 					</h3>
 					<ul class="text-sm text-muted-foreground space-y-2">
@@ -514,7 +514,7 @@
 
 				<div class="border rounded-lg p-6">
 					<h3 class="font-semibold mb-3 flex items-center">
-						<Icon icon="solar:bookmark-bold" class="w-5 h-5 mr-2 text-purple-600" />
+						<Icon icon="lucide:bookmark-bold" class="w-5 h-5 mr-2 text-purple-600" />
 						Validation
 					</h3>
 					<ul class="text-sm text-muted-foreground space-y-2">
@@ -534,7 +534,7 @@
 		<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 			<a href="/docs/package-linking" class="block border rounded-lg p-6 hover:bg-accent transition-colors">
 				<div class="flex items-center space-x-3 mb-3">
-					<Icon icon="solar:link-bold" class="w-6 h-6 text-green-600" />
+					<Icon icon="lucide:link" class="w-6 h-6 text-green-600" />
 					<h3 class="font-semibold">Package Linking</h3>
 				</div>
 				<p class="text-sm text-muted-foreground">
@@ -544,7 +544,7 @@
 
 			<a href="/docs/project-management" class="block border rounded-lg p-6 hover:bg-accent transition-colors">
 				<div class="flex items-center space-x-3 mb-3">
-					<Icon icon="solar:terminal-bold" class="w-6 h-6 text-blue-600" />
+					<Icon icon="lucide:terminal" class="w-6 h-6 text-blue-600" />
 					<h3 class="font-semibold">CLI Commands</h3>
 				</div>
 				<p class="text-sm text-muted-foreground">

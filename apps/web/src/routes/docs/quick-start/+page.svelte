@@ -46,7 +46,7 @@
 		<h2 class="text-2xl font-bold mb-6">Prerequisites</h2>
 		<div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
 			<div class="flex items-start space-x-3">
-				<Icon icon="solar:info-circle-bold" class="w-6 h-6 text-blue-600 mt-1 flex-shrink-0" />
+				<Icon icon="lucide:info" class="w-6 h-6 text-blue-600 mt-1 flex-shrink-0" />
 				<div>
 					<h3 class="font-semibold text-blue-900 mb-2">Before we start</h3>
 					<ul class="text-sm text-blue-700 space-y-1">
@@ -81,9 +81,9 @@
 						on:click={() => copyToClipboard('knot init my-awesome-project')}
 					>
 						{#if showCopied && copyText === 'knot init my-awesome-project'}
-							<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+							<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 						{:else}
-							<Icon icon="solar:copy-bold" class="w-4 h-4" />
+							<Icon icon="lucide:copy" class="w-4 h-4" />
 						{/if}
 					</button>
 				</div>
@@ -103,9 +103,9 @@
 						on:click={() => copyToClipboard('cd my-awesome-project')}
 					>
 						{#if showCopied && copyText === 'cd my-awesome-project'}
-							<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+							<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 						{:else}
-							<Icon icon="solar:copy-bold" class="w-4 h-4" />
+							<Icon icon="lucide:copy" class="w-4 h-4" />
 						{/if}
 					</button>
 				</div>
@@ -141,9 +141,9 @@
 						on:click={() => copyToClipboard('knot init:package utils')}
 					>
 						{#if showCopied && copyText === 'knot init:package utils'}
-							<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+							<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 						{:else}
-							<Icon icon="solar:copy-bold" class="w-4 h-4" />
+							<Icon icon="lucide:copy" class="w-4 h-4" />
 						{/if}
 					</button>
 				</div>
@@ -195,9 +195,9 @@
 						on:click={() => copyToClipboard('knot init:app frontend')}
 					>
 						{#if showCopied && copyText === 'knot init:app frontend'}
-							<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+							<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 						{:else}
-							<Icon icon="solar:copy-bold" class="w-4 h-4" />
+							<Icon icon="lucide:copy" class="w-4 h-4" />
 						{/if}
 					</button>
 				</div>
@@ -218,9 +218,9 @@
 						on:click={() => copyToClipboard('cd apps/frontend && knot install utils')}
 					>
 						{#if showCopied && copyText === 'cd apps/frontend && knot install utils'}
-							<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+							<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 						{:else}
-							<Icon icon="solar:copy-bold" class="w-4 h-4" />
+							<Icon icon="lucide:copy" class="w-4 h-4" />
 						{/if}
 					</button>
 				</div>
@@ -250,9 +250,9 @@
 						on:click={() => copyToClipboard('knot link')}
 					>
 						{#if showCopied && copyText === 'knot link'}
-							<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+							<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 						{:else}
-							<Icon icon="solar:copy-bold" class="w-4 h-4" />
+							<Icon icon="lucide:copy" class="w-4 h-4" />
 						{/if}
 					</button>
 				</div>
@@ -305,9 +305,9 @@
 						on:click={() => copyToClipboard('cd apps/frontend && npm install')}
 					>
 						{#if showCopied && copyText === 'cd apps/frontend && npm install'}
-							<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+							<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 						{:else}
-							<Icon icon="solar:copy-bold" class="w-4 h-4" />
+							<Icon icon="lucide:copy" class="w-4 h-4" />
 						{/if}
 					</button>
 				</div>
@@ -322,9 +322,9 @@
 						on:click={() => copyToClipboard('knot run dev')}
 					>
 						{#if showCopied && copyText === 'knot run dev'}
-							<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+							<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 						{:else}
-							<Icon icon="solar:copy-bold" class="w-4 h-4" />
+							<Icon icon="lucide:copy" class="w-4 h-4" />
 						{/if}
 					</button>
 				</div>
@@ -342,9 +342,9 @@
 						on:click={() => copyToClipboard('knot run build')}
 					>
 						{#if showCopied && copyText === 'knot run build'}
-							<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+							<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 						{:else}
-							<Icon icon="solar:copy-bold" class="w-4 h-4" />
+							<Icon icon="lucide:copy" class="w-4 h-4" />
 						{/if}
 					</button>
 				</div>
@@ -359,7 +359,7 @@
 	<section class="mb-12">
 		<div class="bg-green-50 border border-green-200 rounded-lg p-6">
 			<div class="flex items-start space-x-3">
-				<Icon icon="solar:check-circle-bold" class="w-6 h-6 text-green-600 mt-1 flex-shrink-0" />
+				<Icon icon="lucide:check-circle" class="w-6 h-6 text-green-600 mt-1 flex-shrink-0" />
 				<div>
 					<h3 class="font-semibold text-green-900 mb-2">Congratulations! 🎉</h3>
 					<p class="text-sm text-green-700 mb-4">
@@ -368,11 +368,11 @@
 					</p>
 					<div class="flex flex-wrap gap-3">
 						<a href="/docs/package-linking" class="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 transition-colors">
-							<Icon icon="solar:link-bold" class="w-4 h-4 mr-2" />
+							<Icon icon="lucide:link" class="w-4 h-4 mr-2" />
 							Learn Package Linking
 						</a>
 						<a href="/docs/publishing" class="inline-flex items-center px-4 py-2 border border-green-600 text-green-600 text-sm font-medium rounded-md hover:bg-green-50 transition-colors">
-							<Icon icon="solar:upload-bold" class="w-4 h-4 mr-2" />
+							<Icon icon="lucide:upload-bold" class="w-4 h-4 mr-2" />
 							Publish Your Package
 						</a>
 					</div>
@@ -387,7 +387,7 @@
 		<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 			<div class="border rounded-lg p-6">
 				<div class="flex items-center space-x-3 mb-3">
-					<Icon icon="solar:settings-bold" class="w-6 h-6 text-blue-600" />
+					<Icon icon="lucide:settings-bold" class="w-6 h-6 text-blue-600" />
 					<h3 class="font-semibold">Advanced Configuration</h3>
 				</div>
 				<p class="text-sm text-muted-foreground mb-4">
@@ -400,7 +400,7 @@
 
 			<div class="border rounded-lg p-6">
 				<div class="flex items-center space-x-3 mb-3">
-					<Icon icon="solar:users-group-two-rounded-bold" class="w-6 h-6 text-purple-600" />
+					<Icon icon="lucide:users-group-two-rounded-bold" class="w-6 h-6 text-purple-600" />
 					<h3 class="font-semibold">Team Collaboration</h3>
 				</div>
 				<p class="text-sm text-muted-foreground mb-4">
@@ -413,7 +413,7 @@
 
 			<div class="border rounded-lg p-6">
 				<div class="flex items-center space-x-3 mb-3">
-					<Icon icon="solar:upload-bold" class="w-6 h-6 text-green-600" />
+					<Icon icon="lucide:upload-bold" class="w-6 h-6 text-green-600" />
 					<h3 class="font-semibold">Package Publishing</h3>
 				</div>
 				<p class="text-sm text-muted-foreground mb-4">
@@ -426,7 +426,7 @@
 
 			<div class="border rounded-lg p-6">
 				<div class="flex items-center space-x-3 mb-3">
-					<Icon icon="solar:server-bold" class="w-6 h-6 text-red-600" />
+					<Icon icon="lucide:server-bold" class="w-6 h-6 text-red-600" />
 					<h3 class="font-semibold">Self-Hosting</h3>
 				</div>
 				<p class="text-sm text-muted-foreground mb-4">

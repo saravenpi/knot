@@ -46,7 +46,7 @@
 		<h2 class="text-2xl font-bold mb-6">Overview</h2>
 		<div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
 			<div class="flex items-start space-x-3">
-				<Icon icon="solar:users-group-two-rounded-bold" class="w-6 h-6 text-blue-600 mt-1 flex-shrink-0" />
+				<Icon icon="lucide:users-group-two-rounded-bold" class="w-6 h-6 text-blue-600 mt-1 flex-shrink-0" />
 				<div>
 					<h3 class="font-semibold text-blue-900 mb-2">What are Teams?</h3>
 					<p class="text-sm text-blue-700 mb-4">
@@ -54,15 +54,15 @@
 					</p>
 					<div class="space-y-2 text-sm text-blue-700">
 						<div class="flex items-center space-x-2">
-							<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-600" />
+							<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-600" />
 							<span>Private package sharing within your organization</span>
 						</div>
 						<div class="flex items-center space-x-2">
-							<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-600" />
+							<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-600" />
 							<span>Role-based access control (Owner, Admin, Member)</span>
 						</div>
 						<div class="flex items-center space-x-2">
-							<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-600" />
+							<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-600" />
 							<span>Namespace protection for package names</span>
 						</div>
 					</div>
@@ -92,9 +92,9 @@
 								on:click={() => copyToClipboard('knot team create myteam')}
 							>
 								{#if showCopied && copyText === 'knot team create myteam'}
-									<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+									<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 								{:else}
-									<Icon icon="solar:copy-bold" class="w-4 h-4" />
+									<Icon icon="lucide:copy" class="w-4 h-4" />
 								{/if}
 							</button>
 						</div>
@@ -109,9 +109,9 @@
 								on:click={() => copyToClipboard('knot team create myteam --description "My awesome development team"')}
 							>
 								{#if showCopied && copyText.includes('awesome development')}
-									<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+									<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 								{:else}
-									<Icon icon="solar:copy-bold" class="w-4 h-4" />
+									<Icon icon="lucide:copy" class="w-4 h-4" />
 								{/if}
 							</button>
 						</div>
@@ -119,7 +119,7 @@
 
 					<div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
 						<div class="flex items-start space-x-3">
-							<Icon icon="solar:info-circle-bold" class="w-5 h-5 text-yellow-600 mt-0.5 flex-shrink-0" />
+							<Icon icon="lucide:info" class="w-5 h-5 text-yellow-600 mt-0.5 flex-shrink-0" />
 							<div class="text-sm">
 								<p class="font-medium text-yellow-800 mb-1">Team Name Requirements</p>
 								<ul class="text-yellow-700 space-y-1">
@@ -154,9 +154,9 @@
 						on:click={() => copyToClipboard('knot team list')}
 					>
 						{#if showCopied && copyText === 'knot team list'}
-							<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+							<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 						{:else}
-							<Icon icon="solar:copy-bold" class="w-4 h-4" />
+							<Icon icon="lucide:copy" class="w-4 h-4" />
 						{/if}
 					</button>
 				</div>
@@ -175,9 +175,9 @@
 						on:click={() => copyToClipboard('knot team info myteam')}
 					>
 						{#if showCopied && copyText === 'knot team info myteam'}
-							<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+							<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 						{:else}
-							<Icon icon="solar:copy-bold" class="w-4 h-4" />
+							<Icon icon="lucide:copy" class="w-4 h-4" />
 						{/if}
 					</button>
 				</div>
@@ -207,9 +207,9 @@
 								on:click={() => copyToClipboard('knot team add-member myteam username --role member')}
 							>
 								{#if showCopied && copyText.includes('add-member')}
-									<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+									<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 								{:else}
-									<Icon icon="solar:copy-bold" class="w-4 h-4" />
+									<Icon icon="lucide:copy" class="w-4 h-4" />
 								{/if}
 							</button>
 						</div>
@@ -224,9 +224,9 @@
 								on:click={() => copyToClipboard('knot team add-member myteam username --role admin')}
 							>
 								{#if showCopied && copyText.includes('role admin')}
-									<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+									<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 								{:else}
-									<Icon icon="solar:copy-bold" class="w-4 h-4" />
+									<Icon icon="lucide:copy" class="w-4 h-4" />
 								{/if}
 							</button>
 						</div>
@@ -247,9 +247,9 @@
 						on:click={() => copyToClipboard('knot team remove-member myteam username')}
 					>
 						{#if showCopied && copyText.includes('remove-member')}
-							<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+							<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 						{:else}
-							<Icon icon="solar:copy-bold" class="w-4 h-4" />
+							<Icon icon="lucide:copy" class="w-4 h-4" />
 						{/if}
 					</button>
 				</div>
@@ -264,7 +264,7 @@
 		<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 			<div class="border rounded-lg p-6">
 				<div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mb-4">
-					<Icon icon="solar:crown-bold" class="w-6 h-6 text-red-600" />
+					<Icon icon="lucide:crown-bold" class="w-6 h-6 text-red-600" />
 				</div>
 				<h3 class="font-semibold mb-3">Owner</h3>
 				<ul class="text-sm text-muted-foreground space-y-2">
@@ -279,7 +279,7 @@
 
 			<div class="border rounded-lg p-6">
 				<div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
-					<Icon icon="solar:shield-user-bold" class="w-6 h-6 text-orange-600" />
+					<Icon icon="lucide:shield-user-bold" class="w-6 h-6 text-orange-600" />
 				</div>
 				<h3 class="font-semibold mb-3">Admin</h3>
 				<ul class="text-sm text-muted-foreground space-y-2">
@@ -293,7 +293,7 @@
 
 			<div class="border rounded-lg p-6">
 				<div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
-					<Icon icon="solar:user-bold" class="w-6 h-6 text-green-600" />
+					<Icon icon="lucide:user-bold" class="w-6 h-6 text-green-600" />
 				</div>
 				<h3 class="font-semibold mb-3">Member</h3>
 				<ul class="text-sm text-muted-foreground space-y-2">
@@ -324,9 +324,9 @@
 						on:click={() => copyToClipboard('knot init:package shared-utils --team myteam')}
 					>
 						{#if showCopied && copyText.includes('shared-utils')}
-							<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+							<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 						{:else}
-							<Icon icon="solar:copy-bold" class="w-4 h-4" />
+							<Icon icon="lucide:copy" class="w-4 h-4" />
 						{/if}
 					</button>
 				</div>
@@ -348,9 +348,9 @@
 						on:click={() => copyToClipboard('knot publish --team myteam')}
 					>
 						{#if showCopied && copyText.includes('publish --team')}
-							<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+							<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 						{:else}
-							<Icon icon="solar:copy-bold" class="w-4 h-4" />
+							<Icon icon="lucide:copy" class="w-4 h-4" />
 						{/if}
 					</button>
 				</div>
@@ -390,7 +390,7 @@
 		<div class="space-y-6">
 			<div class="border rounded-lg p-6">
 				<h3 class="font-semibold mb-3 flex items-center">
-					<Icon icon="solar:lightbulb-bold" class="w-5 h-5 mr-2 text-yellow-500" />
+					<Icon icon="lucide:lightbulb-bold" class="w-5 h-5 mr-2 text-yellow-500" />
 					Team Organization
 				</h3>
 				<ul class="text-sm text-muted-foreground space-y-2">
@@ -403,7 +403,7 @@
 
 			<div class="border rounded-lg p-6">
 				<h3 class="font-semibold mb-3 flex items-center">
-					<Icon icon="solar:shield-check-bold" class="w-5 h-5 mr-2 text-green-500" />
+					<Icon icon="lucide:shield-check-bold" class="w-5 h-5 mr-2 text-green-500" />
 					Security
 				</h3>
 				<ul class="text-sm text-muted-foreground space-y-2">
@@ -416,7 +416,7 @@
 
 			<div class="border rounded-lg p-6">
 				<h3 class="font-semibold mb-3 flex items-center">
-					<Icon icon="solar:users-group-rounded-bold" class="w-5 h-5 mr-2 text-blue-500" />
+					<Icon icon="lucide:users-group-rounded-bold" class="w-5 h-5 mr-2 text-blue-500" />
 					Collaboration
 				</h3>
 				<ul class="text-sm text-muted-foreground space-y-2">
@@ -435,7 +435,7 @@
 		<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 			<a href="/docs/authentication" class="block border rounded-lg p-6 hover:bg-accent transition-colors">
 				<div class="flex items-center space-x-3 mb-3">
-					<Icon icon="solar:key-bold" class="w-6 h-6 text-blue-600" />
+					<Icon icon="lucide:key-bold" class="w-6 h-6 text-blue-600" />
 					<h3 class="font-semibold">Authentication</h3>
 				</div>
 				<p class="text-sm text-muted-foreground">
@@ -445,7 +445,7 @@
 
 			<a href="/docs/publishing" class="block border rounded-lg p-6 hover:bg-accent transition-colors">
 				<div class="flex items-center space-x-3 mb-3">
-					<Icon icon="solar:upload-bold" class="w-6 h-6 text-red-600" />
+					<Icon icon="lucide:upload-bold" class="w-6 h-6 text-red-600" />
 					<h3 class="font-semibold">Publishing Packages</h3>
 				</div>
 				<p class="text-sm text-muted-foreground">
@@ -455,7 +455,7 @@
 
 			<a href="/docs/permissions" class="block border rounded-lg p-6 hover:bg-accent transition-colors">
 				<div class="flex items-center space-x-3 mb-3">
-					<Icon icon="solar:shield-user-bold" class="w-6 h-6 text-green-600" />
+					<Icon icon="lucide:shield-user-bold" class="w-6 h-6 text-green-600" />
 					<h3 class="font-semibold">Permissions</h3>
 				</div>
 				<p class="text-sm text-muted-foreground">
@@ -465,7 +465,7 @@
 
 			<a href="/docs/troubleshooting" class="block border rounded-lg p-6 hover:bg-accent transition-colors">
 				<div class="flex items-center space-x-3 mb-3">
-					<Icon icon="solar:help-bold" class="w-6 h-6 text-purple-600" />
+					<Icon icon="lucide:help-bold" class="w-6 h-6 text-purple-600" />
 					<h3 class="font-semibold">Troubleshooting</h3>
 				</div>
 				<p class="text-sm text-muted-foreground">

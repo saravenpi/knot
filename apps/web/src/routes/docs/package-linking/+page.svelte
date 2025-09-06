@@ -39,7 +39,7 @@
 		
 		<div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
 			<div class="flex items-start space-x-3">
-				<Icon icon="solar:info-circle-bold" class="w-6 h-6 text-blue-600 mt-1 flex-shrink-0" />
+				<Icon icon="lucide:info" class="w-6 h-6 text-blue-600 mt-1 flex-shrink-0" />
 				<div>
 					<h3 class="font-semibold text-blue-900 mb-2">Copy-First Approach</h3>
 					<p class="text-sm text-blue-700">
@@ -61,7 +61,7 @@
 			<div class="border rounded-lg p-6">
 				<div class="flex items-center space-x-3 mb-4">
 					<div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-						<Icon icon="solar:copy-bold" class="w-6 h-6 text-green-600" />
+						<Icon icon="lucide:copy" class="w-6 h-6 text-green-600" />
 					</div>
 					<div>
 						<h3 class="font-semibold">Copy Mode (Default)</h3>
@@ -76,19 +76,19 @@
 					
 					<div class="text-sm space-y-2">
 						<div class="flex items-start space-x-2">
-							<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+							<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
 							<span class="text-muted-foreground">Works in Docker containers</span>
 						</div>
 						<div class="flex items-start space-x-2">
-							<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+							<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
 							<span class="text-muted-foreground">Compatible with all CI/CD systems</span>
 						</div>
 						<div class="flex items-start space-x-2">
-							<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+							<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
 							<span class="text-muted-foreground">Can be committed to version control</span>
 						</div>
 						<div class="flex items-start space-x-2">
-							<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+							<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
 							<span class="text-muted-foreground">No platform-specific issues</span>
 						</div>
 					</div>
@@ -99,7 +99,7 @@
 			<div class="border rounded-lg p-6">
 				<div class="flex items-center space-x-3 mb-4">
 					<div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-						<Icon icon="solar:link-bold" class="w-6 h-6 text-purple-600" />
+						<Icon icon="lucide:link" class="w-6 h-6 text-purple-600" />
 					</div>
 					<div>
 						<h3 class="font-semibold">Symlink Mode</h3>
@@ -114,19 +114,19 @@
 					
 					<div class="text-sm space-y-2">
 						<div class="flex items-start space-x-2">
-							<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+							<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
 							<span class="text-muted-foreground">Live updates during development</span>
 						</div>
 						<div class="flex items-start space-x-2">
-							<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+							<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
 							<span class="text-muted-foreground">Instant changes across apps</span>
 						</div>
 						<div class="flex items-start space-x-2">
-							<Icon icon="solar:close-circle-bold" class="w-4 h-4 text-red-600 mt-0.5 flex-shrink-0" />
+							<Icon icon="lucide:x-circle" class="w-4 h-4 text-red-600 mt-0.5 flex-shrink-0" />
 							<span class="text-muted-foreground">Docker compatibility issues</span>
 						</div>
 						<div class="flex items-start space-x-2">
-							<Icon icon="solar:close-circle-bold" class="w-4 h-4 text-red-600 mt-0.5 flex-shrink-0" />
+							<Icon icon="lucide:x-circle" class="w-4 h-4 text-red-600 mt-0.5 flex-shrink-0" />
 							<span class="text-muted-foreground">Platform-specific limitations</span>
 						</div>
 					</div>
@@ -334,7 +334,7 @@
 			<!-- Local Packages -->
 			<div class="border rounded-lg p-6">
 				<h3 class="font-semibold mb-4 flex items-center">
-					<Icon icon="solar:home-bold" class="w-5 h-5 mr-2 text-blue-600" />
+					<Icon icon="lucide:home-bold" class="w-5 h-5 mr-2 text-blue-600" />
 					Local Packages
 				</h3>
 				<div class="space-y-3">
@@ -359,7 +359,7 @@
 			<!-- Remote Packages -->
 			<div class="border rounded-lg p-6">
 				<h3 class="font-semibold mb-4 flex items-center">
-					<Icon icon="solar:cloud-bold" class="w-5 h-5 mr-2 text-green-600" />
+					<Icon icon="lucide:cloud-bold" class="w-5 h-5 mr-2 text-green-600" />
 					Remote Packages
 				</h3>
 				<div class="space-y-3">
@@ -396,7 +396,7 @@
 				<!-- Development Mode -->
 				<div class="border rounded-lg p-6">
 					<h3 class="font-semibold mb-3 flex items-center">
-						<Icon icon="solar:code-bold" class="w-5 h-5 mr-2 text-purple-600" />
+						<Icon icon="lucide:code" class="w-5 h-5 mr-2 text-purple-600" />
 						Development Mode
 					</h3>
 					<div class="space-y-3">
@@ -407,9 +407,9 @@
 								on:click={() => copyToClipboard('knot link --symlink')}
 							>
 								{#if showCopied && copyText === 'knot link --symlink'}
-									<Icon icon="solar:check-circle-bold" class="w-3 h-3 text-green-400" />
+									<Icon icon="lucide:check-circle" class="w-3 h-3 text-green-400" />
 								{:else}
-									<Icon icon="solar:copy-bold" class="w-3 h-3" />
+									<Icon icon="lucide:copy" class="w-3 h-3" />
 								{/if}
 							</button>
 						</div>
@@ -425,7 +425,7 @@
 				<!-- Production Mode -->
 				<div class="border rounded-lg p-6">
 					<h3 class="font-semibold mb-3 flex items-center">
-						<Icon icon="solar:rocket-bold" class="w-5 h-5 mr-2 text-green-600" />
+						<Icon icon="lucide:rocket-bold" class="w-5 h-5 mr-2 text-green-600" />
 						Production Mode
 					</h3>
 					<div class="space-y-3">
@@ -436,9 +436,9 @@
 								on:click={() => copyToClipboard('knot link')}
 							>
 								{#if showCopied && copyText === 'knot link'}
-									<Icon icon="solar:check-circle-bold" class="w-3 h-3 text-green-400" />
+									<Icon icon="lucide:check-circle" class="w-3 h-3 text-green-400" />
 								{:else}
-									<Icon icon="solar:copy-bold" class="w-3 h-3" />
+									<Icon icon="lucide:copy" class="w-3 h-3" />
 								{/if}
 							</button>
 						</div>
@@ -461,7 +461,7 @@
 		<div class="space-y-6">
 			<div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
 				<div class="flex items-start space-x-3">
-					<Icon icon="solar:refresh-bold" class="w-6 h-6 text-blue-600 mt-1 flex-shrink-0" />
+					<Icon icon="lucide:refresh-bold" class="w-6 h-6 text-blue-600 mt-1 flex-shrink-0" />
 					<div>
 						<h3 class="font-semibold text-blue-900 mb-2">Pre-commit Hook</h3>
 						<p class="text-sm text-blue-700 mb-3">
@@ -488,9 +488,9 @@ knot link --update-copied</code>
 						on:click={() => copyToClipboard('knot link --force')}
 					>
 						{#if showCopied && copyText === 'knot link --force'}
-							<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+							<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 						{:else}
-							<Icon icon="solar:copy-bold" class="w-4 h-4" />
+							<Icon icon="lucide:copy" class="w-4 h-4" />
 						{/if}
 					</button>
 				</div>
@@ -509,7 +509,7 @@ knot link --update-copied</code>
 			<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 				<div class="border rounded-lg p-6">
 					<h3 class="font-semibold mb-3 flex items-center">
-						<Icon icon="solar:danger-triangle-bold" class="w-5 h-5 mr-2 text-red-600" />
+						<Icon icon="lucide:danger-triangle-bold" class="w-5 h-5 mr-2 text-red-600" />
 						Common Issues
 					</h3>
 					<div class="space-y-3 text-sm">
@@ -530,7 +530,7 @@ knot link --update-copied</code>
 
 				<div class="border rounded-lg p-6">
 					<h3 class="font-semibold mb-3 flex items-center">
-						<Icon icon="solar:tools-bold" class="w-5 h-5 mr-2 text-blue-600" />
+						<Icon icon="lucide:tools-bold" class="w-5 h-5 mr-2 text-blue-600" />
 						Debug Commands
 					</h3>
 					<div class="space-y-3 text-sm">
@@ -558,7 +558,7 @@ knot link --update-copied</code>
 		<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 			<a href="/docs/typescript" class="block border rounded-lg p-6 hover:bg-accent transition-colors">
 				<div class="flex items-center space-x-3 mb-3">
-					<Icon icon="solar:code-2-bold" class="w-6 h-6 text-blue-600" />
+					<Icon icon="lucide:code-2" class="w-6 h-6 text-blue-600" />
 					<h3 class="font-semibold">TypeScript Integration</h3>
 				</div>
 				<p class="text-sm text-muted-foreground">
@@ -568,7 +568,7 @@ knot link --update-copied</code>
 
 			<a href="/docs/project-management" class="block border rounded-lg p-6 hover:bg-accent transition-colors">
 				<div class="flex items-center space-x-3 mb-3">
-					<Icon icon="solar:terminal-bold" class="w-6 h-6 text-green-600" />
+					<Icon icon="lucide:terminal" class="w-6 h-6 text-green-600" />
 					<h3 class="font-semibold">CLI Commands</h3>
 				</div>
 				<p class="text-sm text-muted-foreground">

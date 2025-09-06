@@ -47,7 +47,7 @@
 		<h2 class="text-2xl font-bold mb-6">Prerequisites</h2>
 		<div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
 			<div class="flex items-start space-x-3">
-				<Icon icon="solar:info-circle-bold" class="w-6 h-6 text-blue-600 mt-1 flex-shrink-0" />
+				<Icon icon="lucide:info" class="w-6 h-6 text-blue-600 mt-1 flex-shrink-0" />
 				<div>
 					<h3 class="font-semibold text-blue-900 mb-2">Before you start</h3>
 					<ul class="text-sm text-blue-700 space-y-1">
@@ -78,9 +78,9 @@
 				on:click={() => copyToClipboard('git clone https://github.com/saravenpi/knot.git')}
 			>
 				{#if showCopied && copyText === 'git clone https://github.com/saravenpi/knot.git'}
-					<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+					<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 				{:else}
-					<Icon icon="solar:copy-bold" class="w-4 h-4" />
+					<Icon icon="lucide:copy" class="w-4 h-4" />
 				{/if}
 			</button>
 		</div>
@@ -104,9 +104,9 @@
 				on:click={() => copyToClipboard('cp .env.example .env')}
 			>
 				{#if showCopied && copyText === 'cp .env.example .env'}
-					<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+					<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 				{:else}
-					<Icon icon="solar:copy-bold" class="w-4 h-4" />
+					<Icon icon="lucide:copy" class="w-4 h-4" />
 				{/if}
 			</button>
 		</div>
@@ -133,9 +133,9 @@
 						on:click={() => copyToClipboard('docker build -t knot-space .')}
 					>
 						{#if showCopied && copyText === 'docker build -t knot-space .'}
-							<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+							<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 						{:else}
-							<Icon icon="solar:copy-bold" class="w-4 h-4" />
+							<Icon icon="lucide:copy" class="w-4 h-4" />
 						{/if}
 					</button>
 				</div>
@@ -149,9 +149,9 @@
 						on:click={() => copyToClipboard('docker run -d -p 3000:3000 --env-file .env knot-space')}
 					>
 						{#if showCopied && copyText === 'docker run -d -p 3000:3000 --env-file .env knot-space'}
-							<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+							<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 						{:else}
-							<Icon icon="solar:copy-bold" class="w-4 h-4" />
+							<Icon icon="lucide:copy" class="w-4 h-4" />
 						{/if}
 					</button>
 				</div>
@@ -164,7 +164,7 @@
 		<h2 class="text-2xl font-bold mb-6">Next Steps</h2>
 		<div class="bg-green-50 border border-green-200 rounded-lg p-6">
 			<div class="flex items-start space-x-3">
-				<Icon icon="solar:check-circle-bold" class="w-6 h-6 text-green-600 mt-1 flex-shrink-0" />
+				<Icon icon="lucide:check-circle" class="w-6 h-6 text-green-600 mt-1 flex-shrink-0" />
 				<div>
 					<h3 class="font-semibold text-green-900 mb-2">Your Knot Space is ready!</h3>
 					<p class="text-sm text-green-700 mb-4">
@@ -172,11 +172,11 @@
 					</p>
 					<div class="flex flex-wrap gap-3">
 						<a href="/docs/production" class="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 transition-colors">
-							<Icon icon="solar:box-bold" class="w-4 h-4 mr-2" />
+							<Icon icon="lucide:box-bold" class="w-4 h-4 mr-2" />
 							Production Deployment
 						</a>
 						<a href="/docs/permissions" class="inline-flex items-center px-4 py-2 border border-green-600 text-green-600 text-sm font-medium rounded-md hover:bg-green-50 transition-colors">
-							<Icon icon="solar:shield-user-bold" class="w-4 h-4 mr-2" />
+							<Icon icon="lucide:shield-user-bold" class="w-4 h-4 mr-2" />
 							Permissions Guide
 						</a>
 					</div>

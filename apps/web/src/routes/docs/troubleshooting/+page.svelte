@@ -46,7 +46,7 @@
 		<div class="space-y-6">
 			<div class="border rounded-lg p-6">
 				<h3 class="font-semibold mb-3 flex items-center">
-					<Icon icon="solar:danger-triangle-bold" class="w-5 h-5 mr-2 text-red-600" />
+					<Icon icon="lucide:danger-triangle-bold" class="w-5 h-5 mr-2 text-red-600" />
 					Command not found
 				</h3>
 				<div class="space-y-3 text-sm">
@@ -62,7 +62,7 @@
 
 			<div class="border rounded-lg p-6">
 				<h3 class="font-semibold mb-3 flex items-center">
-					<Icon icon="solar:lock-bold" class="w-5 h-5 mr-2 text-yellow-600" />
+					<Icon icon="lucide:lock-bold" class="w-5 h-5 mr-2 text-yellow-600" />
 					Permission denied
 				</h3>
 				<div class="space-y-3 text-sm">
@@ -84,7 +84,7 @@
 		<div class="space-y-6">
 			<div class="border rounded-lg p-6">
 				<h3 class="font-semibold mb-3 flex items-center">
-					<Icon icon="solar:close-circle-bold" class="w-5 h-5 mr-2 text-red-600" />
+					<Icon icon="lucide:x-circle" class="w-5 h-5 mr-2 text-red-600" />
 					Package not found
 				</h3>
 				<div class="space-y-3 text-sm">
@@ -104,9 +104,9 @@
 							on:click={() => copyToClipboard('knot link --verbose')}
 						>
 							{#if showCopied && copyText === 'knot link --verbose'}
-								<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+								<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 							{:else}
-								<Icon icon="solar:copy-bold" class="w-4 h-4" />
+								<Icon icon="lucide:copy" class="w-4 h-4" />
 							{/if}
 						</button>
 					</div>
@@ -115,7 +115,7 @@
 
 			<div class="border rounded-lg p-6">
 				<h3 class="font-semibold mb-3 flex items-center">
-					<Icon icon="solar:code-bold" class="w-5 h-5 mr-2 text-orange-600" />
+					<Icon icon="lucide:code" class="w-5 h-5 mr-2 text-orange-600" />
 					TypeScript import errors
 				</h3>
 				<div class="space-y-3 text-sm">
@@ -135,9 +135,9 @@
 							on:click={() => copyToClipboard('knot link --force')}
 						>
 							{#if showCopied && copyText === 'knot link --force'}
-								<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+								<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 							{:else}
-								<Icon icon="solar:copy-bold" class="w-4 h-4" />
+								<Icon icon="lucide:copy" class="w-4 h-4" />
 							{/if}
 						</button>
 					</div>
@@ -153,7 +153,7 @@
 		<div class="space-y-6">
 			<div class="border rounded-lg p-6">
 				<h3 class="font-semibold mb-3 flex items-center">
-					<Icon icon="solar:shield-warning-bold" class="w-5 h-5 mr-2 text-red-600" />
+					<Icon icon="lucide:shield-warning-bold" class="w-5 h-5 mr-2 text-red-600" />
 					Authentication failed
 				</h3>
 				<div class="space-y-3 text-sm">
@@ -173,9 +173,9 @@
 							on:click={() => copyToClipboard('knot auth')}
 						>
 							{#if showCopied && copyText === 'knot auth'}
-								<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+								<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 							{:else}
-								<Icon icon="solar:copy-bold" class="w-4 h-4" />
+								<Icon icon="lucide:copy" class="w-4 h-4" />
 							{/if}
 						</button>
 					</div>
@@ -184,7 +184,7 @@
 
 			<div class="border rounded-lg p-6">
 				<h3 class="font-semibold mb-3 flex items-center">
-					<Icon icon="solar:wifi-router-bold" class="w-5 h-5 mr-2 text-orange-600" />
+					<Icon icon="lucide:wifi-router-bold" class="w-5 h-5 mr-2 text-orange-600" />
 					Connection failed
 				</h3>
 				<div class="space-y-3 text-sm">
@@ -207,7 +207,7 @@
 		<div class="space-y-6">
 			<div class="border rounded-lg p-6">
 				<h3 class="font-semibold mb-3 flex items-center">
-					<Icon icon="solar:bug-bold" class="w-5 h-5 mr-2 text-purple-600" />
+					<Icon icon="lucide:bug-bold" class="w-5 h-5 mr-2 text-purple-600" />
 					Build failures
 				</h3>
 				<div class="space-y-3 text-sm">
@@ -227,9 +227,9 @@
 							on:click={() => copyToClipboard('knot run build --verbose')}
 						>
 							{#if showCopied && copyText === 'knot run build --verbose'}
-								<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+								<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 							{:else}
-								<Icon icon="solar:copy-bold" class="w-4 h-4" />
+								<Icon icon="lucide:copy" class="w-4 h-4" />
 							{/if}
 						</button>
 					</div>
@@ -245,7 +245,7 @@
 		<div class="space-y-6">
 			<div class="border rounded-lg p-6">
 				<h3 class="font-semibold mb-3 flex items-center">
-					<Icon icon="solar:upload-bold" class="w-5 h-5 mr-2 text-red-600" />
+					<Icon icon="lucide:upload-bold" class="w-5 h-5 mr-2 text-red-600" />
 					Publish failed
 				</h3>
 				<div class="space-y-3 text-sm">
@@ -266,9 +266,9 @@
 							on:click={() => copyToClipboard('knot publish --dry-run')}
 						>
 							{#if showCopied && copyText === 'knot publish --dry-run'}
-								<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+								<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 							{:else}
-								<Icon icon="solar:copy-bold" class="w-4 h-4" />
+								<Icon icon="lucide:copy" class="w-4 h-4" />
 							{/if}
 						</button>
 					</div>
@@ -284,7 +284,7 @@
 		<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 			<div class="border rounded-lg p-6">
 				<h3 class="font-semibold mb-3 flex items-center">
-					<Icon icon="solar:adhesive-plaster-bold-duotone" class="w-5 h-5 mr-2 text-blue-600" />
+					<Icon icon="lucide:adhesive-plaster-bold-duotone" class="w-5 h-5 mr-2 text-blue-600" />
 					Diagnostic Commands
 				</h3>
 				<div class="space-y-3 text-sm">
@@ -301,7 +301,7 @@
 
 			<div class="border rounded-lg p-6">
 				<h3 class="font-semibold mb-3 flex items-center">
-					<Icon icon="solar:document-text-bold" class="w-5 h-5 mr-2 text-green-600" />
+					<Icon icon="lucide:document-text-bold" class="w-5 h-5 mr-2 text-green-600" />
 					Verbose Logging
 				</h3>
 				<div class="space-y-3 text-sm">
@@ -329,7 +329,7 @@
 		<div class="space-y-6">
 			<div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
 				<div class="flex items-start space-x-3">
-					<Icon icon="solar:question-circle-bold" class="w-6 h-6 text-blue-600 mt-1 flex-shrink-0" />
+					<Icon icon="lucide:question-circle-bold" class="w-6 h-6 text-blue-600 mt-1 flex-shrink-0" />
 					<div>
 						<h3 class="font-semibold text-blue-900 mb-2">Still Need Help?</h3>
 						<p class="text-sm text-blue-700 mb-4">

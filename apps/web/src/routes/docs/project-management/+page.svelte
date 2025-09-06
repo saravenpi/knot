@@ -44,7 +44,7 @@
 	<!-- Initializing a Project -->
 	<section class="mb-12">
 		<div class="flex items-center space-x-3 mb-6">
-			<Icon icon="solar:rocket-bold" class="w-8 h-8 text-green-600" />
+			<Icon icon="lucide:rocket-bold" class="w-8 h-8 text-green-600" />
 			<h2 class="text-2xl font-bold">Initializing a Project</h2>
 		</div>
 		<p class="text-muted-foreground mb-6 leading-relaxed">
@@ -63,9 +63,9 @@
 						on:click={() => copyToClipboard('knot init my-project')}
 					>
 						{#if showCopied && copyText === 'knot init my-project'}
-							<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+							<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 						{:else}
-							<Icon icon="solar:copy-bold" class="w-4 h-4" />
+							<Icon icon="lucide:copy" class="w-4 h-4" />
 						{/if}
 					</button>
 				</div>
@@ -76,7 +76,7 @@
 
 			<div class="bg-muted/30 rounded-lg p-6">
 				<h4 class="font-semibold mb-3 flex items-center space-x-2">
-					<Icon icon="solar:folder-bold" class="w-5 h-5 text-blue-600" />
+					<Icon icon="lucide:folder" class="w-5 h-5 text-blue-600" />
 					<span>Generated Project Structure</span>
 				</h4>
 				<pre class="text-sm font-mono"><code>my-project/
@@ -99,9 +99,9 @@
 						on:click={() => copyToClipboard('knot init .')}
 					>
 						{#if showCopied && copyText === 'knot init .'}
-							<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+							<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 						{:else}
-							<Icon icon="solar:copy-bold" class="w-4 h-4" />
+							<Icon icon="lucide:copy" class="w-4 h-4" />
 						{/if}
 					</button>
 				</div>
@@ -115,7 +115,7 @@
 	<!-- Project Configuration -->
 	<section class="mb-12">
 		<div class="flex items-center space-x-3 mb-6">
-			<Icon icon="solar:settings-bold" class="w-8 h-8 text-blue-600" />
+			<Icon icon="lucide:settings-bold" class="w-8 h-8 text-blue-600" />
 			<h2 class="text-2xl font-bold">Project Configuration</h2>
 		</div>
 		<p class="text-muted-foreground mb-6 leading-relaxed">
@@ -168,7 +168,7 @@
 	<!-- Project Status -->
 	<section class="mb-12">
 		<div class="flex items-center space-x-3 mb-6">
-			<Icon icon="solar:chart-bold" class="w-8 h-8 text-purple-600" />
+			<Icon icon="lucide:chart-bold" class="w-8 h-8 text-purple-600" />
 			<h2 class="text-2xl font-bold">Checking Project Status</h2>
 		</div>
 		<p class="text-muted-foreground mb-6 leading-relaxed">
@@ -187,9 +187,9 @@
 						on:click={() => copyToClipboard('knot status')}
 					>
 						{#if showCopied && copyText === 'knot status'}
-							<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+							<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 						{:else}
-							<Icon icon="solar:copy-bold" class="w-4 h-4" />
+							<Icon icon="lucide:copy" class="w-4 h-4" />
 						{/if}
 					</button>
 				</div>
@@ -209,9 +209,9 @@
 						on:click={() => copyToClipboard('knot status --detailed')}
 					>
 						{#if showCopied && copyText === 'knot status --detailed'}
-							<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+							<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 						{:else}
-							<Icon icon="solar:copy-bold" class="w-4 h-4" />
+							<Icon icon="lucide:copy" class="w-4 h-4" />
 						{/if}
 					</button>
 				</div>
@@ -222,7 +222,7 @@
 
 			<div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
 				<div class="flex items-start space-x-3">
-					<Icon icon="solar:chart-2-bold" class="w-6 h-6 text-blue-600 mt-1 flex-shrink-0" />
+					<Icon icon="lucide:chart-2-bold" class="w-6 h-6 text-blue-600 mt-1 flex-shrink-0" />
 					<div>
 						<h4 class="font-semibold text-blue-900 mb-2">Status Information Includes</h4>
 						<ul class="text-sm text-blue-700 space-y-1">
@@ -241,7 +241,7 @@
 	<!-- Project Scripts -->
 	<section class="mb-12">
 		<div class="flex items-center space-x-3 mb-6">
-			<Icon icon="solar:play-bold" class="w-8 h-8 text-orange-600" />
+			<Icon icon="lucide:play" class="w-8 h-8 text-orange-600" />
 			<h2 class="text-2xl font-bold">Running Project Scripts</h2>
 		</div>
 		<p class="text-muted-foreground mb-6 leading-relaxed">
@@ -260,9 +260,9 @@
 						on:click={() => copyToClipboard('knot run build')}
 					>
 						{#if showCopied && copyText === 'knot run build'}
-							<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+							<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 						{:else}
-							<Icon icon="solar:copy-bold" class="w-4 h-4" />
+							<Icon icon="lucide:copy" class="w-4 h-4" />
 						{/if}
 					</button>
 				</div>
@@ -282,9 +282,9 @@
 						on:click={() => copyToClipboard('knot run build --parallel')}
 					>
 						{#if showCopied && copyText === 'knot run build --parallel'}
-							<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+							<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 						{:else}
-							<Icon icon="solar:copy-bold" class="w-4 h-4" />
+							<Icon icon="lucide:copy" class="w-4 h-4" />
 						{/if}
 					</button>
 				</div>
@@ -304,9 +304,9 @@
 						on:click={() => copyToClipboard('knot run test --filter="packages/*"')}
 					>
 						{#if showCopied && copyText === 'knot run test --filter="packages/*"'}
-							<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+							<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 						{:else}
-							<Icon icon="solar:copy-bold" class="w-4 h-4" />
+							<Icon icon="lucide:copy" class="w-4 h-4" />
 						{/if}
 					</button>
 				</div>
@@ -320,7 +320,7 @@
 	<!-- Project Maintenance -->
 	<section class="mb-12">
 		<div class="flex items-center space-x-3 mb-6">
-			<Icon icon="solar:settings-minimalistic-bold" class="w-8 h-8 text-red-600" />
+			<Icon icon="lucide:settings-minimalistic-bold" class="w-8 h-8 text-red-600" />
 			<h2 class="text-2xl font-bold">Project Maintenance</h2>
 		</div>
 		<p class="text-muted-foreground mb-6 leading-relaxed">
@@ -339,9 +339,9 @@
 						on:click={() => copyToClipboard('knot clean')}
 					>
 						{#if showCopied && copyText === 'knot clean'}
-							<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+							<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 						{:else}
-							<Icon icon="solar:copy-bold" class="w-4 h-4" />
+							<Icon icon="lucide:copy" class="w-4 h-4" />
 						{/if}
 					</button>
 				</div>
@@ -361,9 +361,9 @@
 						on:click={() => copyToClipboard('knot update')}
 					>
 						{#if showCopied && copyText === 'knot update'}
-							<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+							<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 						{:else}
-							<Icon icon="solar:copy-bold" class="w-4 h-4" />
+							<Icon icon="lucide:copy" class="w-4 h-4" />
 						{/if}
 					</button>
 				</div>
@@ -383,9 +383,9 @@
 						on:click={() => copyToClipboard('knot validate')}
 					>
 						{#if showCopied && copyText === 'knot validate'}
-							<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+							<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 						{:else}
-							<Icon icon="solar:copy-bold" class="w-4 h-4" />
+							<Icon icon="lucide:copy" class="w-4 h-4" />
 						{/if}
 					</button>
 				</div>
@@ -399,14 +399,14 @@
 	<!-- Best Practices -->
 	<section class="mb-12">
 		<div class="flex items-center space-x-3 mb-6">
-			<Icon icon="solar:star-bold" class="w-8 h-8 text-yellow-500" />
+			<Icon icon="lucide:star-bold" class="w-8 h-8 text-yellow-500" />
 			<h2 class="text-2xl font-bold">Best Practices</h2>
 		</div>
 		
 		<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 			<div class="bg-green-50 border border-green-200 rounded-lg p-6">
 				<div class="flex items-start space-x-3">
-					<Icon icon="solar:check-circle-bold" class="w-6 h-6 text-green-600 mt-1 flex-shrink-0" />
+					<Icon icon="lucide:check-circle" class="w-6 h-6 text-green-600 mt-1 flex-shrink-0" />
 					<div>
 						<h3 class="font-semibold text-green-900 mb-2">Project Organization</h3>
 						<ul class="text-sm text-green-700 space-y-1">
@@ -421,7 +421,7 @@
 
 			<div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
 				<div class="flex items-start space-x-3">
-					<Icon icon="solar:settings-bold" class="w-6 h-6 text-blue-600 mt-1 flex-shrink-0" />
+					<Icon icon="lucide:settings-bold" class="w-6 h-6 text-blue-600 mt-1 flex-shrink-0" />
 					<div>
 						<h3 class="font-semibold text-blue-900 mb-2">Configuration Tips</h3>
 						<ul class="text-sm text-blue-700 space-y-1">
@@ -436,7 +436,7 @@
 
 			<div class="bg-orange-50 border border-orange-200 rounded-lg p-6">
 				<div class="flex items-start space-x-3">
-					<Icon icon="solar:shield-check-bold" class="w-6 h-6 text-orange-600 mt-1 flex-shrink-0" />
+					<Icon icon="lucide:shield-check-bold" class="w-6 h-6 text-orange-600 mt-1 flex-shrink-0" />
 					<div>
 						<h3 class="font-semibold text-orange-900 mb-2">Maintenance</h3>
 						<ul class="text-sm text-orange-700 space-y-1">
@@ -451,7 +451,7 @@
 
 			<div class="bg-purple-50 border border-purple-200 rounded-lg p-6">
 				<div class="flex items-start space-x-3">
-					<Icon icon="solar:users-group-two-rounded-bold" class="w-6 h-6 text-purple-600 mt-1 flex-shrink-0" />
+					<Icon icon="lucide:users-group-two-rounded-bold" class="w-6 h-6 text-purple-600 mt-1 flex-shrink-0" />
 					<div>
 						<h3 class="font-semibold text-purple-900 mb-2">Team Collaboration</h3>
 						<ul class="text-sm text-purple-700 space-y-1">
@@ -472,7 +472,7 @@
 		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 			<a href="/docs/package-development" class="block border rounded-lg p-6 hover:bg-accent transition-colors">
 				<div class="flex items-center space-x-3 mb-3">
-					<Icon icon="solar:box-bold" class="w-6 h-6 text-blue-600" />
+					<Icon icon="lucide:box-bold" class="w-6 h-6 text-blue-600" />
 					<h3 class="font-semibold">Package Development</h3>
 				</div>
 				<p class="text-sm text-muted-foreground">
@@ -482,7 +482,7 @@
 
 			<a href="/docs/configuration" class="block border rounded-lg p-6 hover:bg-accent transition-colors">
 				<div class="flex items-center space-x-3 mb-3">
-					<Icon icon="solar:terminal-bold" class="w-6 h-6 text-green-600" />
+					<Icon icon="lucide:terminal" class="w-6 h-6 text-green-600" />
 					<h3 class="font-semibold">CLI Commands</h3>
 				</div>
 				<p class="text-sm text-muted-foreground">
@@ -492,7 +492,7 @@
 
 			<a href="/docs/workflows" class="block border rounded-lg p-6 hover:bg-accent transition-colors">
 				<div class="flex items-center space-x-3 mb-3">
-					<Icon icon="solar:cpu-bolt-bold" class="w-6 h-6 text-purple-600" />
+					<Icon icon="lucide:cpu-bolt-bold" class="w-6 h-6 text-purple-600" />
 					<h3 class="font-semibold">Workflows</h3>
 				</div>
 				<p class="text-sm text-muted-foreground">
@@ -502,7 +502,7 @@
 
 			<a href="/docs/teams" class="block border rounded-lg p-6 hover:bg-accent transition-colors">
 				<div class="flex items-center space-x-3 mb-3">
-					<Icon icon="solar:users-group-two-rounded-bold" class="w-6 h-6 text-orange-600" />
+					<Icon icon="lucide:users-group-two-rounded-bold" class="w-6 h-6 text-orange-600" />
 					<h3 class="font-semibold">Team Management</h3>
 				</div>
 				<p class="text-sm text-muted-foreground">
@@ -512,7 +512,7 @@
 
 			<a href="/docs/typescript" class="block border rounded-lg p-6 hover:bg-accent transition-colors">
 				<div class="flex items-center space-x-3 mb-3">
-					<Icon icon="solar:code-bold" class="w-6 h-6 text-red-600" />
+					<Icon icon="lucide:code" class="w-6 h-6 text-red-600" />
 					<h3 class="font-semibold">TypeScript Setup</h3>
 				</div>
 				<p class="text-sm text-muted-foreground">
@@ -522,7 +522,7 @@
 
 			<a href="/docs/troubleshooting" class="block border rounded-lg p-6 hover:bg-accent transition-colors">
 				<div class="flex items-center space-x-3 mb-3">
-					<Icon icon="solar:bug-bold" class="w-6 h-6 text-yellow-600" />
+					<Icon icon="lucide:bug-bold" class="w-6 h-6 text-yellow-600" />
 					<h3 class="font-semibold">Troubleshooting</h3>
 				</div>
 				<p class="text-sm text-muted-foreground">

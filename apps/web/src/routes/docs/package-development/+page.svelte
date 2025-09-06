@@ -84,7 +84,7 @@
 	<!-- Creating Packages -->
 	<section class="mb-12">
 		<div class="flex items-center space-x-3 mb-6">
-			<Icon icon="solar:add-circle-bold" class="w-8 h-8 text-green-600" />
+			<Icon icon="lucide:add-circle-bold" class="w-8 h-8 text-green-600" />
 			<h2 class="text-2xl font-bold">Creating Packages</h2>
 		</div>
 

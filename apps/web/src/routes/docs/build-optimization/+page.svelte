@@ -219,7 +219,7 @@ jobs:
 		
 		<div class="space-y-3">
 			<div class="flex items-start space-x-3">
-				<Icon icon="solar:check-circle-bold" class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+				<Icon icon="lucide:check-circle" class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
 				<div>
 					<p class="font-medium">Use production builds for deployment</p>
 					<p class="text-sm text-muted-foreground">Always use <code>knot build --production</code> for production</p>
@@ -227,7 +227,7 @@ jobs:
 			</div>
 
 			<div class="flex items-start space-x-3">
-				<Icon icon="solar:check-circle-bold" class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+				<Icon icon="lucide:check-circle" class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
 				<div>
 					<p class="font-medium">Enable caching in CI/CD</p>
 					<p class="text-sm text-muted-foreground">Cache dependencies and build outputs</p>
@@ -235,7 +235,7 @@ jobs:
 			</div>
 
 			<div class="flex items-start space-x-3">
-				<Icon icon="solar:check-circle-bold" class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+				<Icon icon="lucide:check-circle" class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
 				<div>
 					<p class="font-medium">Monitor bundle sizes</p>
 					<p class="text-sm text-muted-foreground">Set up size limits and track changes</p>
@@ -243,7 +243,7 @@ jobs:
 			</div>
 
 			<div class="flex items-start space-x-3">
-				<Icon icon="solar:check-circle-bold" class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+				<Icon icon="lucide:check-circle" class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
 				<div>
 					<p class="font-medium">Use incremental builds in development</p>
 					<p class="text-sm text-muted-foreground">Speed up development with smart rebuilds</p>
@@ -260,7 +260,7 @@ jobs:
 						<h3 class="font-semibold group-hover:text-primary">Configuration</h3>
 						<p class="text-sm text-muted-foreground">Learn about all configuration options</p>
 					</div>
-					<Icon icon="solar:arrow-right-bold" class="w-5 h-5 text-muted-foreground group-hover:text-primary" />
+					<Icon icon="lucide:arrow-right-bold" class="w-5 h-5 text-muted-foreground group-hover:text-primary" />
 				</div>
 			</a>
 
@@ -270,7 +270,7 @@ jobs:
 						<h3 class="font-semibold group-hover:text-primary">Project Commands</h3>
 						<p class="text-sm text-muted-foreground">Explore build-related CLI commands</p>
 					</div>
-					<Icon icon="solar:arrow-right-bold" class="w-5 h-5 text-muted-foreground group-hover:text-primary" />
+					<Icon icon="lucide:arrow-right-bold" class="w-5 h-5 text-muted-foreground group-hover:text-primary" />
 				</div>
 			</a>
 		</div>

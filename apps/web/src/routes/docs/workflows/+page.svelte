@@ -46,7 +46,7 @@
 		<h2 class="text-2xl font-bold mb-6">Version Control</h2>
 		<div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
 			<div class="flex items-start space-x-3">
-				<Icon icon="solar:branch-bold" class="w-6 h-6 text-blue-600 mt-1 flex-shrink-0" />
+				<Icon icon="lucide:branch-bold" class="w-6 h-6 text-blue-600 mt-1 flex-shrink-0" />
 				<div class="flex-1 min-w-0">
 					<h3 class="font-semibold text-blue-900 mb-2">Commit your `knot.yml`</h3>
 					<p class="text-sm text-blue-700 mb-4">
@@ -62,7 +62,7 @@
 		<h2 class="text-2xl font-bold mb-6">Package Development</h2>
 		<div class="bg-purple-50 border border-purple-200 rounded-lg p-6">
 			<div class="flex items-start space-x-3">
-				<Icon icon="solar:box-bold" class="w-6 h-6 text-purple-600 mt-1 flex-shrink-0" />
+				<Icon icon="lucide:box-bold" class="w-6 h-6 text-purple-600 mt-1 flex-shrink-0" />
 				<div class="flex-1 min-w-0">
 					<h3 class="font-semibold text-purple-900 mb-2">Keep packages small and focused</h3>
 					<p class="text-sm text-purple-700 mb-4">
@@ -78,7 +78,7 @@
 		<h2 class="text-2xl font-bold mb-6">Linking</h2>
 		<div class="bg-green-50 border border-green-200 rounded-lg p-6">
 			<div class="flex items-start space-x-3">
-				<Icon icon="solar:link-bold" class="w-6 h-6 text-green-600 mt-1 flex-shrink-0" />
+				<Icon icon="lucide:link" class="w-6 h-6 text-green-600 mt-1 flex-shrink-0" />
 				<div class="flex-1 min-w-0">
 					<h3 class="font-semibold text-green-900 mb-2">Link early, link often</h3>
 					<p class="text-sm text-green-700 mb-4">
@@ -94,7 +94,7 @@
 		<h2 class="text-2xl font-bold mb-6">Next Steps</h2>
 		<div class="bg-gray-50 border border-gray-200 rounded-lg p-6">
 			<div class="flex items-start space-x-3">
-				<Icon icon="solar:check-circle-bold" class="w-6 h-6 text-gray-600 mt-1 flex-shrink-0" />
+				<Icon icon="lucide:check-circle" class="w-6 h-6 text-gray-600 mt-1 flex-shrink-0" />
 				<div>
 					<h3 class="font-semibold text-gray-900 mb-2">Ready to optimize your workflow?</h3>
 					<p class="text-sm text-gray-700 mb-4">
@@ -102,11 +102,11 @@
 					</p>
 					<div class="flex flex-wrap gap-3">
 						<a href="/docs/package-development" class="inline-flex items-center px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-md hover:bg-gray-700 transition-colors">
-							<Icon icon="solar:box-bold" class="w-4 h-4 mr-2" />
+							<Icon icon="lucide:box-bold" class="w-4 h-4 mr-2" />
 							Package Development
 						</a>
 						<a href="/docs/project-management" class="inline-flex items-center px-4 py-2 border border-gray-600 text-gray-600 text-sm font-medium rounded-md hover:bg-gray-50 transition-colors">
-							<Icon icon="solar:folder-with-files-bold" class="w-4 h-4 mr-2" />
+							<Icon icon="lucide:folder-with-files-bold" class="w-4 h-4 mr-2" />
 							Project Management
 						</a>
 					</div>

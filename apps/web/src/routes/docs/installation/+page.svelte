@@ -46,7 +46,7 @@
 		<h2 class="text-2xl font-bold mb-6">Quick Install (Recommended)</h2>
 		<div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
 			<div class="flex items-start space-x-3">
-				<Icon icon="solar:rocket-2-bold" class="w-6 h-6 text-blue-600 mt-1 flex-shrink-0" />
+				<Icon icon="lucide:rocket" class="w-6 h-6 text-blue-600 mt-1 flex-shrink-0" />
 				<div class="flex-1 min-w-0">
 					<h3 class="font-semibold text-blue-900 mb-2">One-line installer</h3>
 					<p class="text-sm text-blue-700 mb-4">
@@ -62,9 +62,9 @@
 							title="Copy to clipboard"
 						>
 							{#if showCopied && copyText.includes('curl')}
-								<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+								<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 							{:else}
-								<Icon icon="solar:copy-bold" class="w-4 h-4" />
+								<Icon icon="lucide:copy" class="w-4 h-4" />
 							{/if}
 						</button>
 					</div>
@@ -78,7 +78,7 @@
 		<h2 class="text-2xl font-bold mb-6">Keeping Knot Up to Date</h2>
 		<div class="bg-purple-50 border border-purple-200 rounded-lg p-6">
 			<div class="flex items-start space-x-3">
-				<Icon icon="solar:refresh-circle-bold" class="w-6 h-6 text-purple-600 mt-1 flex-shrink-0" />
+				<Icon icon="lucide:refresh-circle-bold" class="w-6 h-6 text-purple-600 mt-1 flex-shrink-0" />
 				<div class="flex-1 min-w-0">
 					<h3 class="font-semibold text-purple-900 mb-2">Self-Upgrade Command</h3>
 					<p class="text-sm text-purple-700 mb-4">
@@ -96,9 +96,9 @@
 									on:click={() => copyToClipboard('knot upgrade')}
 								>
 									{#if showCopied && copyText === 'knot upgrade'}
-										<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+										<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 									{:else}
-										<Icon icon="solar:copy-bold" class="w-4 h-4" />
+										<Icon icon="lucide:copy" class="w-4 h-4" />
 									{/if}
 								</button>
 							</div>
@@ -114,9 +114,9 @@
 									on:click={() => copyToClipboard('knot upgrade --force')}
 								>
 									{#if showCopied && copyText === 'knot upgrade --force'}
-										<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+										<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 									{:else}
-										<Icon icon="solar:copy-bold" class="w-4 h-4" />
+										<Icon icon="lucide:copy" class="w-4 h-4" />
 									{/if}
 								</button>
 							</div>
@@ -143,9 +143,9 @@
 						on:click={() => copyToClipboard('knot --version')}
 					>
 						{#if showCopied && copyText === 'knot --version'}
-							<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+							<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 						{:else}
-							<Icon icon="solar:copy-bold" class="w-4 h-4" />
+							<Icon icon="lucide:copy" class="w-4 h-4" />
 						{/if}
 					</button>
 				</div>
@@ -158,16 +158,16 @@
 				<h3 class="text-lg font-semibold mb-3">Test basic functionality</h3>
 				<div class="bg-black/90 text-green-400 font-mono text-sm rounded-lg relative group w-full max-w-full">
 					<div class="overflow-x-auto overflow-y-hidden p-4 pr-12 max-w-full">
-						<pre class="whitespace-nowrap m-0 min-w-max"><code>knot --version</code></pre>
+						<pre class="whitespace-nowrap m-0 min-w-max"><code>knot --help</code></pre>
 					</div>
 					<button
 						class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100 z-10"
-						on:click={() => copyToClipboard('knot --version')}
+						on:click={() => copyToClipboard('knot --help')}
 					>
-						{#if showCopied && copyText === 'knot --version'}
-							<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+						{#if showCopied && copyText === 'knot --help'}
+							<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 						{:else}
-							<Icon icon="solar:copy-bold" class="w-4 h-4" />
+							<Icon icon="lucide:copy" class="w-4 h-4" />
 						{/if}
 					</button>
 				</div>
@@ -185,7 +185,7 @@
 		<div class="space-y-6">
 			<div class="border rounded-lg p-6">
 				<h3 class="font-semibold mb-3 flex items-center">
-					<Icon icon="solar:shield-warning-bold" class="w-5 h-5 mr-2 text-yellow-600" />
+					<Icon icon="lucide:shield-warning-bold" class="w-5 h-5 mr-2 text-yellow-600" />
 					Command not found
 				</h3>
 				<div class="space-y-3 text-sm text-muted-foreground">
@@ -201,7 +201,7 @@
 
 			<div class="border rounded-lg p-6">
 				<h3 class="font-semibold mb-3 flex items-center">
-					<Icon icon="solar:lock-bold" class="w-5 h-5 mr-2 text-red-600" />
+					<Icon icon="lucide:lock-bold" class="w-5 h-5 mr-2 text-red-600" />
 					Permission denied
 				</h3>
 				<div class="space-y-3 text-sm text-muted-foreground">
@@ -216,7 +216,7 @@
 
 			<div class="border rounded-lg p-6">
 				<h3 class="font-semibold mb-3 flex items-center">
-					<Icon icon="solar:bug-bold" class="w-5 h-5 mr-2 text-purple-600" />
+					<Icon icon="lucide:bug-bold" class="w-5 h-5 mr-2 text-purple-600" />
 					Other issues
 				</h3>
 				<div class="space-y-3 text-sm text-muted-foreground">
@@ -236,7 +236,7 @@
 		<h2 class="text-2xl font-bold mb-6">Next Steps</h2>
 		<div class="bg-green-50 border border-green-200 rounded-lg p-6">
 			<div class="flex items-start space-x-3">
-				<Icon icon="solar:check-circle-bold" class="w-6 h-6 text-green-600 mt-1 flex-shrink-0" />
+				<Icon icon="lucide:check-circle" class="w-6 h-6 text-green-600 mt-1 flex-shrink-0" />
 				<div>
 					<h3 class="font-semibold text-green-900 mb-2">Installation complete!</h3>
 					<p class="text-sm text-green-700 mb-4">
@@ -244,11 +244,11 @@
 					</p>
 					<div class="flex flex-wrap gap-3">
 						<a href="/docs/quick-start" class="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 transition-colors">
-							<Icon icon="solar:play-bold" class="w-4 h-4 mr-2" />
+							<Icon icon="lucide:play" class="w-4 h-4 mr-2" />
 							Quick Start Guide
 						</a>
 						<a href="/docs/authentication" class="inline-flex items-center px-4 py-2 border border-green-600 text-green-600 text-sm font-medium rounded-md hover:bg-green-50 transition-colors">
-							<Icon icon="solar:key-bold" class="w-4 h-4 mr-2" />
+							<Icon icon="lucide:key-bold" class="w-4 h-4 mr-2" />
 							Setup Authentication
 						</a>
 					</div>

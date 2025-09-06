@@ -167,7 +167,7 @@
 				<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 					<div class="border rounded-lg p-6">
 						<div class="flex items-center space-x-3 mb-3">
-							<Icon icon="solar:code-bold" class="w-6 h-6 text-purple-600" />
+							<Icon icon="lucide:code" class="w-6 h-6 text-purple-600" />
 							<h4 class="font-semibold">Type Definitions</h4>
 						</div>
 						<p class="text-sm text-muted-foreground mb-3">
@@ -180,7 +180,7 @@
 
 					<div class="border rounded-lg p-6">
 						<div class="flex items-center space-x-3 mb-3">
-							<Icon icon="solar:box-bold" class="w-6 h-6 text-blue-600" />
+							<Icon icon="lucide:box-bold" class="w-6 h-6 text-blue-600" />
 							<h4 class="font-semibold">Utility Functions</h4>
 						</div>
 						<p class="text-sm text-muted-foreground mb-3">
@@ -209,7 +209,7 @@
 				<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
 					<div class="border rounded-lg p-6">
 						<div class="flex items-center space-x-3 mb-3">
-							<Icon icon="solar:terminal-bold" class="w-6 h-6 text-orange-600" />
+							<Icon icon="lucide:terminal" class="w-6 h-6 text-orange-600" />
 							<h4 class="font-semibold">CLI (Rust)</h4>
 						</div>
 						<p class="text-sm text-muted-foreground mb-3">
@@ -222,7 +222,7 @@
 
 					<div class="border rounded-lg p-6">
 						<div class="flex items-center space-x-3 mb-3">
-							<Icon icon="solar:browser-bold" class="w-6 h-6 text-green-600" />
+							<Icon icon="lucide:browser-bold" class="w-6 h-6 text-green-600" />
 							<h4 class="font-semibold">Web UI (SvelteKit)</h4>
 						</div>
 						<p class="text-sm text-muted-foreground mb-3">
@@ -235,7 +235,7 @@
 
 					<div class="border rounded-lg p-6">
 						<div class="flex items-center space-x-3 mb-3">
-							<Icon icon="solar:server-bold" class="w-6 h-6 text-blue-600" />
+							<Icon icon="lucide:server-bold" class="w-6 h-6 text-blue-600" />
 							<h4 class="font-semibold">Backend API (Node.js)</h4>
 						</div>
 						<p class="text-sm text-muted-foreground mb-3">
@@ -273,7 +273,7 @@
 				<h3 class="text-lg font-semibold mb-3">Linked Packages (knot_packages/)</h3>
 				<div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
 					<div class="flex items-start space-x-3">
-						<Icon icon="solar:info-circle-bold" class="w-6 h-6 text-blue-600 mt-1 flex-shrink-0" />
+						<Icon icon="lucide:info" class="w-6 h-6 text-blue-600 mt-1 flex-shrink-0" />
 						<div>
 							<h4 class="font-semibold text-blue-900 mb-2">Auto-generated Directory</h4>
 							<p class="text-sm text-blue-700">
@@ -295,7 +295,7 @@
 			<div class="space-y-6">
 				<div class="border rounded-lg p-6">
 					<h3 class="font-semibold mb-3 flex items-center">
-						<Icon icon="solar:folder-bold" class="w-5 h-5 mr-2 text-green-600" />
+						<Icon icon="lucide:folder" class="w-5 h-5 mr-2 text-green-600" />
 						Package Structure
 					</h3>
 					<div class="text-sm font-mono bg-muted p-3 rounded">
@@ -314,7 +314,7 @@
 
 				<div class="border rounded-lg p-6">
 					<h3 class="font-semibold mb-3 flex items-center">
-						<Icon icon="solar:programming-bold" class="w-5 h-5 mr-2 text-blue-600" />
+						<Icon icon="lucide:programming-bold" class="w-5 h-5 mr-2 text-blue-600" />
 						App Structure
 					</h3>
 					<div class="text-sm font-mono bg-muted p-3 rounded">
@@ -333,7 +333,7 @@
 			<div class="space-y-6">
 				<div class="border rounded-lg p-6">
 					<h3 class="font-semibold mb-3 flex items-center">
-						<Icon icon="solar:check-circle-bold" class="w-5 h-5 mr-2 text-green-600" />
+						<Icon icon="lucide:check-circle" class="w-5 h-5 mr-2 text-green-600" />
 						Best Practices
 					</h3>
 					<ul class="text-sm text-muted-foreground space-y-2">
@@ -347,7 +347,7 @@
 
 				<div class="border rounded-lg p-6">
 					<h3 class="font-semibold mb-3 flex items-center">
-						<Icon icon="solar:danger-triangle-bold" class="w-5 h-5 mr-2 text-red-600" />
+						<Icon icon="lucide:danger-triangle-bold" class="w-5 h-5 mr-2 text-red-600" />
 						Common Pitfalls
 					</h3>
 					<ul class="text-sm text-muted-foreground space-y-2">
@@ -407,7 +407,7 @@
 		<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 			<a href="/docs/configuration" class="block border rounded-lg p-6 hover:bg-accent transition-colors">
 				<div class="flex items-center space-x-3 mb-3">
-					<Icon icon="solar:settings-bold" class="w-6 h-6 text-blue-600" />
+					<Icon icon="lucide:settings-bold" class="w-6 h-6 text-blue-600" />
 					<h3 class="font-semibold">Configuration Files</h3>
 				</div>
 				<p class="text-sm text-muted-foreground">
@@ -417,7 +417,7 @@
 
 			<a href="/docs/package-linking" class="block border rounded-lg p-6 hover:bg-accent transition-colors">
 				<div class="flex items-center space-x-3 mb-3">
-					<Icon icon="solar:link-bold" class="w-6 h-6 text-green-600" />
+					<Icon icon="lucide:link" class="w-6 h-6 text-green-600" />
 					<h3 class="font-semibold">Package Linking</h3>
 				</div>
 				<p class="text-sm text-muted-foreground">

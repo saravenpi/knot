@@ -46,7 +46,7 @@
 		<h2 class="text-2xl font-bold mb-6">Building for Production</h2>
 		<div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
 			<div class="flex items-start space-x-3">
-				<Icon icon="solar:box-bold" class="w-6 h-6 text-blue-600 mt-1 flex-shrink-0" />
+				<Icon icon="lucide:box-bold" class="w-6 h-6 text-blue-600 mt-1 flex-shrink-0" />
 				<div class="flex-1 min-w-0">
 					<h3 class="font-semibold text-blue-900 mb-2">Create a production-ready build</h3>
 					<p class="text-sm text-blue-700 mb-4">
@@ -62,9 +62,9 @@
 							title="Copy to clipboard"
 						>
 							{#if showCopied && copyText === 'knot build'}
-								<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+								<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 							{:else}
-								<Icon icon="solar:copy-bold" class="w-4 h-4" />
+								<Icon icon="lucide:copy" class="w-4 h-4" />
 							{/if}
 						</button>
 					</div>
@@ -78,7 +78,7 @@
 		<h2 class="text-2xl font-bold mb-6">Containerizing with Docker</h2>
 		<div class="bg-purple-50 border border-purple-200 rounded-lg p-6">
 			<div class="flex items-start space-x-3">
-				<Icon icon="solar:server-bold" class="w-6 h-6 text-purple-600 mt-1 flex-shrink-0" />
+				<Icon icon="lucide:server-bold" class="w-6 h-6 text-purple-600 mt-1 flex-shrink-0" />
 				<div class="flex-1 min-w-0">
 					<h3 class="font-semibold text-purple-900 mb-2">Dockerize your apps</h3>
 					<p class="text-sm text-purple-700 mb-4">
@@ -93,9 +93,9 @@
 							on:click={() => copyToClipboard('docker build -t my-app ./apps/knot-space')}
 						>
 							{#if showCopied && copyText === 'docker build -t my-app ./apps/knot-space'}
-								<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+								<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 							{:else}
-								<Icon icon="solar:copy-bold" class="w-4 h-4" />
+								<Icon icon="lucide:copy" class="w-4 h-4" />
 							{/if}
 						</button>
 					</div>
@@ -149,7 +149,7 @@
 		<h2 class="text-2xl font-bold mb-6">Next Steps</h2>
 		<div class="bg-green-50 border border-green-200 rounded-lg p-6">
 			<div class="flex items-start space-x-3">
-				<Icon icon="solar:check-circle-bold" class="w-6 h-6 text-green-600 mt-1 flex-shrink-0" />
+				<Icon icon="lucide:check-circle" class="w-6 h-6 text-green-600 mt-1 flex-shrink-0" />
 				<div>
 					<h3 class="font-semibold text-green-900 mb-2">Ready for production!</h3>
 					<p class="text-sm text-green-700 mb-4">
@@ -157,11 +157,11 @@
 					</p>
 					<div class="flex flex-wrap gap-3">
 						<a href="/docs/self-hosting" class="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 transition-colors">
-							<Icon icon="solar:server-bold" class="w-4 h-4 mr-2" />
+							<Icon icon="lucide:server-bold" class="w-4 h-4 mr-2" />
 							Self-Hosting Guide
 						</a>
 						<a href="/docs/workflows" class="inline-flex items-center px-4 py-2 border border-green-600 text-green-600 text-sm font-medium rounded-md hover:bg-green-50 transition-colors">
-							<Icon icon="solar:settings-bold" class="w-4 h-4 mr-2" />
+							<Icon icon="lucide:settings-bold" class="w-4 h-4 mr-2" />
 							Workflow Best Practices
 						</a>
 					</div>

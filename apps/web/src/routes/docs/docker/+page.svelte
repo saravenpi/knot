@@ -35,7 +35,7 @@
 		<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
 			<div class="border rounded-lg p-6">
 				<div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-					<Icon icon="solar:box-bold" class="w-6 h-6 text-blue-600" />
+					<Icon icon="lucide:box-bold" class="w-6 h-6 text-blue-600" />
 				</div>
 				<h3 class="font-semibold mb-2">Consistent Environments</h3>
 				<p class="text-sm text-muted-foreground">
@@ -45,7 +45,7 @@
 			
 			<div class="border rounded-lg p-6">
 				<div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
-					<Icon icon="solar:copy-bold" class="w-6 h-6 text-green-600" />
+					<Icon icon="lucide:copy" class="w-6 h-6 text-green-600" />
 				</div>
 				<h3 class="font-semibold mb-2">Copy-First Benefits</h3>
 				<p class="text-sm text-muted-foreground">
@@ -56,7 +56,7 @@
 
 		<div class="bg-amber-50 border border-amber-200 rounded-lg p-6">
 			<div class="flex items-start space-x-3">
-				<Icon icon="solar:info-circle-bold" class="w-6 h-6 text-amber-600 mt-1 flex-shrink-0" />
+				<Icon icon="lucide:info" class="w-6 h-6 text-amber-600 mt-1 flex-shrink-0" />
 				<div>
 					<h3 class="font-semibold text-amber-900 mb-2">Important Note</h3>
 					<p class="text-sm text-amber-700">
@@ -108,9 +108,9 @@ EXPOSE 3000
 CMD ["npm", "start"]`)}
 					>
 						{#if showCopied && copyText.includes('Single app')}
-							<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+							<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 						{:else}
-							<Icon icon="solar:copy-bold" class="w-4 h-4" />
+							<Icon icon="lucide:copy" class="w-4 h-4" />
 						{/if}
 					</button>
 					<pre><code># apps/frontend/Dockerfile
@@ -187,9 +187,9 @@ EXPOSE 3000
 CMD ["npm", "start"]`)}
 					>
 						{#if showCopied && copyText.includes('Multi-stage')}
-							<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+							<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 						{:else}
-							<Icon icon="solar:copy-bold" class="w-4 h-4" />
+							<Icon icon="lucide:copy" class="w-4 h-4" />
 						{/if}
 					</button>
 					<pre><code># Multi-stage Dockerfile
@@ -287,9 +287,9 @@ volumes:
   postgres_data:`)}
 			>
 				{#if showCopied && copyText.includes('docker-compose')}
-					<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+					<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 				{:else}
-					<Icon icon="solar:copy-bold" class="w-4 h-4" />
+					<Icon icon="lucide:copy" class="w-4 h-4" />
 				{/if}
 			</button>
 			<pre><code># docker-compose.yml
@@ -343,20 +343,20 @@ volumes:
 		<div class="space-y-6">
 			<div class="border rounded-lg p-6">
 				<h3 class="font-semibold mb-3 flex items-center">
-					<Icon icon="solar:layers-bold" class="w-5 h-5 mr-2 text-blue-600" />
+					<Icon icon="lucide:layers" class="w-5 h-5 mr-2 text-blue-600" />
 					Layer Optimization
 				</h3>
 				<div class="space-y-3 text-sm">
 					<div class="flex items-start space-x-3">
-						<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+						<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
 						<span>Copy package.json files first to leverage Docker layer caching</span>
 					</div>
 					<div class="flex items-start space-x-3">
-						<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+						<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
 						<span>Run <code>npm install</code> before copying source code</span>
 					</div>
 					<div class="flex items-start space-x-3">
-						<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+						<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
 						<span>Use <code>.dockerignore</code> to exclude unnecessary files</span>
 					</div>
 				</div>
@@ -364,20 +364,20 @@ volumes:
 			
 			<div class="border rounded-lg p-6">
 				<h3 class="font-semibold mb-3 flex items-center">
-					<Icon icon="solar:link-bold" class="w-5 h-5 mr-2 text-purple-600" />
+					<Icon icon="lucide:link" class="w-5 h-5 mr-2 text-purple-600" />
 					Package Linking
 				</h3>
 				<div class="space-y-3 text-sm">
 					<div class="flex items-start space-x-3">
-						<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+						<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
 						<span>Always use <code>knot link</code> (copy mode) in Docker builds</span>
 					</div>
 					<div class="flex items-start space-x-3">
-						<Icon icon="solar:close-circle-bold" class="w-4 h-4 text-red-600 mt-0.5 flex-shrink-0" />
+						<Icon icon="lucide:x-circle" class="w-4 h-4 text-red-600 mt-0.5 flex-shrink-0" />
 						<span>Never use <code>knot link --symlink</code> in Docker containers</span>
 					</div>
 					<div class="flex items-start space-x-3">
-						<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+						<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
 						<span>Run linking after copying all packages and app source</span>
 					</div>
 				</div>
@@ -385,20 +385,20 @@ volumes:
 			
 			<div class="border rounded-lg p-6">
 				<h3 class="font-semibold mb-3 flex items-center">
-					<Icon icon="solar:shield-check-bold" class="w-5 h-5 mr-2 text-green-600" />
+					<Icon icon="lucide:shield-check-bold" class="w-5 h-5 mr-2 text-green-600" />
 					Security
 				</h3>
 				<div class="space-y-3 text-sm">
 					<div class="flex items-start space-x-3">
-						<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+						<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
 						<span>Use non-root user in production containers</span>
 					</div>
 					<div class="flex items-start space-x-3">
-						<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+						<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
 						<span>Remove development dependencies in production stage</span>
 					</div>
 					<div class="flex items-start space-x-3">
-						<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+						<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
 						<span>Use specific base image tags instead of 'latest'</span>
 					</div>
 				</div>
@@ -444,9 +444,9 @@ coverage
 */out`)}
 			>
 				{#if showCopied && copyText.includes('dockerignore')}
-					<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+					<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 				{:else}
-					<Icon icon="solar:copy-bold" class="w-4 h-4" />
+					<Icon icon="lucide:copy" class="w-4 h-4" />
 				{/if}
 			</button>
 			<pre><code># .dockerignore
@@ -557,7 +557,7 @@ coverage
 		<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 			<a href="/docs/production" class="block border rounded-lg p-6 hover:bg-accent transition-colors">
 				<div class="flex items-center space-x-3 mb-3">
-					<Icon icon="solar:rocket-bold" class="w-6 h-6 text-green-600" />
+					<Icon icon="lucide:rocket-bold" class="w-6 h-6 text-green-600" />
 					<h3 class="font-semibold">Production Deployment</h3>
 				</div>
 				<p class="text-sm text-muted-foreground">
@@ -567,7 +567,7 @@ coverage
 
 			<a href="/docs/troubleshooting" class="block border rounded-lg p-6 hover:bg-accent transition-colors">
 				<div class="flex items-center space-x-3 mb-3">
-					<Icon icon="solar:help-bold" class="w-6 h-6 text-purple-600" />
+					<Icon icon="lucide:help-bold" class="w-6 h-6 text-purple-600" />
 					<h3 class="font-semibold">Troubleshooting</h3>
 				</div>
 				<p class="text-sm text-muted-foreground">

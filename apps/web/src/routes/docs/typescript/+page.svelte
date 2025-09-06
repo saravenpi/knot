@@ -121,7 +121,7 @@
 		<div class="space-y-6">
 			<div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
 				<div class="flex items-start space-x-3">
-					<Icon icon="solar:hammer-bold" class="w-6 h-6 text-blue-600 mt-1 flex-shrink-0" />
+					<Icon icon="lucide:hammer-bold" class="w-6 h-6 text-blue-600 mt-1 flex-shrink-0" />
 					<div class="flex-1">
 						<h3 class="font-semibold text-blue-900 mb-2">Build Command</h3>
 						<div class="bg-black/90 text-green-400 font-mono text-sm rounded-lg relative group mb-3">
@@ -133,9 +133,9 @@
 								on:click={() => copyToClipboard('knot build')}
 							>
 								{#if showCopied && copyText === 'knot build'}
-									<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+									<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 								{:else}
-									<Icon icon="solar:copy-bold" class="w-4 h-4" />
+									<Icon icon="lucide:copy" class="w-4 h-4" />
 								{/if}
 							</button>
 						</div>
@@ -148,7 +148,7 @@
 
 			<div class="bg-green-50 border border-green-200 rounded-lg p-6">
 				<div class="flex items-start space-x-3">
-					<Icon icon="solar:eye-bold" class="w-6 h-6 text-green-600 mt-1 flex-shrink-0" />
+					<Icon icon="lucide:eye-bold" class="w-6 h-6 text-green-600 mt-1 flex-shrink-0" />
 					<div class="flex-1">
 						<h3 class="font-semibold text-green-900 mb-2">Watch Mode</h3>
 						<div class="bg-black/90 text-green-400 font-mono text-sm rounded-lg relative group mb-3">
@@ -160,9 +160,9 @@
 								on:click={() => copyToClipboard('knot dev')}
 							>
 								{#if showCopied && copyText === 'knot dev'}
-									<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+									<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 								{:else}
-									<Icon icon="solar:copy-bold" class="w-4 h-4" />
+									<Icon icon="lucide:copy" class="w-4 h-4" />
 								{/if}
 							</button>
 						</div>
@@ -199,9 +199,9 @@ knot publish
 					on:click={() => copyToClipboard('knot build\nknot publish')}
 				>
 					{#if showCopied && copyText === 'knot build\nknot publish'}
-						<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+						<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 					{:else}
-						<Icon icon="solar:copy-bold" class="w-4 h-4" />
+						<Icon icon="lucide:copy" class="w-4 h-4" />
 					{/if}
 				</button>
 			</div>
@@ -215,7 +215,7 @@ knot publish
 		<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 			<div class="border rounded-lg p-6">
 				<div class="flex items-center space-x-3 mb-3">
-					<Icon icon="solar:code-bold" class="w-6 h-6 text-blue-600" />
+					<Icon icon="lucide:code" class="w-6 h-6 text-blue-600" />
 					<h3 class="font-semibold">ESM (ECMAScript Modules)</h3>
 				</div>
 				<p class="text-sm text-muted-foreground mb-3">Modern standard, recommended for new projects</p>
@@ -226,7 +226,7 @@ knot publish
 
 			<div class="border rounded-lg p-6">
 				<div class="flex items-center space-x-3 mb-3">
-					<Icon icon="solar:code-2-bold" class="w-6 h-6 text-purple-600" />
+					<Icon icon="lucide:code-2" class="w-6 h-6 text-purple-600" />
 					<h3 class="font-semibold">CommonJS</h3>
 				</div>
 				<p class="text-sm text-muted-foreground mb-3">Legacy format, supported for compatibility</p>
@@ -259,9 +259,9 @@ knot test --coverage`}</code></pre>
 					on:click={() => copyToClipboard('knot test')}
 				>
 					{#if showCopied && copyText === 'knot test'}
-						<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+						<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 					{:else}
-						<Icon icon="solar:copy-bold" class="w-4 h-4" />
+						<Icon icon="lucide:copy" class="w-4 h-4" />
 					{/if}
 				</button>
 			</div>
@@ -274,7 +274,7 @@ knot test --coverage`}</code></pre>
 		
 		<div class="space-y-4">
 			<div class="flex items-start space-x-3">
-				<Icon icon="solar:check-circle-bold" class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+				<Icon icon="lucide:check-circle" class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
 				<div>
 					<p class="font-semibold">Use strict TypeScript settings</p>
 					<p class="text-sm text-muted-foreground">Enable strict mode for better type safety and catching potential issues early.</p>
@@ -282,7 +282,7 @@ knot test --coverage`}</code></pre>
 			</div>
 
 			<div class="flex items-start space-x-3">
-				<Icon icon="solar:check-circle-bold" class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+				<Icon icon="lucide:check-circle" class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
 				<div>
 					<p class="font-semibold">Include source maps</p>
 					<p class="text-sm text-muted-foreground">Help with debugging in production and development environments.</p>
@@ -290,7 +290,7 @@ knot test --coverage`}</code></pre>
 			</div>
 
 			<div class="flex items-start space-x-3">
-				<Icon icon="solar:check-circle-bold" class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+				<Icon icon="lucide:check-circle" class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
 				<div>
 					<p class="font-semibold">Export types explicitly</p>
 					<p class="text-sm text-muted-foreground">Make your API surface clear and documented for better developer experience.</p>
@@ -298,7 +298,7 @@ knot test --coverage`}</code></pre>
 			</div>
 
 			<div class="flex items-start space-x-3">
-				<Icon icon="solar:check-circle-bold" class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+				<Icon icon="lucide:check-circle" class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
 				<div>
 					<p class="font-semibold">Use semantic versioning</p>
 					<p class="text-sm text-muted-foreground">Follow semver conventions for version updates to ensure compatibility.</p>
@@ -313,7 +313,7 @@ knot test --coverage`}</code></pre>
 		<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 			<a href="/docs/publishing" class="block border rounded-lg p-6 hover:bg-accent transition-colors">
 				<div class="flex items-center space-x-3 mb-3">
-					<Icon icon="solar:upload-bold" class="w-6 h-6 text-green-600" />
+					<Icon icon="lucide:upload-bold" class="w-6 h-6 text-green-600" />
 					<h3 class="font-semibold">Publishing Packages</h3>
 				</div>
 				<p class="text-sm text-muted-foreground">
@@ -323,7 +323,7 @@ knot test --coverage`}</code></pre>
 
 			<a href="/docs/package-development" class="block border rounded-lg p-6 hover:bg-accent transition-colors">
 				<div class="flex items-center space-x-3 mb-3">
-					<Icon icon="solar:terminal-bold" class="w-6 h-6 text-blue-600" />
+					<Icon icon="lucide:terminal" class="w-6 h-6 text-blue-600" />
 					<h3 class="font-semibold">Package Commands</h3>
 				</div>
 				<p class="text-sm text-muted-foreground">

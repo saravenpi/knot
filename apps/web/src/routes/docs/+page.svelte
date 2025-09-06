@@ -16,7 +16,7 @@
 <div class="max-w-5xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
 	<div class="mb-16 text-center">
 		<div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl shadow-lg mb-6">
-			<Icon icon="solar:magic-stick-3-bold" class="w-8 h-8 text-white" />
+			<Icon icon="lucide:wand-2" class="w-8 h-8 text-white" />
 		</div>
 		<h1 class="text-5xl lg:text-6xl font-bold tracking-tight mb-6 bg-gradient-to-r from-slate-900 via-blue-900 to-purple-900 bg-clip-text text-transparent" style="font-family: 'Gambarino', 'Satoshi', sans-serif;">
 			Introduction to Knot
@@ -45,7 +45,7 @@
 				<div class="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur"></div>
 				<div class="relative bg-white rounded-2xl p-8 shadow-lg border border-slate-100 hover:shadow-2xl transition-all duration-300 h-full">
 					<div class="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
-						<Icon icon="solar:bolt-bold-duotone" class="w-7 h-7 text-white" />
+						<Icon icon="lucide:zap" class="w-7 h-7 text-white" />
 					</div>
 					<h3 class="text-xl font-bold mb-3 text-slate-900">Fast & Efficient</h3>
 					<p class="text-slate-600 leading-relaxed">
@@ -57,7 +57,7 @@
 				<div class="absolute -inset-0.5 bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur"></div>
 				<div class="relative bg-white rounded-2xl p-8 shadow-lg border border-slate-100 hover:shadow-2xl transition-all duration-300 h-full">
 					<div class="w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
-						<Icon icon="solar:link-bold" class="w-7 h-7 text-white" />
+						<Icon icon="lucide:link" class="w-7 h-7 text-white" />
 					</div>
 					<h3 class="text-xl font-bold mb-3 text-slate-900">Smart Linking</h3>
 					<p class="text-slate-600 leading-relaxed">
@@ -69,7 +69,7 @@
 				<div class="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur"></div>
 				<div class="relative bg-white rounded-2xl p-8 shadow-lg border border-slate-100 hover:shadow-2xl transition-all duration-300 h-full">
 					<div class="w-14 h-14 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
-						<Icon icon="solar:code-bold" class="w-7 h-7 text-white" />
+						<Icon icon="lucide:code" class="w-7 h-7 text-white" />
 					</div>
 					<h3 class="text-xl font-bold mb-3 text-slate-900">TypeScript Native</h3>
 					<p class="text-slate-600 leading-relaxed">
@@ -91,7 +91,7 @@
 				<div class="bg-white/70 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-white/20 hover:shadow-2xl transition-all duration-300">
 					<div class="flex items-center mb-6">
 						<div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg mr-4">
-							<Icon icon="solar:folder-bold" class="w-6 h-6 text-white" />
+							<Icon icon="lucide:folder" class="w-6 h-6 text-white" />
 						</div>
 						<h3 class="text-xl font-bold text-slate-900">Project Structure</h3>
 					</div>
@@ -112,7 +112,7 @@
 				<div class="bg-white/70 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-white/20 hover:shadow-2xl transition-all duration-300">
 					<div class="flex items-center mb-6">
 						<div class="w-12 h-12 bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg mr-4">
-							<Icon icon="solar:terminal-bold" class="w-6 h-6 text-white" />
+							<Icon icon="lucide:terminal" class="w-6 h-6 text-white" />
 						</div>
 						<h3 class="text-xl font-bold text-slate-900">Common Workflow</h3>
 					</div>
@@ -151,32 +151,32 @@ knot publish</code></pre>
 			<div class="bg-white/70 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-white/20 hover:shadow-2xl transition-all duration-300 group">
 				<div class="flex items-center mb-6">
 					<div class="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center shadow-lg mr-4 group-hover:scale-110 transition-transform duration-300">
-						<Icon icon="solar:layers-bold" class="w-6 h-6 text-white" />
+						<Icon icon="lucide:layers" class="w-6 h-6 text-white" />
 					</div>
 					<h3 class="text-xl font-bold text-slate-900">Package Management</h3>
 				</div>
 				<div class="space-y-4">
 					<div class="flex items-start group/item">
 						<div class="w-6 h-6 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center mr-3 mt-0.5 shadow-sm group-hover/item:scale-110 transition-transform duration-200">
-							<Icon icon="solar:check-circle-bold" class="w-3.5 h-3.5 text-white" />
+							<Icon icon="lucide:check-circle" class="w-3.5 h-3.5 text-white" />
 						</div>
 						<p class="text-slate-700 leading-relaxed">Local package linking with copy or symlink modes</p>
 					</div>
 					<div class="flex items-start group/item">
 						<div class="w-6 h-6 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center mr-3 mt-0.5 shadow-sm group-hover/item:scale-110 transition-transform duration-200">
-							<Icon icon="solar:check-circle-bold" class="w-3.5 h-3.5 text-white" />
+							<Icon icon="lucide:check-circle" class="w-3.5 h-3.5 text-white" />
 						</div>
 						<p class="text-slate-700 leading-relaxed">Remote package registry with team collaboration</p>
 					</div>
 					<div class="flex items-start group/item">
 						<div class="w-6 h-6 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center mr-3 mt-0.5 shadow-sm group-hover/item:scale-110 transition-transform duration-200">
-							<Icon icon="solar:check-circle-bold" class="w-3.5 h-3.5 text-white" />
+							<Icon icon="lucide:check-circle" class="w-3.5 h-3.5 text-white" />
 						</div>
 						<p class="text-slate-700 leading-relaxed">Automatic dependency resolution and updates</p>
 					</div>
 					<div class="flex items-start group/item">
 						<div class="w-6 h-6 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center mr-3 mt-0.5 shadow-sm group-hover/item:scale-110 transition-transform duration-200">
-							<Icon icon="solar:check-circle-bold" class="w-3.5 h-3.5 text-white" />
+							<Icon icon="lucide:check-circle" class="w-3.5 h-3.5 text-white" />
 						</div>
 						<p class="text-slate-700 leading-relaxed">Version management and publishing workflows</p>
 					</div>
@@ -186,32 +186,32 @@ knot publish</code></pre>
 			<div class="bg-white/70 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-white/20 hover:shadow-2xl transition-all duration-300 group">
 				<div class="flex items-center mb-6">
 					<div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg mr-4 group-hover:scale-110 transition-transform duration-300">
-						<Icon icon="solar:code-2-bold" class="w-6 h-6 text-white" />
+						<Icon icon="lucide:code-2" class="w-6 h-6 text-white" />
 					</div>
 					<h3 class="text-xl font-bold text-slate-900">Developer Experience</h3>
 				</div>
 				<div class="space-y-4">
 					<div class="flex items-start group/item">
 						<div class="w-6 h-6 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center mr-3 mt-0.5 shadow-sm group-hover/item:scale-110 transition-transform duration-200">
-							<Icon icon="solar:check-circle-bold" class="w-3.5 h-3.5 text-white" />
+							<Icon icon="lucide:check-circle" class="w-3.5 h-3.5 text-white" />
 						</div>
 						<p class="text-slate-700 leading-relaxed">Automatic TypeScript configuration and path mapping</p>
 					</div>
 					<div class="flex items-start group/item">
 						<div class="w-6 h-6 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center mr-3 mt-0.5 shadow-sm group-hover/item:scale-110 transition-transform duration-200">
-							<Icon icon="solar:check-circle-bold" class="w-3.5 h-3.5 text-white" />
+							<Icon icon="lucide:check-circle" class="w-3.5 h-3.5 text-white" />
 						</div>
 						<p class="text-slate-700 leading-relaxed">Context-aware script execution with fallbacks</p>
 					</div>
 					<div class="flex items-start group/item">
 						<div class="w-6 h-6 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center mr-3 mt-0.5 shadow-sm group-hover/item:scale-110 transition-transform duration-200">
-							<Icon icon="solar:check-circle-bold" class="w-3.5 h-3.5 text-white" />
+							<Icon icon="lucide:check-circle" class="w-3.5 h-3.5 text-white" />
 						</div>
 						<p class="text-slate-700 leading-relaxed">Parallel build execution and caching</p>
 					</div>
 					<div class="flex items-start group/item">
 						<div class="w-6 h-6 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center mr-3 mt-0.5 shadow-sm group-hover/item:scale-110 transition-transform duration-200">
-							<Icon icon="solar:check-circle-bold" class="w-3.5 h-3.5 text-white" />
+							<Icon icon="lucide:check-circle" class="w-3.5 h-3.5 text-white" />
 						</div>
 						<p class="text-slate-700 leading-relaxed">Docker-friendly package copying for production</p>
 					</div>
@@ -228,7 +228,7 @@ knot publish</code></pre>
 				<div class="flex items-start space-x-6">
 					<div class="flex-shrink-0">
 						<div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-xl">
-							<Icon icon="solar:rocket-2-bold" class="w-8 h-8 text-white" />
+							<Icon icon="lucide:rocket" class="w-8 h-8 text-white" />
 						</div>
 					</div>
 					<div class="flex-1">
@@ -237,12 +237,12 @@ knot publish</code></pre>
 							Follow our step-by-step guides to get up and running with Knot in minutes.
 						</p>
 						<div class="flex flex-col sm:flex-row gap-4">
-							<a href="/docs/installation" class="group inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-2xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105">
-								<Icon icon="solar:download-bold" class="w-5 h-5 mr-3 group-hover:rotate-12 transition-transform duration-300" />
+							<a href="/docs/installation" class="group inline-flex items-center justify-center px-8 py-4 bg-black text-white font-semibold rounded-2xl hover:bg-gray-800 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105">
+								<Icon icon="lucide:download" class="w-5 h-5 mr-3 group-hover:rotate-12 transition-transform duration-300" />
 								Installation Guide
 							</a>
 							<a href="/docs/quick-start" class="group inline-flex items-center justify-center px-8 py-4 border-2 border-blue-600/30 text-slate-700 font-semibold rounded-2xl hover:bg-white/80 hover:border-blue-600/50 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 backdrop-blur-sm">
-								<Icon icon="solar:play-bold" class="w-5 h-5 mr-3 group-hover:scale-110 transition-transform duration-300" />
+								<Icon icon="lucide:play" class="w-5 h-5 mr-3 group-hover:scale-110 transition-transform duration-300" />
 								Quick Start
 							</a>
 						</div>

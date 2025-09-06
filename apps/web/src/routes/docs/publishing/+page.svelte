@@ -53,7 +53,7 @@
 		<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 			<div class="border rounded-lg p-6">
 				<div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
-					<Icon icon="solar:upload-bold" class="w-6 h-6 text-green-600" />
+					<Icon icon="lucide:upload-bold" class="w-6 h-6 text-green-600" />
 				</div>
 				<h3 class="font-semibold mb-2">Easy Publishing</h3>
 				<p class="text-sm text-muted-foreground">
@@ -62,7 +62,7 @@
 			</div>
 			<div class="border rounded-lg p-6">
 				<div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-					<Icon icon="solar:users-group-two-rounded-bold" class="w-6 h-6 text-blue-600" />
+					<Icon icon="lucide:users-group-two-rounded-bold" class="w-6 h-6 text-blue-600" />
 				</div>
 				<h3 class="font-semibold mb-2">Team Collaboration</h3>
 				<p class="text-sm text-muted-foreground">
@@ -71,7 +71,7 @@
 			</div>
 			<div class="border rounded-lg p-6">
 				<div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
-					<Icon icon="solar:shield-check-bold" class="w-6 h-6 text-purple-600" />
+					<Icon icon="lucide:shield-check-bold" class="w-6 h-6 text-purple-600" />
 				</div>
 				<h3 class="font-semibold mb-2">Version Management</h3>
 				<p class="text-sm text-muted-foreground">
@@ -102,9 +102,9 @@
 								on:click={() => copyToClipboard('knot auth')}
 							>
 								{#if showCopied && copyText === 'knot auth'}
-									<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+									<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 								{:else}
-									<Icon icon="solar:copy-bold" class="w-4 h-4" />
+									<Icon icon="lucide:copy" class="w-4 h-4" />
 								{/if}
 							</button>
 						</div>
@@ -122,9 +122,9 @@
 								on:click={() => copyToClipboard('knot auth')}
 							>
 								{#if showCopied && copyText === 'knot auth'}
-									<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+									<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 								{:else}
-									<Icon icon="solar:copy-bold" class="w-4 h-4" />
+									<Icon icon="lucide:copy" class="w-4 h-4" />
 								{/if}
 							</button>
 						</div>
@@ -151,9 +151,9 @@
 								on:click={() => copyToClipboard('knot config set registry https://knot.mycompany.com')}
 							>
 								{#if showCopied && copyText.includes('mycompany')}
-									<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+									<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 								{:else}
-									<Icon icon="solar:copy-bold" class="w-4 h-4" />
+									<Icon icon="lucide:copy" class="w-4 h-4" />
 								{/if}
 							</button>
 						</div>
@@ -193,9 +193,9 @@
 								on:click={() => copyToClipboard('cd packages/utils && knot publish')}
 							>
 								{#if showCopied && copyText.includes('packages/utils')}
-									<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+									<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 								{:else}
-									<Icon icon="solar:copy-bold" class="w-4 h-4" />
+									<Icon icon="lucide:copy" class="w-4 h-4" />
 								{/if}
 							</button>
 						</div>
@@ -255,9 +255,9 @@
 								on:click={() => copyToClipboard('knot publish --dry-run')}
 							>
 								{#if showCopied && copyText === 'knot publish --dry-run'}
-									<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+									<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 								{:else}
-									<Icon icon="solar:copy-bold" class="w-4 h-4" />
+									<Icon icon="lucide:copy" class="w-4 h-4" />
 								{/if}
 							</button>
 						</div>
@@ -275,9 +275,9 @@
 								on:click={() => copyToClipboard('knot publish --force')}
 							>
 								{#if showCopied && copyText === 'knot publish --force'}
-									<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+									<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 								{:else}
-									<Icon icon="solar:copy-bold" class="w-4 h-4" />
+									<Icon icon="lucide:copy" class="w-4 h-4" />
 								{/if}
 							</button>
 						</div>
@@ -295,9 +295,9 @@
 								on:click={() => copyToClipboard('knot publish --tag beta')}
 							>
 								{#if showCopied && copyText.includes('--tag beta')}
-									<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+									<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 								{:else}
-									<Icon icon="solar:copy-bold" class="w-4 h-4" />
+									<Icon icon="lucide:copy" class="w-4 h-4" />
 								{/if}
 							</button>
 						</div>
@@ -337,9 +337,9 @@ team: myteam           # Published as @myteam/shared-lib
 version: 1.0.0`)}
 							>
 								{#if showCopied && copyText.includes('shared-lib')}
-									<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+									<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 								{:else}
-									<Icon icon="solar:copy-bold" class="w-4 h-4" />
+									<Icon icon="lucide:copy" class="w-4 h-4" />
 								{/if}
 							</button>
 						</div>
@@ -354,9 +354,9 @@ version: 1.0.0`)}
 								on:click={() => copyToClipboard('cd packages/shared-lib && knot publish')}
 							>
 								{#if showCopied && copyText.includes('shared-lib')}
-									<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+									<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 								{:else}
-									<Icon icon="solar:copy-bold" class="w-4 h-4" />
+									<Icon icon="lucide:copy" class="w-4 h-4" />
 								{/if}
 							</button>
 						</div>
@@ -499,9 +499,9 @@ knot publish
 git tag v1.3.0 && git push --tags`)}
 							>
 								{#if showCopied && copyText.includes('Update version')}
-									<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+									<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 								{:else}
-									<Icon icon="solar:copy-bold" class="w-4 h-4" />
+									<Icon icon="lucide:copy" class="w-4 h-4" />
 								{/if}
 							</button>
 						</div>
@@ -618,7 +618,7 @@ git tag v1.3.0 && git push --tags`)}
 		<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 			<a href="/docs/teams" class="block border rounded-lg p-6 hover:bg-accent transition-colors">
 				<div class="flex items-center space-x-3 mb-3">
-					<Icon icon="solar:users-group-two-rounded-bold" class="w-6 h-6 text-blue-600" />
+					<Icon icon="lucide:users-group-two-rounded-bold" class="w-6 h-6 text-blue-600" />
 					<h3 class="font-semibold">Team Management</h3>
 				</div>
 				<p class="text-sm text-muted-foreground">
@@ -628,7 +628,7 @@ git tag v1.3.0 && git push --tags`)}
 
 			<a href="/docs/permissions" class="block border rounded-lg p-6 hover:bg-accent transition-colors">
 				<div class="flex items-center space-x-3 mb-3">
-					<Icon icon="solar:shield-check-bold" class="w-6 h-6 text-green-600" />
+					<Icon icon="lucide:shield-check-bold" class="w-6 h-6 text-green-600" />
 					<h3 class="font-semibold">Permissions</h3>
 				</div>
 				<p class="text-sm text-muted-foreground">
@@ -638,7 +638,7 @@ git tag v1.3.0 && git push --tags`)}
 
 			<a href="/docs/package-development" class="block border rounded-lg p-6 hover:bg-accent transition-colors">
 				<div class="flex items-center space-x-3 mb-3">
-					<Icon icon="solar:box-bold" class="w-6 h-6 text-purple-600" />
+					<Icon icon="lucide:box-bold" class="w-6 h-6 text-purple-600" />
 					<h3 class="font-semibold">Package Development</h3>
 				</div>
 				<p class="text-sm text-muted-foreground">
@@ -648,7 +648,7 @@ git tag v1.3.0 && git push --tags`)}
 
 			<a href="/docs/self-hosting" class="block border rounded-lg p-6 hover:bg-accent transition-colors">
 				<div class="flex items-center space-x-3 mb-3">
-					<Icon icon="solar:server-bold" class="w-6 h-6 text-red-600" />
+					<Icon icon="lucide:server-bold" class="w-6 h-6 text-red-600" />
 					<h3 class="font-semibold">Self-Hosting</h3>
 				</div>
 				<p class="text-sm text-muted-foreground">

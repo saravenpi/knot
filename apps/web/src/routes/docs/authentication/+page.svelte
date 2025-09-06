@@ -39,7 +39,7 @@
 			
 			<div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
 				<div class="flex items-start space-x-3">
-					<Icon icon="solar:shield-check-bold" class="w-6 h-6 text-blue-600 mt-1 flex-shrink-0" />
+					<Icon icon="lucide:shield-check-bold" class="w-6 h-6 text-blue-600 mt-1 flex-shrink-0" />
 					<div>
 						<h3 class="font-semibold text-blue-900 mb-2">Secure by Default</h3>
 						<p class="text-sm text-blue-700">
@@ -71,11 +71,11 @@
 					</p>
 					<div class="flex flex-wrap gap-3">
 						<a href="/register" class="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground text-sm font-medium rounded-md hover:bg-primary/90 transition-colors">
-							<Icon icon="solar:user-plus-bold" class="w-4 h-4 mr-2" />
+							<Icon icon="lucide:user-plus-bold" class="w-4 h-4 mr-2" />
 							Create Account
 						</a>
 						<a href="/login" class="inline-flex items-center px-4 py-2 border border-input text-foreground text-sm font-medium rounded-md hover:bg-accent transition-colors">
-							<Icon icon="solar:login-3-bold" class="w-4 h-4 mr-2" />
+							<Icon icon="lucide:login-3-bold" class="w-4 h-4 mr-2" />
 							Sign In
 						</a>
 					</div>
@@ -101,9 +101,9 @@
 							on:click={() => copyToClipboard('https://knot-space-production.up.railway.app/settings')}
 						>
 							{#if showCopied && copyText.includes('settings')}
-								<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+								<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 							{:else}
-								<Icon icon="solar:copy-bold" class="w-4 h-4" />
+								<Icon icon="lucide:copy" class="w-4 h-4" />
 							{/if}
 						</button>
 					</div>
@@ -128,7 +128,7 @@
 					</p>
 					<div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
 						<div class="flex items-start space-x-2">
-							<Icon icon="solar:shield-warning-bold" class="w-5 h-5 text-yellow-600 mt-0.5 flex-shrink-0" />
+							<Icon icon="lucide:shield-warning-bold" class="w-5 h-5 text-yellow-600 mt-0.5 flex-shrink-0" />
 							<div>
 								<div class="text-sm font-medium text-yellow-900 mb-1">Keep Your Token Secure</div>
 								<div class="text-sm text-yellow-700">
@@ -166,9 +166,9 @@
 									on:click={() => copyToClipboard('export KNOT_TOKEN=your-token-here')}
 								>
 									{#if showCopied && copyText.includes('export')}
-										<Icon icon="solar:check-circle-bold" class="w-3 h-3 text-green-400" />
+										<Icon icon="lucide:check-circle" class="w-3 h-3 text-green-400" />
 									{:else}
-										<Icon icon="solar:copy-bold" class="w-3 h-3" />
+										<Icon icon="lucide:copy" class="w-3 h-3" />
 									{/if}
 								</button>
 							</div>
@@ -187,9 +187,9 @@
 									on:click={() => copyToClipboard('set KNOT_TOKEN=your-token-here')}
 								>
 									{#if showCopied && copyText.includes('set KNOT_TOKEN')}
-										<Icon icon="solar:check-circle-bold" class="w-3 h-3 text-green-400" />
+										<Icon icon="lucide:check-circle" class="w-3 h-3 text-green-400" />
 									{:else}
-										<Icon icon="solar:copy-bold" class="w-3 h-3" />
+										<Icon icon="lucide:copy" class="w-3 h-3" />
 									{/if}
 								</button>
 							</div>
@@ -234,9 +234,9 @@
 						on:click={() => copyToClipboard('knot auth')}
 					>
 						{#if showCopied && copyText === 'knot auth'}
-							<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+							<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 						{:else}
-							<Icon icon="solar:copy-bold" class="w-4 h-4" />
+							<Icon icon="lucide:copy" class="w-4 h-4" />
 						{/if}
 					</button>
 				</div>
@@ -255,7 +255,7 @@
 				<div class="space-y-4">
 					<div class="border rounded-lg p-4">
 						<h4 class="font-medium mb-2 flex items-center">
-							<Icon icon="solar:danger-triangle-bold" class="w-4 h-4 mr-2 text-red-600" />
+							<Icon icon="lucide:danger-triangle-bold" class="w-4 h-4 mr-2 text-red-600" />
 							"Authentication failed"
 						</h4>
 						<ul class="text-sm text-muted-foreground space-y-1 ml-6">
@@ -267,7 +267,7 @@
 
 					<div class="border rounded-lg p-4">
 						<h4 class="font-medium mb-2 flex items-center">
-							<Icon icon="solar:wifi-router-bold" class="w-4 h-4 mr-2 text-orange-600" />
+							<Icon icon="lucide:wifi-router-bold" class="w-4 h-4 mr-2 text-orange-600" />
 							"Connection failed"
 						</h4>
 						<ul class="text-sm text-muted-foreground space-y-1 ml-6">
@@ -301,9 +301,9 @@ export KNOT_TOKEN=your-auth-token</code>
 						on:click={() => copyToClipboard('export KNOT_SPACE_URL=https://your-knot-instance.com\nexport KNOT_TOKEN=your-auth-token')}
 					>
 						{#if showCopied && copyText.includes('your-knot-instance')}
-							<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+							<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 						{:else}
-							<Icon icon="solar:copy-bold" class="w-4 h-4" />
+							<Icon icon="lucide:copy" class="w-4 h-4" />
 						{/if}
 					</button>
 				</div>
@@ -318,9 +318,9 @@ export KNOT_TOKEN=your-auth-token</code>
 						on:click={() => copyToClipboard('knot auth')}
 					>
 						{#if showCopied && copyText === 'knot auth'}
-							<Icon icon="solar:check-circle-bold" class="w-4 h-4 text-green-400" />
+							<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
 						{:else}
-							<Icon icon="solar:copy-bold" class="w-4 h-4" />
+							<Icon icon="lucide:copy" class="w-4 h-4" />
 						{/if}
 					</button>
 				</div>
@@ -338,7 +338,7 @@ export KNOT_TOKEN=your-auth-token</code>
 		<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 			<div class="border rounded-lg p-6">
 				<div class="flex items-center space-x-3 mb-3">
-					<Icon icon="solar:eye-closed-bold" class="w-6 h-6 text-purple-600" />
+					<Icon icon="lucide:eye-closed-bold" class="w-6 h-6 text-purple-600" />
 					<h3 class="font-semibold">Keep Tokens Private</h3>
 				</div>
 				<ul class="text-sm text-muted-foreground space-y-1">
@@ -351,7 +351,7 @@ export KNOT_TOKEN=your-auth-token</code>
 
 			<div class="border rounded-lg p-6">
 				<div class="flex items-center space-x-3 mb-3">
-					<Icon icon="solar:shield-network-bold" class="w-6 h-6 text-green-600" />
+					<Icon icon="lucide:shield-network-bold" class="w-6 h-6 text-green-600" />
 					<h3 class="font-semibold">Team Access</h3>
 				</div>
 				<ul class="text-sm text-muted-foreground space-y-1">
@@ -364,7 +364,7 @@ export KNOT_TOKEN=your-auth-token</code>
 
 			<div class="border rounded-lg p-6">
 				<div class="flex items-center space-x-3 mb-3">
-					<Icon icon="solar:refresh-bold" class="w-6 h-6 text-blue-600" />
+					<Icon icon="lucide:refresh-bold" class="w-6 h-6 text-blue-600" />
 					<h3 class="font-semibold">Token Management</h3>
 				</div>
 				<ul class="text-sm text-muted-foreground space-y-1">
@@ -377,7 +377,7 @@ export KNOT_TOKEN=your-auth-token</code>
 
 			<div class="border rounded-lg p-6">
 				<div class="flex items-center space-x-3 mb-3">
-					<Icon icon="solar:server-path-bold" class="w-6 h-6 text-red-600" />
+					<Icon icon="lucide:server-path-bold" class="w-6 h-6 text-red-600" />
 					<h3 class="font-semibold">CI/CD Integration</h3>
 				</div>
 				<ul class="text-sm text-muted-foreground space-y-1">
@@ -395,7 +395,7 @@ export KNOT_TOKEN=your-auth-token</code>
 		<h2 class="text-2xl font-bold mb-6">Next Steps</h2>
 		<div class="bg-green-50 border border-green-200 rounded-lg p-6">
 			<div class="flex items-start space-x-3">
-				<Icon icon="solar:check-circle-bold" class="w-6 h-6 text-green-600 mt-1 flex-shrink-0" />
+				<Icon icon="lucide:check-circle" class="w-6 h-6 text-green-600 mt-1 flex-shrink-0" />
 				<div>
 					<h3 class="font-semibold text-green-900 mb-2">Authentication Complete!</h3>
 					<p class="text-sm text-green-700 mb-4">
@@ -403,11 +403,11 @@ export KNOT_TOKEN=your-auth-token</code>
 					</p>
 					<div class="flex flex-wrap gap-3">
 						<a href="/docs/quick-start" class="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 transition-colors">
-							<Icon icon="solar:play-bold" class="w-4 h-4 mr-2" />
+							<Icon icon="lucide:play" class="w-4 h-4 mr-2" />
 							Quick Start Guide
 						</a>
 						<a href="/docs/publishing" class="inline-flex items-center px-4 py-2 border border-green-600 text-green-600 text-sm font-medium rounded-md hover:bg-green-50 transition-colors">
-							<Icon icon="solar:upload-bold" class="w-4 h-4 mr-2" />
+							<Icon icon="lucide:upload-bold" class="w-4 h-4 mr-2" />
 							Publishing Packages
 						</a>
 					</div>
