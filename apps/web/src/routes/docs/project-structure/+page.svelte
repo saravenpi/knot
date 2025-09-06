@@ -48,31 +48,43 @@
 		</p>
 		
 		<div class="bg-muted/30 rounded-lg p-6">
-			<h3 class="text-lg font-semibold mb-4">Basic Project Structure</h3>
-			<pre class="text-sm font-mono bg-black/90 text-white p-4 rounded overflow-x-auto"><code>my-project/
+			<h3 class="text-lg font-semibold mb-4">Knot CLI Project Structure</h3>
+			<pre class="text-sm font-mono bg-black/90 text-white p-4 rounded overflow-x-auto"><code>Knot/
 ├── <span class="text-blue-400">knot.yml</span>                    # Project configuration
 ├── <span class="text-yellow-400">packages/</span>                   # Shared packages directory
-│   ├── <span class="text-yellow-400">types/</span>                  # Type definitions package
+│   ├── <span class="text-yellow-400">types/</span>                  # TypeScript type definitions
 │   │   ├── <span class="text-blue-400">package.yml</span>           # Package configuration
 │   │   ├── <span class="text-gray-400">package.json</span>          # NPM package.json
 │   │   ├── <span class="text-gray-400">tsconfig.json</span>         # TypeScript config
-│   │   └── <span class="text-green-400">src/</span>                 # Source code
-│   └── <span class="text-yellow-400">utils/</span>                  # Utility functions package
+│   │   ├── <span class="text-green-400">src/</span>                 # Type definitions source
+│   │   └── <span class="text-gray-400">dist/</span>                # Compiled output
+│   └── <span class="text-yellow-400">utils/</span>                  # Shared utility functions
 │       ├── <span class="text-blue-400">package.yml</span>           # Package configuration
 │       ├── <span class="text-gray-400">package.json</span>          # NPM package.json
-│       └── <span class="text-green-400">src/</span>                 # Source code
+│       ├── <span class="text-gray-400">tsconfig.json</span>         # TypeScript config
+│       ├── <span class="text-green-400">src/</span>                 # Utility functions source
+│       └── <span class="text-gray-400">dist/</span>                # Compiled output
 ├── <span class="text-green-400">apps/</span>                       # Applications directory
-│   ├── <span class="text-green-400">frontend/</span>               # React/Vue/etc frontend app
+│   ├── <span class="text-green-400">cli/</span>                    # Knot CLI (Rust)
+│   │   ├── <span class="text-orange-400">Cargo.toml</span>           # Rust dependencies
+│   │   ├── <span class="text-purple-400">knot_packages/</span>       # Linked packages
+│   │   ├── <span class="text-green-400">src/</span>                 # Rust source code
+│   │   └── <span class="text-gray-400">target/</span>              # Build artifacts
+│   ├── <span class="text-green-400">web/</span>                    # Knot Space UI (SvelteKit)
 │   │   ├── <span class="text-blue-400">app.yml</span>              # App configuration
 │   │   ├── <span class="text-gray-400">package.json</span>          # NPM dependencies
 │   │   ├── <span class="text-gray-400">tsconfig.json</span>         # TypeScript config
 │   │   ├── <span class="text-purple-400">knot_packages/</span>       # Linked packages (auto-generated)
-│   │   └── <span class="text-green-400">src/</span>                 # Application source
-│   └── <span class="text-green-400">api/</span>                    # Backend API app
+│   │   ├── <span class="text-green-400">src/</span>                 # SvelteKit application
+│   │   └── <span class="text-gray-400">static/</span>              # Static assets
+│   └── <span class="text-green-400">backend/</span>                # Node.js Backend API
 │       ├── <span class="text-blue-400">app.yml</span>              # App configuration
 │       ├── <span class="text-gray-400">package.json</span>          # NPM dependencies
-│       └── <span class="text-green-400">src/</span>                 # Application source
-└── <span class="text-gray-400">README.md</span>                   # Project documentation</code></pre>
+│       ├── <span class="text-purple-400">knot_packages/</span>       # Linked packages
+│       └── <span class="text-green-400">src/</span>                 # Backend source
+├── <span class="text-cyan-400">assets/</span>                     # Project assets (logos, etc.)
+├── <span class="text-gray-400">README.md</span>                   # Project documentation
+└── <span class="text-gray-400">install.sh</span>                  # Installation script</code></pre>
 		</div>
 	</section>
 
@@ -86,24 +98,35 @@
 			</p>
 			
 			<div class="bg-black/90 text-white font-mono text-sm p-4 rounded-lg">
-				<code><span class="text-blue-400">name:</span> <span class="text-green-400">my-awesome-project</span>
-<span class="text-blue-400">description:</span> <span class="text-green-400">"A modern monorepo with shared packages"</span>
-<span class="text-blue-400">version:</span> <span class="text-green-400">1.0.0</span>
+				<code><span class="text-blue-400">name:</span> <span class="text-green-400">Knot</span>
+<span class="text-blue-400">description:</span> <span class="text-green-400">A modern monorepo package manager for TypeScript/JavaScript projects</span>
 
 <span class="text-gray-400"># Global scripts available to all apps</span>
 <span class="text-blue-400">scripts:</span>
-  <span class="text-blue-400">setup:</span> <span class="text-green-400">"npm install"</span>
-  <span class="text-blue-400">test-all:</span> <span class="text-green-400">"knot run test --all"</span>
-  <span class="text-blue-400">lint-all:</span> <span class="text-green-400">"knot run lint --all"</span>
+  <span class="text-blue-400">setup:</span> <span class="text-green-400">"echo 'Setting up Knot development environment...'"</span>
+  <span class="text-blue-400">build-all:</span> <span class="text-green-400">"echo 'Building all apps...' && cd apps/cli && cargo build --release"</span>
+  <span class="text-blue-400">dev-ui:</span> <span class="text-green-400">"cd apps/backend && npm run dev"</span>
+  <span class="text-blue-400">install-cli:</span> <span class="text-green-400">"cd apps/cli && cargo build --release && sudo cp target/release/knot /usr/local/bin/"</span>
 
 <span class="text-gray-400"># App-specific configurations</span>
 <span class="text-blue-400">apps:</span>
-  <span class="text-blue-400">frontend:</span>
-    <span class="text-blue-400">tsAlias:</span> <span class="text-green-400">"@"</span>                  <span class="text-gray-400"># TypeScript alias prefix</span>
-    <span class="text-blue-400">packages:</span> [<span class="text-yellow-400">types</span>, <span class="text-yellow-400">utils</span>]        <span class="text-gray-400"># Local packages to link</span>
-  <span class="text-blue-400">api:</span>
-    <span class="text-blue-400">tsAlias:</span> <span class="text-green-400">"#"</span>
-    <span class="text-blue-400">packages:</span> [<span class="text-yellow-400">types</span>, <span class="text-yellow-400">utils</span>]</code>
+  <span class="text-blue-400">cli:</span>
+    <span class="text-blue-400">description:</span> <span class="text-green-400">"The Knot CLI tool for monorepo package management"</span>
+  <span class="text-blue-400">web:</span>
+    <span class="text-blue-400">description:</span> <span class="text-green-400">"Backend API server for Knot packages"</span>
+    <span class="text-blue-400">tsAlias:</span> <span class="text-green-400">"#"</span>                  <span class="text-gray-400"># TypeScript alias prefix</span>
+    <span class="text-blue-400">packages:</span> [<span class="text-yellow-400">types</span>]              <span class="text-gray-400"># Local packages to link</span>
+  <span class="text-blue-400">backend:</span>
+    <span class="text-blue-400">description:</span> <span class="text-green-400">"Frontend UI for Knot Space package registry"</span>
+    <span class="text-blue-400">tsAlias:</span> <span class="text-green-400">true</span>
+    <span class="text-blue-400">packages:</span> [<span class="text-yellow-400">types</span>, <span class="text-yellow-400">utils</span>]
+
+<span class="text-gray-400"># Package definitions</span>
+<span class="text-blue-400">packages:</span>
+  <span class="text-blue-400">types:</span>
+    <span class="text-blue-400">description:</span> <span class="text-green-400">"Shared TypeScript types for all Knot applications"</span>
+  <span class="text-blue-400">utils:</span>
+    <span class="text-blue-400">description:</span> <span class="text-green-400">"Shared utility functions for Knot applications"</span></code>
 			</div>
 		</div>
 	</section>
@@ -145,29 +168,27 @@
 				<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 					<div class="border rounded-lg p-6">
 						<div class="flex items-center space-x-3 mb-3">
-							<Icon icon="solar:box-bold" class="w-6 h-6 text-blue-600" />
-							<h4 class="font-semibold">Library Package</h4>
+							<Icon icon="solar:code-bold" class="w-6 h-6 text-purple-600" />
+							<h4 class="font-semibold">Type Definitions</h4>
 						</div>
 						<p class="text-sm text-muted-foreground mb-3">
-							Contains reusable functions, components, or utilities.
+							Shared TypeScript type definitions for API interfaces, data models, and common structures.
 						</p>
 						<div class="text-xs font-mono bg-muted p-2 rounded">
-							packages/utils/<br>
-							packages/ui-components/
+							packages/types/
 						</div>
 					</div>
 
 					<div class="border rounded-lg p-6">
 						<div class="flex items-center space-x-3 mb-3">
-							<Icon icon="solar:code-bold" class="w-6 h-6 text-purple-600" />
-							<h4 class="font-semibold">Type Definitions</h4>
+							<Icon icon="solar:box-bold" class="w-6 h-6 text-blue-600" />
+							<h4 class="font-semibold">Utility Functions</h4>
 						</div>
 						<p class="text-sm text-muted-foreground mb-3">
-							Shared TypeScript type definitions and interfaces.
+							Common utility functions and helpers used across Knot applications.
 						</p>
 						<div class="text-xs font-mono bg-muted p-2 rounded">
-							packages/types/<br>
-							packages/api-types/
+							packages/utils/
 						</div>
 					</div>
 				</div>
@@ -181,29 +202,71 @@
 		
 		<div class="space-y-6">
 			<p class="text-muted-foreground">
-				The <code>apps/</code> directory contains your applications that consume packages from the packages directory.
+				The <code>apps/</code> directory contains three main applications that make up the Knot ecosystem:
 			</p>
+
+			<div>
+				<h3 class="text-lg font-semibold mb-3">Application Types</h3>
+				<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+					<div class="border rounded-lg p-6">
+						<div class="flex items-center space-x-3 mb-3">
+							<Icon icon="solar:terminal-bold" class="w-6 h-6 text-orange-600" />
+							<h4 class="font-semibold">CLI (Rust)</h4>
+						</div>
+						<p class="text-sm text-muted-foreground mb-3">
+							The core Knot CLI tool built with Rust for high performance monorepo management.
+						</p>
+						<div class="text-xs font-mono bg-muted p-2 rounded">
+							apps/cli/
+						</div>
+					</div>
+
+					<div class="border rounded-lg p-6">
+						<div class="flex items-center space-x-3 mb-3">
+							<Icon icon="solar:browser-bold" class="w-6 h-6 text-green-600" />
+							<h4 class="font-semibold">Web UI (SvelteKit)</h4>
+						</div>
+						<p class="text-sm text-muted-foreground mb-3">
+							Modern web interface for Knot Space package registry built with SvelteKit.
+						</p>
+						<div class="text-xs font-mono bg-muted p-2 rounded">
+							apps/web/
+						</div>
+					</div>
+
+					<div class="border rounded-lg p-6">
+						<div class="flex items-center space-x-3 mb-3">
+							<Icon icon="solar:server-bold" class="w-6 h-6 text-blue-600" />
+							<h4 class="font-semibold">Backend API (Node.js)</h4>
+						</div>
+						<p class="text-sm text-muted-foreground mb-3">
+							REST API server handling package registry operations and user management.
+						</p>
+						<div class="text-xs font-mono bg-muted p-2 rounded">
+							apps/backend/
+						</div>
+					</div>
+				</div>
+			</div>
 
 			<div>
 				<h3 class="text-lg font-semibold mb-3">App Configuration (app.yml)</h3>
 				<div class="bg-black/90 text-white font-mono text-sm p-4 rounded-lg">
-					<code><span class="text-blue-400">name:</span> <span class="text-green-400">frontend</span>
-<span class="text-blue-400">description:</span> <span class="text-green-400">"React frontend application"</span>
+					<code><span class="text-blue-400">name:</span> <span class="text-green-400">knot-space-ui</span>
+<span class="text-blue-400">description:</span> <span class="text-green-400">Frontend UI for Knot Space package registry</span>
 
 <span class="text-gray-400"># Build configuration</span>
 <span class="text-blue-400">build:</span> <span class="text-green-400">"npm run build"</span>
 
-<span class="text-gray-400"># App-specific scripts</span>
+<span class="text-gray-400"># Frontend-specific scripts</span>
 <span class="text-blue-400">scripts:</span>
-  <span class="text-blue-400">dev:</span> <span class="text-green-400">"vite dev --port 3000"</span>
-  <span class="text-blue-400">test:</span> <span class="text-green-400">"vitest run"</span>
-  <span class="text-blue-400">preview:</span> <span class="text-green-400">"vite preview"</span>
-
-<span class="text-gray-400"># Package dependencies</span>
-<span class="text-blue-400">packages:</span>
-  - <span class="text-yellow-400">types</span>                        <span class="text-gray-400"># Local package</span>
-  - <span class="text-yellow-400">utils</span>                       <span class="text-gray-400"># Local package</span>
-  - <span class="text-yellow-400">"@myteam/shared-ui"</span>          <span class="text-gray-400"># Remote team package</span></code>
+  <span class="text-blue-400">dev:</span> <span class="text-green-400">"npm run dev"</span>
+  <span class="text-blue-400">build:</span> <span class="text-green-400">"npm run build"</span>
+  <span class="text-blue-400">preview:</span> <span class="text-green-400">"npm run preview"</span>
+  <span class="text-blue-400">check:</span> <span class="text-green-400">"npm run check"</span>
+  <span class="text-blue-400">lint:</span> <span class="text-green-400">"npm run lint"</span>
+  <span class="text-blue-400">format:</span> <span class="text-green-400">"npm run format"</span>
+  <span class="text-blue-400">clean:</span> <span class="text-green-400">"rm -rf .svelte-kit build node_modules"</span></code>
 				</div>
 			</div>
 
