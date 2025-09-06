@@ -223,16 +223,15 @@ knot publish</code></pre>
 					<p class="text-lg text-gray-600 mb-8 leading-relaxed">
 						Follow our step-by-step guides to get up and running with Knot in minutes.
 					</p>
-						<div class="flex flex-col sm:flex-row gap-4">
-							<a href="/docs/installation" class="group inline-flex items-center justify-center px-8 py-4 bg-black text-white font-semibold rounded-2xl hover:bg-gray-800 transition-all duration-300">
-								<Icon icon="lucide:download" class="w-5 h-5 mr-3" />
-								Installation Guide
-							</a>
-							<a href="/docs/quick-start" class="group inline-flex items-center justify-center px-8 py-4 border-2 border-gray-300 text-gray-700 font-semibold rounded-2xl hover:bg-gray-50 hover:border-gray-400 transition-all duration-300">
-								<Icon icon="lucide:play" class="w-5 h-5 mr-3" />
-								Quick Start
-							</a>
-						</div>
+					<div class="flex flex-col sm:flex-row gap-4">
+						<a href="/docs/installation" class="group inline-flex items-center justify-center px-8 py-4 bg-black text-white font-semibold rounded-2xl hover:bg-gray-800 transition-all duration-300">
+							<Icon icon="lucide:download" class="w-5 h-5 mr-3" />
+							Installation Guide
+						</a>
+						<a href="/docs/quick-start" class="group inline-flex items-center justify-center px-8 py-4 border-2 border-gray-300 text-gray-700 font-semibold rounded-2xl hover:bg-gray-50 hover:border-gray-400 transition-all duration-300">
+							<Icon icon="lucide:play" class="w-5 h-5 mr-3" />
+							Quick Start
+						</a>
 					</div>
 				</div>
 			</div>
