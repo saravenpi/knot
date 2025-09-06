@@ -2,5 +2,6 @@ name: utils
 description: Shared utility functions for Knot applications
 version: 1.0.0
 scripts:
-  build: "echo 'Building utils package...'"
+  build: "tsc"
+  check: "tsc --noEmit"
   test: "echo 'Testing utils package...'"

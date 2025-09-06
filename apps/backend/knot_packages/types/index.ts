@@ -21,9 +21,9 @@ export interface Package {
   downloadsCount: number | string; // API returns as string due to BigInt serialization
   totalDownloadsCount?: number | string; // Total downloads across all versions
   owner: User;
-  team?: {
+  team?: { 
     id: string;
-    name: string;
+    name: string; 
   };
   tags?: string[];
   createdAt: string;
@@ -36,14 +36,14 @@ export interface Package {
 export interface FileEntry {
   name: string;
   path: string;
-  type: "file" | "directory";
+  type: 'file' | 'directory';
   size?: number;
   children?: FileEntry[];
 }
 
 export interface FileContent {
   content: string;
-  encoding: "utf-8" | "base64";
+  encoding: 'utf-8' | 'base64';
   mimeType: string;
 }
 
@@ -59,7 +59,7 @@ export interface Team {
 }
 
 // Enums and literals
-export type TeamRole = "owner" | "admin" | "member";
+export type TeamRole = 'owner' | 'admin' | 'member';
 
 // Request interfaces
 export interface LoginCredentials {
@@ -242,28 +242,23 @@ export const LIMITS = {
 
 // Type guards
 export function isUser(obj: any): obj is User {
-  return obj && typeof obj.id === "string" && typeof obj.username === "string";
+  return obj && typeof obj.id === 'string' && typeof obj.username === 'string';
 }
 
 export function isPackage(obj: any): obj is Package {
-  return obj && typeof obj.id === "string" && typeof obj.name === "string";
+  return obj && typeof obj.id === 'string' && typeof obj.name === 'string';
 }
 
 export function isTeam(obj: any): obj is Team {
-  return obj && typeof obj.id === "string" && typeof obj.name === "string";
+  return obj && typeof obj.id === 'string' && typeof obj.name === 'string';
 }
 
 export function isApiError(obj: any): obj is ApiError {
-  return obj && typeof obj.error === "string";
+  return obj && typeof obj.error === 'string';
 }
 
 // Utility types
-export type CreatePackageData = Omit<
-  Package,
-  "id" | "created_at" | "updated_at" | "downloads_count" | "owner"
->;
-export type UpdatePackageData = Partial<Pick<Package, "description" | "tags">>;
-export type CreateTeamData = Omit<Team, "id" | "createdAt" | "members">;
-export type CreateUserData = Omit<User, "id" | "createdAt"> & {
-  password: string;
-};
+export type CreatePackageData = Omit<Package, 'id' | 'created_at' | 'updated_at' | 'downloads_count' | 'owner'>;
+export type UpdatePackageData = Partial<Pick<Package, 'description' | 'tags'>>;
+export type CreateTeamData = Omit<Team, 'id' | 'createdAt' | 'members'>;
+export type CreateUserData = Omit<User, 'id' | 'createdAt'> & { password: string };

@@ -1,44 +1,23 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
-    "declaration": false,
-    "declarationMap": false,
+    "allowJs": true,
+    "checkJs": true,
     "esModuleInterop": true,
-    "exactOptionalPropertyTypes": false,
     "forceConsistentCasingInFileNames": true,
-    "lib": [
-      "ES2022"
-    ],
-    "module": "commonjs",
-    "noImplicitAny": true,
-    "noImplicitReturns": true,
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "outDir": "./dist",
+    "moduleResolution": "bundler",
     "paths": {
       "#/*": [
         "./knot_packages/*"
       ]
     },
-    "removeComments": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
-    "sourceMap": false,
-    "strict": true,
-    "target": "ES2022",
-    "types": [
-      "node"
-    ]
+    "sourceMap": true,
+    "strict": true
   },
-  "exclude": [
-    "node_modules",
-    "dist",
-    "***.spec.ts"
-  ],
+  "extends": "./.svelte-kit/tsconfig.json",
   "include": [
     "src/**/*",
-    "src*",
-    "prisma*",
     "knot_packages/**/*"
   ]
 }

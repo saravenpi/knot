@@ -1,14 +1,11 @@
-# Rust
-/target
-**/*.rs.bk
-
-# Environment files
+# Svelte specific
+.DS_Store
+node_modules
+/build
+/.svelte-kit
+/package
 .env
-.env.local
-
-# Logs
-*.log
-*.out
-
-# Built binaries
-server
+.env.*
+!.env.example
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*

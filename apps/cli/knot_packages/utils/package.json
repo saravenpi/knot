@@ -5,8 +5,12 @@
   "main": "index.ts",
   "type": "module",
   "scripts": {
-    "build": "echo 'Building utils package...'",
+    "build": "tsc",
+    "check": "tsc --noEmit",
     "test": "echo 'Testing utils package...'"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
   },
   "keywords": ["knot", "utilities", "helpers"],
   "private": true

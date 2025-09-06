@@ -1,71 +1,49 @@
-# Multi-stage build for production optimization
-FROM oven/bun:1 AS base
+# Build stage
+FROM oven/bun as builder
+
+# Set working directory
 WORKDIR /app
 
-# Install system dependencies
-FROM base AS deps
-RUN apt-get clean && rm -rf /var/lib/apt/lists/* && \
-    apt-get update --fix-missing -y && \
-    apt-get install -y \
-    openssl \
-    ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
+# Copy package files
+COPY package.json bun.lock ./
 
 # Install dependencies
-COPY package.json bun.lock ./
-RUN bun install --production --frozen-lockfile
-
-# Generate Prisma client
-COPY prisma ./prisma/
-RUN bunx prisma generate
-
-# Build stage
-FROM base AS builder
-RUN apt-get clean && rm -rf /var/lib/apt/lists/* && \
-    apt-get update --fix-missing -y && \
-    apt-get install -y openssl ca-certificates && \
-    rm -rf /var/lib/apt/lists/*
-
-# Copy dependencies from deps stage
-COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/prisma ./prisma
+RUN bun install --frozen-lockfile
 
 # Copy app source code (knot_packages already included via pre-commit hook)
 COPY . ./
 
-# Build the application
+# Set build-time environment variables for SvelteKit
+ARG PUBLIC_BACKEND_URL
+ENV PUBLIC_BACKEND_URL=${PUBLIC_BACKEND_URL}
+
+# Build application
 RUN bun run build
 
-# Production stage
-FROM oven/bun:1-slim AS production
+# Runtime stage
+FROM oven/bun
+
+# Create app user
+RUN addgroup --gid 1001 --system nodejs &&     adduser --system --uid 1001 nextjs
+
+# Set working directory
 WORKDIR /app
 
-# Install runtime dependencies
-RUN apt-get clean && rm -rf /var/lib/apt/lists/* && \
-    apt-get update --fix-missing -y && \
-    apt-get install -y \
-    openssl \
-    ca-certificates \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
+# Copy built application
+COPY --from=builder --chown=nextjs:nodejs /app/build ./build
+COPY --from=builder --chown=nextjs:nodejs /app/knot_packages ./knot_packages
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
+COPY --from=builder /app/package.json ./package.json
 
-# Create non-root user
-RUN groupadd -r appuser && useradd -r -g appuser appuser
+# Switch to non-root user
+USER nextjs
 
-# Copy built application with correct ownership
-COPY --from=builder /app/server ./server
-COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/start.sh ./start.sh
-COPY --from=builder /app/src ./src
-COPY --from=builder /app/tsconfig.json ./tsconfig.json
-COPY --from=builder /app/knot_packages ./knot_packages
+# Expose port
+EXPOSE 3000
 
-# Make scripts executable
-RUN chmod +x ./server ./start.sh
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:3000 || exit 1
 
-# Expose the port your server uses
-EXPOSE 3001
-
-# Start as root so we can fix permissions, then switch to appuser inside start.sh
-CMD ["./start.sh"]
+# Start application
+CMD ["node", "build/index.js"]
