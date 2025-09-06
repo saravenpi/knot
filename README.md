@@ -6,6 +6,7 @@ A modern monorepo package manager for any programming language that simplifies d
 
 - **🔗 Smart Package Linking** - Automatic symlinking of local packages
 - **☁️ Online Package Support** - Download packages from knot space (`@package`, `@team/package`)
+- **📋 Template System** - Use published packages as templates for new projects
 - **⚡ Language Integration** - Per-app configuration with special TypeScript support
 - **🔨 Build Management** - Execute build commands across apps or individually
 - **▶️ Script Runner** - Run scripts from any config file with `knot run`
@@ -13,6 +14,8 @@ A modern monorepo package manager for any programming language that simplifies d
 - **🌍 Multi-Language Support** - Works with any programming language (Rust, Go, Python, Java, etc.)
 
 ## 🚀 Quick Install
+
+![Installation Demo](./assets/install-quick.gif)
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/saravenpi/knot/main/install.sh | bash
@@ -32,8 +35,12 @@ knot status                                # Show project status
 
 ### Package & App Management
 ```bash
-knot init:package <name> [--team <team>]   # Create a new package
-knot init:app <name> [--description <desc>] # Create a new app
+knot init:package <name> [--team <team>] [--template <@package>]  # Create a new package
+knot init:app <name> [--template <@package>]                      # Create a new app
+
+# Examples with templates from Knot Space:
+knot init:app my-app --template @svelte-starter
+knot init:package my-lib --template @typescript-lib
 ```
 
 ### Linking & Building
@@ -51,21 +58,23 @@ knot update --force                        # Force reinstall current version
 
 ## 🎯 Quick Start
 
+![Quick Start Demo](./assets/demo-quick.gif)
+
 ```bash
 # 1. Initialize project
 knot init my-monorepo --description "My awesome monorepo"
 cd my-monorepo
 
-# 2. Create shared packages
+# 2. Create shared packages (optionally with templates)
 cd packages
 knot init:package utils --team myteam
-knot init:package types --team myteam
+knot init:package types --team myteam --template @typescript-lib
 cd ..
 
-# 3. Create applications
+# 3. Create applications (optionally with templates)
 cd apps
-knot init:app frontend --description "Web frontend"
-knot init:app backend --description "API server"
+knot init:app frontend --description "Web frontend" --template @react-starter
+knot init:app backend --description "API server" --template @fastify-api
 cd ..
 
 # 4. Configure dependencies and scripts in knot.yml
@@ -330,7 +339,7 @@ my-monorepo/
 
 ```bash
 git clone https://github.com/saravenpi/knot.git
-cd knot/apps/knot-cli
+cd knot/apps/cli
 cargo build --release
 sudo cp target/release/knot /usr/local/bin/
 ```
