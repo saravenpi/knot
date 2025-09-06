@@ -184,7 +184,7 @@ clone_repository() {
     REPO_URL="${KNOT_REPO_URL:-https://github.com/saravenpi/knot.git}"
 
     # If running locally for testing, check for monorepo structure
-    if [[ -f "$(dirname "$0")/apps/knot-cli/Cargo.toml" ]]; then
+    if [[ -f "$(dirname "$0")/apps/cli/Cargo.toml" ]]; then
         print_warning "Using local development version"
         cp -r "$(dirname "$0")" "$TEMP_DIR/knot"
     elif [[ -f "$(dirname "$0")/Cargo.toml" ]] && [[ -d "$(dirname "$0")/../.." ]]; then
@@ -229,7 +229,7 @@ build_project() {
         fi
     fi
 
-    cd "$src_dir/apps/knot-cli"
+    cd "$src_dir/apps/cli"
 
     # Use cached build directory if available
     if [ "$use_cache" = true ]; then
@@ -248,7 +248,7 @@ build_project() {
     if [ "$use_cache" = true ]; then
         BINARY_PATH="$HOME/.knot-build-cache/target/release/knot"
     else
-        BINARY_PATH="$src_dir/apps/knot-cli/target/release/knot"
+        BINARY_PATH="$src_dir/apps/cli/target/release/knot"
     fi
 
     print_success "Build completed successfully"

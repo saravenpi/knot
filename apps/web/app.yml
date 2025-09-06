@@ -1,0 +1,22 @@
+name: knot-web
+description: Online repository server for Knot packages
+tsAlias: null
+packages:
+- '@hono-modules-loader'
+scripts:
+  build-debug: cargo build
+  build-release: cargo build --release
+  clean: cargo clean
+  fmt-check: cargo fmt -- --check
+  docker-build: docker build -t knot-web .
+  fmt: cargo fmt
+  doc: cargo doc --open
+  check: cargo check
+  serve: cargo run --release
+  docker-run: docker run -p 8000:8000 knot-web
+  lint: cargo clippy -- -D warnings
+  load-test: echo 'Load testing not implemented yet'
+  test: cargo test
+  integration-test: cargo test --test '*'
+  watch: cargo watch -x run
+  dev: cargo run
