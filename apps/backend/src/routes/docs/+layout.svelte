@@ -24,14 +24,11 @@
 			]
 		},
 		{
-			title: 'CLI Reference',
-			icon: 'solar:terminal-bold',
+			title: 'Package Management',
+			icon: 'solar:box-bold',
 			items: [
-				{ title: 'Commands Overview', href: '/docs/cli-commands' },
-				{ title: 'Project Management', href: '/docs/cli-project' },
-				{ title: 'Package Development', href: '/docs/cli-packages' },
-				{ title: 'Dependency Management', href: '/docs/dependency-management' },
-				{ title: 'Version Management', href: '/docs/version-management' },
+				{ title: 'Project Management', href: '/docs/project-management' },
+				{ title: 'Package Development', href: '/docs/package-development' },
 				{ title: 'Publishing', href: '/docs/publishing' }
 			]
 		},

@@ -8,6 +8,10 @@
     "build": "echo 'Building utils package...'",
     "test": "echo 'Testing utils package...'"
   },
-  "keywords": ["knot", "utilities", "helpers"],
+  "keywords": [
+    "knot",
+    "utilities",
+    "helpers"
+  ],
   "private": true
 }

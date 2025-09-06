@@ -6,9 +6,7 @@
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "bundler",
     "paths": {
-      "#/*": [
-        "./knot_packages/*"
-      ]
+      "#/*": ["./knot_packages/*"]
     },
     "resolveJsonModule": true,
     "skipLibCheck": true,
@@ -16,8 +14,5 @@
     "strict": true
   },
   "extends": "./.svelte-kit/tsconfig.json",
-  "include": [
-    "src/**/*",
-    "knot_packages/**/*"
-  ]
+  "include": ["src/**/*", "knot_packages/**/*"]
 }

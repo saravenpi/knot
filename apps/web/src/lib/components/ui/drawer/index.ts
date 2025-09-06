@@ -6,15 +6,15 @@ const Portal = DrawerPrimitive.Portal;
 const Close = DrawerPrimitive.Close;
 
 export {
-	Root,
-	Trigger,
-	Portal,
-	Close,
-	//
-	Root as Drawer,
-	Trigger as DrawerTrigger,
-	Portal as DrawerPortal,
-	Close as DrawerClose,
+  Root,
+  Trigger,
+  Portal,
+  Close,
+  //
+  Root as Drawer,
+  Trigger as DrawerTrigger,
+  Portal as DrawerPortal,
+  Close as DrawerClose,
 };
 
 export { default as DrawerContent } from "./drawer-content.svelte";

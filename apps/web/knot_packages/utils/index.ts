@@ -4,17 +4,17 @@
  * Format a file size in bytes to a human readable string
  */
 export function formatFileSize(bytes: number): string {
-  const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
-  if (bytes === 0) return '0 B';
+  const sizes = ["B", "KB", "MB", "GB", "TB"];
+  if (bytes === 0) return "0 B";
   const i = Math.floor(Math.log(bytes) / Math.log(1024));
-  return Math.round(bytes / Math.pow(1024, i) * 100) / 100 + ' ' + sizes[i];
+  return Math.round((bytes / Math.pow(1024, i)) * 100) / 100 + " " + sizes[i];
 }
 
 /**
  * Truncate a string to a specified length
  */
 export function truncate(str: string, length: number): string {
-  return str.length > length ? str.substring(0, length) + '...' : str;
+  return str.length > length ? str.substring(0, length) + "..." : str;
 }
 
 /**
@@ -34,10 +34,10 @@ export function formatRelativeTime(date: Date): string {
   const hours = Math.floor(diff / (1000 * 60 * 60));
   const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
-  if (minutes < 1) return 'just now';
+  if (minutes < 1) return "just now";
   if (minutes < 60) return `${minutes}m ago`;
   if (hours < 24) return `${hours}h ago`;
   if (days < 30) return `${days}d ago`;
-  
+
   return date.toLocaleDateString();
 }
