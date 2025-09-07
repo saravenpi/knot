@@ -92,7 +92,9 @@
 
 <span class="text-blue-400">apps:</span>
   <span class="text-blue-400">frontend:</span>
-    <span class="text-blue-400">packages:</span> [<span class="text-green-400">types</span>, <span class="text-green-400">utils</span>]</code></pre>
+    <span class="text-blue-400">packages:</span>
+      - <span class="text-green-400">types</span>
+      - <span class="text-green-400">utils</span></code></pre>
 						</div>
 					</div>
 
@@ -125,7 +127,10 @@
 						<div class="bg-black/90 text-white font-mono text-sm p-4 rounded-lg">
 							<pre><code><span class="text-blue-400">name:</span> frontend
 <span class="text-blue-400">ts_alias:</span> <span class="text-green-400">"#"</span>  <span class="text-gray-500"># Override project default</span>
-<span class="text-blue-400">packages:</span> [<span class="text-green-400">types</span>, <span class="text-green-400">utils</span>, <span class="text-green-400">ui-components</span>]</code></pre>
+<span class="text-blue-400">packages:</span>
+  - <span class="text-green-400">types</span>
+  - <span class="text-green-400">utils</span>
+  - <span class="text-green-400">ui-components</span></code></pre>
 						</div>
 					</div>
 
@@ -134,7 +139,8 @@
 						<div class="bg-black/90 text-white font-mono text-sm p-4 rounded-lg">
 							<pre><code><span class="text-blue-400">name:</span> legacy-app
 <span class="text-blue-400">ts_alias:</span> <span class="text-red-400">false</span>  <span class="text-gray-500"># Disable aliases for this app</span>
-<span class="text-blue-400">packages:</span> [<span class="text-green-400">types</span>]</code></pre>
+<span class="text-blue-400">packages:</span>
+  - <span class="text-green-400">types</span></code></pre>
 						</div>
 					</div>
 				</div>

@@ -148,8 +148,12 @@
 				<div class="bg-black/90 text-white font-mono text-sm p-4 rounded-lg">
 					<pre><code>{@html `<span class="text-gray-400"># Advanced knot.yml configuration</span>
 <span class="text-blue-400">workspaces:</span>
-  <span class="text-blue-400">packages:</span> <span class="text-green-400">["packages/*", "tools/*"]</span>
-  <span class="text-blue-400">apps:</span> <span class="text-green-400">["apps/*", "examples/*"]</span>
+  <span class="text-blue-400">packages:</span>
+    - <span class="text-green-400">"packages/*"</span>
+    - <span class="text-green-400">"tools/*"</span>
+  <span class="text-blue-400">apps:</span>
+    - <span class="text-green-400">"apps/*"</span>
+    - <span class="text-green-400">"examples/*"</span>
 
 <span class="text-blue-400">typescript:</span>
   <span class="text-blue-400">aliases:</span>

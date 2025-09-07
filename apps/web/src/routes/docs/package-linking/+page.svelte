@@ -156,7 +156,10 @@
 						<code><span class="text-gray-400"># From knot.yml or app.yml</span>
 <span class="text-blue-400">apps:</span>
   <span class="text-blue-400">frontend:</span>
-    <span class="text-blue-400">packages:</span> [<span class="text-yellow-400">types</span>, <span class="text-yellow-400">utils</span>, <span class="text-yellow-400">"@team/shared"</span>]</code>
+    <span class="text-blue-400">packages:</span>
+      - <span class="text-yellow-400">types</span>
+      - <span class="text-yellow-400">utils</span>
+      - <span class="text-yellow-400">"@team/shared"</span></code>
 					</div>
 				</div>
 			</div>

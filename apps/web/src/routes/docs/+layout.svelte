@@ -184,10 +184,10 @@
 			<div class="flex h-20 items-center justify-between px-8 border-b border-gray-200">
 				<div class="flex items-center space-x-4">
 					<a href="/docs" class="flex items-center space-x-3 group">
-						<div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center group-hover:bg-blue-700 transition-colors duration-200">
-							<Icon icon="lucide:book-open" class="w-4 h-4 text-white" />
+						<div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center group-hover:bg-gray-200 transition-colors duration-200">
+							<Icon icon="lucide:book-open" class="w-4 h-4 text-gray-700" />
 						</div>
-						<h1 class="text-xl font-semibold text-gray-900 group-hover:text-blue-600 transition-colors duration-200" style="font-family: 'Gambarino', 'Satoshi', sans-serif;">
+						<h1 class="text-xl font-semibold text-gray-900 group-hover:text-black transition-colors duration-200" style="font-family: 'Gambarino', 'Satoshi', sans-serif;">
 							Knot Docs
 						</h1>
 					</a>
@@ -269,8 +269,8 @@
 					<Icon icon="lucide:menu" class="w-5 h-5 text-gray-700" />
 				</button>
 				<div class="flex items-center space-x-2">
-					<div class="w-6 h-6 bg-blue-600 rounded-md flex items-center justify-center">
-						<Icon icon="lucide:book-open" class="w-3 h-3 text-white" />
+					<div class="w-6 h-6 bg-gray-100 rounded-md flex items-center justify-center">
+						<Icon icon="lucide:book-open" class="w-3 h-3 text-gray-700" />
 					</div>
 					<div class="flex flex-col items-center">
 						<h1 class="text-lg font-semibold text-gray-900" style="font-family: 'Gambarino', 'Satoshi', sans-serif;">

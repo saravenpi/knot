@@ -131,7 +131,7 @@
   <!-- Mobile Floating Docs Button -->
   <a 
     href="/docs"
-    class="lg:hidden fixed bottom-20 right-4 z-40 bg-primary text-primary-foreground p-3 rounded-full shadow-lg hover:bg-primary/90 transition-all duration-200 {currentPath.startsWith('/docs') ? 'ring-2 ring-primary ring-offset-2' : ''}"
+    class="lg:hidden fixed bottom-20 right-4 z-40 bg-white text-gray-700 p-3 rounded-full shadow-lg hover:bg-gray-50 transition-all duration-200 border border-gray-200 {currentPath.startsWith('/docs') ? 'ring-2 ring-gray-300 ring-offset-2' : ''}"
     title="Documentation"
   >
     <Icon icon="solar:book-2-bold" class="w-5 h-5" />

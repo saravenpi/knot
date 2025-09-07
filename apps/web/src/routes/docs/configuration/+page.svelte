@@ -454,8 +454,8 @@
 						<div class="text-sm space-y-1">
 							<div>Define in your app.yml:</div>
 							<div class="bg-muted p-2 rounded font-mono text-xs">
-								env:<br>
-								&nbsp;&nbsp;API_URL: "https://api.example.com"
+								<pre><code>env:
+  API_URL: "https://api.example.com"</code></pre>
 							</div>
 						</div>
 					</div>

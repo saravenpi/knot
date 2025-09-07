@@ -114,11 +114,14 @@
   <span class="text-blue-400">web:</span>
     <span class="text-blue-400">description:</span> <span class="text-green-400">"Backend API server for Knot packages"</span>
     <span class="text-blue-400">tsAlias:</span> <span class="text-green-400">"#"</span>                  <span class="text-gray-400"># TypeScript alias prefix</span>
-    <span class="text-blue-400">packages:</span> [<span class="text-yellow-400">types</span>]              <span class="text-gray-400"># Local packages to link</span>
+    <span class="text-blue-400">packages:</span>                          <span class="text-gray-400"># Local packages to link</span>
+      - <span class="text-yellow-400">types</span>
   <span class="text-blue-400">backend:</span>
     <span class="text-blue-400">description:</span> <span class="text-green-400">"Frontend UI for Knot Space package registry"</span>
     <span class="text-blue-400">tsAlias:</span> <span class="text-green-400">true</span>
-    <span class="text-blue-400">packages:</span> [<span class="text-yellow-400">types</span>, <span class="text-yellow-400">utils</span>]
+    <span class="text-blue-400">packages:</span>
+      - <span class="text-yellow-400">types</span>
+      - <span class="text-yellow-400">utils</span>
 
 <span class="text-gray-400"># Package definitions</span>
 <span class="text-blue-400">packages:</span>
@@ -251,7 +254,7 @@
 			<div>
 				<h3 class="text-lg font-semibold mb-3">App Configuration (app.yml)</h3>
 				<div class="bg-black/90 text-white font-mono text-sm p-4 rounded-lg">
-					<code><span class="text-blue-400">name:</span> <span class="text-green-400">knot-space-ui</span>
+					<pre><code>{@html `<span class="text-blue-400">name:</span> <span class="text-green-400">knot-space-ui</span>
 <span class="text-blue-400">description:</span> <span class="text-green-400">Frontend UI for Knot Space package registry</span>
 
 <span class="text-gray-400"># Build configuration</span>
@@ -265,7 +268,7 @@
   <span class="text-blue-400">check:</span> <span class="text-green-400">"npm run check"</span>
   <span class="text-blue-400">lint:</span> <span class="text-green-400">"npm run lint"</span>
   <span class="text-blue-400">format:</span> <span class="text-green-400">"npm run format"</span>
-  <span class="text-blue-400">clean:</span> <span class="text-green-400">"rm -rf .svelte-kit build node_modules"</span></code>
+  <span class="text-blue-400">clean:</span> <span class="text-green-400">"rm -rf .svelte-kit build node_modules"</span>`}</code></pre>
 				</div>
 			</div>
 
