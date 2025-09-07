@@ -1,0 +1,23 @@
+name: ui-components
+version: 2.1.0
+description: Reusable UI components with TypeScript support
+author: saravenpi
+license: MIT
+
+dependencies:
+  - utils  # Local dependency that will use aliases
+  - react@^18.0.0
+  - @types/react@^18.0.0
+
+scripts:
+  build: "tsc && vite build"
+  dev: "vite"
+  test: "jest"
+  storybook: "start-storybook"
+
+exports:
+  ".": "./src/index.ts"
+  "./Button": "./src/Button/index.ts"
+  "./Input": "./src/Input/index.ts"
+  "./DataTable": "./src/DataTable/index.ts"
+  "./Modal": "./src/Modal/index.ts"

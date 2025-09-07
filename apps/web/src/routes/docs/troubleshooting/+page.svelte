@@ -322,6 +322,139 @@
 		</div>
 	</section>
 
+	<!-- Dependency Issues -->
+	<section class="mb-12">
+		<h2 class="text-2xl font-bold mb-6">Dependency Issues</h2>
+
+		<div class="space-y-6">
+			<div class="border rounded-lg p-6">
+				<h3 class="font-semibold mb-3 flex items-center">
+					<Icon icon="lucide:package-x" class="w-5 h-5 mr-2 text-red-600" />
+					Circular dependency detected
+				</h3>
+				<div class="space-y-3 text-sm">
+					<p class="text-muted-foreground">When packages depend on each other in a cycle:</p>
+					<ul class="space-y-1 ml-4 text-muted-foreground">
+						<li>• Identify the circular path using <code>knot deps tree</code></li>
+						<li>• Extract shared logic into a separate package</li>
+						<li>• Use dependency injection or interfaces to break cycles</li>
+						<li>• Consider merging packages if they're tightly coupled</li>
+					</ul>
+					<div class="bg-black/90 text-green-400 font-mono text-sm rounded-lg relative group mt-3">
+						<div class="overflow-x-auto p-4 pr-12">
+							<code class="whitespace-nowrap block">knot deps check --verbose</code>
+						</div>
+						<button 
+							class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100 z-10"
+							on:click={() => copyToClipboard('knot deps check --verbose')}
+						>
+							{#if showCopied && copyText === 'knot deps check --verbose'}
+								<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
+							{:else}
+								<Icon icon="lucide:copy" class="w-4 h-4" />
+							{/if}
+						</button>
+					</div>
+				</div>
+			</div>
+
+			<div class="border rounded-lg p-6">
+				<h3 class="font-semibold mb-3 flex items-center">
+					<Icon icon="lucide:alert-triangle" class="w-5 h-5 mr-2 text-yellow-600" />
+					Version conflicts
+				</h3>
+				<div class="space-y-3 text-sm">
+					<p class="text-muted-foreground">When multiple packages require incompatible versions:</p>
+					<ul class="space-y-1 ml-4 text-muted-foreground">
+						<li>• Use <code>knot deps sync</code> to find and resolve conflicts</li>
+						<li>• Update version constraints to be more flexible</li>
+						<li>• Consider using <code>peerDependencies</code> for shared libraries</li>
+						<li>• Pin to specific versions if needed for stability</li>
+					</ul>
+					<div class="bg-black/90 text-blue-400 font-mono text-sm rounded-lg relative group mt-3">
+						<div class="overflow-x-auto p-4 pr-12">
+							<code class="whitespace-nowrap block">knot deps sync</code>
+						</div>
+						<button 
+							class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100 z-10"
+							on:click={() => copyToClipboard('knot deps sync')}
+						>
+							{#if showCopied && copyText === 'knot deps sync'}
+								<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
+							{:else}
+								<Icon icon="lucide:copy" class="w-4 h-4" />
+							{/if}
+						</button>
+					</div>
+				</div>
+			</div>
+
+			<div class="border rounded-lg p-6">
+				<h3 class="font-semibold mb-3 flex items-center">
+					<Icon icon="lucide:search-x" class="w-5 h-5 mr-2 text-purple-600" />
+					Package not found
+				</h3>
+				<div class="space-y-3 text-sm">
+					<p class="text-muted-foreground">When a dependency cannot be resolved:</p>
+					<ul class="space-y-1 ml-4 text-muted-foreground">
+						<li>• Check package name spelling and case sensitivity</li>
+						<li>• Ensure package exists in local packages/ directory</li>
+						<li>• Verify remote packages are published to the registry</li>
+						<li>• Check authentication for private packages</li>
+						<li>• Use <code>knot search</code> to find available packages</li>
+					</ul>
+					<div class="bg-black/90 text-purple-400 font-mono text-sm rounded-lg relative group mt-3">
+						<div class="overflow-x-auto p-4 pr-12">
+							<code class="whitespace-nowrap block">knot search "package-name"</code>
+						</div>
+						<button 
+							class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100 z-10"
+							on:click={() => copyToClipboard('knot search "package-name"')}
+						>
+							{#if showCopied && copyText === 'knot search "package-name"'}
+								<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
+							{:else}
+								<Icon icon="lucide:copy" class="w-4 h-4" />
+							{/if}
+						</button>
+					</div>
+				</div>
+			</div>
+
+			<div class="border rounded-lg p-6">
+				<h3 class="font-semibold mb-3 flex items-center">
+					<Icon icon="lucide:code-2" class="w-5 h-5 mr-2 text-orange-600" />
+					TypeScript import errors
+				</h3>
+				<div class="space-y-3 text-sm">
+					<p class="text-muted-foreground">When TypeScript can't find package imports:</p>
+					<ul class="space-y-1 ml-4 text-muted-foreground">
+						<li>• Run <code>knot link --force</code> to refresh path mappings</li>
+						<li>• Check if package has been built with <code>knot run build</code></li>
+						<li>• Verify TypeScript alias configuration in app config</li>
+						<li>• Ensure package exports correct types from index.ts</li>
+						<li>• Restart TypeScript language server in your editor</li>
+					</ul>
+					<div class="bg-black/90 text-orange-400 font-mono text-sm rounded-lg relative group mt-3">
+						<div class="overflow-x-auto p-4 pr-12">
+							<code class="whitespace-nowrap block">knot link --force && knot run build</code>
+						</div>
+						<button 
+							class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100 z-10"
+							on:click={() => copyToClipboard('knot link --force && knot run build')}
+						>
+							{#if showCopied && copyText === 'knot link --force && knot run build'}
+								<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
+							{:else}
+								<Icon icon="lucide:copy" class="w-4 h-4" />
+							{/if}
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
 	<!-- Getting Help -->
 	<section class="mb-12">
 		<h2 class="text-2xl font-bold mb-6">Getting Help</h2>
@@ -340,6 +473,7 @@
 							<li>• Join our community discussions</li>
 							<li>• Review the complete documentation</li>
 							<li>• Contact support team</li>
+							<li>• Visit the <a href="/docs/inter-package-dependencies" class="underline">Inter-Package Dependencies guide</a></li>
 						</ul>
 					</div>
 				</div>

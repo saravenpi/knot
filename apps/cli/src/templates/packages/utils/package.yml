@@ -1,0 +1,17 @@
+name: "{{name}}"
+description: "{{description}}"
+version: "{{version}}"
+dependencies:
+  # External npm dependencies
+  external:
+    - date-fns@^2.30.0
+    - lodash@^4.17.21
+  # No internal knot package dependencies for this base utility package
+  internal: []
+scripts:
+  build: "tsc"
+  test: "jest"
+  dev: "tsc --watch"
+  lint: "eslint src --ext .ts"
+  format: "prettier --write src/**/*.ts"
+  clean: "rm -rf dist"

@@ -75,6 +75,66 @@ impl TsAlias {
     }
 }
 
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
+pub struct PackageEntry {
+    pub name: String,
+    #[serde(rename = "as")]
+    pub alias: Option<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
+#[serde(untagged)]
+pub enum PackageSpec {
+    String(String),
+    Object(PackageEntry),
+}
+
+impl PackageSpec {
+    pub fn get_name(&self) -> &str {
+        match self {
+            PackageSpec::String(name) => name,
+            PackageSpec::Object(entry) => &entry.name,
+        }
+    }
+
+    pub fn get_alias(&self) -> Option<&str> {
+        match self {
+            PackageSpec::String(_) => None,
+            PackageSpec::Object(entry) => entry.alias.as_deref(),
+        }
+    }
+
+    pub fn to_package_entry(&self) -> PackageEntry {
+        match self {
+            PackageSpec::String(name) => PackageEntry {
+                name: name.clone(),
+                alias: None,
+            },
+            PackageSpec::Object(entry) => entry.clone(),
+        }
+    }
+
+    pub fn starts_with(&self, prefix: &str) -> bool {
+        self.get_name().starts_with(prefix)
+    }
+
+    pub fn from_string(name: String) -> Self {
+        PackageSpec::String(name)
+    }
+}
+
+impl PartialEq<String> for PackageSpec {
+    fn eq(&self, other: &String) -> bool {
+        self.get_name() == other
+    }
+}
+
+impl PartialEq<&str> for PackageSpec {
+    fn eq(&self, other: &&str) -> bool {
+        self.get_name() == *other
+    }
+}
+
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum AppDependencies {
@@ -82,7 +142,7 @@ pub enum AppDependencies {
     Object {
         #[serde(rename = "tsAlias")]
         ts_alias: Option<TsAlias>,
-        packages: Option<Vec<String>>,
+        packages: Option<Vec<PackageSpec>>,
     },
 }
 
@@ -90,7 +150,27 @@ impl AppDependencies {
     pub fn get_packages(&self) -> Vec<String> {
         match self {
             AppDependencies::List(packages) => packages.clone(),
-            AppDependencies::Object { packages, .. } => packages.clone().unwrap_or_default(),
+            AppDependencies::Object { packages, .. } => {
+                packages.as_ref().map_or_else(Vec::new, |pkgs| {
+                    pkgs.iter().map(|pkg| pkg.get_name().to_string()).collect()
+                })
+            }
+        }
+    }
+
+    pub fn get_package_entries(&self) -> Vec<PackageEntry> {
+        match self {
+            AppDependencies::List(packages) => {
+                packages.iter().map(|name| PackageEntry {
+                    name: name.clone(),
+                    alias: None,
+                }).collect()
+            }
+            AppDependencies::Object { packages, .. } => {
+                packages.as_ref().map_or_else(Vec::new, |pkgs| {
+                    pkgs.iter().map(|pkg| pkg.to_package_entry()).collect()
+                })
+            }
         }
     }
 
@@ -110,6 +190,7 @@ pub struct PackageConfig {
     pub description: Option<String>,
     pub tags: Option<Vec<String>>,
     pub scripts: Option<HashMap<String, String>>,
+    pub dependencies: Option<Vec<String>>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -118,7 +199,7 @@ pub struct AppConfig {
     pub description: Option<String>,
     #[serde(rename = "tsAlias")]
     pub ts_alias: Option<TsAlias>,
-    pub packages: Option<Vec<String>>,
+    pub packages: Option<Vec<PackageSpec>>,
     pub scripts: Option<HashMap<String, String>>,
 }
 
@@ -163,10 +244,33 @@ impl KnotConfig {
             }
         }
 
-        // Validate app names
+        // Validate app names and their package aliases
         if let Some(apps) = &self.apps {
-            for app_name in apps.keys() {
+            let mut global_aliases = std::collections::HashMap::new();
+            
+            for (app_name, app_deps) in apps {
                 self.validate_safe_name(app_name, "App name")?;
+                
+                // Validate aliases within each app and globally
+                let package_entries = app_deps.get_package_entries();
+                for entry in package_entries {
+                    if let Some(alias) = &entry.alias {
+                        self.validate_alias_name(alias)?;
+                        
+                        // Check for global alias conflicts across apps
+                        if let Some((existing_app, existing_package)) = global_aliases.get(alias) {
+                            anyhow::bail!(
+                                "Global alias conflict: alias '{}' is used by package '{}' in app '{}' and package '{}' in app '{}'",
+                                alias,
+                                existing_package,
+                                existing_app,
+                                entry.name,
+                                app_name
+                            );
+                        }
+                        global_aliases.insert(alias.clone(), (app_name.clone(), entry.name.clone()));
+                    }
+                }
             }
         }
 
@@ -187,6 +291,34 @@ impl KnotConfig {
         // Check name length
         if name.len() > 100 {
             anyhow::bail!("{} is too long (max 100 characters): '{}'", context, name);
+        }
+
+        Ok(())
+    }
+
+    pub fn validate_alias_name(&self, alias: &str) -> anyhow::Result<()> {
+        if alias.trim().is_empty() {
+            anyhow::bail!("Alias name cannot be empty");
+        }
+
+        // Alias names must be valid identifiers (safe for use in imports)
+        if !alias.chars().all(|c| c.is_ascii_alphanumeric() || c == '_' || c == '$') {
+            anyhow::bail!("Alias '{}' contains invalid characters. Only alphanumeric characters, underscores, and dollar signs allowed", alias);
+        }
+
+        if alias.starts_with(|c: char| c.is_ascii_digit()) {
+            anyhow::bail!("Alias '{}' cannot start with a digit", alias);
+        }
+
+        // Check for reserved keywords
+        let reserved = ["import", "export", "default", "const", "let", "var", "function", "class", "interface", "type", "namespace", "enum"];
+        if reserved.contains(&alias) {
+            anyhow::bail!("Alias '{}' is a reserved keyword", alias);
+        }
+
+        // Check alias length
+        if alias.len() > 50 {
+            anyhow::bail!("Alias '{}' is too long (max 50 characters)", alias);
         }
 
         Ok(())
@@ -279,6 +411,16 @@ impl PackageConfig {
             }
         }
 
+        // Validate dependencies
+        if let Some(dependencies) = &self.dependencies {
+            for dep in dependencies {
+                if dep.trim().is_empty() {
+                    anyhow::bail!("Dependency name cannot be empty");
+                }
+                self.validate_dependency_name(dep)?;
+            }
+        }
+
         Ok(())
     }
 
@@ -296,6 +438,33 @@ impl PackageConfig {
         // Check name length
         if name.len() > 100 {
             anyhow::bail!("{} is too long (max 100 characters): '{}'", context, name);
+        }
+
+        Ok(())
+    }
+
+    fn validate_dependency_name(&self, dependency: &str) -> anyhow::Result<()> {
+        // Check for dangerous characters (allow @ for online packages)
+        if dependency.contains('\0') || dependency.contains("..") || dependency.contains('\\') {
+            anyhow::bail!("Dependency name contains unsafe characters: '{}'", dependency);
+        }
+
+        // Online dependencies must follow @name or @team/name format
+        if let Some(dep_part) = dependency.strip_prefix('@') {
+            if dep_part.is_empty() {
+                anyhow::bail!("Invalid online dependency name format: '{}'", dependency);
+            }
+            if dep_part.contains("..") || dep_part.contains('\\') || dep_part.contains('\0') {
+                anyhow::bail!("Invalid online dependency name: '{}'", dependency);
+            }
+        } else {
+            // Local dependencies use same validation as other names
+            self.validate_safe_name(dependency, "Dependency name")?;
+        }
+
+        // Check name length
+        if dependency.len() > 100 {
+            anyhow::bail!("Dependency name is too long (max 100 characters): '{}'", dependency);
         }
 
         Ok(())
@@ -346,12 +515,32 @@ impl AppConfig {
 
         // Validate packages
         if let Some(packages) = &self.packages {
+            let mut aliases = std::collections::HashMap::new();
             for package in packages {
-                if package.trim().is_empty() {
+                let package_entry = package.to_package_entry();
+                
+                if package_entry.name.trim().is_empty() {
                     anyhow::bail!("Package name cannot be empty");
                 }
+                
                 // Package names can contain @ for online packages, so use different validation
-                self.validate_package_name(package)?;
+                self.validate_package_name(&package_entry.name)?;
+                
+                // Validate alias if present
+                if let Some(alias) = &package_entry.alias {
+                    self.validate_alias_name(alias)?;
+                    
+                    // Check for alias conflicts
+                    if let Some(existing_package) = aliases.get(alias) {
+                        anyhow::bail!(
+                            "Alias conflict: alias '{}' is used by both '{}' and '{}'",
+                            alias,
+                            existing_package,
+                            package_entry.name
+                        );
+                    }
+                    aliases.insert(alias.clone(), package_entry.name.clone());
+                }
             }
         }
 
@@ -408,5 +597,45 @@ impl AppConfig {
         }
 
         Ok(())
+    }
+
+    pub fn validate_alias_name(&self, alias: &str) -> anyhow::Result<()> {
+        if alias.trim().is_empty() {
+            anyhow::bail!("Alias name cannot be empty");
+        }
+
+        // Alias names must be valid identifiers (safe for use in imports)
+        if !alias.chars().all(|c| c.is_ascii_alphanumeric() || c == '_' || c == '$') {
+            anyhow::bail!("Alias '{}' contains invalid characters. Only alphanumeric characters, underscores, and dollar signs allowed", alias);
+        }
+
+        if alias.starts_with(|c: char| c.is_ascii_digit()) {
+            anyhow::bail!("Alias '{}' cannot start with a digit", alias);
+        }
+
+        // Check for reserved keywords
+        let reserved = ["import", "export", "default", "const", "let", "var", "function", "class", "interface", "type", "namespace", "enum"];
+        if reserved.contains(&alias) {
+            anyhow::bail!("Alias '{}' is a reserved keyword", alias);
+        }
+
+        // Check alias length
+        if alias.len() > 50 {
+            anyhow::bail!("Alias '{}' is too long (max 50 characters)", alias);
+        }
+
+        Ok(())
+    }
+
+    pub fn get_package_entries(&self) -> Vec<PackageEntry> {
+        self.packages.as_ref().map_or_else(Vec::new, |pkgs| {
+            pkgs.iter().map(|pkg| pkg.to_package_entry()).collect()
+        })
+    }
+
+    pub fn get_packages(&self) -> Vec<String> {
+        self.packages.as_ref().map_or_else(Vec::new, |pkgs| {
+            pkgs.iter().map(|pkg| pkg.get_name().to_string()).collect()
+        })
     }
 }

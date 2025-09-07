@@ -29,6 +29,7 @@
 			items: [
 				{ title: 'Project Management', href: '/docs/project-management' },
 				{ title: 'Package Development', href: '/docs/package-development' },
+				{ title: 'Inter-Package Dependencies', href: '/docs/inter-package-dependencies' },
 				{ title: 'Publishing', href: '/docs/publishing' }
 			]
 		},
@@ -54,7 +55,7 @@
 			title: 'Advanced',
 			icon: 'lucide:settings',
 			items: [
-				{ title: 'TypeScript Path Aliases', href: '/docs/aliases' },
+				{ title: 'Package Aliases', href: '/docs/aliases' },
 				{ title: 'Build Optimization', href: '/docs/build-optimization' },
 				{ title: 'Troubleshooting', href: '/docs/troubleshooting' }
 			]

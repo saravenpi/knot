@@ -1,0 +1,14 @@
+name: api-server
+description: API server showcasing @core alias usage
+tsAlias: "@core"  # Override global alias with @core
+
+packages:
+  - utils
+  - data-layer
+  - api-client
+
+scripts:
+  build: "tsc"
+  dev: "tsx watch src/server.ts"
+  test: "jest"
+  start: "node dist/server.js"

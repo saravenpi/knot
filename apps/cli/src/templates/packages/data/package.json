@@ -1,0 +1,43 @@
+{
+  "name": "{{name}}",
+  "version": "{{version}}",
+  "description": "{{description}}",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist",
+    "test": "jest",
+    "lint": "eslint src --ext .ts",
+    "format": "prettier --write src/**/*.ts",
+    "migrate": "prisma migrate dev",
+    "generate": "prisma generate",
+    "seed": "tsx src/seed.ts"
+  },
+  "files": [
+    "dist",
+    "prisma"
+  ],
+  "dependencies": {
+    "@prisma/client": "^4.15.0",
+    "zod": "^3.21.4",
+    "ioredis": "^5.3.2",
+    "mysql2": "^3.3.3",
+    "pg": "^8.11.0",
+    "mongodb": "^5.6.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.0",
+    "@types/pg": "^8.10.1",
+    "@typescript-eslint/eslint-plugin": "^5.59.0",
+    "@typescript-eslint/parser": "^5.59.0",
+    "eslint": "^8.40.0",
+    "jest": "^29.5.0",
+    "prettier": "^2.8.8",
+    "prisma": "^4.15.0",
+    "ts-jest": "^29.1.0",
+    "tsx": "^3.12.7",
+    "typescript": "^5.0.0"
+  }
+}

@@ -196,6 +196,7 @@ pub fn init_package(name: Option<&str>, team: Option<&str>, version: Option<&str
         description: package_description.clone(),
         scripts: None,
         tags: None,
+        dependencies: None,
     };
 
     let yaml_content = serde_yaml::to_string(&config)?;

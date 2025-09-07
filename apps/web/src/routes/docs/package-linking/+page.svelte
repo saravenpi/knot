@@ -252,77 +252,347 @@
 
 	<!-- TypeScript Aliases -->
 	<section class="mb-12">
-		<h2 class="text-2xl font-bold mb-6">TypeScript Aliases</h2>
+		<h2 class="text-2xl font-bold mb-6">TypeScript Aliases with Linking</h2>
 		
 		<div class="space-y-6">
 			<p class="text-muted-foreground">
-				Knot automatically configures TypeScript path mappings based on your chosen alias prefix, 
+				Knot's linking system automatically configures TypeScript path mappings based on your chosen alias prefix, 
 				making package imports clean and consistent across your applications.
 			</p>
 
 			<div>
-				<h3 class="text-lg font-semibold mb-3">Alias Configuration</h3>
+				<h3 class="text-lg font-semibold mb-3">Alias Configuration During Linking</h3>
+				<p class="text-muted-foreground mb-4">
+					When you run <code>knot link</code>, the system reads your alias configuration and updates TypeScript paths accordingly.
+				</p>
 				<div class="bg-black/90 text-white font-mono text-sm p-4 rounded-lg">
 					<code><span class="text-gray-400"># In knot.yml or app.yml</span>
 <span class="text-blue-400">apps:</span>
   <span class="text-blue-400">frontend:</span>
-    <span class="text-blue-400">tsAlias:</span> <span class="text-green-400">"@"</span>        <span class="text-gray-400"># Results in @/package-name</span>
+    <span class="text-blue-400">ts_alias:</span> <span class="text-green-400">"@"</span>        <span class="text-gray-400"># Results in @/package-name</span>
+    <span class="text-blue-400">packages:</span> [<span class="text-yellow-400">ui-components</span>, <span class="text-yellow-400">shared-types</span>]
   <span class="text-blue-400">api:</span>
-    <span class="text-blue-400">tsAlias:</span> <span class="text-green-400">"#"</span>        <span class="text-gray-400"># Results in #/package-name</span>
+    <span class="text-blue-400">ts_alias:</span> <span class="text-green-400">"#"</span>        <span class="text-gray-400"># Results in #/package-name</span>
+    <span class="text-blue-400">packages:</span> [<span class="text-yellow-400">database-models</span>, <span class="text-yellow-400">shared-types</span>]
   <span class="text-blue-400">admin:</span>
-    <span class="text-blue-400">tsAlias:</span> <span class="text-green-400">"~"</span>        <span class="text-gray-400"># Results in ~/package-name</span></code>
+    <span class="text-blue-400">ts_alias:</span> <span class="text-green-400">"~"</span>        <span class="text-gray-400"># Results in ~/package-name</span>
+    <span class="text-blue-400">packages:</span> [<span class="text-yellow-400">admin-components</span>, <span class="text-yellow-400">shared-types</span>]</code>
 				</div>
 			</div>
 
 			<div>
-				<h3 class="text-lg font-semibold mb-3">Import Examples</h3>
-				<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+				<h3 class="text-lg font-semibold mb-3">Generated TypeScript Paths</h3>
+				<p class="text-muted-foreground mb-4">
+					The linking process creates path mappings in each app's <code>tsconfig.json</code> file.
+				</p>
+				<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 					<div>
 						<h4 class="font-medium mb-2">Before Linking</h4>
-						<div class="bg-red-50 border border-red-200 rounded p-3 text-sm font-mono">
-							<span class="text-red-700">// Ugly relative paths</span><br>
-							import * from '../../../packages/utils'
+						<div class="bg-red-50 border border-red-200 rounded p-4 text-sm font-mono">
+							<pre><code><span class="text-red-700">// No path mappings</span>
+{"{"}
+  <span class="text-blue-400">"compilerOptions"</span>: {"{"}
+    <span class="text-blue-400">"baseUrl"</span>: <span class="text-green-400">"."</span>
+  {"}"}
+{"}"}</code></pre>
 						</div>
 					</div>
 					<div>
 						<h4 class="font-medium mb-2">After Linking</h4>
-						<div class="bg-green-50 border border-green-200 rounded p-3 text-sm font-mono">
-							<span class="text-green-700">// Clean alias imports</span><br>
-							import * from '@/utils'
+						<div class="bg-green-50 border border-green-200 rounded p-4 text-sm font-mono">
+							<pre><code><span class="text-green-700">// Clean alias mappings</span>
+{"{"}
+  <span class="text-blue-400">"compilerOptions"</span>: {"{"}
+    <span class="text-blue-400">"baseUrl"</span>: <span class="text-green-400">"."</span>,
+    <span class="text-blue-400">"paths"</span>: {"{"}
+      <span class="text-green-400">"@/ui-components"</span>: [<span class="text-green-400">"./knot_packages/ui-components"</span>],
+      <span class="text-green-400">"@/shared-types"</span>: [<span class="text-green-400">"./knot_packages/shared-types"</span>]
+    {"}"}
+  {"}"}, 
+  <span class="text-blue-400">"include"</span>: [<span class="text-green-400">"knot_packages/**/*"</span>]
+{"}"}</code></pre>
 						</div>
 					</div>
 				</div>
 			</div>
 
 			<div>
-				<h3 class="text-lg font-semibold mb-3">Common Alias Patterns</h3>
-				<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-					<div class="border rounded p-4">
-						<h4 class="font-semibold mb-2">@ Prefix</h4>
-						<div class="text-sm text-muted-foreground space-y-1">
-							<div><code>@/utils</code></div>
-							<div><code>@/types</code></div>
-							<div><code>@/components</code></div>
+				<h3 class="text-lg font-semibold mb-3">Alias Resolution Process</h3>
+				<p class="text-muted-foreground mb-4">
+					Understanding how aliases are resolved during the linking process helps with troubleshooting.
+				</p>
+				
+				<div class="space-y-4">
+					<div class="border rounded-lg p-4">
+						<div class="flex items-center space-x-3 mb-3">
+							<div class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
+								<span class="text-blue-600 font-bold text-xs">1</span>
+							</div>
+							<h4 class="font-semibold">Package Discovery</h4>
 						</div>
-						<div class="text-xs text-muted-foreground mt-2">Most common choice</div>
+						<div class="ml-9">
+							<p class="text-sm text-muted-foreground mb-2">
+								Knot scans your configuration to find which packages each app needs.
+							</p>
+							<div class="bg-black/90 text-white font-mono text-xs p-3 rounded">
+								<code><span class="text-gray-400"># Found packages for frontend app:</span>
+<span class="text-yellow-400">ui-components</span> <span class="text-gray-400">(local)</span>
+<span class="text-yellow-400">shared-types</span> <span class="text-gray-400">(local)</span>
+<span class="text-yellow-400">"@company/design-system"</span> <span class="text-gray-400">(remote)</span></code>
+							</div>
+						</div>
 					</div>
-					<div class="border rounded p-4">
-						<h4 class="font-semibold mb-2"># Prefix</h4>
-						<div class="text-sm text-muted-foreground space-y-1">
-							<div><code>#/utils</code></div>
-							<div><code>#/types</code></div>
-							<div><code>#/components</code></div>
+					
+					<div class="border rounded-lg p-4">
+						<div class="flex items-center space-x-3 mb-3">
+							<div class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+								<span class="text-green-600 font-bold text-xs">2</span>
+							</div>
+							<h4 class="font-semibold">Alias Mapping</h4>
 						</div>
-						<div class="text-xs text-muted-foreground mt-2">Good for backend apps</div>
+						<div class="ml-9">
+							<p class="text-sm text-muted-foreground mb-2">
+								Each package gets mapped to an alias path based on the app's ts_alias setting.
+							</p>
+							<div class="bg-black/90 text-white font-mono text-xs p-3 rounded">
+								<code><span class="text-gray-400"># Generated mappings:</span>
+<span class="text-green-400">"@/ui-components"</span> → <span class="text-blue-400">./knot_packages/ui-components</span>
+<span class="text-green-400">"@/shared-types"</span> → <span class="text-blue-400">./knot_packages/shared-types</span>
+<span class="text-green-400">"@/design-system"</span> → <span class="text-blue-400">./knot_packages/@company_design-system</span></code>
+							</div>
+						</div>
 					</div>
-					<div class="border rounded p-4">
-						<h4 class="font-semibold mb-2">~ Prefix</h4>
-						<div class="text-sm text-muted-foreground space-y-1">
-							<div><code>~/utils</code></div>
-							<div><code>~/types</code></div>
-							<div><code>~/components</code></div>
+					
+					<div class="border rounded-lg p-4">
+						<div class="flex items-center space-x-3 mb-3">
+							<div class="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center">
+								<span class="text-purple-600 font-bold text-xs">3</span>
+							</div>
+							<h4 class="font-semibold">TypeScript Update</h4>
 						</div>
-						<div class="text-xs text-muted-foreground mt-2">Alternative option</div>
+						<div class="ml-9">
+							<p class="text-sm text-muted-foreground mb-2">
+								The app's tsconfig.json is updated with the generated path mappings.
+							</p>
+							<div class="bg-black/90 text-white font-mono text-xs p-3 rounded">
+								<code><span class="text-gray-400"># Updated tsconfig.json paths section</span>
+<span class="text-blue-400">"paths"</span>: {"{"}
+  <span class="text-green-400">"@/*"</span>: [<span class="text-green-400">"./knot_packages/*"</span>]
+{"}"}</code>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div>
+				<h3 class="text-lg font-semibold mb-3">Different Package Types with Aliases</h3>
+				<p class="text-muted-foreground mb-4">
+					See how different types of packages are handled by the alias system during linking.
+				</p>
+				
+				<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+					<div class="border rounded-lg p-4">
+						<h4 class="font-semibold mb-3 flex items-center">
+							<Icon icon="lucide:home" class="w-4 h-4 mr-2 text-blue-600" />
+							Local Packages
+						</h4>
+						<div class="space-y-3">
+							<div class="bg-black/90 text-white font-mono text-xs p-3 rounded">
+								<code><span class="text-gray-400"># Configuration</span>
+<span class="text-blue-400">packages:</span>
+  - <span class="text-yellow-400">user-management</span>
+  - <span class="text-yellow-400">data-validation</span></code>
+							</div>
+							<div class="bg-green-50 border border-green-200 rounded p-3 text-xs font-mono">
+								<code><span class="text-green-700">// Generated imports</span><br>
+import {"{ UserService }"} from '<span class="text-green-600">@/user-management</span>';<br>
+import {"{ validate }"} from '<span class="text-green-600">@/data-validation</span>';</code>
+							</div>
+						</div>
+					</div>
+					
+					<div class="border rounded-lg p-4">
+						<h4 class="font-semibold mb-3 flex items-center">
+							<Icon icon="lucide:users" class="w-4 h-4 mr-2 text-purple-600" />
+							Team Packages
+						</h4>
+						<div class="space-y-3">
+							<div class="bg-black/90 text-white font-mono text-xs p-3 rounded">
+								<code><span class="text-gray-400"># Configuration</span>
+<span class="text-blue-400">packages:</span>
+  - <span class="text-yellow-400">"@myteam/shared-lib"</span>
+  - <span class="text-yellow-400">"@myteam/ui-kit"</span></code>
+							</div>
+							<div class="bg-green-50 border border-green-200 rounded p-3 text-xs font-mono">
+								<code><span class="text-green-700">// Cleaned up imports</span><br>
+import {"{ ApiClient }"} from '<span class="text-green-600">@/shared-lib</span>';<br>
+import {"{ Button }"} from '<span class="text-green-600">@/ui-kit</span>';</code>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div>
+				<h3 class="text-lg font-semibold mb-3">Linking Mode Impact on Aliases</h3>
+				<p class="text-muted-foreground mb-4">
+					Both copy and symlink modes generate the same alias mappings, but with different underlying implementations.
+				</p>
+				
+				<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+					<div class="border rounded-lg p-4 bg-green-50">
+						<h4 class="font-semibold mb-2 text-green-700">Copy Mode</h4>
+						<div class="space-y-2 text-sm">
+							<p class="text-muted-foreground">Packages are copied to knot_packages/</p>
+							<div class="bg-black/90 text-green-400 font-mono text-xs p-2 rounded">
+								<code>knot link</code>
+							</div>
+							<div class="text-xs text-muted-foreground">
+								→ Stable imports<br>
+								→ Production ready<br>
+								→ Version locked
+							</div>
+						</div>
+					</div>
+					
+					<div class="border rounded-lg p-4 bg-purple-50">
+						<h4 class="font-semibold mb-2 text-purple-700">Symlink Mode</h4>
+						<div class="space-y-2 text-sm">
+							<p class="text-muted-foreground">Packages are symlinked to knot_packages/</p>
+							<div class="bg-black/90 text-purple-400 font-mono text-xs p-2 rounded">
+								<code>knot link --symlink</code>
+							</div>
+							<div class="text-xs text-muted-foreground">
+								→ Live updates<br>
+								→ Development mode<br>
+								→ Hot reloading
+							</div>
+						</div>
+					</div>
+				</div>
+				
+				<div class="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4">
+					<div class="flex items-start space-x-3">
+						<Icon icon="lucide:info" class="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+						<div class="text-sm">
+							<h4 class="font-medium text-blue-900 mb-1">Aliases Work the Same</h4>
+							<p class="text-blue-700">
+								Regardless of linking mode, your import statements remain identical. The alias system 
+								abstracts away the underlying file structure, providing consistency across development and production.
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Advanced Alias Linking Scenarios -->
+	<section class="mb-12">
+		<h2 class="text-2xl font-bold mb-6">Advanced Alias Scenarios</h2>
+		
+		<div class="space-y-8">
+			<div class="border rounded-lg p-6">
+				<h3 class="text-lg font-semibold mb-4">Mixed Package Sources</h3>
+				<p class="text-muted-foreground mb-4">
+					When apps use packages from multiple sources, aliases provide a unified import interface.
+				</p>
+				
+				<div class="space-y-4">
+					<div>
+						<h4 class="font-medium mb-2">Complex Configuration</h4>
+						<div class="bg-black/90 text-white font-mono text-sm p-4 rounded-lg">
+							<pre><code><span class="text-blue-400">apps:</span>
+  <span class="text-blue-400">web-app:</span>
+    <span class="text-blue-400">ts_alias:</span> <span class="text-green-400">"@"</span>
+    <span class="text-blue-400">packages:</span>
+      <span class="text-gray-400"># Local packages</span>
+      - <span class="text-yellow-400">shared-types</span>
+      - <span class="text-yellow-400">ui-components</span>
+      <span class="text-gray-400"># Team packages</span>
+      - <span class="text-yellow-400">"@company/design-system"</span>
+      - <span class="text-yellow-400">"@team/analytics"</span>
+      <span class="text-gray-400"># External packages</span>
+      - <span class="text-yellow-400">"@external/charts"</span></code></pre>
+						</div>
+					</div>
+					
+					<div>
+						<h4 class="font-medium mb-2">Unified Import Experience</h4>
+						<div class="bg-black/90 text-white font-mono text-sm p-4 rounded-lg">
+							<pre><code><span class="text-gray-400">// All packages use consistent alias imports</span>
+<span class="text-purple-400">import</span> {"{ "}<span class="text-yellow-400">User</span> {"} "}<span class="text-purple-400">from</span> <span class="text-green-400">'@/shared-types'</span>;        <span class="text-gray-400">// Local</span>
+<span class="text-purple-400">import</span> {"{ "}<span class="text-yellow-400">Button</span> {"} "}<span class="text-purple-400">from</span> <span class="text-green-400">'@/ui-components'</span>;     <span class="text-gray-400">// Local</span>
+<span class="text-purple-400">import</span> {"{ "}<span class="text-yellow-400">Theme</span> {"} "}<span class="text-purple-400">from</span> <span class="text-green-400">'@/design-system'</span>;     <span class="text-gray-400">// Team</span>
+<span class="text-purple-400">import</span> {"{ "}<span class="text-yellow-400">track</span> {"} "}<span class="text-purple-400">from</span> <span class="text-green-400">'@/analytics'</span>;        <span class="text-gray-400">// Team</span>
+<span class="text-purple-400">import</span> {"{ "}<span class="text-yellow-400">LineChart</span> {"} "}<span class="text-purple-400">from</span> <span class="text-green-400">'@/charts'</span>;          <span class="text-gray-400">// External</span></code></pre>
+						</div>
+					</div>
+					
+					<div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+						<div class="flex items-start space-x-3">
+							<Icon icon="lucide:lightbulb" class="w-5 h-5 text-yellow-600 mt-0.5 flex-shrink-0" />
+							<div class="text-sm">
+								<h4 class="font-medium text-yellow-900 mb-1">Package Source Transparency</h4>
+								<p class="text-yellow-700">
+									Developers don't need to remember whether a package is local, from a team registry, or external. 
+									The alias system provides a consistent interface regardless of the package source.
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="border rounded-lg p-6">
+				<h3 class="text-lg font-semibold mb-4">Alias Switching Between Environments</h3>
+				<p class="text-muted-foreground mb-4">
+					Different environments may require different linking strategies while maintaining the same alias imports.
+				</p>
+				
+				<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+					<div class="space-y-4">
+						<h4 class="font-semibold">Development Environment</h4>
+						<div class="border rounded p-4 bg-purple-50">
+							<div class="bg-black/90 text-purple-400 font-mono text-sm p-3 rounded mb-3">
+								<code>knot link --symlink</code>
+							</div>
+							<ul class="text-xs text-muted-foreground space-y-1">
+								<li>• Live package updates</li>
+								<li>• Fast iteration cycle</li>
+								<li>• Hot module replacement</li>
+								<li>• Real-time debugging</li>
+							</ul>
+						</div>
+					</div>
+					
+					<div class="space-y-4">
+						<h4 class="font-semibold">Production Environment</h4>
+						<div class="border rounded p-4 bg-green-50">
+							<div class="bg-black/90 text-green-400 font-mono text-sm p-3 rounded mb-3">
+								<code>knot link</code>
+							</div>
+							<ul class="text-xs text-muted-foreground space-y-1">
+								<li>• Stable package versions</li>
+								<li>• Docker compatibility</li>
+								<li>• Predictable builds</li>
+								<li>• Version control friendly</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+				
+				<div class="mt-4 bg-green-50 border border-green-200 rounded-lg p-4">
+					<div class="flex items-start space-x-3">
+						<Icon icon="lucide:check-circle" class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+						<div class="text-sm">
+							<h4 class="font-medium text-green-900 mb-1">Same Code, Different Linking</h4>
+							<p class="text-green-700">
+								Your application code remains unchanged between development and production. 
+								Only the linking strategy changes, while aliases provide consistent import paths.
+							</p>
+						</div>
 					</div>
 				</div>
 			</div>

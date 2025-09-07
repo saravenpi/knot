@@ -1,0 +1,10 @@
+name: utils
+description: Shared utility functions for Knot applications with online dependencies
+version: 1.0.0
+dependencies:
+  - "@types/node"
+  - "@types/lodash@^4.14.0"
+  - "axios@^1.0.0"
+scripts:
+  build: "echo 'Building utils package...'"
+  test: "echo 'Testing utils package...'"

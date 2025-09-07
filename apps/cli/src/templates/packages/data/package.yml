@@ -1,0 +1,25 @@
+name: "{{name}}"
+description: "{{description}}"
+version: "{{version}}"
+dependencies:
+  # Heavy external npm dependencies for database operations
+  external:
+    - "@prisma/client@^4.15.0"
+    - "zod@^3.21.4"
+    - "ioredis@^5.3.2"
+    - "mysql2@^3.3.3"
+    - "pg@^8.11.0"
+    - "mongodb@^5.6.0"
+  # Internal knot package dependencies
+  internal:
+    - utils # Uses validation, formatting, and helper functions
+scripts:
+  build: "tsc"
+  test: "jest"
+  dev: "tsc --watch"
+  lint: "eslint src --ext .ts"
+  format: "prettier --write src/**/*.ts"
+  clean: "rm -rf dist"
+  migrate: "prisma migrate dev"
+  generate: "prisma generate"
+  seed: "tsx src/seed.ts"

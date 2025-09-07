@@ -1,0 +1,20 @@
+name: "{{name}}"
+description: "{{description}}"
+version: "{{version}}"
+dependencies:
+  # External npm dependencies
+  external:
+    - clsx@^1.2.1
+    - framer-motion@^10.12.16
+  # Internal knot package dependencies
+  internal:
+    - utils # Depends on the utils package for validation, formatting, and helpers
+scripts:
+  build: "tsc"
+  test: "jest"
+  dev: "tsc --watch"
+  lint: "eslint src --ext .ts,.tsx"
+  format: "prettier --write src/**/*.{ts,tsx}"
+  storybook: "storybook dev -p 6006"
+  build-storybook: "storybook build"
+  clean: "rm -rf dist"

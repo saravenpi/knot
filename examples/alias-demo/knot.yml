@@ -1,0 +1,38 @@
+name: alias-demo
+description: Comprehensive demonstration of Knot's package alias system
+tsAlias: "#"  # Global alias prefix for all apps
+
+apps:
+  dashboard-app:
+    tsAlias: "@ui"  # App-specific alias override
+    packages:
+      - utils
+      - ui-components
+      - data-layer
+      - @saravenpi/icons@latest
+
+  api-server:
+    tsAlias: "@core"  # Different alias for API server
+    packages:
+      - utils
+      - data-layer
+      - api-client
+
+  mobile-app:
+    # Uses global tsAlias: "#" (inherited)
+    packages:
+      - ui-components
+      - utils
+      - @saravenpi/mobile-utils@^1.0.0
+
+  analytics:
+    tsAlias: "$"  # Short alias for analytics
+    packages:
+      - utils
+      - data-layer
+      - @saravenpi/charts@latest
+
+scripts:
+  build: "bun run build:all"
+  test: "bun run test:all"
+  dev: "bun run dev:all"

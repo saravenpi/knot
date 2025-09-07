@@ -2,6 +2,7 @@ use crate::project::Project;
 use anyhow::{Context, Result};
 use regex::Regex;
 use serde_json::{json, Value};
+use std::collections::HashMap;
 use std::fs;
 use std::path::Path;
 
@@ -19,26 +20,121 @@ impl<'a> TypeScriptManager<'a> {
 
         for app_name in app_names {
             if let Some(alias) = self.project.get_app_ts_alias(&app_name) {
-                self.setup_tsconfig_alias(&app_name, &alias)?;
+                self.setup_tsconfig_aliases(&app_name, &alias)?;
             }
         }
         Ok(())
     }
 
-    pub fn setup_tsconfig_alias(&self, app_name: &str, alias: &str) -> Result<()> {
+    pub fn setup_tsconfig_aliases(&self, app_name: &str, alias_prefix: &str) -> Result<()> {
         let app_dir = self.project.root.join("apps").join(app_name);
         let tsconfig_path = app_dir.join("tsconfig.json");
 
+        // Get the packages for this app
+        let package_names = self.project.get_app_dependencies(app_name);
+        
+        // Generate package-specific aliases
+        let package_aliases = self.generate_package_aliases(&package_names, alias_prefix)?;
+
         if tsconfig_path.exists() {
-            self.update_existing_tsconfig(&tsconfig_path, alias)?;
+            self.update_existing_tsconfig_with_aliases(&tsconfig_path, &package_aliases)?
         } else {
-            self.create_default_tsconfig(&tsconfig_path, alias)?;
+            self.create_default_tsconfig_with_aliases(&tsconfig_path, &package_aliases)?
         }
 
         Ok(())
     }
 
-    fn update_existing_tsconfig(&self, tsconfig_path: &Path, alias: &str) -> Result<()> {
+    /// Generate package-specific aliases with validation
+    fn generate_package_aliases(&self, package_names: &[String], alias_prefix: &str) -> Result<HashMap<String, String>> {
+        let mut aliases = HashMap::new();
+        
+        for package_name in package_names {
+            // Skip online packages (those starting with @)
+            if package_name.starts_with('@') {
+                continue;
+            }
+
+            let alias_name = format!("{}{}", alias_prefix, package_name);
+            
+            // Validate that the alias is a valid TypeScript identifier
+            self.validate_typescript_identifier(&alias_name, package_name)?;
+            
+            let package_path = format!("./knot_packages/{}/*", package_name);
+            aliases.insert(alias_name, package_path);
+        }
+        
+        Ok(aliases)
+    }
+
+    /// Validate that an alias is a valid TypeScript identifier and not a reserved word
+    fn validate_typescript_identifier(&self, alias: &str, package_name: &str) -> Result<()> {
+        // Check if it's a valid identifier format
+        if !self.is_valid_identifier(alias) {
+            anyhow::bail!(
+                "Invalid TypeScript alias '{}' for package '{}'. Aliases must be valid JavaScript identifiers.",
+                alias, package_name
+            );
+        }
+
+        // Check if it's a TypeScript reserved word
+        if self.is_typescript_reserved_word(alias) {
+            anyhow::bail!(
+                "TypeScript alias '{}' for package '{}' conflicts with a reserved word. Please use a different alias prefix.",
+                alias, package_name
+            );
+        }
+
+        Ok(())
+    }
+
+    /// Check if a string is a valid JavaScript/TypeScript identifier
+    fn is_valid_identifier(&self, name: &str) -> bool {
+        if name.is_empty() {
+            return false;
+        }
+
+        let mut chars = name.chars();
+        let first_char = chars.next().unwrap();
+        
+        // First character must be a letter, underscore, or dollar sign
+        if !first_char.is_ascii_alphabetic() && first_char != '_' && first_char != '$' {
+            return false;
+        }
+
+        // Remaining characters must be letters, digits, underscores, or dollar signs
+        for ch in chars {
+            if !ch.is_ascii_alphanumeric() && ch != '_' && ch != '$' {
+                return false;
+            }
+        }
+
+        true
+    }
+
+    /// Check if a name is a TypeScript reserved word
+    fn is_typescript_reserved_word(&self, name: &str) -> bool {
+        const TYPESCRIPT_RESERVED_WORDS: &[&str] = &[
+            // JavaScript reserved words
+            "break", "case", "catch", "class", "const", "continue", "debugger",
+            "default", "delete", "do", "else", "enum", "export", "extends",
+            "false", "finally", "for", "function", "if", "import", "in",
+            "instanceof", "new", "null", "return", "super", "switch",
+            "this", "throw", "true", "try", "typeof", "var", "void",
+            "while", "with", "yield", "let", "static", "implements",
+            "interface", "package", "private", "protected", "public",
+            // TypeScript specific keywords
+            "abstract", "any", "boolean", "constructor", "declare",
+            "get", "module", "require", "number", "set", "string",
+            "symbol", "type", "from", "of", "as", "async", "await",
+            "namespace", "readonly", "keyof", "unique", "infer",
+            "is", "asserts", "never", "object", "unknown", "bigint",
+        ];
+
+        TYPESCRIPT_RESERVED_WORDS.contains(&name)
+    }
+
+    fn update_existing_tsconfig_with_aliases(&self, tsconfig_path: &Path, package_aliases: &HashMap<String, String>) -> Result<()> {
         let content = fs::read_to_string(tsconfig_path)
             .with_context(|| format!("Failed to read {:?}", tsconfig_path))?;
 
@@ -82,28 +178,16 @@ impl<'a> TypeScriptManager<'a> {
             .as_object_mut()
             .ok_or_else(|| anyhow::anyhow!("paths is not an object"))?;
 
-        // Add or append to the path alias
-        let knot_packages_path = format!("{}/*", alias);
-        let new_path = "./knot_packages/*";
+        // Clear existing knot_packages paths and add package-specific aliases
+        // Remove any existing knot_packages related paths with similar patterns
+        paths_obj.retain(|key, _| {
+            !key.contains("knot_packages") && !key.starts_with("#")
+        });
 
-        // Check if this path alias already exists
-        if let Some(existing_paths) = paths_obj.get_mut(&knot_packages_path) {
-            // If it exists, ensure it's an array and append if not already present
-            match existing_paths {
-                Value::Array(arr) => {
-                    let new_path_value = Value::String(new_path.to_string());
-                    if !arr.contains(&new_path_value) {
-                        arr.push(new_path_value);
-                    }
-                }
-                _ => {
-                    // If it's not an array, convert it to one with the new path
-                    *existing_paths = json!([new_path]);
-                }
-            }
-        } else {
-            // Path doesn't exist, create it
-            paths_obj.insert(knot_packages_path, json!([new_path]));
+        // Add package-specific aliases
+        for (alias_name, package_path) in package_aliases {
+            let alias_pattern = format!("{}/*", alias_name);
+            paths_obj.insert(alias_pattern, json!([package_path]));
         }
 
         // Handle the include array - add knot_packages/**/* if not present
@@ -148,6 +232,12 @@ impl<'a> TypeScriptManager<'a> {
                 eprintln!("💡 Creating a fresh tsconfig with minimal configuration...");
                 
                 // Fallback: create a minimal but correct tsconfig
+                let mut paths_obj = serde_json::Map::new();
+                for (alias_name, package_path) in package_aliases {
+                    let alias_pattern = format!("{}/*", alias_name);
+                    paths_obj.insert(alias_pattern, json!([package_path]));
+                }
+                
                 let fallback_tsconfig = json!({
                     "compilerOptions": {
                         "target": "es2020",
@@ -158,9 +248,7 @@ impl<'a> TypeScriptManager<'a> {
                         "strict": true,
                         "skipLibCheck": true,
                         "forceConsistentCasingInFileNames": true,
-                        "paths": {
-                            format!("{}/*", alias): ["./knot_packages/*"]
-                        }
+                        "paths": paths_obj
                     },
                     "include": ["src/**/*", "knot_packages/**/*"],
                     "exclude": ["node_modules", "dist"]
@@ -174,7 +262,12 @@ impl<'a> TypeScriptManager<'a> {
         fs::write(tsconfig_path, updated_content)
             .with_context(|| format!("Failed to write updated tsconfig to {:?}", tsconfig_path))?;
 
-        println!("✅ Updated tsconfig.json with alias '{}' and knot_packages include", alias);
+        let alias_count = package_aliases.len();
+        if alias_count > 0 {
+            println!("✅ Updated tsconfig.json with {} package aliases and knot_packages include", alias_count);
+        } else {
+            println!("✅ Updated tsconfig.json (no local packages found to alias)");
+        }
         Ok(())
     }
 
@@ -316,8 +409,12 @@ impl<'a> TypeScriptManager<'a> {
     }
 
 
-    fn create_default_tsconfig(&self, tsconfig_path: &Path, alias: &str) -> Result<()> {
-        let knot_packages_path = format!("{}/*", alias);
+    fn create_default_tsconfig_with_aliases(&self, tsconfig_path: &Path, package_aliases: &HashMap<String, String>) -> Result<()> {
+        let mut paths_obj = serde_json::Map::new();
+        for (alias_name, package_path) in package_aliases {
+            let alias_pattern = format!("{}/*", alias_name);
+            paths_obj.insert(alias_pattern, json!([package_path]));
+        }
 
         let tsconfig = json!({
             "compilerOptions": {
@@ -330,9 +427,7 @@ impl<'a> TypeScriptManager<'a> {
                 "strict": true,
                 "skipLibCheck": true,
                 "forceConsistentCasingInFileNames": true,
-                "paths": {
-                    knot_packages_path: ["./knot_packages/*"]
-                }
+                "paths": paths_obj
             },
             "include": ["src/**/*", "knot_packages/**/*"],
             "exclude": ["node_modules", "dist"]
@@ -342,7 +437,12 @@ impl<'a> TypeScriptManager<'a> {
         fs::write(tsconfig_path, content)
             .with_context(|| format!("Failed to create default tsconfig at {:?}", tsconfig_path))?;
 
-        println!("✅ Created tsconfig.json with alias '{}' and knot_packages include", alias);
+        let alias_count = package_aliases.len();
+        if alias_count > 0 {
+            println!("✅ Created tsconfig.json with {} package aliases and knot_packages include", alias_count);
+        } else {
+            println!("✅ Created tsconfig.json (no local packages found to alias)");
+        }
         Ok(())
     }
 }

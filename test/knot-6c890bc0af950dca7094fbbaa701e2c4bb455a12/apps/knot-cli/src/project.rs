@@ -124,7 +124,7 @@ impl Project {
 
         if let Some(app_config) = self.apps.get(app_name) {
             if let Some(packages) = &app_config.packages {
-                dependencies.extend(packages.clone());
+                dependencies.extend(packages.iter().map(|pkg| pkg.get_name().to_string()));
             }
         }
 
@@ -144,6 +144,69 @@ impl Project {
         names.sort();
         names.dedup();
         names
+    }
+
+    pub fn get_app_package_entries(&self, app_name: &str) -> Result<Vec<crate::config::PackageEntry>, anyhow::Error> {
+        let mut package_entries = Vec::new();
+
+        // Get packages from knot.yml app dependencies
+        if let Some(app_deps) = self
+            .config
+            .apps
+            .as_ref()
+            .and_then(|apps| apps.get(app_name))
+        {
+            package_entries.extend(app_deps.get_package_entries());
+        }
+
+        // Get packages from app.yml
+        if let Some(app_config) = self.apps.get(app_name) {
+            if let Some(packages) = &app_config.packages {
+                package_entries.extend(packages.iter().map(|pkg| pkg.to_package_entry()));
+            }
+        }
+
+        // Remove duplicates, preferring entries with aliases
+        let mut unique_entries: std::collections::HashMap<String, crate::config::PackageEntry> = std::collections::HashMap::new();
+        for entry in package_entries {
+            if let Some(existing) = unique_entries.get(&entry.name) {
+                // Keep the entry that has an alias, or the first one if both have/don't have aliases
+                if existing.alias.is_none() && entry.alias.is_some() {
+                    unique_entries.insert(entry.name.clone(), entry);
+                }
+            } else {
+                unique_entries.insert(entry.name.clone(), entry);
+            }
+        }
+
+        let mut result: Vec<_> = unique_entries.into_values().collect();
+        result.sort_by(|a, b| a.name.cmp(&b.name));
+        
+        // Check for alias conflicts
+        self.validate_alias_conflicts(&result)?;
+        
+        Ok(result)
+    }
+
+    fn validate_alias_conflicts(&self, package_entries: &[crate::config::PackageEntry]) -> Result<(), anyhow::Error> {
+        let mut target_names = std::collections::HashMap::new();
+        
+        for entry in package_entries {
+            let target_name = entry.alias.as_ref().unwrap_or(&entry.name);
+            
+            if let Some(existing_package) = target_names.get(target_name) {
+                if *existing_package != &entry.name {
+                    anyhow::bail!(
+                        "Alias conflict detected: both '{}' and '{}' would be linked as '{}'",
+                        existing_package, entry.name, target_name
+                    );
+                }
+            } else {
+                target_names.insert(target_name, &entry.name);
+            }
+        }
+        
+        Ok(())
     }
 
     pub fn get_app_ts_alias(&self, app_name: &str) -> Option<String> {
@@ -172,5 +235,87 @@ impl Project {
         }
 
         None
+    }
+
+    pub fn get_package_dependencies(&self, package_name: &str) -> Vec<String> {
+        if let Some(package_config) = self.packages.get(package_name) {
+            package_config.dependencies.clone().unwrap_or_default()
+        } else {
+            Vec::new()
+        }
+    }
+
+    pub fn resolve_all_dependencies(&self, initial_deps: &[String]) -> Result<Vec<String>, anyhow::Error> {
+        use std::collections::{HashMap, HashSet, VecDeque};
+        
+        let mut resolved = Vec::new();
+        let mut visited = HashSet::new();
+        let mut queue = VecDeque::from(initial_deps.to_vec());
+        let mut dependency_versions: HashMap<String, String> = HashMap::new();
+
+        while let Some(dependency) = queue.pop_front() {
+            if visited.contains(&dependency) {
+                continue;
+            }
+
+            visited.insert(dependency.clone());
+            
+            // Handle version conflicts for online dependencies
+            if dependency.starts_with('@') {
+                let (dep_name, version) = self.parse_dependency_spec(&dependency);
+                
+                if let Some(existing_version) = dependency_versions.get(&dep_name) {
+                    if let Some(current_version) = &version {
+                        if existing_version != current_version {
+                            eprintln!(
+                                "Warning: Version conflict for {}: {} vs {}. Using {}",
+                                dep_name, existing_version, current_version, existing_version
+                            );
+                        }
+                    }
+                } else if let Some(version) = version {
+                    dependency_versions.insert(dep_name.clone(), version);
+                }
+            }
+
+            resolved.push(dependency.clone());
+
+            // If it's a local package, get its dependencies recursively
+            if !dependency.starts_with('@') {
+                let package_deps = self.get_package_dependencies(&dependency);
+                for dep in package_deps {
+                    if !visited.contains(&dep) {
+                        queue.push_back(dep);
+                    }
+                }
+            }
+        }
+
+        Ok(resolved)
+    }
+
+    fn parse_dependency_spec(&self, dependency: &str) -> (String, Option<String>) {
+        if dependency.starts_with('@') {
+            // Handle scoped packages like @hono-modules-loader@0.2.5
+            if let Some(at_pos) = dependency[1..].find('@') {
+                // Found a second @ after the first one
+                let at_pos = at_pos + 1; // Adjust for the skipped first character
+                let name = dependency[..at_pos].to_string();
+                let version = dependency[at_pos + 1..].to_string();
+                (name, Some(version))
+            } else {
+                // No version specified, just the scoped package name
+                (dependency.to_string(), None)
+            }
+        } else {
+            // Handle regular packages like package-name@1.0.0
+            if let Some(at_pos) = dependency.rfind('@') {
+                let name = dependency[..at_pos].to_string();
+                let version = dependency[at_pos + 1..].to_string();
+                (name, Some(version))
+            } else {
+                (dependency.to_string(), None)
+            }
+        }
     }
 }

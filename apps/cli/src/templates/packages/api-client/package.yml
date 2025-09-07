@@ -1,0 +1,23 @@
+name: "{{name}}"
+description: "{{description}}"
+version: "{{version}}"
+dependencies:
+  # External npm dependencies
+  external:
+    - "axios@^1.4.0"
+    - "axios-retry@^3.4.0"
+    - "qs@^6.11.2"
+    - "@openapi-generator-cli/cli@^2.7.0"
+  # Internal knot package dependencies - depends on multiple packages
+  internal:
+    - utils # Uses validation, formatting, retry logic, and helper functions
+    - data  # Uses types and schemas for API data structures
+scripts:
+  build: "tsc"
+  test: "jest"
+  dev: "tsc --watch"
+  lint: "eslint src --ext .ts"
+  format: "prettier --write src/**/*.ts"
+  clean: "rm -rf dist"
+  generate-client: "openapi-generator-cli generate"
+  test:integration: "jest --testPathPattern=integration"

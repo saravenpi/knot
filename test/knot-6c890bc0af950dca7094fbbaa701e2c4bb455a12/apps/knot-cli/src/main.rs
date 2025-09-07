@@ -1,11 +1,15 @@
 mod commands;
 mod config;
+mod dependency_manager;
 mod downloader;
 mod ignore;
 mod linker;
 mod project;
 mod templates;
 mod typescript;
+
+#[cfg(test)]
+mod test_aliases;
 
 use anyhow::Result;
 use clap::{Arg, Command};

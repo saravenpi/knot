@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "es2020",
+    "lib": ["es2020"],
+    "module": "esnext",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "paths": {
+      "#types/*": ["./knot_packages/types/*"],
+      "#utils/*": ["./knot_packages/utils/*"]
+    }
+  },
+  "include": ["src/**/*", "knot_packages/**/*"],
+  "exclude": ["node_modules", "dist"]
+}

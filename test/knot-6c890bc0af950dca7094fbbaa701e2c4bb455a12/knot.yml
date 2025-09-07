@@ -15,14 +15,9 @@ scripts:
 apps:
   knot-cli:
     description: "The Knot CLI tool for monorepo package management"
-  knot-space:
-    description: "Online repository server for Knot packages"
-    tsAlias: "#"
-    packages: [types]
   knot-space-ui:
     description: "Frontend UI for Knot Space package registry"
     tsAlias: true
-    packages: [types, utils]
 
 packages:
   types:

@@ -488,6 +488,34 @@ impl DependencyResolver {
         Vec::new()
     }
 
+    pub fn get_local_registry(&self) -> &LocalPackageRegistry {
+        &self.local_registry
+    }
+
+    pub fn get_local_registry_mut(&mut self) -> &mut LocalPackageRegistry {
+        &mut self.local_registry
+    }
+
+    pub fn get_remote_registry(&self) -> &RemotePackageRegistry {
+        &self.remote_registry
+    }
+
+    pub fn get_remote_registry_mut(&mut self) -> &mut RemotePackageRegistry {
+        &mut self.remote_registry
+    }
+
+    pub fn get_cache(&self) -> &ResolutionCache {
+        &self.cache
+    }
+
+    pub async fn clear_cache(&mut self) -> ResolutionResult<()> {
+        self.cache.clear_cache().await
+    }
+
+    pub async fn get_cache_stats(&self) -> crate::dependency::cache::CacheStats {
+        self.cache.cache_stats()
+    }
+
     fn generate_warnings(&self, resolution: &HashMap<PackageId, PackageVersion>) -> Vec<String> {
         let mut warnings = Vec::new();
 
@@ -502,6 +530,9 @@ impl DependencyResolver {
             }
         }
 
+        // Check for security vulnerabilities (placeholder for future implementation)
+        // TODO: Integrate with vulnerability databases
+        
         // Check for major version conflicts (different major versions of same package)
         let mut major_versions: HashMap<String, HashSet<u64>> = HashMap::new();
         for (package_id, package_version) in resolution {
@@ -521,6 +552,99 @@ impl DependencyResolver {
         }
 
         warnings
+    }
+
+    pub async fn get_package_info(&self, package_id: &PackageId) -> ResolutionResult<Vec<PackageVersion>> {
+        self.discover_package_versions(package_id).await
+    }
+
+    pub async fn update_package_cache(&mut self, package_id: &PackageId) -> ResolutionResult<()> {
+        // Invalidate cache for this package
+        self.cache.invalidate_package_cache(&package_id.name).await?;
+        
+        // Re-discover package versions
+        let _versions = self.discover_package_versions(package_id).await?;
+        
+        Ok(())
+    }
+
+    pub fn set_context(&mut self, context: ResolutionContext) {
+        self.context = context;
+    }
+
+    pub fn get_context(&self) -> &ResolutionContext {
+        &self.context
+    }
+
+    // Enhanced dependency analysis methods
+    pub async fn analyze_package_ecosystem(&self, package_id: &PackageId) -> ResolutionResult<PackageEcosystemAnalysis> {
+        let versions = self.discover_package_versions(package_id).await?;
+        
+        let mut analysis = PackageEcosystemAnalysis {
+            package_id: package_id.clone(),
+            available_versions: versions.len(),
+            latest_version: None,
+            dependency_count: 0,
+            dependents: Vec::new(),
+            security_advisories: Vec::new(),
+            maintenance_status: MaintenanceStatus::Unknown,
+        };
+        
+        if let Some(latest) = versions.iter().max_by(|a, b| a.version.cmp(&b.version)) {
+            analysis.latest_version = Some(latest.version.clone());
+            analysis.dependency_count = latest.dependencies.len() + latest.dev_dependencies.len();
+        }
+        
+        // TODO: Add more sophisticated analysis
+        
+        Ok(analysis)
+    }
+
+    pub async fn find_dependency_path(&self, from_package: &PackageId, to_package: &PackageId) -> ResolutionResult<Option<Vec<PackageId>>> {
+        // This would find the shortest dependency path between two packages
+        let mut queue = std::collections::VecDeque::new();
+        let mut visited = std::collections::HashSet::new();
+        let mut parent_map = std::collections::HashMap::new();
+        
+        queue.push_back(from_package.clone());
+        visited.insert(from_package.clone());
+        
+        while let Some(current) = queue.pop_front() {
+            if current == *to_package {
+                // Reconstruct path
+                let mut path = Vec::new();
+                let mut node = to_package.clone();
+                
+                while node != *from_package {
+                    path.push(node.clone());
+                    if let Some(parent) = parent_map.get(&node) {
+                        node = parent.clone();
+                    } else {
+                        break;
+                    }
+                }
+                
+                path.push(from_package.clone());
+                path.reverse();
+                return Ok(Some(path));
+            }
+            
+            // Get dependencies of current package
+            if let Ok(versions) = self.discover_package_versions(&current).await {
+                if let Some(version) = versions.first() {
+                    let deps = version.get_applicable_dependencies(&self.context);
+                    for dep in deps {
+                        if !visited.contains(&dep.id) {
+                            visited.insert(dep.id.clone());
+                            parent_map.insert(dep.id.clone(), current.clone());
+                            queue.push_back(dep.id.clone());
+                        }
+                    }
+                }
+            }
+        }
+        
+        Ok(None)
     }
 }
 
@@ -551,4 +675,43 @@ fn edit_distance(s1: &str, s2: &str) -> usize {
     }
 
     dp[len1][len2]
+}
+
+// Additional analysis types
+#[derive(Debug, Clone)]
+pub struct PackageEcosystemAnalysis {
+    pub package_id: PackageId,
+    pub available_versions: usize,
+    pub latest_version: Option<semver::Version>,
+    pub dependency_count: usize,
+    pub dependents: Vec<PackageId>,
+    pub security_advisories: Vec<SecurityAdvisory>,
+    pub maintenance_status: MaintenanceStatus,
+}
+
+#[derive(Debug, Clone)]
+pub struct SecurityAdvisory {
+    pub id: String,
+    pub severity: SecuritySeverity,
+    pub title: String,
+    pub description: String,
+    pub affected_versions: semver::VersionReq,
+    pub fixed_version: Option<semver::Version>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum SecuritySeverity {
+    Critical,
+    High,
+    Medium,
+    Low,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum MaintenanceStatus {
+    Active,
+    Maintained,
+    Deprecated,
+    Unmaintained,
+    Unknown,
 }

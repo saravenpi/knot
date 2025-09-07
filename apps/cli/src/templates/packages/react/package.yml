@@ -1,0 +1,12 @@
+name: "{{name}}"
+description: "{{description}}"
+version: "{{version}}"
+dependencies:
+  # No external dependencies besides React peer deps
+  external: []
+  # No internal knot package dependencies for basic React package
+  internal: []
+scripts:
+  build: "tsc"
+  dev: "tsc --watch"
+  clean: "rm -rf dist"

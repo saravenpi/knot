@@ -2,6 +2,12 @@ name: knot-space-ui
 description: Frontend UI for Knot Space package registry
 build: "npm run build"
 
+packages:
+  - name: types
+    as: shared-types
+  - name: utils
+    as: shared-utils
+
 # Frontend-specific scripts
 scripts:
   dev: "npm run dev"

@@ -1,7 +1,7 @@
 use anyhow::{Context, Result};
 use std::fs;
 
-use crate::config::AppConfig;
+use crate::config::{AppConfig, PackageSpec};
 use crate::linker::Linker;
 use crate::project::Project;
 use crate::typescript::TypeScriptManager;
@@ -122,16 +122,19 @@ pub async fn add_package(package_spec: &str, auto_link: bool) -> Result<()> {
     let packages = app_config.packages.as_mut().unwrap();
 
     // Check if package (with same version) is already added
-    if packages.contains(&storage_spec) {
+    if packages.iter().any(|p| p.get_name() == &storage_spec) {
         println!("📦 Package '{}' is already added to app '{}'", display_name, app_config.name);
         return Ok(());
     }
 
     // Remove any existing versions of the same package
-    packages.retain(|p| !p.starts_with(&format!("{}@", package_name)) && p != &package_name);
+    packages.retain(|p| {
+        let name = p.get_name();
+        !name.starts_with(&format!("{}@", package_name)) && name != &package_name
+    });
 
     // Add the package with version specification (always includes version)
-    packages.push(storage_spec.clone());
+    packages.push(PackageSpec::String(storage_spec.clone()));
 
     // Save updated config
     let yaml_content = serde_yaml::to_string(&app_config)?;

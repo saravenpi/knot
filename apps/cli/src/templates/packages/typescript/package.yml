@@ -1,0 +1,13 @@
+name: "{{name}}"
+description: "{{description}}"
+version: "{{version}}"
+dependencies:
+  # No external dependencies for basic TypeScript package
+  external: []
+  # No internal knot package dependencies for basic package
+  internal: []
+scripts:
+  build: "tsc"
+  dev: "tsc --watch"
+  clean: "rm -rf dist"
+  test: "echo \"No tests specified\" && exit 1"
