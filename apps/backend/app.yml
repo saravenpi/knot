@@ -1,15 +1,22 @@
-name: knot-backend
-description: Frontend UI for Knot Space package registry
-build: "npm run build"
-
-# Frontend-specific scripts
+name: knot-space
+description: Online repository server for Knot packages
+tsAlias: null
+packages:
+- '@hono-modules-loader'
 scripts:
-  dev: "npm run dev"
-  build: "npm run build"
-  preview: "npm run preview"
-  check: "npm run check"
-  lint: "npm run lint"
-  format: "npm run format"
-  install: "npm install"
-  clean: "rm -rf .svelte-kit build node_modules"
-  type-check: "npm run check"
+  build-debug: cargo build
+  build-release: cargo build --release
+  clean: cargo clean
+  fmt-check: cargo fmt -- --check
+  docker-build: docker build -t knot-space .
+  fmt: cargo fmt
+  doc: cargo doc --open
+  check: cargo check
+  serve: cargo run --release
+  docker-run: docker run -p 8000:8000 knot-space
+  lint: cargo clippy -- -D warnings
+  load-test: echo 'Load testing not implemented yet'
+  test: cargo test
+  integration-test: cargo test --test '*'
+  watch: cargo watch -x run
+  dev: cargo run

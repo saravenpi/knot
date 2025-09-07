@@ -41,6 +41,7 @@ export const requestApi = async <T>(
     headers,
     body: body ? JSON.stringify(body) : undefined,
     credentials: "include",
+    mode: "cors", // Explicitly set CORS mode
   });
 
   if (response.status === 401) {

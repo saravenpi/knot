@@ -1,0 +1,31 @@
+name: Knot
+description: A modern monorepo package manager for TypeScript/JavaScript projects
+
+scripts:
+  setup: "echo 'Setting up Knot development environment...' && echo 'Run cargo build in each app directory to build'"
+  test-all: "echo 'Running all tests...' && cd apps/knot-cli && cargo test && cd ../knot-space && cargo test"
+  build-all: "echo 'Building all apps...' && cd apps/knot-cli && cargo build --release && cd ../knot-space && cargo build --release"
+  clean: "echo 'Cleaning build artifacts...' && find . -name target -type d -exec rm -rf {} + 2>/dev/null || true"
+  dev-space: "cd apps/knot-space && cargo run"
+  dev-ui: "cd apps/knot-space-ui && npm run dev"
+  dev-full: "echo 'Starting Knot Space backend and frontend...' && (cd apps/knot-space && cargo run &) && (cd apps/knot-space-ui && npm run dev)"
+  install-cli: "cd apps/knot-cli && cargo build --release && sudo cp target/release/knot /usr/local/bin/"
+  setup-ui: "cd apps/knot-space-ui && npm install"
+
+apps:
+  knot-cli:
+    description: "The Knot CLI tool for monorepo package management"
+  knot-space:
+    description: "Online repository server for Knot packages"
+    tsAlias: "#"
+    packages: [types]
+  knot-space-ui:
+    description: "Frontend UI for Knot Space package registry"
+    tsAlias: true
+    packages: [types, utils]
+
+packages:
+  types:
+    description: "Shared TypeScript types for all Knot applications"
+  utils:
+    description: "Shared utility functions for Knot applications"
