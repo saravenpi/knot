@@ -35,8 +35,24 @@ pub fn init_project(name: Option<&str>, path: Option<&str>, description: Option<
         Some(p) => PathBuf::from(p),
         None if interactive => {
             let suggested_path = PathBuf::from(format!("./{}", project_name));
-            let path_str = prompt_for_input("📁 Where should we create the project?", Some(suggested_path.to_str().unwrap_or(".")))?;
-            PathBuf::from(path_str)
+            println!("💡 Path options:");
+            println!("   {} Default location: {}", style("•").dim(), style(format!("./{}", project_name)).cyan());
+            println!("   {} Current directory: {}", style("•").dim(), style(".").cyan());
+            println!("   {} Custom path: {}", style("•").dim(), style("./my-custom-path").dim());
+            println!();
+            let path_str = prompt_for_input("📁 Where should we create the project?", Some(suggested_path.to_str().unwrap_or(".")))?.trim().to_string();
+            
+            // Handle special cases for path input
+            if path_str.is_empty() {
+                // Empty input: use default path (create folder with project name)
+                suggested_path
+            } else if path_str == "." {
+                // Dot input: create in current directory
+                std::env::current_dir()?
+            } else {
+                // Normal path: use as provided
+                PathBuf::from(path_str)
+            }
         }
         None => std::env::current_dir()?,
     };
@@ -49,7 +65,14 @@ pub fn init_project(name: Option<&str>, path: Option<&str>, description: Option<
         if let Some(desc) = &project_description {
             println!("   {} {}", style("Description:").dim(), desc);
         }
-        println!("   {} {}", style("Location:").dim(), target_dir.display());
+        let location_description = if target_dir == std::env::current_dir()? {
+            format!("{} (current directory)", target_dir.display())
+        } else if target_dir.file_name().and_then(|n| n.to_str()) == Some(&project_name) {
+            format!("{} (new folder)", target_dir.display())
+        } else {
+            format!("{}", target_dir.display())
+        };
+        println!("   {} {}", style("Location:").dim(), location_description);
         println!();
 
         if !prompt_for_confirm("Create this project?", Some(true))? {
