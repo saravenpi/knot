@@ -69,15 +69,9 @@ pub async fn run_script_interactive() -> Result<()> {
     // Collect all available scripts
     let mut all_scripts = Vec::new();
 
-    // Load project first to get context
-    let project = match Project::find_and_load(&current_dir) {
-        Ok(project) => Some(project),
-        Err(_) => {
-            println!("❌ No knot.yml/yaml found");
-            println!("💡 Run from a directory containing knot.yml/yaml, app.yml/yaml, or package.yml/yaml");
-            return Ok(());
-        }
-    };
+    // First check local directories for app/package configs, then try to load project
+    // This follows the same priority as non-interactive mode
+    let project = Project::find_and_load(&current_dir).ok();
 
     // Check if we're in an app directory (has app.yml or app.yaml)
     if let Some(app_config_path) = utils::find_yaml_file(&current_dir, "app") {
@@ -126,13 +120,23 @@ pub async fn run_script_interactive() -> Result<()> {
     }
 
     if all_scripts.is_empty() {
-        println!("❌ No scripts found");
-        println!("💡 Add scripts to knot.yml/yaml, app.yml/yaml, or package.yml/yaml");
-        println!("\nExample:");
-        println!("scripts:");
-        println!("  build: \"npm run build\"");
-        println!("  test: \"npm test\"");
-        println!("  dev: \"npm run dev\"");
+        // Check if we have any configuration files at all
+        let has_app_config = utils::find_yaml_file(&current_dir, "app").is_some();
+        let has_package_config = utils::find_yaml_file(&current_dir, "package").is_some();
+        let has_project = project.is_some();
+        
+        if !has_app_config && !has_package_config && !has_project {
+            println!("❌ No knot.yml/yaml, app.yml/yaml, or package.yml/yaml found");
+            println!("💡 Run from a directory containing one of these config files");
+        } else {
+            println!("❌ No scripts found");
+            println!("💡 Add scripts to knot.yml/yaml, app.yml/yaml, or package.yml/yaml");
+            println!("\nExample:");
+            println!("scripts:");
+            println!("  build: \"npm run build\"");
+            println!("  test: \"npm test\"");
+            println!("  dev: \"npm run dev\"");
+        }
         return Ok(());
     }
 
