@@ -1,13 +1,10 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { goto } from '$app/navigation';
 	import { packagesStore } from '$lib/stores';
-	import { formatDownloadCount, formatFileSize, formatDate, formatTimeAgo } from '$lib/utils/format';
 	import PackageCard from '$lib/components/PackageCard.svelte';
 
 	$: packages = $packagesStore.packages;
 	$: loading = $packagesStore.loading;
-	$: searchResults = $packagesStore.searchResults;
 	let searchTerm = '';
 	let selectedTags: string[] = [];
 	let filteredPackages: any[] = [];
@@ -304,8 +301,8 @@
 
 	{#if loading}
 		<div class="grid grid-cols-1 gap-4">
-			{#each Array(8) as _}
-				<div class="border rounded-lg p-6 animate-pulse">
+			{#each Array(8) as _item, index}
+				<div class="border rounded-lg p-6 animate-pulse" key={index}>
 					<div class="flex items-start justify-between mb-4">
 						<div class="flex-1">
 							<div class="h-5 bg-muted rounded w-1/3 mb-2"></div>

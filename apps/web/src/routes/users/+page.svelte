@@ -75,8 +75,8 @@
 
 	{#if loading}
 		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-			{#each Array(9) as _}
-				<div class="border rounded-lg p-6 animate-pulse">
+			{#each Array(9) as _item, index}
+				<div class="border rounded-lg p-6 animate-pulse" key={index}>
 					<div class="flex items-center gap-4 mb-4">
 						<div class="w-12 h-12 bg-muted rounded-lg"></div>
 						<div class="flex-1">

@@ -108,7 +108,7 @@ export function debugPackageData(packages: Package[]): void {
 /**
  * Check if API response data is properly formatted
  */
-export function validateApiResponse(response: any, endpoint: string): void {
+export function validateApiResponse(response: unknown, endpoint: string): void {
   if (process.env.NODE_ENV !== "development") return;
 
   console.group(`🌐 API Response Validation: ${endpoint}`);

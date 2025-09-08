@@ -1,5 +1,5 @@
 {
-  "name": "utils",
+  "name": "@knot/utils",
   "version": "1.0.0",
   "description": "Shared utility functions for Knot applications",
   "main": "index.ts",
@@ -10,7 +10,7 @@
     "test": "echo 'Testing utils package...'"
   },
   "devDependencies": {
-    "typescript": "^5.0.0"
+    "typescript": "^5.5.4"
   },
   "keywords": ["knot", "utilities", "helpers"],
   "private": true

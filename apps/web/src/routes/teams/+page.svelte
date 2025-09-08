@@ -18,7 +18,6 @@
 	let createError = '';
 
 	// Team management state
-	let managingTeam = null;
 	let showDeleteConfirm = false;
 	let deleteTeamId = '';
 	let deleteError = '';

@@ -14,7 +14,7 @@ interface UsersState {
 }
 
 const createUsersStore = () => {
-  const { subscribe, set, update } = writable<UsersState>({
+  const { subscribe, update } = writable<UsersState>({
     selectedUser: null,
     userPackages: [],
     userStats: null,

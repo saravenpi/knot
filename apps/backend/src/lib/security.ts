@@ -13,8 +13,7 @@ export function rateLimit(windowMs: number, maxRequests: number) {
 
     if (!current || now > current.resetTime) {
       rateLimitStore.set(key, { count: 1, resetTime: now + windowMs });
-      await next();
-      return;
+      return await next();
     }
 
     if (current.count >= maxRequests) {
@@ -29,7 +28,7 @@ export function rateLimit(windowMs: number, maxRequests: number) {
     }
 
     current.count++;
-    await next();
+    return await next();
   };
 }
 

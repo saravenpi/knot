@@ -209,7 +209,7 @@ class PackagesService {
       fileSize: pkg.fileSize.toString(),
       downloadsCount: pkg.downloadsCount.toString(),
       totalDownloadsCount: pkg.totalDownloadsCount.toString(),
-      tags: pkg.tags.map(tag => tag.tag), // Transform from {tag: string}[] to string[]
+      tags: pkg.tags.map((tag: any) => tag.tag), // Transform from {tag: string}[] to string[]
     }));
 
     return {
@@ -302,7 +302,7 @@ class PackagesService {
       fileSize: pkg.fileSize.toString(),
       downloadsCount: pkg.downloadsCount.toString(),
       totalDownloadsCount: totalDownloadsCount.toString(),
-      tags: pkg.tags.map(tag => tag.tag), // Transform from {tag: string}[] to string[]
+      tags: pkg.tags.map((tag: any) => tag.tag), // Transform from {tag: string}[] to string[]
       team: pkg.team ? { 
         id: pkg.team.id, 
         name: pkg.team.name, 

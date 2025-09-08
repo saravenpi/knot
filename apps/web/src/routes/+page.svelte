@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { goto } from '$app/navigation';
 	import { packagesStore, authStore } from '$lib/stores';
 	import { packagesApi } from '../lib/api';
 	import { formatDownloadCount, formatLargeNumber } from '../lib/utils/format';
@@ -8,7 +7,6 @@
 
 	$: packages = $packagesStore.packages;
 	$: loading = $packagesStore.loading;
-	$: isAuthenticated = $authStore.isAuthenticated;
 	$: initialized = $authStore.initialized;
 
 	let stats = {
@@ -29,7 +27,7 @@
 				setTimeout(() => reject(new Error('Request timeout')), 3000);
 			});
 
-			const [packagesResult, statsResult] = await Promise.all([
+			const [, statsResult] = await Promise.all([
 				Promise.race([packagesStore.fetchAll(), timeout]),
 				Promise.race([packagesApi.getGlobalStats(), timeout])
 			]);
@@ -201,8 +199,8 @@
 
 	{#if loading}
 		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-			{#each Array(6) as _}
-				<div class="border rounded-lg p-6 animate-pulse">
+			{#each Array(6) as _item, index}
+				<div class="border rounded-lg p-6 animate-pulse" key={index}>
 					<div class="h-4 bg-muted rounded w-3/4 mb-2"></div>
 					<div class="h-3 bg-muted rounded w-1/2 mb-4"></div>
 					<div class="h-3 bg-muted rounded w-full"></div>

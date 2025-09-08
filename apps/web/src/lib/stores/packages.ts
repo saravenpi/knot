@@ -11,7 +11,7 @@ interface PackagesState {
 }
 
 const createPackagesStore = () => {
-  const { subscribe, set, update } = writable<PackagesState>({
+  const { subscribe, update } = writable<PackagesState>({
     packages: [],
     loading: false,
     error: null,

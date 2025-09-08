@@ -96,7 +96,7 @@ export function errorHandler(error: Error, c: Context) {
         code: error.code,
         requestId,
       },
-      error.statusCode
+error.statusCode as any
     );
   }
 

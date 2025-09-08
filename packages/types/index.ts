@@ -92,7 +92,7 @@ export interface PublishPackageRequest {
 }
 
 // Response interfaces
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   data?: T;
   message?: string;
   token?: string;
@@ -109,7 +109,7 @@ export interface ApiError {
   details?: string;
 }
 
-export interface SuccessResponse<T = any> {
+export interface SuccessResponse<T = unknown> {
   success: boolean;
   data?: T;
   message?: string;
@@ -241,20 +241,27 @@ export const LIMITS = {
 } as const;
 
 // Type guards
-export function isUser(obj: any): obj is User {
-  return obj && typeof obj.id === 'string' && typeof obj.username === 'string';
+export function isUser(obj: unknown): obj is User {
+  return typeof obj === 'object' && obj !== null && 
+         'id' in obj && typeof (obj as User).id === 'string' && 
+         'username' in obj && typeof (obj as User).username === 'string';
 }
 
-export function isPackage(obj: any): obj is Package {
-  return obj && typeof obj.id === 'string' && typeof obj.name === 'string';
+export function isPackage(obj: unknown): obj is Package {
+  return typeof obj === 'object' && obj !== null && 
+         'id' in obj && typeof (obj as Package).id === 'string' && 
+         'name' in obj && typeof (obj as Package).name === 'string';
 }
 
-export function isTeam(obj: any): obj is Team {
-  return obj && typeof obj.id === 'string' && typeof obj.name === 'string';
+export function isTeam(obj: unknown): obj is Team {
+  return typeof obj === 'object' && obj !== null && 
+         'id' in obj && typeof (obj as Team).id === 'string' && 
+         'name' in obj && typeof (obj as Team).name === 'string';
 }
 
-export function isApiError(obj: any): obj is ApiError {
-  return obj && typeof obj.error === 'string';
+export function isApiError(obj: unknown): obj is ApiError {
+  return typeof obj === 'object' && obj !== null && 
+         'error' in obj && typeof (obj as ApiError).error === 'string';
 }
 
 // Utility types

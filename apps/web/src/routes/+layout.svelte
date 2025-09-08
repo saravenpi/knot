@@ -2,14 +2,12 @@
 	import '../app.css';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { goto } from '$app/navigation';
 	import { authStore } from '$lib/stores';
 	import Icon from '@iconify/svelte';
 
 	$: user = $authStore.user;
 	$: isLoggedIn = $authStore.isAuthenticated;
 	$: initialized = $authStore.initialized;
-	$: loading = $authStore.loading;
 	$: currentPath = $page.url.pathname;
 
 	// Pages that should use public layout even when authenticated (docs has its own layout)

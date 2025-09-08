@@ -2,7 +2,7 @@
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 	import { packagesStore, authStore } from '$lib/stores';
-	import { formatDownloadCount, formatFileSize, formatDateTime, formatTimeAgo, formatDate } from '../../../lib/utils/format';
+	import { formatTimeAgo, formatDate, formatDownloadCount, formatFileSize } from '../../../lib/utils/format';
 	import Icon from '@iconify/svelte';
 	import Chart from '../../../lib/components/ui/chart.svelte';
 	import Drawer from '../../../lib/components/ui/drawer.svelte';

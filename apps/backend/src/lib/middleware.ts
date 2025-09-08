@@ -1,7 +1,7 @@
 import { Context, Next } from 'hono';
 import { authModuleService } from '../modules/auth/service';
 
-export async function authMiddleware(c: Context, next: Next) {
+export async function authMiddleware(c: Context, next: Next): Promise<Response | void> {
   try {
     const authHeader = c.req.header('Authorization');
 

@@ -1,13 +1,11 @@
 <script lang="ts">
 	import Icon from '@iconify/svelte';
 
-	let copyText = '';
 	let showCopied = false;
 
 	async function copyToClipboard(text: string) {
 		try {
 			await navigator.clipboard.writeText(text);
-			copyText = text;
 			showCopied = true;
 			setTimeout(() => {
 				showCopied = false;

@@ -12,14 +12,14 @@ export const prisma =
     log:
       env.NODE_ENV === 'development'
         ? [
-            { emit: 'event', level: 'query' },
-            { emit: 'event', level: 'error' },
-            { emit: 'event', level: 'info' },
-            { emit: 'event', level: 'warn' },
+            { emit: 'event', level: 'query' } as any,
+            { emit: 'event', level: 'error' } as any,
+            { emit: 'event', level: 'info' } as any,
+            { emit: 'event', level: 'warn' } as any,
           ]
         : [
-            { emit: 'event', level: 'error' },
-            { emit: 'event', level: 'warn' },
+            { emit: 'event', level: 'error' } as any,
+            { emit: 'event', level: 'warn' } as any,
           ],
     datasources: {
       db: {
@@ -30,7 +30,7 @@ export const prisma =
 
 // Set up logging
 if (env.NODE_ENV === 'development') {
-  prisma.$on('query', (e) => {
+  (prisma as any).$on('query', (e: any) => {
     logger.debug('Database query', {
       query: e.query,
       params: e.params,
@@ -39,21 +39,21 @@ if (env.NODE_ENV === 'development') {
   });
 }
 
-prisma.$on('error', (e) => {
+(prisma as any).$on('error', (e: any) => {
   logger.error('Database error', {
     message: e.message,
     target: e.target,
   });
 });
 
-prisma.$on('warn', (e) => {
+(prisma as any).$on('warn', (e: any) => {
   logger.warn('Database warning', {
     message: e.message,
     target: e.target,
   });
 });
 
-prisma.$on('info', (e) => {
+(prisma as any).$on('info', (e: any) => {
   logger.info('Database info', {
     message: e.message,
     target: e.target,

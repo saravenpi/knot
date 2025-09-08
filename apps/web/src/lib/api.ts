@@ -18,10 +18,17 @@ export type {
   Team,
 } from "#/types";
 
+interface Pagination {
+  page: number;
+  limit: number;
+  total: number;
+  pages: number;
+}
+
 export const requestApi = async <T>(
   method: string,
   endpoint: string,
-  body?: any,
+  body?: Record<string, unknown> | FormData,
 ): Promise<T> => {
   const token =
     typeof localStorage !== "undefined"
@@ -101,17 +108,19 @@ export const packagesApi = {
   async getAll(): Promise<Package[]> {
     const response = await requestApi<{
       success: boolean;
-      data: { packages: Package[]; pagination: any };
+      data: { packages: Package[]; pagination: Pagination };
     }>("GET", "/api/packages");
     return response.data.packages;
   },
 
-  async getById(id: string): Promise<Package> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async getById(_id: string): Promise<Package> {
     // Note: Backend doesn't have this endpoint, this method should not be used
     throw new Error("getById not supported - use getByName instead");
   },
 
-  async getByName(name: string): Promise<Package> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async getByName(_name: string): Promise<Package> {
     // Backend expects name and version, but we only have name
     // This will need to be handled differently - get latest version or specific version
     throw new Error(
@@ -139,7 +148,7 @@ export const packagesApi = {
     return requestApi<Package>("POST", "/api/packages", packageData);
   },
 
-  async update(id: string, packageData: Partial<Package>): Promise<Package> {
+  async update(_id: string, _packageData: Partial<Package>): Promise<Package> {
     // Backend doesn't have this endpoint
     throw new Error("Package updates not supported via API");
   },
@@ -259,10 +268,10 @@ export const usersApi = {
     username: string,
     offset: number = 0,
     limit: number = 20,
-  ): Promise<{ packages: Package[]; pagination: any }> {
+  ): Promise<{ packages: Package[]; pagination: Pagination }> {
     const response = await requestApi<{
       success: boolean;
-      data: { packages: Package[]; pagination: any };
+      data: { packages: Package[]; pagination: Pagination };
     }>(
       "GET",
       `/api/users/${encodeURIComponent(username)}/packages?offset=${offset}&limit=${limit}`,

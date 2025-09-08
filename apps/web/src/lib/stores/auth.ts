@@ -142,7 +142,7 @@ const createAuthStore = () => {
         const response = (await Promise.race([
           authApi.getProfile(),
           timeoutPromise,
-        ])) as any;
+        ])) as { data?: { user: User; token: string }; user?: User; token?: string };
 
         // Handle both direct token and nested data structure
         const authData = response.data || response;
@@ -165,7 +165,7 @@ const createAuthStore = () => {
       } catch (error) {
         console.warn("Profile fetch failed:", error);
         removeStoredToken();
-        update((state) => ({
+        update(() => ({
           user: null,
           loading: false,
           isAuthenticated: false,
@@ -198,6 +198,7 @@ const createAuthStore = () => {
       const unsubscribe = subscribe((state) => {
         currentState = state;
       })();
+      unsubscribe(); // Immediately unsubscribe after getting current state
 
       if (currentState!.initialized) {
         return;
@@ -224,7 +225,7 @@ const createAuthStore = () => {
       if (token) {
         try {
           await this.getProfile();
-        } catch (error) {
+        } catch {
           console.warn("Token refresh failed, user may need to re-login");
           this.logout();
         }

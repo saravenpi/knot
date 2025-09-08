@@ -140,7 +140,7 @@ class UsersService {
       fileSize: pkg.fileSize.toString(),
       downloadsCount: pkg.downloadsCount.toString(),
       totalDownloadsCount: pkg.totalDownloadsCount.toString(),
-      tags: pkg.tags.map(tag => tag.tag), // Transform from {tag: string}[] to string[]
+      tags: pkg.tags.map((tag: any) => tag.tag), // Transform from {tag: string}[] to string[]
     }));
 
     return {

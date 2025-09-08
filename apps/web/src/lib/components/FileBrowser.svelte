@@ -233,7 +233,7 @@
     }
   }
 
-  function renderFileTree(fileList: FileEntry[], depth = 0): FileEntry[] {
+  function renderFileTree(fileList: FileEntry[], _depth = 0): FileEntry[] {
     return fileList.sort((a, b) => {
       if (a.type !== b.type) {
         return a.type === 'directory' ? -1 : 1;
@@ -292,7 +292,11 @@
 
       <!-- Sidebar overlay for mobile -->
       {#if sidebarOpen}
-        <div class="sidebar-overlay md:hidden" on:click={closeSidebar}></div>
+        <button 
+          class="sidebar-overlay md:hidden" 
+          on:click={closeSidebar}
+          aria-label="Close file browser sidebar"
+        ></button>
       {/if}
 
       <!-- File tree sidebar -->

@@ -9,7 +9,7 @@ interface TeamsState {
 }
 
 const createTeamsStore = () => {
-  const { subscribe, set, update } = writable<TeamsState>({
+  const { subscribe, update } = writable<TeamsState>({
     teams: [],
     loading: false,
     error: null,

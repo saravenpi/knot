@@ -7,8 +7,6 @@
 	import Drawer from '$lib/components/ui/drawer.svelte';
 
 	$: user = $authStore.user;
-	$: loading = $authStore.loading;
-	$: initialized = $authStore.initialized;
 
 	let token = '';
 	let showToken = false;

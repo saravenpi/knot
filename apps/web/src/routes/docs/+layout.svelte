@@ -71,7 +71,6 @@
 
 	// Get current page info for breadcrumbs
 	$: currentPageInfo = (() => {
-		const currentPath = $page.url.pathname;
 		for (const section of sections) {
 			for (const item of section.items) {
 				if (isActive(item.href, item.exact)) {

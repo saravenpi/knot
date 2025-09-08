@@ -20,10 +20,7 @@ export interface FileContent {
 }
 
 export class FileExplorerService {
-  constructor(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    private readonly packageStorePath: string = process.env.UPLOAD_DIR || './uploads'
-  ) {}
+  constructor() {}
 
   /**
    * Extract and list files from a .tgz package
@@ -36,7 +33,7 @@ export class FileExplorerService {
       await new Promise<void>((resolve, reject) => {
         const stream = fs.createReadStream(packagePath).pipe(zlib.createGunzip()).pipe(tar.list());
 
-        (stream as unknown as NodeJS.EventEmitter).on('entry', (entry: ReadEntry) => {
+        (stream as any).on('entry', (entry: ReadEntry) => {
           // Skip the root package directory if it exists
           let relativePath = entry.path;
           const pathParts = relativePath.split('/');
@@ -111,7 +108,7 @@ export class FileExplorerService {
           .pipe(zlib.createGunzip())
           .pipe(tar.extract());
 
-        (stream as unknown as NodeJS.EventEmitter).on('entry', (entry: ReadEntry) => {
+        (stream as any).on('entry', (entry: ReadEntry) => {
           // Skip the root package directory if it exists
           let relativePath = entry.path;
           const pathParts = relativePath.split('/');
@@ -261,5 +258,5 @@ export class FileExplorerService {
   }
 }
 
-export const fileExplorerService = new FileExplorerService(process.env.UPLOAD_DIR || './uploads');
+export const fileExplorerService = new FileExplorerService();
 
