@@ -19,6 +19,7 @@ pub fn find_yaml_file(base_path: &Path, filename: &str) -> Option<PathBuf> {
 }
 
 /// Get the expected config file path, preferring .yml if neither exists
+#[allow(dead_code)]
 pub fn get_yaml_config_path(base_path: &Path, filename: &str) -> PathBuf {
     find_yaml_file(base_path, filename)
         .unwrap_or_else(|| base_path.join(format!("{}.yml", filename)))

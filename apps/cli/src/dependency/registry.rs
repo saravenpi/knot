@@ -18,7 +18,9 @@ struct RemoteDependency {
 #[async_trait]
 pub trait PackageRegistry {
     async fn list_versions(&self, package_id: &PackageId) -> ResolutionResult<Vec<PackageVersion>>;
+    #[allow(dead_code)]
     async fn get_package_metadata(&self, package_id: &PackageId, version: &Version) -> ResolutionResult<PackageMetadata>;
+    #[allow(dead_code)]
     async fn download_package(&self, package_id: &PackageId, version: &Version, destination: &Path) -> ResolutionResult<()>;
     async fn search_packages(&self, query: &str) -> ResolutionResult<Vec<String>>;
 }
@@ -273,6 +275,7 @@ impl RemotePackageRegistry {
         }
     }
 
+    #[allow(dead_code)]
     pub fn with_auth(mut self, token: String) -> Self {
         self.auth_token = Some(token);
         self

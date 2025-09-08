@@ -488,30 +488,37 @@ impl DependencyResolver {
         Vec::new()
     }
 
+    #[allow(dead_code)]
     pub fn get_local_registry(&self) -> &LocalPackageRegistry {
         &self.local_registry
     }
 
+    #[allow(dead_code)]
     pub fn get_local_registry_mut(&mut self) -> &mut LocalPackageRegistry {
         &mut self.local_registry
     }
 
+    #[allow(dead_code)]
     pub fn get_remote_registry(&self) -> &RemotePackageRegistry {
         &self.remote_registry
     }
 
+    #[allow(dead_code)]
     pub fn get_remote_registry_mut(&mut self) -> &mut RemotePackageRegistry {
         &mut self.remote_registry
     }
 
+    #[allow(dead_code)]
     pub fn get_cache(&self) -> &ResolutionCache {
         &self.cache
     }
 
+    #[allow(dead_code)]
     pub async fn clear_cache(&mut self) -> ResolutionResult<()> {
         self.cache.clear_cache().await
     }
 
+    #[allow(dead_code)]
     pub async fn get_cache_stats(&self) -> crate::dependency::cache::CacheStats {
         self.cache.cache_stats().await
     }
@@ -554,10 +561,12 @@ impl DependencyResolver {
         warnings
     }
 
+    #[allow(dead_code)]
     pub async fn get_package_info(&self, package_id: &PackageId) -> ResolutionResult<Vec<PackageVersion>> {
         self.discover_package_versions(package_id).await
     }
 
+    #[allow(dead_code)]
     pub async fn update_package_cache(&mut self, package_id: &PackageId) -> ResolutionResult<()> {
         // Invalidate cache for this package
         self.cache.invalidate_package_cache(&package_id.name).await?;
@@ -568,15 +577,18 @@ impl DependencyResolver {
         Ok(())
     }
 
+    #[allow(dead_code)]
     pub fn set_context(&mut self, context: ResolutionContext) {
         self.context = context;
     }
 
+    #[allow(dead_code)]
     pub fn get_context(&self) -> &ResolutionContext {
         &self.context
     }
 
     // Enhanced dependency analysis methods
+    #[allow(dead_code)]
     pub async fn analyze_package_ecosystem(&self, package_id: &PackageId) -> ResolutionResult<PackageEcosystemAnalysis> {
         let versions = self.discover_package_versions(package_id).await?;
         
@@ -600,6 +612,7 @@ impl DependencyResolver {
         Ok(analysis)
     }
 
+    #[allow(dead_code)]
     pub async fn find_dependency_path(&self, from_package: &PackageId, to_package: &PackageId) -> ResolutionResult<Option<Vec<PackageId>>> {
         // This would find the shortest dependency path between two packages
         let mut queue = std::collections::VecDeque::new();

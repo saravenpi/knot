@@ -5,17 +5,20 @@ use std::path::Path;
 
 use super::manifest::{TemplateManifest, TemplateCategory};
 
+#[allow(dead_code)]
 pub struct TemplateEngine {
     templates_root: String,
 }
 
 impl TemplateEngine {
+    #[allow(dead_code)]
     pub fn new() -> Self {
         Self {
             templates_root: concat!(env!("CARGO_MANIFEST_DIR"), "/src/templates").to_string(),
         }
     }
 
+    #[allow(dead_code)]
     pub fn create_from_template(
         &self,
         template: &TemplateManifest,
@@ -62,6 +65,7 @@ impl TemplateEngine {
         Ok(())
     }
 
+    #[allow(dead_code)]
     fn process_template_variables(
         &self,
         content: &str,
@@ -77,6 +81,7 @@ impl TemplateEngine {
         result
     }
 
+    #[allow(dead_code)]
     pub fn get_template(&self, name: &str, category: TemplateCategory) -> Option<TemplateManifest> {
         match category {
             TemplateCategory::Package => {
@@ -88,6 +93,7 @@ impl TemplateEngine {
         }
     }
 
+    #[allow(dead_code)]
     pub fn prepare_variables(
         &self,
         template: &TemplateManifest,

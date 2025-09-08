@@ -13,6 +13,7 @@ pub struct Project {
     pub config: KnotConfig,
     pub packages: HashMap<String, PackageConfig>,
     pub apps: HashMap<String, AppConfig>,
+    #[allow(dead_code)]
     dependency_resolver: Option<DependencyResolver>,
 }
 
@@ -179,6 +180,7 @@ impl Project {
         None
     }
 
+    #[allow(dead_code)]
     pub async fn resolve_dependencies(&mut self, app_name: &str, include_dev: bool, _strategy: Option<ResolutionStrategy>) -> Result<crate::dependency::types::ResolutionResult> {
         // Get dependency specs first to avoid borrowing conflicts
         let deps = self.get_app_dependency_specs(app_name, include_dev)?;
@@ -204,6 +206,7 @@ impl Project {
         Ok(result)
     }
 
+    #[allow(dead_code)]
     pub async fn install_dependencies(&mut self, app_name: &str, resolution: &crate::dependency::types::ResolutionResult) -> Result<()> {
         let app_packages_dir = self.root.join("apps").join(app_name).join("knot_packages");
         
@@ -258,6 +261,7 @@ impl Project {
         Ok(())
     }
 
+    #[allow(dead_code)]
     pub fn get_app_dependency_specs(&self, app_name: &str, include_dev: bool) -> Result<Vec<DependencySpec>> {
         let raw_deps = self.get_app_dependencies(app_name);
         let mut dep_specs = Vec::new();
@@ -278,6 +282,7 @@ impl Project {
         Ok(dep_specs)
     }
 
+    #[allow(dead_code)]
     pub async fn check_dependency_health(&mut self, app_name: &str) -> Result<DependencyHealthReport> {
         let deps = self.get_app_dependency_specs(app_name, false)?;
         let resolver = self.get_or_create_resolver().await?;
@@ -326,6 +331,7 @@ impl Project {
         Ok(report)
     }
 
+    #[allow(dead_code)]
     pub fn validate_dependency_tree(&self, app_name: &str) -> Result<Vec<String>> {
         let mut issues = Vec::new();
         let app_deps = self.get_app_dependencies(app_name);
@@ -355,6 +361,7 @@ impl Project {
         Ok(issues)
     }
 
+    #[allow(dead_code)]
     fn parse_dependency_spec(&self, dep_str: &str, dev_only: bool) -> Result<DependencySpec> {
         let (name, version_req_str) = if let Some(at_pos) = dep_str.rfind('@') {
             let name = dep_str[..at_pos].to_string();
@@ -388,6 +395,7 @@ impl Project {
         })
     }
 
+    #[allow(dead_code)]
     fn extract_package_name(&self, dep_str: &str) -> Result<String> {
         let name = if let Some(at_pos) = dep_str.rfind('@') {
             dep_str[..at_pos].to_string()
@@ -398,6 +406,7 @@ impl Project {
         Ok(name)
     }
 
+    #[allow(dead_code)]
     async fn get_or_create_resolver(&mut self) -> Result<&mut DependencyResolver> {
         if self.dependency_resolver.is_none() {
             let context = ResolutionContext {
@@ -429,6 +438,7 @@ impl Project {
         Ok(self.dependency_resolver.as_mut().unwrap())
     }
 
+    #[allow(dead_code)]
     fn create_package_link_static(source_path: &Path, target_path: &Path) -> Result<()> {
         // Create parent directory if it doesn't exist
         if let Some(parent) = target_path.parent() {
@@ -471,6 +481,7 @@ impl Project {
     }
 
     #[cfg(not(unix))]
+    #[allow(dead_code)]
     fn copy_dir_recursive_static(src: &Path, dst: &Path) -> std::io::Result<()> {
         use std::fs;
         
@@ -493,6 +504,7 @@ impl Project {
 }
 
 #[derive(Debug)]
+#[allow(dead_code)]
 pub struct DependencyHealthReport {
     pub app_name: String,
     pub total_dependencies: usize,
@@ -502,10 +514,12 @@ pub struct DependencyHealthReport {
 }
 
 impl DependencyHealthReport {
+    #[allow(dead_code)]
     pub fn is_healthy(&self) -> bool {
         self.issues.is_empty()
     }
     
+    #[allow(dead_code)]
     pub fn print_summary(&self) {
         println!("\n📊 Dependency Health Report for app '{}':", style(&self.app_name).green());
         println!("  Total dependencies: {}", self.total_dependencies);

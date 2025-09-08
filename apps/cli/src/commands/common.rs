@@ -71,6 +71,7 @@ pub fn prompt_for_description(prompt: &str, default: Option<&str>) -> Result<Str
 }
 
 // Enhanced select prompt
+#[allow(dead_code)]
 pub fn prompt_for_select(prompt: &str, options: Vec<&str>) -> Result<String> {
     // Fallback to first option if not interactive
     if !is_interactive() {

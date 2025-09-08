@@ -1,8 +1,9 @@
 use anyhow::Result;
-use inquire::{Text, Select};
+use inquire::{Select, Text};
 use serde::{Deserialize, Serialize};
 use std::env;
-use std::io::IsTerminal;
+
+use super::common::{is_interactive, prompt_for_input};
 
 // API structures
 #[derive(Serialize, Deserialize)]
@@ -111,41 +112,6 @@ fn format_api_error(status: reqwest::StatusCode, response_text: &str) -> String 
     }
 }
 
-// Check if running in interactive environment
-fn is_interactive() -> bool {
-    std::io::stdin().is_terminal()
-}
-
-// Helper function for interactive input with beautiful UI
-fn prompt_for_input(prompt: &str, default: Option<&str>) -> Result<String> {
-    // Fallback to default if not interactive
-    if !is_interactive() {
-        if let Some(default_val) = default {
-            return Ok(default_val.to_string());
-        } else {
-            anyhow::bail!("Interactive input required but running in non-interactive environment. Please provide values via command line arguments.");
-        }
-    }
-
-    let mut text_prompt = Text::new(prompt);
-
-    if let Some(default_val) = default {
-        text_prompt = text_prompt.with_default(default_val);
-    }
-
-    let is_required = default.is_none();
-    text_prompt = text_prompt.with_validator(move |input: &str| {
-        if input.trim().is_empty() && is_required {
-            Ok(inquire::validator::Validation::Invalid("This field is required".into()))
-        } else if !input.trim().is_empty() && !input.chars().all(|c| c.is_ascii_alphanumeric() || c == '-' || c == '_' || c == ' ') {
-            Ok(inquire::validator::Validation::Invalid("Please use only letters, numbers, hyphens, underscores, and spaces".into()))
-        } else {
-            Ok(inquire::validator::Validation::Valid)
-        }
-    });
-
-    Ok(text_prompt.prompt()?)
-}
 
 // Helper function to fetch teams and allow interactive selection
 async fn select_team_interactively(prompt_message: &str) -> Result<String> {

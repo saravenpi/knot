@@ -8,9 +8,11 @@ use std::path::Path;
 pub use engine::TemplateEngine;
 pub use manifest::TemplateCategory;
 
+#[allow(dead_code)]
 pub struct TemplateManager;
 
 impl TemplateManager {
+    #[allow(dead_code)]
     pub fn create_from_template(
         name: &str,
         version: &str,

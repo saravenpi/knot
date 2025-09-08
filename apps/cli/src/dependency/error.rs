@@ -136,9 +136,6 @@ impl From<semver::Error> for ResolutionError {
 }
 
 impl ResolutionError {
-    pub fn to_user_friendly_message(&self) -> String {
-        self.to_string()
-    }
 
     pub fn version_conflict(
         package: PackageId,
@@ -210,48 +207,3 @@ impl ResolutionError {
     }
 }
 
-// Helper trait for adding context to errors
-pub trait ErrorContext<T> {
-    fn with_package_context(self, package: &PackageId) -> ResolutionResult<T>;
-    fn with_operation_context(self, operation: &str) -> ResolutionResult<T>;
-}
-
-impl<T, E> ErrorContext<T> for Result<T, E>
-where
-    E: Into<ResolutionError>,
-{
-    fn with_package_context(self, package: &PackageId) -> ResolutionResult<T> {
-        self.map_err(|e| {
-            let mut error = e.into();
-            // Add package context to the error if it doesn't already have it
-            match &mut error {
-                ResolutionError::IOError { operation, path, .. } => {
-                    if path.is_none() {
-                        *operation = format!("{} (for package '{}')", operation, package.name);
-                    }
-                }
-                ResolutionError::ConfigurationError { message, .. } => {
-                    *message = format!("{} (for package '{}')", message, package.name);
-                }
-                _ => {}
-            }
-            error
-        })
-    }
-
-    fn with_operation_context(self, operation: &str) -> ResolutionResult<T> {
-        self.map_err(|e| {
-            let mut error = e.into();
-            match &mut error {
-                ResolutionError::IOError { operation: op, .. } => {
-                    *op = operation.to_string();
-                }
-                ResolutionError::CacheError { operation: op, .. } => {
-                    *op = operation.to_string();
-                }
-                _ => {}
-            }
-            error
-        })
-    }
-}

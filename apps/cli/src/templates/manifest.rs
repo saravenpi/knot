@@ -31,6 +31,7 @@ pub struct TemplateVariable {
     pub required: bool,
 }
 
+#[allow(dead_code)]
 pub fn get_package_templates() -> HashMap<String, TemplateManifest> {
     let mut templates = HashMap::new();
 
@@ -140,6 +141,7 @@ pub fn get_package_templates() -> HashMap<String, TemplateManifest> {
     templates
 }
 
+#[allow(dead_code)]
 pub fn get_app_templates() -> HashMap<String, TemplateManifest> {
     let mut templates = HashMap::new();
 

@@ -11,6 +11,7 @@ use crate::dependency::error::{ResolutionError, ResolutionResult};
 #[derive(Debug)]
 pub struct ResolutionCache {
     memory_cache: RwLock<HashMap<String, CacheEntry>>,
+    #[allow(dead_code)]
     package_cache: RwLock<HashMap<PackageId, PackageCacheEntry>>,
     disk_cache_path: PathBuf,
     cache_ttl: Duration,
@@ -65,11 +66,13 @@ impl ResolutionCache {
         }
     }
 
+    #[allow(dead_code)]
     pub fn with_ttl(mut self, ttl: Duration) -> Self {
         self.cache_ttl = ttl;
         self
     }
 
+    #[allow(dead_code)]
     pub fn with_memory_limits(mut self, max_entries: usize, max_size: usize) -> Self {
         self.max_memory_entries = max_entries;
         self.max_memory_size = max_size;
@@ -163,6 +166,7 @@ impl ResolutionCache {
         Ok(())
     }
     
+    #[allow(dead_code)]
     pub async fn invalidate_package_cache(&self, package_name: &str) -> ResolutionResult<()> {
         // Remove from memory cache
         {
@@ -196,6 +200,7 @@ impl ResolutionCache {
         Ok(())
     }
     
+    #[allow(dead_code)]
     pub async fn clear_cache(&self) -> ResolutionResult<()> {
         // Clear memory caches
         {
@@ -231,6 +236,7 @@ impl ResolutionCache {
         Ok(())
     }
     
+    #[allow(dead_code)]
     pub async fn cleanup_expired(&self) -> ResolutionResult<()> {
         // Clean memory cache
         {
@@ -264,6 +270,7 @@ impl ResolutionCache {
         Ok(())
     }
 
+    #[allow(dead_code)]
     pub async fn cache_stats(&self) -> CacheStats {
         let memory_cache = self.memory_cache.read().await;
         let package_cache = self.package_cache.read().await;
@@ -392,6 +399,7 @@ impl ResolutionCache {
         Ok(())
     }
     
+    #[allow(dead_code)]
     fn cache_contains_package_by_hash(&self, _cache_key: &str, _package_name: &str) -> bool {
         // This is a simplified check - for better performance, we'd need to store
         // metadata about which packages are in each cache entry
@@ -483,6 +491,7 @@ impl ResolutionCache {
     }
 
     // Package-specific caching methods
+    #[allow(dead_code)]
     pub async fn cache_package_versions(&self, package_id: &PackageId, versions: Vec<crate::dependency::types::PackageVersion>, fingerprint: String) {
         let entry = PackageCacheEntry {
             versions,
@@ -495,6 +504,7 @@ impl ResolutionCache {
         package_cache.insert(package_id.clone(), entry);
     }
 
+    #[allow(dead_code)]
     pub async fn get_cached_package_versions(&self, package_id: &PackageId, current_fingerprint: &str) -> Option<Vec<crate::dependency::types::PackageVersion>> {
         let mut package_cache = self.package_cache.write().await;
         
@@ -511,6 +521,7 @@ impl ResolutionCache {
         None
     }
     
+    #[allow(dead_code)]
     async fn cleanup_disk_cache_for_package(&self, package_name: &str) -> ResolutionResult<()> {
         if !self.disk_cache_path.exists() {
             return Ok(());
@@ -545,6 +556,7 @@ impl ResolutionCache {
         Ok(())
     }
     
+    #[allow(dead_code)]
     async fn cleanup_expired_disk_cache(&self) -> ResolutionResult<()> {
         if !self.disk_cache_path.exists() {
             return Ok(());
@@ -578,6 +590,7 @@ impl ResolutionCache {
         Ok(())
     }
     
+    #[allow(dead_code)]
     async fn estimate_memory_size(&self) -> usize {
         // This is a rough estimate - in practice you'd want more accurate measurement
         let memory_cache = self.memory_cache.read().await;
@@ -585,6 +598,7 @@ impl ResolutionCache {
     }
 }
 
+#[allow(dead_code)]
 #[derive(Debug)]
 pub struct CacheStats {
     pub memory_entries: usize,
@@ -599,6 +613,7 @@ pub struct CacheStats {
     pub total_requests: u64,
 }
 
+#[allow(dead_code)]
 impl CacheStats {
     pub fn format_size(&self) -> String {
         if self.memory_size_bytes < 1024 {
@@ -610,6 +625,7 @@ impl CacheStats {
         }
     }
     
+    #[allow(dead_code)]
     pub fn format_ttl(&self) -> String {
         let secs = self.ttl.as_secs();
         if secs < 60 {
@@ -621,6 +637,7 @@ impl CacheStats {
         }
     }
     
+    #[allow(dead_code)]
     pub fn efficiency_score(&self) -> f64 {
         // Calculate cache efficiency based on hit rate and memory usage efficiency
         let hit_rate_score = self.hit_rate / 100.0; // Normalize to 0-1
@@ -633,6 +650,7 @@ impl CacheStats {
         (hit_rate_score * 0.7) + (memory_efficiency * 0.3)
     }
     
+    #[allow(dead_code)]
     pub fn print_detailed_report(&self) {
         use console::style;
         

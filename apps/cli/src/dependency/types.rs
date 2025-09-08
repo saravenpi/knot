@@ -1,6 +1,5 @@
 use std::collections::HashMap;
 use std::path::PathBuf;
-use std::time::{Duration, SystemTime};
 use semver::{Version, VersionReq};
 use serde::{Deserialize, Serialize};
 
@@ -166,41 +165,6 @@ pub enum ConflictResolution {
     Ignore,
 }
 
-// Cache structures
-#[derive(Debug, Clone)]
-pub struct CacheKey {
-    pub request_hash: String,
-    pub timestamp: SystemTime,
-}
-
-#[derive(Debug, Clone)]
-pub struct CacheValue {
-    pub result: ResolutionResult,
-    pub timestamp: SystemTime,
-    pub ttl: Duration,
-}
-
-impl CacheValue {
-    pub fn is_expired(&self) -> bool {
-        self.timestamp.elapsed().unwrap_or(Duration::MAX) > self.ttl
-    }
-}
-
-// Helper trait for package identification
-pub trait PackageIdentifiable {
-    fn package_id(&self) -> &PackageId;
-    fn version(&self) -> &Version;
-}
-
-impl PackageIdentifiable for PackageVersion {
-    fn package_id(&self) -> &PackageId {
-        &self.id
-    }
-
-    fn version(&self) -> &Version {
-        &self.version
-    }
-}
 
 // Utility functions
 impl DependencySpec {
