@@ -513,7 +513,7 @@ impl DependencyResolver {
     }
 
     pub async fn get_cache_stats(&self) -> crate::dependency::cache::CacheStats {
-        self.cache.cache_stats()
+        self.cache.cache_stats().await
     }
 
     fn generate_warnings(&self, resolution: &HashMap<PackageId, PackageVersion>) -> Vec<String> {
@@ -604,7 +604,7 @@ impl DependencyResolver {
         // This would find the shortest dependency path between two packages
         let mut queue = std::collections::VecDeque::new();
         let mut visited = std::collections::HashSet::new();
-        let mut parent_map = std::collections::HashMap::new();
+        let mut parent_map: std::collections::HashMap<PackageId, PackageId> = std::collections::HashMap::new();
         
         queue.push_back(from_package.clone());
         visited.insert(from_package.clone());
@@ -678,6 +678,7 @@ fn edit_distance(s1: &str, s2: &str) -> usize {
 }
 
 // Additional analysis types
+#[allow(dead_code)]
 #[derive(Debug, Clone)]
 pub struct PackageEcosystemAnalysis {
     pub package_id: PackageId,
@@ -689,6 +690,7 @@ pub struct PackageEcosystemAnalysis {
     pub maintenance_status: MaintenanceStatus,
 }
 
+#[allow(dead_code)]
 #[derive(Debug, Clone)]
 pub struct SecurityAdvisory {
     pub id: String,
@@ -699,6 +701,7 @@ pub struct SecurityAdvisory {
     pub fixed_version: Option<semver::Version>,
 }
 
+#[allow(dead_code)]
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum SecuritySeverity {
     Critical,
@@ -707,6 +710,7 @@ pub enum SecuritySeverity {
     Low,
 }
 
+#[allow(dead_code)]
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum MaintenanceStatus {
     Active,

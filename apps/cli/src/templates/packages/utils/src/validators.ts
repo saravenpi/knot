@@ -28,7 +28,7 @@ export function isStrongPassword(password: string): boolean {
   return strongPasswordRegex.test(password);
 }
 
-export function validateRequired(value: any, field: string): ValidationError | null {
+export function validateRequired(value: unknown, field: string): ValidationError | null {
   if (value === null || value === undefined || value === '') {
     return { field, message: `${field} is required` };
   }

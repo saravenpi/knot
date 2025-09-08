@@ -1,12 +1,12 @@
 use crate::config::{AppConfig, KnotConfig, PackageConfig};
-use crate::dependency::{DependencyResolver, DependencySpec, PackageId, PackageVersion, ResolutionContext, ResolutionStrategy};
-use crate::dependency::registry::{LocalPackageRegistry, RemotePackageRegistry};
+use crate::dependency::{DependencyResolver, DependencySpec, PackageId, ResolutionContext, ResolutionStrategy};
+use crate::dependency::registry::{LocalPackageRegistry, RemotePackageRegistry, PackageRegistry};
 use crate::utils;
 use anyhow::{Context, Result};
 use console::style;
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
-use semver::{Version, VersionReq};
+use semver::VersionReq;
 
 pub struct Project {
     pub root: PathBuf,
@@ -179,9 +179,10 @@ impl Project {
         None
     }
 
-    pub async fn resolve_dependencies(&mut self, app_name: &str, include_dev: bool, strategy: Option<ResolutionStrategy>) -> Result<crate::dependency::types::ResolutionResult> {
-        let resolver = self.get_or_create_resolver().await?;
+    pub async fn resolve_dependencies(&mut self, app_name: &str, include_dev: bool, _strategy: Option<ResolutionStrategy>) -> Result<crate::dependency::types::ResolutionResult> {
+        // Get dependency specs first to avoid borrowing conflicts
         let deps = self.get_app_dependency_specs(app_name, include_dev)?;
+        let resolver = self.get_or_create_resolver().await?;
         
         println!("🔍 Resolving {} dependencies for app '{}'...", deps.len(), style(app_name).green());
         
@@ -231,7 +232,7 @@ impl Project {
                     crate::dependency::types::PackageSource::Local => {
                         // For local packages, create symlinks
                         if let Some(source_path) = &package_version.source_path {
-                            self.create_package_link(source_path, &package_dir)
+                            Self::create_package_link_static(source_path, &package_dir)
                                 .with_context(|| format!("Failed to link local package '{}'", package_id.name))?;
                         }
                     }
@@ -268,7 +269,7 @@ impl Project {
         
         // Add development dependencies if requested
         if include_dev {
-            if let Some(app_config) = self.apps.get(app_name) {
+            if let Some(_app_config) = self.apps.get(app_name) {
                 // For now, we don't have dev dependencies in app config
                 // but this is where we'd add them
             }
@@ -428,7 +429,7 @@ impl Project {
         Ok(self.dependency_resolver.as_mut().unwrap())
     }
 
-    fn create_package_link(&self, source_path: &Path, target_path: &Path) -> Result<()> {
+    fn create_package_link_static(source_path: &Path, target_path: &Path) -> Result<()> {
         // Create parent directory if it doesn't exist
         if let Some(parent) = target_path.parent() {
             std::fs::create_dir_all(parent)
@@ -458,7 +459,7 @@ impl Project {
         // Copy directory on Windows and other systems
         #[cfg(not(unix))]
         {
-            self.copy_dir_recursive(source_path, target_path)
+            Self::copy_dir_recursive_static(source_path, target_path)
                 .with_context(|| format!(
                     "Failed to copy from {} to {}", 
                     source_path.display(), 
@@ -470,7 +471,7 @@ impl Project {
     }
 
     #[cfg(not(unix))]
-    fn copy_dir_recursive(&self, src: &Path, dst: &Path) -> std::io::Result<()> {
+    fn copy_dir_recursive_static(src: &Path, dst: &Path) -> std::io::Result<()> {
         use std::fs;
         
         fs::create_dir_all(dst)?;
@@ -481,7 +482,7 @@ impl Project {
             let dst_path = dst.join(entry.file_name());
             
             if src_path.is_dir() {
-                self.copy_dir_recursive(&src_path, &dst_path)?;
+                Self::copy_dir_recursive_static(&src_path, &dst_path)?;
             } else {
                 fs::copy(&src_path, &dst_path)?;
             }

@@ -8,7 +8,7 @@ export interface BaseEntity {
   updatedAt: Date;
 }
 
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   data: T;
   success: boolean;
   message?: string;
@@ -22,14 +22,14 @@ export interface PaginationMeta {
   totalPages: number;
 }
 
-export interface PaginatedResponse<T = any> extends ApiResponse<T[]> {
+export interface PaginatedResponse<T = unknown> extends ApiResponse<T[]> {
   meta: PaginationMeta;
 }
 
 export type ValidationError = {
   field: string;
   message: string;
-  value?: any;
+  value?: unknown;
 };
 
 export type SortDirection = 'asc' | 'desc';
@@ -42,5 +42,5 @@ export interface SortConfig {
 export interface FilterConfig {
   field: string;
   operator: 'eq' | 'ne' | 'gt' | 'lt' | 'gte' | 'lte' | 'in' | 'nin' | 'like';
-  value: any;
+  value: unknown;
 }

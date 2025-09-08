@@ -20,7 +20,7 @@ export interface Post extends BaseEntity {
   published: boolean;
   publishedAt?: Date;
   tags: string[];
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
 }
 
 export interface DatabaseEntity extends BaseEntity {
@@ -29,7 +29,7 @@ export interface DatabaseEntity extends BaseEntity {
   deletedAt?: Date;
 }
 
-export interface QueryResult<T = any> {
+export interface QueryResult<T = unknown> {
   data: T[];
   meta: PaginationMeta;
   total: number;
@@ -46,8 +46,8 @@ export interface Transaction {
 export interface TransactionOperation {
   table: string;
   operation: 'create' | 'update' | 'delete';
-  data: any;
-  where?: any;
+  data: unknown;
+  where?: unknown;
 }
 
 // Zod schemas for validation
@@ -70,7 +70,7 @@ export const PostSchema = z.object({
   published: z.boolean().default(false),
   publishedAt: z.date().optional(),
   tags: z.array(z.string()),
-  metadata: z.record(z.any()),
+  metadata: z.record(z.unknown()),
   createdAt: z.date(),
   updatedAt: z.date(),
 });
@@ -85,7 +85,7 @@ export const QueryOptionsSchema = z.object({
   filters: z.array(z.object({
     field: z.string(),
     operator: z.enum(['eq', 'ne', 'gt', 'lt', 'gte', 'lte', 'in', 'nin', 'like']),
-    value: z.any(),
+    value: z.unknown(),
   })).optional(),
 });
 

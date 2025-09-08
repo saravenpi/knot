@@ -17,7 +17,7 @@ export type CacheProvider = 'redis' | 'memory';
 
 class Cache {
   private redis?: Redis;
-  private memoryCache: Map<string, { value: any; expiresAt: number }> = new Map();
+  private memoryCache: Map<string, { value: unknown; expiresAt: number }> = new Map();
   private config: CacheConfig;
   private cacheId: string;
 
@@ -70,7 +70,7 @@ class Cache {
     return `${this.config.keyPrefix}${key}`;
   }
 
-  async get<T = any>(key: string): Promise<T | null> {
+  async get<T = unknown>(key: string): Promise<T | null> {
     const fullKey = this.getKey(key);
 
     if (this.redis) {
@@ -98,7 +98,7 @@ class Cache {
     }
   }
 
-  async set<T = any>(key: string, value: T, ttl?: number): Promise<void> {
+  async set<T = unknown>(key: string, value: T, ttl?: number): Promise<void> {
     const fullKey = this.getKey(key);
     const effectiveTtl = ttl || this.config.ttl!;
 

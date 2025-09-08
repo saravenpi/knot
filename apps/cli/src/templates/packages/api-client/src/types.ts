@@ -20,8 +20,8 @@ export interface ApiClientConfig {
 export interface RequestConfig {
   url: string;
   method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
-  data?: any;
-  params?: Record<string, any>;
+  data?: unknown;
+  params?: Record<string, unknown>;
   headers?: Record<string, string>;
   timeout?: number;
   validateStatus?: (status: number) => boolean;
@@ -43,18 +43,18 @@ export interface AuthConfig {
 export interface RetryConfig {
   retries: number;
   retryDelay: number;
-  retryCondition?: (error: any) => boolean;
+  retryCondition?: (error: unknown) => boolean;
   shouldResetTimeout?: boolean;
 }
 
 export interface RequestInterceptor {
   onFulfilled?: (config: RequestConfig) => RequestConfig | Promise<RequestConfig>;
-  onRejected?: (error: any) => any;
+  onRejected?: (error: unknown) => unknown;
 }
 
 export interface ResponseInterceptor {
-  onFulfilled?: (response: any) => any;
-  onRejected?: (error: any) => any;
+  onFulfilled?: (response: unknown) => unknown;
+  onRejected?: (error: unknown) => unknown;
 }
 
 // Extending data package types for API operations
@@ -80,7 +80,7 @@ export interface PostApiOperations {
 export interface ApiError extends Error {
   status?: number;
   code?: string;
-  data?: any;
+  data?: unknown;
   validation?: ValidationError[];
 }
 

@@ -117,8 +117,10 @@ pub enum ResolutionStrategy {
 #[derive(Debug, Clone)]
 pub struct DependencyGraph {
     pub packages: HashMap<PackageId, Vec<PackageVersion>>,
+    #[allow(dead_code)]
     pub resolution: HashMap<PackageId, PackageVersion>,
     pub constraints: HashMap<PackageId, Vec<VersionReq>>,
+    #[allow(dead_code)]
     pub dependency_order: Vec<PackageId>,
 }
 

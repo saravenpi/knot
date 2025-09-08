@@ -7,17 +7,17 @@ import { motion } from 'framer-motion';
 // Import from utils package - demonstrating multiple dependencies
 import { formatters, helpers, SortConfig, FilterConfig, SortDirection } from 'utils';
 
-export interface DataTableColumn<T = any> {
+export interface DataTableColumn<T = Record<string, unknown>> {
   key: keyof T;
   title: string;
   sortable?: boolean;
   filterable?: boolean;
-  render?: (value: any, row: T) => React.ReactNode;
+  render?: (value: unknown, row: T) => React.ReactNode;
   format?: 'currency' | 'number' | 'percent' | 'date' | 'fileSize';
   width?: string;
 }
 
-export interface DataTableProps<T = any> {
+export interface DataTableProps<T = Record<string, unknown>> {
   data: T[];
   columns: DataTableColumn<T>[];
   loading?: boolean;
@@ -26,7 +26,7 @@ export interface DataTableProps<T = any> {
   'data-testid'?: string;
 }
 
-function DataTable<T extends Record<string, any>>({
+function DataTable<T extends Record<string, unknown>>({
   data,
   columns,
   loading = false,
@@ -101,7 +101,7 @@ function DataTable<T extends Record<string, any>>({
     setSortConfig({ field: String(columnKey), direction });
   };
 
-  const formatCellValue = (value: any, column: DataTableColumn<T>) => {
+  const formatCellValue = (value: unknown, column: DataTableColumn<T>) => {
     if (column.render) {
       return column.render(value, {} as T);
     }

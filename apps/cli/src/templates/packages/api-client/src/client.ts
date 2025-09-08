@@ -17,21 +17,44 @@ import {
   PostApiOperations,
   ApiMetrics 
 } from './types';
-import HttpClient from './http-client';
-import AuthManager from './auth-manager';
+// Simplified HTTP client interface for template
+interface SimpleHttpClient {
+  get(url: string): Promise<AxiosResponse>;
+  post(url: string, data?: unknown): Promise<AxiosResponse>;
+  put(url: string, data?: unknown): Promise<AxiosResponse>;
+  delete(url: string): Promise<AxiosResponse>;
+  getAxiosInstance(): AxiosInstance;
+  addRequestInterceptor(interceptor: { onFulfilled?: (config: unknown) => unknown; onRejected?: (error: unknown) => unknown }): void;
+  addResponseInterceptor(interceptor: { onFulfilled?: (response: unknown) => unknown; onRejected?: (error: unknown) => unknown }): void;
+  request(config: unknown): Promise<AxiosResponse>;
+}
+
+// Simplified auth manager interface for template
+interface SimpleAuthManager {
+  getAuthHeaders(): Promise<Record<string, string> | null>;
+  refreshToken(): Promise<boolean>;
+}
 
 class ApiClient implements UserApiOperations, PostApiOperations {
-  private httpClient: HttpClient;
-  private authManager: AuthManager;
+  private httpClient: SimpleHttpClient;
+  private authManager: SimpleAuthManager;
   private metrics: ApiMetrics;
   private clientId: string;
+  private axiosInstance: AxiosInstance;
 
   constructor(config: ApiClientConfig) {
     // Use utils package to generate unique client ID
     this.clientId = generateId('api_client');
     
-    this.httpClient = new HttpClient(config);
-    this.authManager = new AuthManager(config.authConfig);
+    this.axiosInstance = axios.create({
+      baseURL: config.baseURL,
+      timeout: config.timeout || 10000,
+      headers: config.defaultHeaders
+    });
+
+    // Create simplified implementations
+    this.httpClient = this.createHttpClient();
+    this.authManager = this.createAuthManager(config.authConfig);
     
     this.metrics = {
       requestCount: 0,
@@ -41,6 +64,44 @@ class ApiClient implements UserApiOperations, PostApiOperations {
 
     this.setupInterceptors();
     this.setupRetry();
+  }
+
+  private createHttpClient(): SimpleHttpClient {
+    return {
+      get: (url: string) => this.axiosInstance.get(url),
+      post: (url: string, data?: unknown) => this.axiosInstance.post(url, data),
+      put: (url: string, data?: unknown) => this.axiosInstance.put(url, data),
+      delete: (url: string) => this.axiosInstance.delete(url),
+      getAxiosInstance: () => this.axiosInstance,
+      addRequestInterceptor: (interceptor) => {
+        this.axiosInstance.interceptors.request.use(
+          interceptor.onFulfilled as any,
+          interceptor.onRejected as any
+        );
+      },
+      addResponseInterceptor: (interceptor) => {
+        this.axiosInstance.interceptors.response.use(
+          interceptor.onFulfilled as any,
+          interceptor.onRejected as any
+        );
+      },
+      request: (config) => this.axiosInstance.request(config as any)
+    };
+  }
+
+  private createAuthManager(authConfig?: AuthConfig): SimpleAuthManager {
+    return {
+      getAuthHeaders: async () => {
+        if (authConfig?.type === 'bearer' && authConfig.token) {
+          return { Authorization: `Bearer ${authConfig.token}` };
+        }
+        return null;
+      },
+      refreshToken: async () => {
+        // Simplified refresh logic - in real implementation would make API call
+        return false;
+      }
+    };
   }
 
   private setupInterceptors(): void {
@@ -113,15 +174,21 @@ class ApiClient implements UserApiOperations, PostApiOperations {
     }
   }
 
-  private transformError(error: any): ApiError {
-    const apiError: ApiError = new Error(error.message);
-    apiError.status = error.response?.status;
-    apiError.code = error.code;
-    apiError.data = error.response?.data;
+  private transformError(error: unknown): ApiError {
+    const err = error as {
+      message: string;
+      code?: string;
+      response?: { status?: number; data?: unknown };
+    };
+    const apiError: ApiError = new Error(err.message);
+    apiError.status = err.response?.status;
+    apiError.code = err.code;
+    apiError.data = err.response?.data;
     
     // Parse validation errors if present
-    if (error.response?.data?.errors) {
-      apiError.validation = error.response.data.errors;
+    const responseData = err.response?.data as { errors?: ValidationError[] };
+    if (responseData?.errors) {
+      apiError.validation = responseData.errors;
     }
     
     return apiError;
@@ -192,9 +259,10 @@ class ApiClient implements UserApiOperations, PostApiOperations {
       if (Object.keys(data).length > 0) {
         UserSchema.partial().parse(data);
       }
-    } catch (error: any) {
-      if (error.errors) {
-        errors.push(...error.errors.map((err: any) => ({
+    } catch (error: unknown) {
+      const zodError = error as { errors?: Array<{ path: string[]; message: string; received: unknown }> };
+      if (zodError.errors) {
+        errors.push(...zodError.errors.map((err) => ({
           field: err.path.join('.'),
           message: err.message,
           value: err.received
@@ -265,9 +333,10 @@ class ApiClient implements UserApiOperations, PostApiOperations {
       if (Object.keys(data).length > 0) {
         PostSchema.partial().parse(data);
       }
-    } catch (error: any) {
-      if (error.errors) {
-        errors.push(...error.errors.map((err: any) => ({
+    } catch (error: unknown) {
+      const zodError = error as { errors?: Array<{ path: string[]; message: string; received: unknown }> };
+      if (zodError.errors) {
+        errors.push(...zodError.errors.map((err) => ({
           field: err.path.join('.'),
           message: err.message,
           value: err.received

@@ -51,7 +51,7 @@ export function unique<T>(array: T[]): T[] {
   return [...new Set(array)];
 }
 
-export function omit<T extends Record<string, any>, K extends keyof T>(
+export function omit<T extends Record<string, unknown>, K extends keyof T>(
   obj: T,
   keys: K[]
 ): Omit<T, K> {
@@ -60,7 +60,7 @@ export function omit<T extends Record<string, any>, K extends keyof T>(
   return result;
 }
 
-export function pick<T extends Record<string, any>, K extends keyof T>(
+export function pick<T extends Record<string, unknown>, K extends keyof T>(
   obj: T,
   keys: K[]
 ): Pick<T, K> {
@@ -73,7 +73,7 @@ export function pick<T extends Record<string, any>, K extends keyof T>(
   return result;
 }
 
-export function deepMerge<T extends Record<string, any>>(target: T, source: Partial<T>): T {
+export function deepMerge<T extends Record<string, unknown>>(target: T, source: Partial<T>): T {
   const result = cloneDeep(target);
   
   for (const key in source) {
@@ -81,7 +81,7 @@ export function deepMerge<T extends Record<string, any>>(target: T, source: Part
       if (typeof source[key] === 'object' && source[key] !== null && !Array.isArray(source[key])) {
         result[key] = deepMerge(result[key] || {}, source[key]);
       } else {
-        result[key] = source[key] as any;
+        result[key] = source[key] as T[typeof key];
       }
     }
   }

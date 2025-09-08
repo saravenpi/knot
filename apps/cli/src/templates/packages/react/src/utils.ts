@@ -16,14 +16,14 @@ export const classNames = (...classes: (string | undefined | null | false)[]): s
   return classes.filter(Boolean).join(' ');
 };
 
-export const mergeProps = <T extends Record<string, any>>(
+export const mergeProps = <T extends Record<string, unknown>>(
   defaultProps: Partial<T>,
   userProps: Partial<T>
 ): T => {
   return { ...defaultProps, ...userProps } as T;
 };
 
-export const getDisplayName = (Component: React.ComponentType<any>): string => {
+export const getDisplayName = (Component: React.ComponentType<unknown>): string => {
   return Component.displayName || Component.name || 'Component';
 };
 

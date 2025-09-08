@@ -426,8 +426,13 @@ impl ResolutionCache {
         let mut entries: Vec<_> = memory_cache.iter().collect();
         entries.sort_by_key(|(_, entry)| entry.last_access);
         
-        for i in 0..count.min(entries.len()) {
-            let key = entries[i].0.clone();
+        // Collect keys to remove first to avoid borrowing conflicts
+        let keys_to_remove: Vec<String> = entries.iter()
+            .take(count)
+            .map(|(key, _)| (*key).clone())
+            .collect();
+        
+        for key in keys_to_remove {
             memory_cache.remove(&key);
         }
         
@@ -442,6 +447,7 @@ impl ResolutionCache {
         
         let mut current_size = self.calculate_memory_usage(memory_cache);
         let mut evicted = 0;
+        let mut keys_to_remove = Vec::new();
         
         for (key, entry) in entries {
             if current_size <= target_size {
@@ -449,8 +455,13 @@ impl ResolutionCache {
             }
             
             current_size -= entry.size_bytes;
-            memory_cache.remove(key);
+            keys_to_remove.push((*key).clone());
             evicted += 1;
+        }
+        
+        // Remove keys after iteration to avoid borrowing conflicts
+        for key in keys_to_remove {
+            memory_cache.remove(&key);
         }
         
         // Update eviction statistics
@@ -567,9 +578,10 @@ impl ResolutionCache {
         Ok(())
     }
     
-    fn estimate_memory_size(&self) -> usize {
+    async fn estimate_memory_size(&self) -> usize {
         // This is a rough estimate - in practice you'd want more accurate measurement
-        self.memory_cache.len() * 1024 // Assume ~1KB per entry on average
+        let memory_cache = self.memory_cache.read().await;
+        memory_cache.len() * 1024 // Assume ~1KB per entry on average
     }
 }
 

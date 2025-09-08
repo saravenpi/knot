@@ -496,6 +496,7 @@ async fn analyze_app_dependencies(_project: &Project, app_name: &str) -> Result<
 }
 
 struct DependencyAnalysis {
+    #[allow(dead_code)]
     app_name: String,
     issues: Vec<String>,
     suggestions: Vec<String>,
