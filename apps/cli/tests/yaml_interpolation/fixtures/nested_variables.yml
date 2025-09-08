@@ -1,0 +1,70 @@
+# Nested Variable References Examples
+# This file demonstrates complex variable interpolation with nested references
+
+variables:
+  # Base variables
+  app_name: "my-app"
+  env: "production"
+  region: "us-west-2"
+  version_major: "2"
+  version_minor: "1"
+  version_patch: "0"
+  
+  # First level nesting
+  environment_region: "${env}-${region}"
+  version_number: "${version_major}.${version_minor}.${version_patch}"
+  service_base: "${app_name}-${env}"
+  
+  # Second level nesting
+  service_name: "${service_base}-service"
+  docker_tag: "${app_name}:${version_number}"
+  deployment_name: "${service_name}-${region}"
+  
+  # Third level nesting
+  full_service_url: "https://${deployment_name}.example.com"
+  kubernetes_label: "app=${service_name},version=${version_number}"
+  backup_name: "${deployment_name}-backup-${version_number}"
+
+# Usage in configuration
+deployment:
+  name: ${deployment_name}
+  image: ${docker_tag}
+  url: ${full_service_url}
+  
+service:
+  name: ${service_name}
+  labels: ${kubernetes_label}
+  
+backup:
+  name: ${backup_name}
+  schedule: "0 2 * * *"
+  
+# Complex interpolation patterns
+monitoring:
+  alerts:
+    - name: "${service_name}-cpu-high"
+      query: "cpu_usage{service=\"${service_name}\"} > 80"
+    - name: "${service_name}-memory-high" 
+      query: "memory_usage{service=\"${service_name}\"} > 85"
+      
+  dashboards:
+    main: "https://grafana.example.com/d/${app_name}-${env}"
+    detailed: "https://grafana.example.com/d/${service_name}-details"
+
+# Nested variables in file paths
+paths:
+  config: "/etc/${app_name}/${env}/config.yml"
+  logs: "/var/log/${service_name}/${env}/${region}"
+  data: "/data/${app_name}/${version_number}/${env}"
+  
+# Environment-specific configurations
+environments:
+  ${env}:
+    database_url: "postgresql://db-${service_name}.${region}:5432/${app_name}_${env}"
+    redis_url: "redis://cache-${service_name}.${region}:6379"
+    api_url: ${full_service_url}
+    
+  staging:
+    database_url: "postgresql://db-${app_name}-staging.us-east-1:5432/${app_name}_staging"
+    redis_url: "redis://cache-${app_name}-staging.us-east-1:6379"
+    api_url: "https://${app_name}-staging-service-us-east-1.example.com"

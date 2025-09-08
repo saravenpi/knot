@@ -1,0 +1,150 @@
+# Knot Configuration with Variable Interpolation
+# Example of a complete knot.yml with variable interpolation
+
+variables:
+  project_name: "my-awesome-workspace"
+  organization: "myorg"
+  repository_base: "github.com/${organization}"
+  node_version: "18.17.0"
+  typescript_version: "5.0.0"
+  build_tool: "turbo"
+  package_manager: "bun"
+  alias_symbol: "#"
+  registry_url: "registry.${organization}.com"
+
+# Project metadata
+name: ${project_name}
+description: "A modern monorepo workspace for ${organization}"
+
+# TypeScript alias configuration  
+tsAlias: ${alias_symbol}
+
+# Project-wide scripts with interpolated commands
+scripts:
+  setup: "${package_manager} install && ${build_tool} run build"
+  build: "${build_tool} run build"
+  test: "${build_tool} run test"
+  lint: "${build_tool} run lint"
+  format: "${build_tool} run format"
+  clean: "${build_tool} run clean"
+  dev: "${build_tool} run dev"
+  
+  # Version and release scripts
+  version: "changeset version"
+  publish: "changeset publish --registry https://${registry_url}"
+  release: "${package_manager} run version && ${package_manager} run publish"
+  
+  # Development environment
+  docker-build: "docker build -t ${organization}/${project_name}:latest ."
+  docker-run: "docker run -p 3000:3000 ${organization}/${project_name}:latest"
+  
+  # CI/CD helpers
+  ci-install: "${package_manager} install --frozen-lockfile"
+  ci-build: "${build_tool} run build --filter=[HEAD^1]"
+  ci-test: "${build_tool} run test --filter=[HEAD^1]"
+
+# Applications configuration
+apps:
+  web:
+    description: "Frontend web application for ${project_name}"
+    tsAlias: ${alias_symbol}
+    packages: 
+      - "ui-components"
+      - "shared-types"
+      - "utils"
+      
+  api:
+    description: "Backend API server for ${project_name}"
+    tsAlias: true
+    packages:
+      - "database"
+      - "shared-types"
+      - "auth"
+      - "utils"
+      
+  mobile:
+    description: "Mobile application for ${project_name}"
+    packages:
+      - "mobile-components"
+      - "shared-types"
+      - "api-client"
+      
+  admin:
+    description: "Admin dashboard for ${project_name}"
+    tsAlias: "${alias_symbol}"
+    packages:
+      - "admin-components"
+      - "shared-types"
+      - "ui-components"
+      - "utils"
+
+# Package definitions (if using packages section)
+packages:
+  ui-components:
+    description: "Shared UI components for ${project_name}"
+  
+  shared-types:
+    description: "TypeScript types shared across ${project_name} applications"
+    
+  utils:
+    description: "Utility functions for ${project_name}"
+    
+  database:
+    description: "Database layer for ${project_name} API"
+    
+  auth:
+    description: "Authentication module for ${project_name}"
+    
+  api-client:
+    description: "API client for ${project_name} services"
+    
+  mobile-components:
+    description: "Mobile-specific components for ${project_name}"
+    
+  admin-components:
+    description: "Admin dashboard components for ${project_name}"
+
+# Development configuration
+dev:
+  node_version: ${node_version}
+  typescript_version: ${typescript_version}
+  registry: "https://${registry_url}"
+  
+# Deployment configuration  
+deployment:
+  environments:
+    development:
+      domain: "${project_name}-dev.${organization}.com"
+      database: "${project_name}_dev"
+      
+    staging:
+      domain: "${project_name}-staging.${organization}.com"
+      database: "${project_name}_staging"
+      
+    production:
+      domain: "${project_name}.${organization}.com"
+      database: "${project_name}_prod"
+
+# CI/CD configuration
+ci:
+  node_version: ${node_version}
+  package_manager: ${package_manager}
+  build_tool: ${build_tool}
+  registry: "https://${registry_url}"
+  
+  # Cache configuration
+  cache:
+    key: "${project_name}-${node_version}-${typescript_version}"
+    paths:
+      - "node_modules"
+      - ".turbo"
+      - "dist"
+      
+  # Build matrix
+  matrix:
+    - name: "Node ${node_version}"
+      node_version: ${node_version}
+      commands:
+        - "${package_manager} run ci-install"
+        - "${package_manager} run ci-build" 
+        - "${package_manager} run ci-test"

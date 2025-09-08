@@ -1,0 +1,163 @@
+# Error Cases for Variable Interpolation Testing
+# This file contains various error scenarios for testing error handling
+
+# CASE 1: Undefined variable reference
+variables:
+  defined_var: "I exist"
+  # undefined_var is not defined
+
+config_with_undefined:
+  name: ${defined_var}
+  missing: ${undefined_var}  # This should cause an error
+
+---
+
+# CASE 2: Circular dependency
+variables:
+  circular_a: ${circular_b}
+  circular_b: ${circular_c}
+  circular_c: ${circular_a}  # Creates a circular reference
+
+circular_test:
+  value: ${circular_a}
+
+---
+
+# CASE 3: Self-referencing variable
+variables:
+  self_ref: "prefix-${self_ref}-suffix"
+
+self_reference_test:
+  value: ${self_ref}
+
+---
+
+# CASE 4: Complex circular dependency
+variables:
+  service: "${app}-${env}"
+  app: "${service_name}"
+  service_name: "${service}-service"  # Indirect circular reference
+  env: "production"
+
+complex_circular:
+  name: ${service}
+
+---
+
+# CASE 5: Malformed variable syntax
+variables:
+  valid_var: "valid_value"
+
+malformed_syntax:
+  unclosed: ${valid_var
+  no_opening: valid_var}
+  empty_name: ${}
+  nested_braces: ${var{with}braces}
+  double_dollar: $${valid_var}
+
+---
+
+# CASE 6: Invalid variable names with special characters
+# These should work as variable names can contain special chars
+variables:
+  "var with spaces": "spaced value"
+  "var@special": "special value"
+  "123numeric": "numeric value"
+  "": "empty name value"  # Edge case - empty variable name
+
+special_chars_test:
+  spaced: ${var with spaces}
+  special: ${var@special}  
+  numeric: ${123numeric}
+  empty: ${}  # This should reference the empty-named variable
+
+---
+
+# CASE 7: Very deep nesting that exceeds limits
+variables:
+  base: "base_value"
+  # Create a chain of 200+ variables (would be generated programmatically in tests)
+  level_0: ${base}
+  level_1: ${level_0}
+  level_2: ${level_1}
+  # ... continue to level_150+
+
+deep_nesting_test:
+  value: ${level_150}  # Should hit iteration limit
+
+---
+
+# CASE 8: Mixed valid and invalid references
+variables:
+  good_var: "good_value"
+  partial_ref: "${good_var}-${bad_var}"  # One valid, one invalid
+
+mixed_validity:
+  partial: ${partial_ref}  # Should fail due to undefined bad_var
+  direct_good: ${good_var}  # Should work
+  direct_bad: ${bad_var}   # Should fail
+
+---
+
+# CASE 9: Environment variable fallback failures
+# These test cases assume env vars are not set
+env_fallback_test:
+  undefined_env: ${DEFINITELY_NOT_SET_ENV_VAR}
+  mixed_env: "${good_var}-${UNDEFINED_ENV_VAR}"
+
+---
+
+# CASE 10: Unicode and special encoding issues
+variables:
+  unicode_var: "café"
+  emoji_var: "🚀"
+  # Test potential encoding issues
+  mixed_encoding: "${unicode_var} ${emoji_var}"
+
+unicode_test:
+  value: ${mixed_encoding}
+  chinese: ${中文_variable}  # Undefined Chinese variable
+  arabic: ${العربية_variable}  # Undefined Arabic variable
+
+---
+
+# CASE 11: YAML parsing errors with interpolation
+# These create invalid YAML structure but variables should still be processed
+invalid_yaml_structure:
+  - item1
+    missing_dash: ${defined_var}  # Invalid YAML but variable should interpolate
+  - item2
+  
+unquoted_colon_value: ${defined_var}: invalid  # Creates parsing ambiguity
+
+---
+
+# CASE 12: Very long variable chains and values
+variables:
+  long_value: ${"x".repeat(100000)}  # Very long string
+  long_chain: "${long_value}${long_value}${long_value}"
+
+performance_test:
+  huge_value: ${long_chain}
+
+---
+
+# CASE 13: Type conflicts and edge cases  
+variables:
+  null_string: "null"
+  true_string: "true"
+  number_string: "123"
+  float_string: "123.456"
+
+type_edge_cases:
+  # These should be treated as their string values, not parsed as YAML types
+  null_value: ${null_string}      # Should be string "null", not null
+  bool_value: ${true_string}      # Should be string "true", not boolean
+  int_value: ${number_string}     # Should be string "123"
+  float_value: ${float_string}    # Should be string "123.456"
+  
+  # Unquoted versions might be parsed as their YAML types
+  unquoted_null: ${null_string}
+  unquoted_bool: ${true_string}
+  unquoted_int: ${number_string}
+  unquoted_float: ${float_string}

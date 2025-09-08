@@ -2,6 +2,37 @@ use anyhow::Context;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
+/// A configuration variable with its value and optional description
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum ConfigVariable {
+    /// Simple string value
+    Simple(String),
+    /// Complex variable with value and metadata
+    Complex {
+        value: String,
+        description: Option<String>,
+    },
+}
+
+impl ConfigVariable {
+    /// Get the value of the variable
+    pub fn get_value(&self) -> &str {
+        match self {
+            ConfigVariable::Simple(value) => value,
+            ConfigVariable::Complex { value, .. } => value,
+        }
+    }
+    
+    /// Get the description of the variable
+    pub fn get_description(&self) -> Option<&str> {
+        match self {
+            ConfigVariable::Simple(_) => None,
+            ConfigVariable::Complex { description, .. } => description.as_deref(),
+        }
+    }
+}
+
 pub fn parse_yaml_error_to_user_friendly(error: &serde_yaml::Error) -> String {
     let error_msg = error.to_string();
     
@@ -48,14 +79,27 @@ pub fn parse_yaml_error_to_user_friendly(error: &serde_yaml::Error) -> String {
     error_msg
 }
 
+/// Project-level configuration structure
 #[derive(Debug, Serialize, Deserialize)]
 pub struct KnotConfig {
+    /// Project name
     pub name: String,
+    /// Project description
     pub description: Option<String>,
+    /// TypeScript alias configuration
     #[serde(rename = "tsAlias")]
     pub ts_alias: Option<TsAlias>,
+    /// App dependencies configuration
     pub apps: Option<HashMap<String, AppDependencies>>,
+    /// Project-level scripts
     pub scripts: Option<HashMap<String, String>>,
+    /// Project-level variables available to all apps and packages
+    /// These variables can be referenced using {{variable_name}} syntax
+    /// Example:
+    /// variables:
+    ///   project_version: "1.0.0"
+    ///   api_url: "https://api.example.com"
+    pub variables: Option<HashMap<String, ConfigVariable>>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -102,34 +146,71 @@ impl AppDependencies {
     }
 }
 
+/// Package-level configuration structure
 #[derive(Debug, Serialize, Deserialize)]
 pub struct PackageConfig {
+    /// Package name
     pub name: String,
+    /// Team owning this package
     pub team: Option<String>,
+    /// Package version
     pub version: String,
+    /// Package description
     pub description: Option<String>,
+    /// Package author
     pub author: Option<String>,
+    /// Package license
     pub license: Option<String>,
+    /// Package repository URL
     pub repository: Option<String>,
+    /// Package keywords
     pub keywords: Option<Vec<String>>,
+    /// Package tags
     pub tags: Option<Vec<String>>,
+    /// Package-level scripts
     pub scripts: Option<HashMap<String, String>>,
+    /// Package dependencies
     pub dependencies: Option<Vec<String>>,
+    /// Development dependencies
     pub dev_dependencies: Option<Vec<String>>,
+    /// Optional dependencies
     pub optional_dependencies: Option<Vec<String>>,
+    /// Peer dependencies
     pub peer_dependencies: Option<Vec<String>>,
+    /// Package exports
     pub exports: Option<HashMap<String, String>>,
+    /// Package features
     pub features: Option<Vec<String>>,
+    /// Package-level variables that can override project and app variables
+    /// These variables can be referenced using {{variable_name}} syntax
+    /// Example:
+    /// variables:
+    ///   package_description: "Custom package description"
+    ///   build_target: "es2020"
+    pub variables: Option<HashMap<String, ConfigVariable>>,
 }
 
+/// App-level configuration structure
 #[derive(Debug, Serialize, Deserialize)]
 pub struct AppConfig {
+    /// App name
     pub name: String,
+    /// App description
     pub description: Option<String>,
+    /// TypeScript alias configuration
     #[serde(rename = "tsAlias")]
     pub ts_alias: Option<TsAlias>,
+    /// Package dependencies for this app
     pub packages: Option<Vec<String>>,
+    /// App-level scripts
     pub scripts: Option<HashMap<String, String>>,
+    /// App-level variables that can override project variables
+    /// These variables can be referenced using {{variable_name}} syntax
+    /// Example:
+    /// variables:
+    ///   app_port: "3000"
+    ///   app_title: "My Application"
+    pub variables: Option<HashMap<String, ConfigVariable>>,
 }
 
 impl KnotConfig {
@@ -339,7 +420,6 @@ impl AppConfig {
 
         // Validate app name for path safety
         self.validate_safe_name(&self.name, "App name")?;
-
 
         // Validate scripts
         if let Some(scripts) = &self.scripts {

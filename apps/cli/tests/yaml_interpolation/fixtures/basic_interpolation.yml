@@ -1,0 +1,47 @@
+# Basic Variable Interpolation Examples
+# This file contains examples of simple variable interpolation patterns
+
+variables:
+  project_name: "awesome-project"
+  version: "2.1.0"
+  author: "saravenpi"
+  description: "An awesome project built with Knot"
+  build_tool: "turbo"
+  package_manager: "bun"
+
+# Simple string interpolation
+name: ${project_name}
+version: ${version}
+author: ${author}
+description: ${description}
+
+# Multiple variables in single values
+full_name: "${project_name} v${version}"
+attribution: "Created by ${author}"
+build_command: "${package_manager} run ${build_tool}"
+
+# Variables in different data types
+metadata:
+  name: ${project_name}
+  version: ${version}
+  created_by: ${author}
+
+# Variables in arrays
+tags:
+  - ${project_name}
+  - "version-${version}"
+  - ${build_tool}
+
+# Variables in object keys and values
+scripts:
+  build: "${build_tool} run build"
+  test: "${build_tool} run test"
+  dev: "${package_manager} run dev"
+  version: "echo ${version}"
+
+# Quoted vs unquoted interpolation
+config:
+  app_name: ${project_name}           # Unquoted - preserves type
+  app_version: "${version}"           # Quoted - always string
+  port: 3000                          # Static value
+  debug: true                         # Static boolean

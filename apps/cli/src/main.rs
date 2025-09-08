@@ -3,11 +3,13 @@ mod config;
 mod dependency;
 mod downloader;
 mod ignore;
+mod interpolation;
 mod linker;
 mod project;
 mod templates;
 mod typescript;
 mod utils;
+mod variables;
 
 use anyhow::Result;
 use clap::{Arg, Command};
@@ -422,6 +424,50 @@ async fn main() -> Result<()> {
                 ),
         )
         .subcommand(
+            Command::new("vars")
+                .alias("variables")
+                .about("Variable management commands")
+                .subcommand_required(true)
+                .subcommand(
+                    Command::new("list")
+                        .about("List all available variables with their sources")
+                        .arg(
+                            Arg::new("app")
+                                .help("Show variables for specific app")
+                                .long("app")
+                                .value_name("APP"),
+                        )
+                        .arg(
+                            Arg::new("package")
+                                .help("Show variables for specific package")
+                                .long("package")
+                                .value_name("PACKAGE"),
+                        ),
+                )
+                .subcommand(
+                    Command::new("get")
+                        .about("Get the value of a specific variable")
+                        .arg(
+                            Arg::new("name")
+                                .help("Variable name")
+                                .required(true)
+                                .index(1),
+                        )
+                        .arg(
+                            Arg::new("app")
+                                .help("Context app name")
+                                .long("app")
+                                .value_name("APP"),
+                        )
+                        .arg(
+                            Arg::new("package")
+                                .help("Context package name")
+                                .long("package")
+                                .value_name("PACKAGE"),
+                        ),
+                ),
+        )
+        .subcommand(
             Command::new("upgrade")
                 .alias("u")
                 .about("Upgrade Knot CLI to the latest version")
@@ -595,6 +641,20 @@ async fn main() -> Result<()> {
             }
             Some(("sync", _)) => {
                 commands::deps_sync().await?;
+            }
+            _ => unreachable!(),
+        },
+        Some(("vars", sub_matches)) | Some(("variables", sub_matches)) => match sub_matches.subcommand() {
+            Some(("list", vars_sub)) => {
+                let app_name = vars_sub.get_one::<String>("app").map(|s| s.as_str());
+                let package_name = vars_sub.get_one::<String>("package").map(|s| s.as_str());
+                commands::vars_list(app_name, package_name)?;
+            }
+            Some(("get", vars_sub)) => {
+                let var_name = vars_sub.get_one::<String>("name").unwrap();
+                let app_name = vars_sub.get_one::<String>("app").map(|s| s.as_str());
+                let package_name = vars_sub.get_one::<String>("package").map(|s| s.as_str());
+                commands::vars_get(var_name, app_name, package_name)?;
             }
             _ => unreachable!(),
         },

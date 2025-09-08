@@ -1,0 +1,183 @@
+# Package Configuration with Variable Interpolation
+# Example of a package.yml with comprehensive variable usage
+
+variables:
+  package_name: "ui-components"
+  team_name: "frontend"
+  organization: "myorg"
+  version: "2.1.3"
+  author_name: "saravenpi"
+  license_type: "MIT"
+  
+  # Repository information
+  repo_name: "${organization}/${package_name}"
+  repo_url: "https://github.com/${repo_name}"
+  issues_url: "${repo_url}/issues"
+  
+  # Registry information
+  registry_url: "registry.${organization}.com"
+  scoped_name: "@${organization}/${package_name}"
+  
+  # Build configuration
+  build_tool: "vite"
+  test_tool: "vitest"
+  docs_tool: "storybook"
+  package_manager: "bun"
+  
+  # Environment-specific values
+  node_version: ">=18.0.0"
+  typescript_version: "^5.0.0"
+  react_version: "^18.2.0"
+
+# Basic package information
+name: ${package_name}
+team: ${team_name}
+version: ${version}
+description: "UI component library for ${organization} applications"
+author: ${author_name}
+license: ${license_type}
+repository: ${repo_url}
+
+# Keywords for package discovery
+keywords:
+  - "ui"
+  - "components" 
+  - "react"
+  - "${package_name}"
+  - "${team_name}"
+  - "${organization}"
+
+# Tags for categorization
+tags:
+  - "ui-library"
+  - "${team_name}-package"
+  - "react-components"
+  - "${organization}-internal"
+
+# Development and build scripts
+scripts:
+  # Development
+  dev: "${docs_tool} dev -p 6006"
+  build: "${build_tool} build"
+  preview: "${build_tool} preview"
+  
+  # Testing
+  test: "${test_tool} run"
+  test-watch: "${test_tool}"
+  test-ui: "${test_tool} --ui"
+  test-coverage: "${test_tool} run --coverage"
+  
+  # Code quality
+  lint: "eslint src --ext .ts,.tsx"
+  lint-fix: "eslint src --ext .ts,.tsx --fix" 
+  format: "prettier --write src/**/*.{ts,tsx}"
+  format-check: "prettier --check src/**/*.{ts,tsx}"
+  typecheck: "tsc --noEmit"
+  
+  # Documentation
+  docs-build: "${docs_tool} build"
+  docs-dev: "${docs_tool} dev"
+  
+  # Publishing
+  prepublish: "${package_manager} run build && ${package_manager} run test"
+  publish-npm: "npm publish --registry https://${registry_url}"
+  publish-local: "npm publish --registry http://localhost:4873"
+  
+  # Release
+  release-patch: "npm version patch && ${package_manager} run publish-npm"
+  release-minor: "npm version minor && ${package_manager} run publish-npm"
+  release-major: "npm version major && ${package_manager} run publish-npm"
+
+# Dependencies
+dependencies:
+  - "react@${react_version}"
+  - "react-dom@${react_version}"
+  - "clsx"
+  - "class-variance-authority"
+
+dev_dependencies:
+  - "typescript@${typescript_version}"
+  - "@types/react@^18.0.0"
+  - "@types/react-dom@^18.0.0"
+  - "${build_tool}"
+  - "${test_tool}"
+  - "@vitest/ui"
+  - "eslint"
+  - "prettier"
+  - "${docs_tool}"
+  - "@storybook/react-vite"
+
+peer_dependencies:
+  - "react@${react_version}"
+  - "react-dom@${react_version}"
+
+optional_dependencies:
+  - "framer-motion"
+  - "lucide-react"
+
+# Package exports
+exports:
+  ".": "./dist/index.js"
+  "./components": "./dist/components/index.js"
+  "./styles": "./dist/styles/index.css"
+  "./types": "./dist/types/index.d.ts"
+  "./utils": "./dist/utils/index.js"
+
+# Package features and capabilities
+features:
+  - "typescript"
+  - "react-components"
+  - "css-in-js"
+  - "theming"
+  - "accessibility"
+  - "${team_name}-optimized"
+  - "${organization}-styled"
+
+# Package metadata
+metadata:
+  homepage: "${repo_url}#readme"
+  bugs: ${issues_url}
+  funding: "https://github.com/sponsors/${organization}"
+  
+  # Engine requirements
+  engines:
+    node: ${node_version}
+    ${package_manager}: ">=1.0.0"
+    
+  # Package manager specific
+  publishConfig:
+    registry: "https://${registry_url}"
+    access: "restricted"
+    
+  # Bundle information
+  main: "./dist/index.js"
+  types: "./dist/index.d.ts"
+  files:
+    - "dist"
+    - "README.md"
+    - "LICENSE"
+    
+  # Development tools configuration
+  prettier:
+    semi: false
+    singleQuote: true
+    trailingComma: "es5"
+    
+  eslintConfig:
+    extends:
+      - "@${organization}/eslint-config"
+      
+# Team and ownership
+ownership:
+  team: ${team_name}
+  maintainers:
+    - ${author_name}
+  reviewers:
+    - "${team_name}-leads"
+  
+# Documentation
+documentation:
+  readme: "README.md"
+  changelog: "CHANGELOG.md"
+  storybook: "https://${package_name}-storybook.${organization}.com"
+  api_docs: "https://docs.${organization}.com/packages/${package_name}"

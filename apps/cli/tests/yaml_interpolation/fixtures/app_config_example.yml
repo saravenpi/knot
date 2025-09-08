@@ -1,0 +1,213 @@
+# Application Configuration with Variable Interpolation
+# Example of an app.yml with comprehensive variable usage
+
+variables:
+  app_name: "web-dashboard"
+  app_type: "react"
+  organization: "myorg"
+  team_name: "frontend"
+  author_name: "saravenpi"
+  
+  # Environment configuration
+  env: "development"
+  port: "3000"
+  host: "localhost"
+  
+  # Build and tooling
+  build_tool: "vite"
+  package_manager: "bun"
+  test_framework: "vitest"
+  alias_symbol: "#"
+  
+  # External services
+  api_base_url: "https://api.${organization}.com"
+  auth_service_url: "https://auth.${organization}.com"
+  cdn_url: "https://cdn.${organization}.com"
+  
+  # Package dependencies
+  ui_package: "ui-components"
+  utils_package: "utils"
+  types_package: "shared-types"
+  client_package: "api-client"
+
+# Basic application information
+name: ${app_name}
+description: "Web dashboard application for ${organization} built with ${app_type}"
+
+# TypeScript alias configuration
+tsAlias: ${alias_symbol}
+
+# Package dependencies
+packages:
+  - ${ui_package}
+  - ${utils_package}
+  - ${types_package}
+  - ${client_package}
+  - "hooks"
+  - "store"
+
+# Development and build scripts
+scripts:
+  # Development
+  dev: "${build_tool} dev --port ${port} --host ${host}"
+  dev-https: "${build_tool} dev --port ${port} --host ${host} --https"
+  dev-network: "${build_tool} dev --port ${port} --host 0.0.0.0"
+  
+  # Building
+  build: "${build_tool} build"
+  build-analyze: "${build_tool} build --analyze"
+  preview: "${build_tool} preview --port ${port}"
+  
+  # Testing
+  test: "${test_framework} run"
+  test-watch: "${test_framework}"
+  test-ui: "${test_framework} --ui"
+  test-coverage: "${test_framework} run --coverage"
+  test-e2e: "playwright test"
+  
+  # Code quality
+  lint: "eslint src --ext .ts,.tsx,.js,.jsx"
+  lint-fix: "eslint src --ext .ts,.tsx,.js,.jsx --fix"
+  format: "prettier --write 'src/**/*.{ts,tsx,js,jsx,css,json}'"
+  format-check: "prettier --check 'src/**/*.{ts,tsx,js,jsx,css,json}'"
+  typecheck: "tsc --noEmit"
+  
+  # Dependencies
+  install: "${package_manager} install"
+  update: "${package_manager} update"
+  clean: "rm -rf node_modules dist .turbo"
+  
+  # Docker
+  docker-build: "docker build -t ${organization}/${app_name}:latest ."
+  docker-run: "docker run -p ${port}:${port} ${organization}/${app_name}:latest"
+  docker-dev: "docker-compose -f docker-compose.dev.yml up"
+  
+  # Deployment
+  deploy-staging: "echo 'Deploying ${app_name} to staging environment'"
+  deploy-prod: "echo 'Deploying ${app_name} to production environment'"
+  
+  # Environment-specific builds
+  build-dev: "NODE_ENV=development ${build_tool} build"
+  build-staging: "NODE_ENV=staging ${build_tool} build"
+  build-prod: "NODE_ENV=production ${build_tool} build"
+
+# Environment configuration
+environment:
+  development:
+    api_url: "${api_base_url}/dev"
+    auth_url: "${auth_service_url}/dev"
+    cdn_url: "${cdn_url}/dev"
+    debug: true
+    log_level: "debug"
+    
+  staging:
+    api_url: "${api_base_url}/staging"
+    auth_url: "${auth_service_url}/staging" 
+    cdn_url: "${cdn_url}/staging"
+    debug: false
+    log_level: "info"
+    
+  production:
+    api_url: ${api_base_url}
+    auth_url: ${auth_service_url}
+    cdn_url: ${cdn_url}
+    debug: false
+    log_level: "error"
+
+# Application-specific configuration
+config:
+  app:
+    name: ${app_name}
+    version: "1.0.0"
+    title: "${app_name} - ${organization}"
+    description: "Dashboard application for ${organization} team"
+    
+  build:
+    target: "es2020"
+    minify: true
+    sourcemap: true
+    outDir: "dist"
+    
+  dev:
+    port: ${port}
+    host: ${host}
+    open: true
+    hmr: true
+    
+  # Feature flags
+  features:
+    dark_mode: true
+    analytics: true
+    offline_support: false
+    pwa: true
+    i18n: false
+
+# Team and ownership
+ownership:
+  team: ${team_name}
+  lead: ${author_name}
+  repository: "https://github.com/${organization}/${app_name}"
+
+# Dependencies and integrations
+integrations:
+  analytics:
+    provider: "google-analytics"
+    tracking_id: "GA-${organization}-${app_name}"
+    
+  monitoring:
+    provider: "sentry"
+    dsn: "https://sentry.${organization}.com/${app_name}"
+    
+  api:
+    base_url: ${api_base_url}
+    timeout: 30000
+    retry_attempts: 3
+    
+  auth:
+    provider: "auth0"
+    domain: "${organization}.auth0.com"
+    client_id: "${app_name}-${env}-client"
+
+# Performance and optimization
+performance:
+  bundle_analyzer: true
+  code_splitting: true
+  lazy_loading: true
+  image_optimization: true
+  
+  # Cache configuration
+  cache:
+    static_assets: "1y"
+    api_responses: "5m"
+    user_data: "24h"
+
+# Security configuration
+security:
+  content_security_policy: true
+  cors_enabled: true
+  rate_limiting: true
+  
+  # Allowed origins
+  allowed_origins:
+    - "https://${organization}.com"
+    - "https://*.${organization}.com"
+    - "http://localhost:${port}"
+
+# Build and deployment
+deployment:
+  targets:
+    staging:
+      url: "https://${app_name}-staging.${organization}.com"
+      branch: "develop"
+      auto_deploy: true
+      
+    production:
+      url: "https://${app_name}.${organization}.com"
+      branch: "main"
+      auto_deploy: false
+      
+  # CDN configuration
+  cdn:
+    provider: "cloudflare"
+    zone: "${organization}.com"
+    purge_on_deploy: true

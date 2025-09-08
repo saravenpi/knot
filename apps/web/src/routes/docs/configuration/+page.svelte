@@ -426,9 +426,196 @@
 		</div>
 	</section>
 
+	<!-- Variables & Interpolation -->
+	<section class="mb-12">
+		<h2 class="text-2xl font-bold mb-6">Variables & Interpolation</h2>
+		
+		<div class="space-y-6">
+			<p class="text-muted-foreground">
+				Knot provides a powerful variable system that allows you to use dynamic values in your configuration files.
+				Variables can be interpolated in any string value across knot.yml, app.yml, and package.yml files.
+			</p>
+
+			<div>
+				<h3 class="text-lg font-semibold mb-3">Variable Syntax</h3>
+				<p class="text-muted-foreground mb-4">
+					Knot supports two variable interpolation syntaxes that you can use in your YAML configuration files:
+				</p>
+				
+				<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+					<div class="border rounded-lg p-4">
+						<h4 class="font-semibold mb-2">Standard Syntax</h4>
+						<div class="bg-black/90 text-white font-mono text-sm p-3 rounded mb-2">
+							<code><span class="text-green-400">name:</span> <span class="text-yellow-400">"{{project_name}}-frontend"</span></code>
+						</div>
+						<div class="text-sm text-muted-foreground">Use <code class="bg-muted px-1 rounded">{{variable}}</code> for simple variable references</div>
+					</div>
+					<div class="border rounded-lg p-4">
+						<h4 class="font-semibold mb-2">Extended Syntax</h4>
+						<div class="bg-black/90 text-white font-mono text-sm p-3 rounded mb-2">
+							<code><span class="text-green-400">version:</span> <span class="text-yellow-400">"${project_name}-${version}"</span></code>
+						</div>
+						<div class="text-sm text-muted-foreground">Use <code class="bg-muted px-1 rounded">${variable}</code> for advanced features and environment fallback</div>
+					</div>
+				</div>
+			</div>
+
+			<div>
+				<h3 class="text-lg font-semibold mb-3">Complete Example</h3>
+				<div class="bg-black/90 text-white font-mono text-sm p-4 rounded-lg relative group">
+					<pre><code><span class="text-gray-400"># knot.yml - Project configuration with variables</span>
+<span class="text-blue-400">name:</span> <span class="text-green-400">"{{project_name}}"</span>
+<span class="text-blue-400">description:</span> <span class="text-green-400">"{{project_name}} - Built on ${date}"</span>
+<span class="text-blue-400">version:</span> <span class="text-green-400">"1.0.0"</span>
+
+<span class="text-gray-400"># Define custom variables</span>
+<span class="text-blue-400">variables:</span>
+  <span class="text-blue-400">project_prefix:</span> <span class="text-green-400">"mycompany"</span>
+  <span class="text-blue-400">build_target:</span> <span class="text-green-400">"production"</span>
+
+<span class="text-blue-400">scripts:</span>
+  <span class="text-blue-400">deploy:</span> <span class="text-green-400">"deploy --name={{project_prefix}}-{{project_name}} --target=${build_target}"</span>
+
+<span class="text-blue-400">apps:</span>
+  <span class="text-blue-400">frontend:</span>
+    <span class="text-blue-400">variables:</span>
+      <span class="text-blue-400">app_title:</span> <span class="text-green-400">"{{project_name}} Dashboard"</span>
+    <span class="text-blue-400">packages:</span>
+      - <span class="text-yellow-400">types</span></code></pre>
+				</div>
+			</div>
+
+			<div>
+				<h3 class="text-lg font-semibold mb-3">Variable Precedence</h3>
+				<div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+					<h4 class="font-semibold mb-4">Resolution Order (Highest to Lowest)</h4>
+					<div class="space-y-3">
+						<div class="flex items-center space-x-3">
+							<div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+								<span class="text-purple-600 font-bold text-sm">1</span>
+							</div>
+							<div>
+								<div class="font-medium">Built-in Variables</div>
+								<div class="text-sm text-muted-foreground">System-provided variables like project_name, date, timestamp, year</div>
+							</div>
+						</div>
+						<div class="flex items-center space-x-3">
+							<div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+								<span class="text-green-600 font-bold text-sm">2</span>
+							</div>
+							<div>
+								<div class="font-medium">Package Variables</div>
+								<div class="text-sm text-muted-foreground">Variables defined in package.yml files</div>
+							</div>
+						</div>
+						<div class="flex items-center space-x-3">
+							<div class="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
+								<span class="text-yellow-600 font-bold text-sm">3</span>
+							</div>
+							<div>
+								<div class="font-medium">App Variables</div>
+								<div class="text-sm text-muted-foreground">Variables defined in app.yml files</div>
+							</div>
+						</div>
+						<div class="flex items-center space-x-3">
+							<div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+								<span class="text-blue-600 font-bold text-sm">4</span>
+							</div>
+							<div>
+								<div class="font-medium">Project Variables</div>
+								<div class="text-sm text-muted-foreground">Variables defined in knot.yml</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div>
+				<h3 class="text-lg font-semibold mb-3">Built-in Variables</h3>
+				<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+					<div class="border rounded-lg p-4">
+						<h4 class="font-semibold mb-3">System Variables</h4>
+						<div class="text-sm space-y-2">
+							<div class="flex justify-between">
+								<code class="bg-muted px-2 py-1 rounded">project_name</code>
+								<span class="text-muted-foreground">Name from knot.yml</span>
+							</div>
+							<div class="flex justify-between">
+								<code class="bg-muted px-2 py-1 rounded">project_root</code>
+								<span class="text-muted-foreground">Project root path</span>
+							</div>
+							<div class="flex justify-between">
+								<code class="bg-muted px-2 py-1 rounded">date</code>
+								<span class="text-muted-foreground">Current date (YYYY-MM-DD)</span>
+							</div>
+							<div class="flex justify-between">
+								<code class="bg-muted px-2 py-1 rounded">timestamp</code>
+								<span class="text-muted-foreground">Unix timestamp</span>
+							</div>
+							<div class="flex justify-between">
+								<code class="bg-muted px-2 py-1 rounded">year</code>
+								<span class="text-muted-foreground">Current year</span>
+							</div>
+						</div>
+					</div>
+
+					<div class="border rounded-lg p-4">
+						<h4 class="font-semibold mb-3">CLI Commands</h4>
+						<div class="text-sm space-y-2">
+							<div>
+								<code class="bg-muted px-2 py-1 rounded">knot vars list</code>
+								<div class="text-muted-foreground mt-1">Show all available variables</div>
+							</div>
+							<div>
+								<code class="bg-muted px-2 py-1 rounded">knot vars get &lt;name&gt;</code>
+								<div class="text-muted-foreground mt-1">Get a specific variable value</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div>
+				<h3 class="text-lg font-semibold mb-3">Advanced Features</h3>
+				<div class="space-y-4">
+					<div class="border rounded-lg p-4">
+						<h4 class="font-semibold mb-2">Nested Variable References</h4>
+						<p class="text-sm text-muted-foreground mb-3">Variables can reference other variables for complex compositions:</p>
+						<div class="bg-black/90 text-white font-mono text-sm p-3 rounded">
+							<pre><code><span class="text-blue-400">variables:</span>
+  <span class="text-blue-400">env:</span> <span class="text-green-400">"production"</span>
+  <span class="text-blue-400">app_name:</span> <span class="text-green-400">"{{project_name}}"</span>
+  <span class="text-blue-400">full_name:</span> <span class="text-green-400">"{{app_name}}-{{env}}"</span>         <span class="text-gray-400"># Results in: "myproject-production"</span></code></pre>
+						</div>
+					</div>
+
+					<div class="border rounded-lg p-4">
+						<h4 class="font-semibold mb-2">Environment Variable Fallback</h4>
+						<p class="text-sm text-muted-foreground mb-3">Use <code>${}</code> syntax for environment variable fallback:</p>
+						<div class="bg-black/90 text-white font-mono text-sm p-3 rounded">
+							<pre><code><span class="text-blue-400">variables:</span>
+  <span class="text-blue-400">api_url:</span> <span class="text-green-400">"${API_URL}"</span>           <span class="text-gray-400"># Falls back to $API_URL env var</span>
+  <span class="text-blue-400">version:</span> <span class="text-green-400">"${BUILD_VERSION}"</span>     <span class="text-gray-400"># Falls back to $BUILD_VERSION env var</span></code></pre>
+						</div>
+					</div>
+
+					<div class="border rounded-lg p-4">
+						<h4 class="font-semibold mb-2">Error Handling</h4>
+						<div class="text-sm space-y-2 text-muted-foreground">
+							<div>• <strong>Undefined variables:</strong> Knot will show an error with suggestions of available variables</div>
+							<div>• <strong>Circular references:</strong> Automatic detection prevents infinite loops</div>
+							<div>• <strong>Type conversion:</strong> All variables are converted to strings when interpolated</div>
+							<div>• <strong>Validation:</strong> Variable names must be alphanumeric with underscores</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
 	<!-- Environment Variables -->
 	<section class="mb-12">
-		<h2 class="text-2xl font-bold mb-6">Environment Variables</h2>
+		<h2 class="text-2xl font-bold mb-6">Environment Configuration</h2>
 		
 		<div class="space-y-6">
 			<p class="text-muted-foreground">
@@ -436,7 +623,7 @@
 			</p>
 
 			<div>
-				<h3 class="text-lg font-semibold mb-3">Configuration Variables</h3>
+				<h3 class="text-lg font-semibold mb-3">Environment Variables</h3>
 				<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 					<div class="border rounded-lg p-4">
 						<h4 class="font-semibold mb-2">Knot Environment Variables</h4>
