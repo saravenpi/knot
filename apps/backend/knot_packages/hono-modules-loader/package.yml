@@ -1,0 +1,7 @@
+name: hono-modules-loader
+team: null
+version: 0.2.5
+description: File Based Router to load modules for Hono backends
+tags:
+  - utilities
+scripts: null

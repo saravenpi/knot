@@ -74,6 +74,7 @@ pub fn init_project(name: Option<&str>, path: Option<&str>, description: Option<
         ts_alias: Some(crate::config::TsAlias::Boolean(false)),
         apps: None,
         scripts: None,
+        variables: None,
     };
 
     let yaml_content = serde_yaml::to_string(&config)?;
@@ -237,6 +238,7 @@ pub async fn init_package(name: Option<&str>, team: Option<&str>, version: Optio
         peer_dependencies: None,
         exports: None,
         features: None,
+        variables: None,
     };
 
     let yaml_content = serde_yaml::to_string(&config)?;
@@ -394,6 +396,7 @@ pub async fn init_app(name: Option<&str>, template: Option<&str>, description: O
         ts_alias: None,
         packages: None,
         scripts: None,
+        variables: None,
     };
 
     let yaml_content = serde_yaml::to_string(&config)?;

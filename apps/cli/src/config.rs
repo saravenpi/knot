@@ -24,13 +24,6 @@ impl ConfigVariable {
         }
     }
     
-    /// Get the description of the variable
-    pub fn get_description(&self) -> Option<&str> {
-        match self {
-            ConfigVariable::Simple(_) => None,
-            ConfigVariable::Complex { description, .. } => description.as_deref(),
-        }
-    }
 }
 
 pub fn parse_yaml_error_to_user_friendly(error: &serde_yaml::Error) -> String {

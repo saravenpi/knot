@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use anyhow::{Context, Result};
-use crate::config::{KnotConfig, AppConfig, PackageConfig, ConfigVariable};
+use crate::config::{KnotConfig, AppConfig, PackageConfig};
 
 /// Variable context for hierarchical variable resolution
 /// Variables are resolved in this order of precedence:
@@ -95,18 +95,6 @@ impl VariableContext {
             .map(|s| s.as_str())
     }
     
-    /// Get all variables as a flat HashMap (for compatibility with existing template system)
-    pub fn to_variables_map(&self) -> HashMap<String, String> {
-        let mut variables = HashMap::new();
-        
-        // Add in reverse precedence order so higher precedence overrides
-        variables.extend(self.project.clone());
-        variables.extend(self.app.clone());
-        variables.extend(self.package.clone());
-        variables.extend(self.built_in.clone());
-        
-        variables
-    }
     
     /// List all available variables with their sources
     pub fn list_variables(&self) -> Vec<VariableInfo> {

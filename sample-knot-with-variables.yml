@@ -1,0 +1,45 @@
+# Sample Knot configuration with variable interpolation
+# Demonstrating the ${variable_name} syntax
+
+# Variables section - define reusable values
+variables:
+  project_base: "my-awesome-project"
+  version: "1.0.0"
+  environment: "development"
+  api_port: 3000
+  database_name: "${project_base}_${environment}"
+  full_project_name: "${project_base}-v${version}"
+
+# Project configuration with interpolated variables  
+name: "${full_project_name}"
+description: "A sample project demonstrating variable interpolation on ${OS} platform"
+
+# Apps configuration
+apps:
+  frontend:
+    description: "Frontend app for ${project_base}"
+    tsAlias: "#"
+    packages: [types, utils]
+  
+  backend:
+    description: "Backend API server running on port ${api_port}"
+    tsAlias: true
+    packages: [types, utils, data]
+
+# Scripts with interpolated values
+scripts:
+  start: "echo 'Starting ${full_project_name} on ${OS}'"
+  build: "echo 'Building ${project_base} for ${environment}'"
+  test: "echo 'Testing ${project_base} version ${version}'"
+  deploy: "echo 'Deploying to ${environment} environment'"
+  dev: "echo 'Starting development server on port ${api_port}'"
+  database-setup: "echo 'Setting up database: ${database_name}'"
+
+# Built-in variables available:
+# ${OS} - Operating system (darwin, linux, windows)
+# ${ARCH} - System architecture (x86_64, aarch64, etc.)
+# ${FAMILY} - OS family (unix, windows)
+# ${PWD} - Current working directory
+
+# Environment variables can also be used with fallback to env vars
+# For example: ${NODE_ENV} would use the NODE_ENV environment variable

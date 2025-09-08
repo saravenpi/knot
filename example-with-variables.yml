@@ -1,0 +1,78 @@
+# Example Knot configuration with variable interpolation
+# This demonstrates the new variables section and ${variable_name} syntax
+
+variables:
+  # Basic variables
+  org_name: "acme-corp"
+  project_name: "awesome-platform"
+  version: "2.1.0"
+  author: "saravenpi"
+  
+  # Computed variables (using other variables)
+  full_name: "${org_name}-${project_name}"
+  display_name: "${project_name} v${version}"
+  
+  # Environment-specific variables (will fallback to env vars if not defined)
+  environment: "development"
+  api_port: 3000
+  db_port: 5432
+
+# Main configuration using variables
+name: "${full_name}"
+description: "${display_name} - A comprehensive platform built by ${author}"
+version: "${version}"
+author: "${author}"
+
+# Scripts with variable interpolation
+scripts:
+  start: "echo 'Starting ${display_name} on port ${api_port}'"
+  build: "echo 'Building ${full_name} for ${environment}'"
+  test: "echo 'Testing ${project_name} v${version}'"
+  deploy: "echo 'Deploying ${org_name}/${project_name}:${version}'"
+
+# Apps configuration
+apps:
+  web:
+    name: "${full_name}-web"
+    description: "Web interface for ${project_name}"
+    packages: 
+      - "${org_name}-types"
+      - "${org_name}-ui-components"
+      - "${full_name}-utils"
+    scripts:
+      dev: "PORT=${api_port} npm run dev"
+      build: "NODE_ENV=${environment} npm run build"
+  
+  api:
+    name: "${full_name}-api"
+    description: "Backend API for ${project_name} v${version}"
+    packages:
+      - "${org_name}-types"
+      - "${full_name}-core"
+      - "${full_name}-database"
+    scripts:
+      start: "PORT=${api_port} DB_PORT=${db_port} npm start"
+      migrate: "echo 'Migrating database for ${environment}'"
+
+  cli:
+    name: "${project_name}-cli"
+    description: "Command-line tools for ${display_name}"
+    packages:
+      - "${org_name}-types"
+      - "${full_name}-core"
+    scripts:
+      install: "echo 'Installing ${project_name}-cli v${version}'"
+
+# Package definitions using variables
+packages:
+  types:
+    name: "${org_name}-types"
+    description: "TypeScript definitions for ${project_name}"
+    version: "${version}"
+    
+  core:
+    name: "${full_name}-core" 
+    description: "Core functionality for ${display_name}"
+    version: "${version}"
+    dependencies:
+      - "${org_name}-types@${version}"

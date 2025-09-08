@@ -2,6 +2,7 @@ use crate::config::{AppConfig, KnotConfig, PackageConfig};
 use crate::dependency::{DependencyResolver, DependencySpec, PackageId, ResolutionContext, ResolutionStrategy};
 use crate::dependency::registry::{LocalPackageRegistry, RemotePackageRegistry, PackageRegistry};
 use crate::utils;
+use crate::variables::{VariableContext, VariableInterpolation};
 use anyhow::{Context, Result};
 use console::style;
 use std::collections::HashMap;
@@ -15,6 +16,8 @@ pub struct Project {
     pub apps: HashMap<String, AppConfig>,
     #[allow(dead_code)]
     dependency_resolver: Option<DependencyResolver>,
+    /// Variable context for the entire project with hierarchical resolution
+    pub variable_context: VariableContext,
 }
 
 impl Project {
@@ -22,8 +25,16 @@ impl Project {
         let project_root = Self::find_project_root(start_dir)?;
         let config_path = utils::find_yaml_file(&project_root, "knot")
             .ok_or_else(|| anyhow::anyhow!("No knot.yml or knot.yaml file found in {:?}", project_root))?;
-        let config = KnotConfig::from_file(&config_path)
+        let mut config = KnotConfig::from_file(&config_path)
             .with_context(|| format!("Failed to load config from {:?}", config_path))?;
+
+        // Create base variable context with project information
+        let variable_context = VariableContext::new(&config.name, &project_root)
+            .with_project_variables(&config);
+
+        // Apply variable interpolation to the project config
+        config.interpolate_variables(&variable_context)
+            .context("Failed to interpolate variables in project config")?;
 
         let mut project = Project {
             root: project_root,
@@ -31,6 +42,7 @@ impl Project {
             packages: HashMap::new(),
             apps: HashMap::new(),
             dependency_resolver: None,
+            variable_context,
         };
 
         project.load_packages()?;
@@ -70,7 +82,7 @@ impl Project {
 
             if path.is_dir() {
                 if let Some(package_config_path) = utils::find_yaml_file(&path, "package") {
-                    let package_config = PackageConfig::from_file(&package_config_path)
+                    let mut package_config = PackageConfig::from_file(&package_config_path)
                         .with_context(|| format!("Failed to load {:?}", package_config_path))?;
 
                     let package_name = path
@@ -78,6 +90,15 @@ impl Project {
                         .and_then(|n| n.to_str())
                         .ok_or_else(|| anyhow::anyhow!("Invalid package directory name"))?
                         .to_string();
+
+                    // Create package-specific variable context
+                    let package_context = self.variable_context
+                        .clone()
+                        .with_package_variables(&package_config);
+
+                    // Apply variable interpolation to package config
+                    package_config.interpolate_variables(&package_context)
+                        .with_context(|| format!("Failed to interpolate variables in package config for '{}'", package_name))?;
 
                     self.packages.insert(package_name, package_config);
                 }
@@ -99,7 +120,7 @@ impl Project {
 
             if path.is_dir() {
                 if let Some(app_config_path) = utils::find_yaml_file(&path, "app") {
-                    let app_config = AppConfig::from_file(&app_config_path)
+                    let mut app_config = AppConfig::from_file(&app_config_path)
                         .with_context(|| format!("Failed to load {:?}", app_config_path))?;
 
                     let app_name = path
@@ -107,6 +128,15 @@ impl Project {
                         .and_then(|n| n.to_str())
                         .ok_or_else(|| anyhow::anyhow!("Invalid app directory name"))?
                         .to_string();
+
+                    // Create app-specific variable context
+                    let app_context = self.variable_context
+                        .clone()
+                        .with_app_variables(&app_config);
+
+                    // Apply variable interpolation to app config
+                    app_config.interpolate_variables(&app_context)
+                        .with_context(|| format!("Failed to interpolate variables in app config for '{}'", app_name))?;
 
                     self.apps.insert(app_name, app_config);
                 }
@@ -178,6 +208,44 @@ impl Project {
         }
 
         None
+    }
+
+    /// Get a variable context for a specific app (includes project and app variables)
+    pub fn get_app_variable_context(&self, app_name: &str) -> VariableContext {
+        let mut context = self.variable_context.clone();
+        
+        if let Some(app_config) = self.apps.get(app_name) {
+            context = context.with_app_variables(app_config);
+        }
+        
+        context
+    }
+
+    /// Get a variable context for a specific package (includes project and package variables)
+    pub fn get_package_variable_context(&self, package_name: &str) -> VariableContext {
+        let mut context = self.variable_context.clone();
+        
+        if let Some(package_config) = self.packages.get(package_name) {
+            context = context.with_package_variables(package_config);
+        }
+        
+        context
+    }
+
+    /// Get a full variable context for a package within an app
+    /// (includes project, app, and package variables with proper precedence)
+    pub fn get_full_variable_context(&self, app_name: &str, package_name: &str) -> VariableContext {
+        let mut context = self.variable_context.clone();
+        
+        if let Some(app_config) = self.apps.get(app_name) {
+            context = context.with_app_variables(app_config);
+        }
+        
+        if let Some(package_config) = self.packages.get(package_name) {
+            context = context.with_package_variables(package_config);
+        }
+        
+        context
     }
 
     #[allow(dead_code)]
