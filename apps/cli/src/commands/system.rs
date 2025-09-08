@@ -173,7 +173,7 @@ pub async fn update_cli(force: bool) -> Result<()> {
                 perform_cargo_update("latest").await?;
             } else {
                 println!("💡 You can still force an update with: knot upgrade --force");
-                println!("   Or update manually with: cargo install --git https://github.com/saravenpi/knot --bin knot --locked");
+                println!("   Or update manually with: cargo install --git https://github.com/saravenpi/knot knot --bin knot --locked");
             }
         }
     }
@@ -199,6 +199,7 @@ async fn perform_cargo_update(version: &str) -> Result<()> {
         "install".to_string(),
         "--git".to_string(),
         "https://github.com/saravenpi/knot".to_string(),
+        "knot".to_string(),
         "--bin".to_string(),
         "knot".to_string(),
     ];
