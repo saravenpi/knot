@@ -27,12 +27,18 @@
 				setTimeout(() => reject(new Error('Request timeout')), 3000);
 			});
 
-			const [, statsResult] = await Promise.all([
-				Promise.race([packagesStore.fetchAll(), timeout]),
-				Promise.race([packagesApi.getGlobalStats(), timeout])
-			]);
+			try {
+				const [, statsResult] = await Promise.all([
+					Promise.race([packagesStore.fetchAll(), timeout]).catch(() => null),
+					Promise.race([packagesApi.getGlobalStats(), timeout]).catch(() => null)
+				]);
 
-			stats = statsResult as any;
+				if (statsResult) {
+					stats = statsResult as any;
+				}
+			} catch (promiseError) {
+				console.error('Promise handling error:', promiseError);
+			}
 			statsLoading = false;
 		} catch (error) {
 			console.error('Failed to fetch data:', error);
@@ -268,7 +274,13 @@
 				<code>curl -fsSL https://raw.githubusercontent.com/saravenpi/knot/main/install.sh | bash</code>
 				<button
 					class="absolute top-2 right-2 p-1.5 rounded bg-white/10 hover:bg-white/20 transition-colors"
-					on:click={() => navigator.clipboard.writeText('curl -fsSL https://raw.githubusercontent.com/saravenpi/knot/main/install.sh | bash')}
+					on:click={async () => {
+				try {
+					await navigator.clipboard.writeText('curl -fsSL https://raw.githubusercontent.com/saravenpi/knot/main/install.sh | bash');
+				} catch (err) {
+					console.error('Failed to copy to clipboard:', err);
+				}
+			}}
 					title="Copy to clipboard"
 					aria-label="Copy install command to clipboard"
 				>
