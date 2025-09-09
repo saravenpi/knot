@@ -197,7 +197,7 @@ const createAuthStore = () => {
       let currentState: AuthState;
       const unsubscribe = subscribe((state) => {
         currentState = state;
-      })();
+      });
       unsubscribe(); // Immediately unsubscribe after getting current state
 
       if (currentState!.initialized) {
