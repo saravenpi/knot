@@ -1,8 +1,0 @@
-{
-  "dependencies": {},
-  "description": "Generated package.json for Knot app 'knot-cli'",
-  "main": "index.js",
-  "name": "knot-cli",
-  "private": true,
-  "version": "1.0.0"
-}
