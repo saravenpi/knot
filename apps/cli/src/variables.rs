@@ -1,6 +1,8 @@
 use std::collections::HashMap;
 use anyhow::{Context, Result};
 use crate::config::{KnotConfig, AppConfig, PackageConfig};
+#[cfg(test)]
+use crate::config::ConfigVariable;
 
 /// Variable context for hierarchical variable resolution
 /// Variables are resolved in this order of precedence:

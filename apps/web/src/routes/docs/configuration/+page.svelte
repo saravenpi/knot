@@ -591,7 +591,7 @@
 
 					<div class="border rounded-lg p-4">
 						<h4 class="font-semibold mb-2">Environment Variable Fallback</h4>
-						<p class="text-sm text-muted-foreground mb-3">Use <code>${}</code> syntax for environment variable fallback:</p>
+						<p class="text-sm text-muted-foreground mb-3">Use <code>{'${}'}</code> syntax for environment variable fallback:</p>
 						<div class="bg-black/90 text-white font-mono text-sm p-3 rounded">
 							<pre><code><span class="text-blue-400">variables:</span>
   <span class="text-blue-400">api_url:</span> <span class="text-green-400">"${API_URL}"</span>           <span class="text-gray-400"># Falls back to $API_URL env var</span>
