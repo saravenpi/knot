@@ -113,7 +113,10 @@
       - <span class="text-yellow-400">ui-components</span></code></pre>
 					<button 
 						class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
-						on:click={() => copyToClipboard(document.querySelector('pre code').textContent)}
+						on:click={(event) => {
+						const codeElement = event.target.closest('.group').querySelector('pre code');
+						if (codeElement) copyToClipboard(codeElement.textContent);
+					}}
 					>
 						{#if showCopied}
 							<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
@@ -208,7 +211,10 @@
   - <span class="text-yellow-400">types</span>                     <span class="text-gray-400"># Local package dependency</span></code></pre>
 					<button 
 						class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
-						on:click={() => copyToClipboard(document.querySelectorAll('pre code')[1].textContent)}
+						on:click={(event) => {
+						const codeElement = event.target.closest('.group').querySelector('pre code');
+						if (codeElement) copyToClipboard(codeElement.textContent);
+					}}
 					>
 						{#if showCopied}
 							<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
@@ -308,7 +314,10 @@
     <span class="text-blue-400">api_url:</span> <span class="text-green-400">"https://api.myapp.com"</span></code></pre>
 					<button 
 						class="absolute top-2 right-2 p-2 rounded-md bg-white/10 hover:bg-white/20 transition-colors opacity-0 group-hover:opacity-100"
-						on:click={() => copyToClipboard(document.querySelectorAll('pre code')[2].textContent)}
+						on:click={(event) => {
+						const codeElement = event.target.closest('.group').querySelector('pre code');
+						if (codeElement) copyToClipboard(codeElement.textContent);
+					}}
 					>
 						{#if showCopied}
 							<Icon icon="lucide:check-circle" class="w-4 h-4 text-green-400" />
