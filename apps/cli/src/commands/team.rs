@@ -160,8 +160,8 @@ async fn select_team_interactively(prompt_message: &str) -> Result<String> {
 
     println!("🔍 Available teams:");
     let selection = Select::new(prompt_message, team_options.clone())
-        .with_vim_mode(true)
-        .with_help_message("Use arrow keys, j/k, or ctrl-j/ctrl-k to navigate, Enter to select, Esc to cancel")
+        .with_vim_mode(false)
+        .with_help_message("Use arrow keys or ctrl-j/ctrl-k to navigate, Enter to select, Esc to cancel")
         .prompt();
 
     match selection {
@@ -457,8 +457,8 @@ pub async fn add_team_member(team: Option<&str>, username: Option<&str>, role: &
         println!();
         println!("🎭 Select role for the new team member:");
         let selection = Select::new("Select role", role_descriptions.clone())
-            .with_vim_mode(true)
-            .with_help_message("Use arrow keys, j/k, or ctrl-j/ctrl-k to navigate, Enter to select")
+            .with_vim_mode(false)
+            .with_help_message("Use arrow keys or ctrl-j/ctrl-k to navigate, Enter to select")
             .prompt();
 
         match selection {
