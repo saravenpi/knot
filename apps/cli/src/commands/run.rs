@@ -79,7 +79,7 @@ pub async fn run_script_interactive() -> Result<()> {
             if let Some(scripts) = &app_config.scripts {
                 for (name, command) in scripts {
                     all_scripts.push((
-                        format!("📱 {} (app: {})", name, app_config.name),
+                        format!("{} (app: {})", name, app_config.name),
                         name.clone(),
                         command.clone(),
                         "app".to_string(),
@@ -95,7 +95,7 @@ pub async fn run_script_interactive() -> Result<()> {
             if let Some(scripts) = &package_config.scripts {
                 for (name, command) in scripts {
                     all_scripts.push((
-                        format!("📦 {} (package: {})", name, package_config.name),
+                        format!("{} (package: {})", name, package_config.name),
                         name.clone(),
                         command.clone(),
                         "package".to_string(),
@@ -110,7 +110,7 @@ pub async fn run_script_interactive() -> Result<()> {
         if let Some(scripts) = &project.config.scripts {
             for (name, command) in scripts {
                 all_scripts.push((
-                    format!("🏗️ {} (project: {})", name, project.config.name),
+                    format!("{} (project: {})", name, project.config.name),
                     name.clone(),
                     command.clone(),
                     "project".to_string(),
@@ -145,7 +145,7 @@ pub async fn run_script_interactive() -> Result<()> {
     
     let script_options: Vec<String> = all_scripts
         .iter()
-        .map(|(display_name, _, command, _)| format!("{} → {}", display_name, style(command).dim()))
+        .map(|(display_name, _, _, _)| display_name.clone())
         .collect();
 
     let selection = Select::new("Select a script:", script_options.clone())
