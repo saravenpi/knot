@@ -79,7 +79,7 @@ pub async fn run_script_interactive() -> Result<()> {
             if let Some(scripts) = &app_config.scripts {
                 for (name, command) in scripts {
                     all_scripts.push((
-                        format!("{} (app: {})", name, app_config.name),
+                        format!("{} {}", name, style(format!("app: {}", app_config.name)).dim()),
                         name.clone(),
                         command.clone(),
                         "app".to_string(),
@@ -95,7 +95,7 @@ pub async fn run_script_interactive() -> Result<()> {
             if let Some(scripts) = &package_config.scripts {
                 for (name, command) in scripts {
                     all_scripts.push((
-                        format!("{} (package: {})", name, package_config.name),
+                        format!("{} {}", name, style(format!("package: {}", package_config.name)).dim()),
                         name.clone(),
                         command.clone(),
                         "package".to_string(),
@@ -110,7 +110,7 @@ pub async fn run_script_interactive() -> Result<()> {
         if let Some(scripts) = &project.config.scripts {
             for (name, command) in scripts {
                 all_scripts.push((
-                    format!("{} (project: {})", name, project.config.name),
+                    format!("{} {}", name, style(format!("project: {}", project.config.name)).dim()),
                     name.clone(),
                     command.clone(),
                     "project".to_string(),
