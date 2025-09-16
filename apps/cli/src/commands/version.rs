@@ -1,6 +1,7 @@
 use anyhow::{Context, Result};
 use crate::config::{PackageConfig, parse_yaml_error_to_user_friendly};
 use crate::utils;
+use crate::validation::{validate_semver, validate_prerelease_id, sanitize_input};
 use std::fs;
 
 // Version management commands
@@ -41,19 +42,26 @@ pub async fn version_bump(bump_type: &str) -> Result<()> {
         }
     }
 
-    anyhow::bail!("No package.yml/yaml or package.json found in current directory");
+    anyhow::bail!("Cannot set version: No package.yml/yaml or package.json found in current directory\n💡 Navigate to a package directory that contains package.yml\n💡 Or use 'knot init:package' to create a new package\n💡 Version management is only available for packages");
 }
 
 pub async fn version_prerelease(preid: Option<&str>) -> Result<()> {
     let current_dir = std::env::current_dir()?;
-    let preid = preid.unwrap_or("alpha");
+    let preid = match preid {
+        Some(id) => {
+            let sanitized = sanitize_input(id);
+            validate_prerelease_id(&sanitized)?;
+            sanitized
+        },
+        None => "alpha".to_string(),
+    };
 
     if let Some(package_config_path) = utils::find_yaml_file(&current_dir, "package") {
         let mut config: PackageConfig = serde_yaml::from_str(
             &fs::read_to_string(&package_config_path)?
         ).map_err(|e| anyhow::anyhow!("{}", parse_yaml_error_to_user_friendly(&e)))?;
 
-        let new_version = bump_prerelease(&config.version, preid)?;
+        let new_version = bump_prerelease(&config.version, &preid)?;
         config.version = new_version.clone();
 
         let yaml_content = serde_yaml::to_string(&config)?;
@@ -63,16 +71,15 @@ pub async fn version_prerelease(preid: Option<&str>) -> Result<()> {
         return Ok(());
     }
 
-    anyhow::bail!("No package.yml/yaml found in current directory");
+    anyhow::bail!("Cannot manage version: No package.yml/yaml found in current directory\n💡 Navigate to a package directory that contains package.yml\n💡 Or use 'knot init:package' to create a new package\n💡 Version management is only available for packages");
 }
 
 pub async fn version_set(version: &str) -> Result<()> {
     let current_dir = std::env::current_dir()?;
 
-    // Validate version format
-    if !is_valid_semver(version) {
-        anyhow::bail!("Invalid version format. Please use semantic versioning (e.g., 1.2.3)");
-    }
+    // Validate and sanitize version format
+    let sanitized_version = sanitize_input(version);
+    validate_semver(&sanitized_version)?;
 
     if let Some(package_config_path) = utils::find_yaml_file(&current_dir, "package") {
         let mut config: PackageConfig = serde_yaml::from_str(
@@ -88,14 +95,14 @@ pub async fn version_set(version: &str) -> Result<()> {
         return Ok(());
     }
 
-    anyhow::bail!("No package.yml/yaml found in current directory");
+    anyhow::bail!("Cannot manage version: No package.yml/yaml found in current directory\n💡 Navigate to a package directory that contains package.yml\n💡 Or use 'knot init:package' to create a new package\n💡 Version management is only available for packages");
 }
 
 // Helper functions for version management
 fn bump_version(current: &str, bump_type: &str) -> Result<String> {
     let parts: Vec<&str> = current.split('.').collect();
     if parts.len() != 3 {
-        anyhow::bail!("Invalid version format: {}", current);
+        anyhow::bail!("Invalid version format '{}' in package.yml\n💡 Current version must follow semantic versioning (major.minor.patch)\n💡 Example: 1.0.0, 2.1.3, 0.1.0\n💡 Fix the version in package.yml before bumping", current);
     }
 
     let mut major: u32 = parts[0].parse().context("Invalid major version")?;

@@ -2,6 +2,7 @@ use anyhow::{Context, Result};
 use crate::config::PackageConfig;
 use crate::ignore::KnotIgnore;
 use crate::utils;
+use crate::validation::{validate_package_name, validate_semver, confirm_destructive_action, sanitize_input};
 use flate2::write::GzEncoder;
 use flate2::Compression;
 use reqwest::multipart;
@@ -366,8 +367,21 @@ pub async fn publish_package(team: Option<&str>, description: Option<&str>) -> R
 pub async fn delete_package(name: &str, version: &str) -> Result<()> {
     let token = require_auth_token()?;
 
+    // Validate inputs
+    let sanitized_name = sanitize_input(name);
+    let sanitized_version = sanitize_input(version);
+    validate_package_name(&sanitized_name)?;
+    validate_semver(&sanitized_version)?;
+
+    // Confirm destructive action
+    let package_spec = format!("{}@{}", sanitized_name, sanitized_version);
+    if !confirm_destructive_action("delete package", &package_spec)? {
+        println!("❌ Delete operation cancelled");
+        return Ok(());
+    }
+
     let base_url = get_knot_space_url();
-    let url = format!("{}/api/packages/{}/{}", base_url, name, version);
+    let url = format!("{}/api/packages/{}/{}", base_url, sanitized_name, sanitized_version);
 
     let client = reqwest::Client::new();
     let response = client

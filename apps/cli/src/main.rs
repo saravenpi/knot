@@ -9,13 +9,19 @@ mod project;
 mod templates;
 mod typescript;
 mod utils;
+mod validation;
 mod variables;
 
 use anyhow::Result;
 use clap::{Arg, Command};
+use console;
 
 #[tokio::main]
 async fn main() -> Result<()> {
+    // Setup graceful Ctrl+C handling
+    if let Err(_) = commands::common::setup_ctrl_c_handler() {
+        // Silently ignore if we can't set up Ctrl+C handler
+    }
     let matches = Command::new("knot")
         .version(env!("CARGO_PKG_VERSION"))
         .about("Knot - Monorepo package manager")
@@ -537,14 +543,14 @@ async fn main() -> Result<()> {
         }
         Some(("delete", sub_matches)) => {
             let name = sub_matches.get_one::<String>("name")
-                .ok_or_else(|| anyhow::anyhow!("Missing required argument: name"))?;
+                .ok_or_else(|| anyhow::anyhow!("Package name is required for deletion\n💡 Usage: knot delete <package-name> <version>\n💡 Example: knot delete my-package 1.0.0"))?;
             let version = sub_matches.get_one::<String>("version")
-                .ok_or_else(|| anyhow::anyhow!("Missing required argument: version"))?;
+                .ok_or_else(|| anyhow::anyhow!("Package version is required for deletion\n💡 Usage: knot delete <package-name> <version>\n💡 Example: knot delete my-package 1.0.0"))?;
             commands::delete_package(name, version).await?;
         }
         Some(("install", sub_matches)) | Some(("add", sub_matches)) => {
             let package = sub_matches.get_one::<String>("package")
-                .ok_or_else(|| anyhow::anyhow!("Missing required argument: package"))?;
+                .ok_or_else(|| anyhow::anyhow!("Package specification is required for installation\n💡 Usage: knot install <package-spec>\n💡 Examples:\n  - knot install utils (install latest version)\n  - knot install utils@1.2.3 (install specific version)\n  - knot install @team/package (install from Knot Space)"))?;
             let no_link = sub_matches.get_flag("no-link");
             let auto_link = !no_link; // Auto-link by default unless --no-link is specified
             commands::add_package(package, auto_link).await?;
@@ -565,7 +571,7 @@ async fn main() -> Result<()> {
             }
             Some(("set", set_sub)) => {
                 let version = set_sub.get_one::<String>("version")
-                    .ok_or_else(|| anyhow::anyhow!("Missing required argument: version"))?;
+                    .ok_or_else(|| anyhow::anyhow!("Version number is required for version set\n💡 Usage: knot version set <version>\n💡 Example: knot version set 2.1.0\n💡 Must follow semantic versioning (major.minor.patch)"))?;
                 commands::version_set(version).await?;
             }
             _ => unreachable!(),
@@ -590,7 +596,7 @@ async fn main() -> Result<()> {
                 let team = team_sub.get_one::<String>("team");
                 let username = team_sub.get_one::<String>("username");
                 let role = team_sub.get_one::<String>("role")
-                    .ok_or_else(|| anyhow::anyhow!("Missing required argument: role"))?;
+                    .ok_or_else(|| anyhow::anyhow!("Member role is required for adding team members\n💡 Usage: knot team add-member [team] [username] --role <admin|member>\n💡 Valid roles: 'admin' or 'member'\n💡 Example: knot team add-member my-team john --role admin"))?;
                 commands::add_team_member(
                     team.map(|s| s.as_str()),
                     username.map(|s| s.as_str()),
@@ -610,7 +616,7 @@ async fn main() -> Result<()> {
         Some(("deps", sub_matches)) => match sub_matches.subcommand() {
             Some(("add", deps_sub)) => {
                 let package_spec = deps_sub.get_one::<String>("package")
-                    .ok_or_else(|| anyhow::anyhow!("Missing required argument: package"))?;
+                    .ok_or_else(|| anyhow::anyhow!("Package specification is required for dependency addition\n💡 Usage: knot deps add <package-spec> [options]\n💡 Examples:\n  - knot deps add utils@1.0.0\n  - knot deps add @team/package@^2.0.0\n  - knot deps add local-package --dev"))?;
                 let app_name = deps_sub.get_one::<String>("app").map(|s| s.as_str());
                 let dev = deps_sub.get_flag("dev");
                 let optional = deps_sub.get_flag("optional");
@@ -642,7 +648,7 @@ async fn main() -> Result<()> {
             }
             Some(("why", deps_sub)) => {
                 let package_name = deps_sub.get_one::<String>("package")
-                    .ok_or_else(|| anyhow::anyhow!("Missing required argument: package"))?;
+                    .ok_or_else(|| anyhow::anyhow!("Package name is required to explain dependency inclusion\n💡 Usage: knot deps why <package-name> [--app <app-name>]\n💡 Example: knot deps why lodash --app my-frontend"))?;
                 let app_name = deps_sub.get_one::<String>("app").map(|s| s.as_str());
                 commands::deps_why(package_name, app_name).await?;
             }
@@ -659,7 +665,7 @@ async fn main() -> Result<()> {
             }
             Some(("get", vars_sub)) => {
                 let var_name = vars_sub.get_one::<String>("name")
-                    .ok_or_else(|| anyhow::anyhow!("Missing required argument: name"))?;
+                    .ok_or_else(|| anyhow::anyhow!("Variable name is required to retrieve variable value\n💡 Usage: knot vars get <variable-name> [options]\n💡 Example: knot vars get api_url --app my-frontend\n💡 Use 'knot vars list' to see all available variables"))?;
                 let app_name = vars_sub.get_one::<String>("app").map(|s| s.as_str());
                 let package_name = vars_sub.get_one::<String>("package").map(|s| s.as_str());
                 commands::vars_get(var_name, app_name, package_name)?;
@@ -676,10 +682,17 @@ async fn main() -> Result<()> {
         }
         None => {
             // No subcommand provided, show help
+            println!("{}", console::style("🪢 Knot - Monorepo package manager").bold().cyan());
+            println!("{} {}", console::style("Version:").dim(), env!("CARGO_PKG_VERSION"));
+            println!();
+
             Command::new("knot")
                 .version(env!("CARGO_PKG_VERSION"))
                 .about("Knot - Monorepo package manager")
                 .print_help()?;
+
+            println!();
+            commands::common::display_tip("Run 'knot <command> --help' for more information on a specific command");
         }
     }
 

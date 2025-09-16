@@ -6,6 +6,11 @@ use tempfile::TempDir;
 
 use crate::config::{KnotConfig, AppConfig, PackageConfig};
 use crate::downloader::PackageDownloader;
+use crate::validation::{
+    validate_project_name, validate_package_name, validate_app_name,
+    validate_team_name, validate_semver, validate_template_name,
+    validate_description, validate_path, sanitize_input
+};
 use super::common::*;
 
 pub fn init_project(name: Option<&str>, path: Option<&str>, description: Option<&str>) -> Result<()> {
@@ -18,21 +23,62 @@ pub fn init_project(name: Option<&str>, path: Option<&str>, description: Option<
     println!();
 
     let project_name = match name {
-        Some(n) => n.to_string(),
-        None => prompt_for_input("✨ What's your project name?", None)?,
+        Some(n) => {
+            let sanitized = sanitize_input(n);
+            validate_project_name(&sanitized)?;
+            sanitized
+        },
+        None => {
+            let input = prompt_for_input_with_validation(
+                "✨ What's your project name?",
+                None,
+                Some("Use letters, numbers, spaces, dots, hyphens, or underscores"),
+                Some(|input: &str| {
+                    let sanitized = sanitize_input(input);
+                    match validate_project_name(&sanitized) {
+                        Ok(()) => Ok(inquire::validator::Validation::Valid),
+                        Err(e) => Ok(inquire::validator::Validation::Invalid(
+                            format!("⚠️  {}", e).into(),
+                        )),
+                    }
+                })
+            )?;
+            sanitize_input(&input)
+        },
     };
 
     let project_description = match description {
-        Some(d) => Some(d.to_string()),
+        Some(d) => {
+            let sanitized = sanitize_input(d);
+            if !sanitized.is_empty() {
+                validate_description(&sanitized)?;
+                Some(sanitized)
+            } else {
+                None
+            }
+        },
         None if interactive => {
-            let desc = prompt_for_description("📝 Project description (optional)", Some("A new Knot project"))?;
-            if desc.trim().is_empty() { None } else { Some(desc) }
+            let desc = prompt_for_description_with_help(
+                "📝 Project description (optional)",
+                Some("A new Knot project"),
+                Some("Briefly describe your project's purpose or goals (max 500 chars)")
+            )?;
+            let sanitized = sanitize_input(&desc);
+            if !sanitized.is_empty() {
+                validate_description(&sanitized)?;
+                Some(sanitized)
+            } else {
+                None
+            }
         },
         None => None,
     };
 
     let target_dir = match path {
-        Some(p) => PathBuf::from(p),
+        Some(p) => {
+            validate_path(p, "target path", false)?;
+            PathBuf::from(p)
+        },
         None if interactive => {
             let suggested_path = PathBuf::from(format!("./{}", project_name));
             println!("💡 Path options:");
@@ -40,7 +86,12 @@ pub fn init_project(name: Option<&str>, path: Option<&str>, description: Option<
             println!("   {} Current directory: {}", style("•").dim(), style(".").cyan());
             println!("   {} Custom path: {}", style("•").dim(), style("./my-custom-path").dim());
             println!();
-            let path_str = prompt_for_input("📁 Where should we create the project?", Some(suggested_path.to_str().unwrap_or(".")))?.trim().to_string();
+            let path_str = prompt_for_input_with_validation(
+                "📁 Where should we create the project?",
+                Some(suggested_path.to_str().unwrap_or(".")),
+                Some("Press Enter for default, '.' for current directory, or specify custom path"),
+                None
+            )?.trim().to_string();
             
             // Handle special cases for path input
             if path_str.is_empty() {
@@ -75,7 +126,11 @@ pub fn init_project(name: Option<&str>, path: Option<&str>, description: Option<
         println!("   {} {}", style("Location:").dim(), location_description);
         println!();
 
-        if !prompt_for_confirm("Create this project?", Some(true))? {
+        if !prompt_for_confirm_with_help(
+            "Create this project?",
+            Some(true),
+            Some("This will create the directory structure and configuration files")
+        )? {
             println!("{}", style("❌ Project creation cancelled").red());
             return Ok(());
         }
@@ -88,7 +143,7 @@ pub fn init_project(name: Option<&str>, path: Option<&str>, description: Option<
     let knot_yml_path = target_dir.join("knot.yml");
 
     if knot_yml_path.exists() {
-        anyhow::bail!("knot.yml already exists in the target directory");
+        anyhow::bail!("Cannot initialize project: knot.yml already exists in directory '{}'\n💡 This directory is already a Knot project\n💡 Use 'knot init:package' or 'knot init:app' to add components to this project\n💡 Or choose a different directory for your new project", target_dir.display());
     }
 
     let config = KnotConfig {
@@ -126,30 +181,122 @@ pub async fn init_package(name: Option<&str>, team: Option<&str>, version: Optio
     }
 
     let package_name = match name {
-        Some(n) => n.to_string(),
-        None => prompt_for_input("✨ What's your package name?", None)?,
+        Some(n) => {
+            let sanitized = sanitize_input(n);
+            validate_package_name(&sanitized)?;
+            sanitized
+        },
+        None => {
+            let input = prompt_for_input_with_validation(
+                "✨ What's your package name?",
+                None,
+                Some("Use lowercase letters, numbers, dots, hyphens, underscores"),
+                Some(|input: &str| {
+                    let sanitized = sanitize_input(input);
+                    match validate_package_name(&sanitized) {
+                        Ok(()) => Ok(inquire::validator::Validation::Valid),
+                        Err(e) => Ok(inquire::validator::Validation::Invalid(
+                            format!("⚠️  {}", e).into(),
+                        )),
+                    }
+                })
+            )?;
+            sanitize_input(&input)
+        },
     };
 
     let team_name = match team {
-        Some(t) => Some(t.to_string()),
+        Some(t) => {
+            let sanitized = sanitize_input(t);
+            if !sanitized.is_empty() {
+                validate_team_name(&sanitized)?;
+                Some(sanitized)
+            } else {
+                None
+            }
+        },
         None if interactive => {
-            let team = prompt_for_input("👥 Team name (optional, for namespaced packages)", None).ok();
-            team.filter(|t| !t.trim().is_empty())
+            let team = prompt_for_input_with_validation(
+                "👥 Team name (optional, for namespaced packages)",
+                None,
+                Some("Use lowercase letters, numbers, dots, hyphens, underscores"),
+                Some(|input: &str| {
+                    let sanitized = sanitize_input(input);
+                    if sanitized.is_empty() {
+                        Ok(inquire::validator::Validation::Valid)
+                    } else {
+                        match validate_team_name(&sanitized) {
+                            Ok(()) => Ok(inquire::validator::Validation::Valid),
+                            Err(e) => Ok(inquire::validator::Validation::Invalid(
+                                format!("⚠️  {}", e).into(),
+                            )),
+                        }
+                    }
+                })
+            ).ok();
+            if let Some(t) = team {
+                let sanitized = sanitize_input(&t);
+                if !sanitized.is_empty() {
+                    Some(sanitized)
+                } else {
+                    None
+                }
+            } else {
+                None
+            }
         },
         None => None,
     };
 
     let package_version = match version {
-        Some(v) => v.to_string(),
-        None if interactive => prompt_for_input("🏷️  Package version", Some("1.0.0"))?,
+        Some(v) => {
+            let sanitized = sanitize_input(v);
+            validate_semver(&sanitized)?;
+            sanitized
+        },
+        None if interactive => {
+            let input = prompt_for_input_with_validation(
+                "🏷️  Package version",
+                Some("1.0.0"),
+                Some("Use semantic versioning: MAJOR.MINOR.PATCH"),
+                Some(|input: &str| {
+                    let sanitized = sanitize_input(input);
+                    match validate_semver(&sanitized) {
+                        Ok(()) => Ok(inquire::validator::Validation::Valid),
+                        Err(e) => Ok(inquire::validator::Validation::Invalid(
+                            format!("⚠️  {}", e).into(),
+                        )),
+                    }
+                })
+            )?;
+            sanitize_input(&input)
+        },
         None => "1.0.0".to_string(),
     };
 
     let package_description = match description {
-        Some(d) => Some(d.to_string()),
+        Some(d) => {
+            let sanitized = sanitize_input(d);
+            if !sanitized.is_empty() {
+                validate_description(&sanitized)?;
+                Some(sanitized)
+            } else {
+                None
+            }
+        },
         None if interactive => {
-            let desc = prompt_for_description("📝 Package description (optional)", Some("A new Knot package"))?;
-            if desc.trim().is_empty() { None } else { Some(desc) }
+            let desc = prompt_for_description_with_help(
+                "📝 Package description (optional)",
+                Some("A new Knot package"),
+                Some("Describe what this package does and how others can use it (max 500 chars)")
+            )?;
+            let sanitized = sanitize_input(&desc);
+            if !sanitized.is_empty() {
+                validate_description(&sanitized)?;
+                Some(sanitized)
+            } else {
+                None
+            }
         },
         None => None,
     };
@@ -157,32 +304,55 @@ pub async fn init_package(name: Option<&str>, team: Option<&str>, version: Optio
     // Ask if user wants to use a template
     let use_template = match template {
         Some(_) => true, // If template is provided via CLI, we're using it
-        None if interactive => prompt_for_confirm("📦 Do you want to use a template from Knot Space?", Some(false))?,
+        None if interactive => prompt_for_confirm_with_help(
+            "📦 Do you want to use a template from Knot Space?",
+            Some(false),
+            Some("Templates provide pre-configured project structure and dependencies")
+        )?,
         None => false,
     };
 
     let package_template = if use_template {
         match template {
             Some(t) => {
-                // Ensure template starts with @
-                if !t.starts_with('@') {
+                let template_name = if !t.starts_with('@') {
                     format!("@{}", t)
                 } else {
                     t.to_string()
-                }
+                };
+                validate_template_name(&template_name)?;
+                template_name
             },
             None if interactive => {
                 println!();
                 println!("{}", style("Enter a package name to use as template.").dim());
                 println!("{}", style("Examples: @svelte-starter, @react-with-auth, @my-team/template").dim());
                 println!();
-                let template_input = prompt_for_input("🎨 Template package name", None)?;
-                // Ensure template starts with @
-                if !template_input.starts_with('@') {
+                let template_input = prompt_for_input_with_validation(
+                    "🎨 Template package name",
+                    None,
+                    Some("Must start with @ (e.g., @my-template or @team/template-name)"),
+                    Some(|input: &str| {
+                        let sanitized = sanitize_input(input);
+                        let template_name = if !sanitized.starts_with('@') {
+                            format!("@{}", sanitized)
+                        } else {
+                            sanitized
+                        };
+                        match validate_template_name(&template_name) {
+                            Ok(()) => Ok(inquire::validator::Validation::Valid),
+                            Err(e) => Ok(inquire::validator::Validation::Invalid(
+                                format!("⚠️  {}", e).into(),
+                            )),
+                        }
+                    })
+                )?;
+                let template_name = if !template_input.starts_with('@') {
                     format!("@{}", template_input)
                 } else {
                     template_input
-                }
+                };
+                template_name
             },
             None => return Ok(()), // No template
         }
@@ -223,7 +393,11 @@ pub async fn init_package(name: Option<&str>, team: Option<&str>, version: Optio
         println!("   {} {} ({})", style("Location:").dim(), target_dir.display(), context);
         println!();
 
-        if !prompt_for_confirm("Create this package?", Some(true))? {
+        if !prompt_for_confirm_with_help(
+            "Create this package?",
+            Some(true),
+            Some("This will create the package directory with configuration and template files")
+        )? {
             println!("{}", style("❌ Package creation cancelled").red());
             return Ok(());
         }
@@ -231,7 +405,7 @@ pub async fn init_package(name: Option<&str>, team: Option<&str>, version: Optio
 
     // Handle path collision for non-here mode
     if !here && target_dir.exists() && !path.map(|p| p == ".").unwrap_or(false) {
-        anyhow::bail!("Directory '{}' already exists", target_dir.display());
+        anyhow::bail!("Cannot create package: directory '{}' already exists\n💡 Choose a different package name or path\n💡 Use --here flag to create the package in the current directory\n💡 Or remove the existing directory first", target_dir.display());
     }
 
     if !target_dir.exists() {
@@ -241,7 +415,7 @@ pub async fn init_package(name: Option<&str>, team: Option<&str>, version: Optio
     let package_yml_path = target_dir.join("package.yml");
 
     if package_yml_path.exists() {
-        anyhow::bail!("package.yml already exists in the target directory");
+        anyhow::bail!("Cannot create package: package.yml already exists in directory '{}'\n💡 This directory already contains a Knot package\n💡 Choose a different directory or package name\n💡 Use --here flag if you want to overwrite (not recommended)", target_dir.display());
     }
 
     let config = PackageConfig {
@@ -314,15 +488,53 @@ pub async fn init_app(name: Option<&str>, template: Option<&str>, description: O
     }
 
     let app_name = match name {
-        Some(n) => n.to_string(),
-        None => prompt_for_input("✨ What's your app name?", None)?,
+        Some(n) => {
+            let sanitized = sanitize_input(n);
+            validate_app_name(&sanitized)?;
+            sanitized
+        },
+        None => {
+            let input = prompt_for_input_with_validation(
+                "✨ What's your app name?",
+                None,
+                Some("Use lowercase letters, numbers, dots, hyphens, underscores"),
+                Some(|input: &str| {
+                    let sanitized = sanitize_input(input);
+                    match validate_app_name(&sanitized) {
+                        Ok(()) => Ok(inquire::validator::Validation::Valid),
+                        Err(e) => Ok(inquire::validator::Validation::Invalid(
+                            format!("⚠️  {}", e).into(),
+                        )),
+                    }
+                })
+            )?;
+            sanitize_input(&input)
+        },
     };
 
     let app_description = match description {
-        Some(d) => Some(d.to_string()),
+        Some(d) => {
+            let sanitized = sanitize_input(d);
+            if !sanitized.is_empty() {
+                validate_description(&sanitized)?;
+                Some(sanitized)
+            } else {
+                None
+            }
+        },
         None if interactive => {
-            let desc = prompt_for_description("📝 App description (optional)", Some("A new Knot app"))?;
-            if desc.trim().is_empty() { None } else { Some(desc) }
+            let desc = prompt_for_description_with_help(
+                "📝 App description (optional)",
+                Some("A new Knot app"),
+                Some("Describe the app's purpose and target users (max 500 chars)")
+            )?;
+            let sanitized = sanitize_input(&desc);
+            if !sanitized.is_empty() {
+                validate_description(&sanitized)?;
+                Some(sanitized)
+            } else {
+                None
+            }
         },
         None => None,
     };
@@ -330,26 +542,36 @@ pub async fn init_app(name: Option<&str>, template: Option<&str>, description: O
     // Ask if user wants to use a template
     let use_template = match template {
         Some(_) => true, // If template is provided via CLI, we're using it
-        None if interactive => prompt_for_confirm("📦 Do you want to use a template from Knot Space?", Some(false))?,
+        None if interactive => prompt_for_confirm_with_help(
+            "📦 Do you want to use a template from Knot Space?",
+            Some(false),
+            Some("Templates provide pre-configured app structure and framework setup")
+        )?,
         None => false,
     };
 
     let app_template = if use_template {
         match template {
             Some(t) => {
-                // Ensure template starts with @
-                if !t.starts_with('@') {
+                let template_name = if !t.starts_with('@') {
                     format!("@{}", t)
                 } else {
                     t.to_string()
-                }
+                };
+                validate_template_name(&template_name)?;
+                template_name
             },
             None if interactive => {
                 println!();
                 println!("{}", style("Enter a package name to use as template.").dim());
                 println!("{}", style("Examples: @svelte-app-starter, @nextjs-with-auth, @my-team/app-template").dim());
                 println!();
-                let template_input = prompt_for_input("🎨 Template package name", None)?;
+                let template_input = prompt_for_input_with_validation(
+                    "🎨 Template package name",
+                    None,
+                    Some("Must start with @ (e.g., @nextjs-starter or @team/app-template)"),
+                    None
+                )?;
                 // Ensure template starts with @
                 if !template_input.starts_with('@') {
                     format!("@{}", template_input)
@@ -392,7 +614,11 @@ pub async fn init_app(name: Option<&str>, template: Option<&str>, description: O
         println!("   {} {} ({})", style("Location:").dim(), target_dir.display(), context);
         println!();
 
-        if !prompt_for_confirm("Create this app?", Some(true))? {
+        if !prompt_for_confirm_with_help(
+            "Create this app?",
+            Some(true),
+            Some("This will create the app directory with configuration and template files")
+        )? {
             println!("{}", style("❌ App creation cancelled").red());
             return Ok(());
         }
@@ -400,7 +626,7 @@ pub async fn init_app(name: Option<&str>, template: Option<&str>, description: O
 
     // Handle path collision for non-here mode
     if !here && target_dir.exists() && !path.map(|p| p == ".").unwrap_or(false) {
-        anyhow::bail!("Directory '{}' already exists", target_dir.display());
+        anyhow::bail!("Cannot create app: directory '{}' already exists\n💡 Choose a different app name or path\n💡 Use --here flag to create the app in the current directory\n💡 Or remove the existing directory first", target_dir.display());
     }
 
     if !target_dir.exists() {
@@ -410,7 +636,7 @@ pub async fn init_app(name: Option<&str>, template: Option<&str>, description: O
     let app_yml_path = target_dir.join("app.yml");
 
     if app_yml_path.exists() {
-        anyhow::bail!("app.yml already exists in the target directory");
+        anyhow::bail!("Cannot create app: app.yml already exists in directory '{}'\n💡 This directory already contains a Knot app\n💡 Choose a different directory or app name\n💡 Use --here flag if you want to overwrite (not recommended)", target_dir.display());
     }
 
     let config = AppConfig {

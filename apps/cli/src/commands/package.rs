@@ -1,10 +1,12 @@
 use anyhow::{Context, Result};
 use std::fs;
 
+use crate::commands::common::{create_spinner, create_progress_bar, finish_progress, fail_progress, display_success, display_error, display_info};
 use crate::config::AppConfig;
 use crate::linker::Linker;
 use crate::project::Project;
 use crate::typescript::TypeScriptManager;
+use crate::validation::{validate_package_spec, sanitize_input};
 
 pub async fn link_packages(use_symlinks: bool) -> Result<()> {
     let start_time = std::time::Instant::now();
@@ -13,35 +15,54 @@ pub async fn link_packages(use_symlinks: bool) -> Result<()> {
     let project = match Project::find_and_load(&current_dir) {
         Ok(project) => project,
         Err(_) => {
-            println!("❌ No knot.yml found in current directory or any parent directory");
-            println!("💡 Run 'knot init <project-name>' to initialize a new Knot project");
-            return Ok(());
+            display_error("Cannot link packages: No knot.yml found in current directory or any parent directory");
+            display_info("You must be inside a Knot project to link packages");
+            display_info("Run 'knot init <project-name>' to initialize a new Knot project");
+            display_info("Or navigate to an existing Knot project directory");
+            anyhow::bail!("Not in a Knot project");
         }
     };
 
+    let mode = if use_symlinks { "symlinked" } else { "copied" };
+    let spinner = create_spinner(&format!("Linking packages ({} mode)...", mode));
+
     let linker = Linker::new(&project);
-    linker
-        .link_all_apps(use_symlinks)
-        .await
-        .context("Failed to link packages to apps")?;
+    match linker.link_all_apps(use_symlinks).await {
+        Ok(_) => {}
+        Err(e) => {
+            fail_progress(&spinner, "Failed to link packages");
+            return Err(e.context("Failed to link packages to apps"));
+        }
+    }
+
+    spinner.set_message("Setting up TypeScript aliases...".to_string());
 
     let ts_manager = TypeScriptManager::new(&project);
-    ts_manager
-        .setup_aliases_for_all_apps()
-        .context("Failed to setup TypeScript aliases")?;
+    match ts_manager.setup_aliases_for_all_apps() {
+        Ok(_) => {}
+        Err(e) => {
+            fail_progress(&spinner, "Failed to setup TypeScript aliases");
+            return Err(e.context("Failed to setup TypeScript aliases"));
+        }
+    }
 
     let duration = start_time.elapsed();
-    let mode = if use_symlinks { "symlinked" } else { "copied" };
-    println!("🔗 Successfully {} all packages and updated TypeScript configurations", mode);
-    println!("⚡ Linked in {}ms", duration.as_millis());
+    finish_progress(&spinner, &format!("All packages {} and TypeScript configured", mode));
+    display_success(&format!("Successfully {} all packages and updated TypeScript configurations", mode));
+    display_info(&format!("Completed in {}ms", duration.as_millis()));
     Ok(())
 }
 
 pub async fn add_package(package_spec: &str, auto_link: bool) -> Result<()> {
     let current_dir = std::env::current_dir()?;
 
-    // Parse package specification (name@version or name@latest or just name)
-    let (package_name, version) = parse_package_spec(package_spec);
+    // Validate and parse package specification
+    let sanitized_spec = sanitize_input(package_spec);
+    if sanitized_spec.is_empty() {
+        anyhow::bail!("Package specification cannot be empty");
+    }
+
+    let (package_name, version) = validate_package_spec(&sanitized_spec)?;
     
     // Determine the version specification to save (inspired by npm)
     let version_spec = match version.as_ref() {
@@ -72,7 +93,7 @@ pub async fn add_package(package_spec: &str, auto_link: bool) -> Result<()> {
         let project = match Project::find_and_load(&current_dir) {
             Ok(project) => project,
             Err(_) => {
-                anyhow::bail!("❌ Not in an app directory or project root. Run 'knot install' from an app directory.");
+                anyhow::bail!("Cannot install package: Not in a Knot project directory\n💡 You must be inside a Knot project to install packages\n💡 Run 'knot init <project-name>' to initialize a new project\n💡 Or navigate to an existing Knot project directory\n💡 Then navigate to an app directory and run 'knot install' there");
             }
         };
 
@@ -100,17 +121,24 @@ pub async fn add_package(package_spec: &str, auto_link: bool) -> Result<()> {
         // This is a local package, verify it exists
         let project = match Project::find_and_load(&current_dir) {
             Ok(project) => project,
-            Err(_) => {
-                anyhow::bail!("❌ Could not load project configuration");
+            Err(e) => {
+                anyhow::bail!("Failed to load project configuration: {}\n💡 Ensure you're in a valid Knot project directory\n💡 Check that knot.yml exists and is properly formatted", e);
             }
         };
         
         // Check if the package exists in the project
         if !project.packages.contains_key(&package_name) {
-            anyhow::bail!("❌ Local package '{}' does not exist in this project.\n💡 Available packages: {}", 
-                package_name,
-                project.packages.keys().map(|s| s.as_str()).collect::<Vec<_>>().join(", ")
-            );
+            let available_packages = project.packages.keys().map(|s| s.as_str()).collect::<Vec<_>>();
+            if available_packages.is_empty() {
+                anyhow::bail!("Local package '{}' does not exist in this project\n💡 No packages found in this project\n💡 Create a package first with: knot init:package {}", package_name, package_name);
+            } else {
+                anyhow::bail!("Local package '{}' does not exist in this project\n💡 Available local packages: {}\n💡 Create the package with: knot init:package {}\n💡 Or install from Knot Space with: @team/{}",
+                    package_name,
+                    available_packages.join(", "),
+                    package_name,
+                    package_name
+                );
+            }
         }
     }
 

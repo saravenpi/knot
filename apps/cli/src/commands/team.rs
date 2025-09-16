@@ -1,9 +1,18 @@
 use anyhow::Result;
+use console;
 use inquire::{Select, Text};
 use serde::{Deserialize, Serialize};
 use std::env;
 
-use super::common::{is_interactive, prompt_for_input};
+use super::common::{
+    is_interactive, prompt_for_input, prompt_for_input_with_validation,
+    prompt_for_description_with_help, create_spinner, finish_progress,
+    fail_progress, display_error, display_success, display_info, display_warning
+};
+use crate::validation::{
+    validate_team_name, validate_username, validate_description,
+    validate_role, sanitize_input, confirm_destructive_action
+};
 
 // API structures
 #[derive(Serialize, Deserialize)]
@@ -201,12 +210,30 @@ pub async fn create_team(name: Option<&str>, description: Option<&str>) -> Resul
 
     // Interactive prompts for missing arguments
     let team_name = match name {
-        Some(n) => n.to_string(),
+        Some(n) => {
+            let sanitized = sanitize_input(n);
+            validate_team_name(&sanitized)?;
+            sanitized
+        },
         None => {
             if is_interactive() {
                 println!("🎉 Creating a new team!");
                 println!();
-                prompt_for_input("💼 Team name", None)?
+                let input = prompt_for_input_with_validation(
+                    "💼 Team name",
+                    None,
+                    Some("Use lowercase letters, numbers, dots, hyphens, underscores"),
+                    Some(|input: &str| {
+                        let sanitized = sanitize_input(input);
+                        match validate_team_name(&sanitized) {
+                            Ok(()) => Ok(inquire::validator::Validation::Valid),
+                            Err(e) => Ok(inquire::validator::Validation::Invalid(
+                                format!("⚠️  {}", e).into(),
+                            )),
+                        }
+                    })
+                )?;
+                sanitize_input(&input)
             } else {
                 anyhow::bail!("Team name is required. Use: knot team create <name>");
             }
@@ -217,7 +244,11 @@ pub async fn create_team(name: Option<&str>, description: Option<&str>) -> Resul
         Some(d) => Some(d.to_string()),
         None => {
             if is_interactive() {
-                match prompt_for_input("📝 Team description (optional)", Some("")) {
+                match prompt_for_description_with_help(
+                    "📝 Team description (optional)",
+                    Some(""),
+                    Some("Describe your team's purpose and responsibilities")
+                ) {
                     Ok(desc) if !desc.trim().is_empty() => Some(desc),
                     _ => None,
                 }
@@ -228,9 +259,11 @@ pub async fn create_team(name: Option<&str>, description: Option<&str>) -> Resul
     };
 
     let request = CreateTeamRequest {
-        name: team_name,
-        description: team_description,
+        name: team_name.clone(),
+        description: team_description.clone(),
     };
+
+    let spinner = create_spinner(&format!("Creating team '{}'...", team_name));
 
     let base_url = get_knot_space_url();
     let url = format!("{}/api/teams", base_url);
@@ -241,7 +274,15 @@ pub async fn create_team(name: Option<&str>, description: Option<&str>) -> Resul
         .header("Authorization", format!("Bearer {}", token))
         .json(&request)
         .send()
-        .await?;
+        .await;
+
+    let response = match response {
+        Ok(resp) => resp,
+        Err(e) => {
+            fail_progress(&spinner, "Failed to create team");
+            return Err(anyhow::anyhow!("Network error: {}", e));
+        }
+    };
 
     if response.status().is_success() {
         let response_text = response.text().await?;
@@ -249,18 +290,23 @@ pub async fn create_team(name: Option<&str>, description: Option<&str>) -> Resul
             Ok(api_response) => {
                 if api_response.success {
                     if let Some(team) = api_response.data {
-                        println!("👥 Created team: {}", team.name);
+                        finish_progress(&spinner, &format!("Team '{}' created successfully", team.name));
+                        display_success(&format!("Created team: {}", team.name));
                         if let Some(desc) = team.description {
-                            println!("   Description: {}", desc);
+                            println!("   {} {}", console::style("Description:").dim(), desc);
                         }
+                        display_info(&format!("Team ID: {}", team.id));
                     } else {
+                        fail_progress(&spinner, "Server response contained no data");
                         anyhow::bail!("Server response was successful but contained no data.");
                     }
                 } else {
+                    fail_progress(&spinner, "Server reported an error");
                     anyhow::bail!("Server reported an error: {}", api_response.error.unwrap_or_else(|| "Unknown error".to_string()));
                 }
             }
             Err(_) => {
+                fail_progress(&spinner, "Failed to parse server response");
                 match serde_json::from_str::<serde_json::Value>(&response_text) {
                     Ok(json) => {
                         if let Some(error_message) = json.get("error").and_then(|v| v.as_str()) {
@@ -282,7 +328,8 @@ pub async fn create_team(name: Option<&str>, description: Option<&str>) -> Resul
         let status = response.status();
         let text = response.text().await.unwrap_or_default();
         let formatted_error = format_api_error(status, &text);
-        anyhow::bail!("Failed to create team: {}", formatted_error);
+        fail_progress(&spinner, "Failed to create team");
+        anyhow::bail!("{}", formatted_error);
     }
 
     Ok(())

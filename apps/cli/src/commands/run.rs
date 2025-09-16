@@ -1,6 +1,8 @@
+use crate::commands::common::{create_spinner, display_error, display_info, display_success};
 use crate::config::{AppConfig, PackageConfig};
 use crate::project::Project;
 use crate::utils;
+use crate::validation::{validate_script_name, sanitize_input};
 use anyhow::{Context, Result};
 use console::style;
 use inquire::Select;
@@ -14,6 +16,10 @@ fn is_interactive() -> bool {
 
 pub async fn run_script(script_name: &str) -> Result<()> {
     let current_dir = std::env::current_dir()?;
+
+    // Validate script name
+    let sanitized_script_name = sanitize_input(script_name);
+    validate_script_name(&sanitized_script_name)?;
 
     // First try to find script in current directory config files
     // Priority: app.yml/yaml > package.yml/yaml > knot.yml/yaml (project root)
@@ -50,7 +56,8 @@ pub async fn run_script(script_name: &str) -> Result<()> {
     }
 
     // If script not found anywhere, show available scripts
-    println!("❌ Script '{}' not found", script_name);
+    display_error(&format!("Script '{}' not found", script_name));
+    display_info("Available scripts:");
     show_available_scripts(&current_dir, &project).await?;
 
     Ok(())
@@ -61,8 +68,8 @@ pub async fn run_script_interactive() -> Result<()> {
     
     // Check if we're in an interactive environment
     if !is_interactive() {
-        println!("❌ Interactive mode requires a terminal");
-        println!("💡 Use 'knot run <script_name>' to run a specific script");
+        display_error("Interactive mode requires a terminal");
+        display_info("Use 'knot run <script_name>' to run a specific script");
         return Ok(());
     }
 
@@ -126,12 +133,12 @@ pub async fn run_script_interactive() -> Result<()> {
         let has_project = project.is_some();
         
         if !has_app_config && !has_package_config && !has_project {
-            println!("❌ No knot.yml/yaml, app.yml/yaml, or package.yml/yaml found");
-            println!("💡 Run from a directory containing one of these config files");
+            display_error("No knot.yml/yaml, app.yml/yaml, or package.yml/yaml found");
+            display_info("Run from a directory containing one of these config files");
         } else {
-            println!("❌ No scripts found");
-            println!("💡 Add scripts to knot.yml/yaml, app.yml/yaml, or package.yml/yaml");
-            println!("\nExample:");
+            display_error("No scripts found");
+            display_info("Add scripts to knot.yml/yaml, app.yml/yaml, or package.yml/yaml");
+            println!("\n{}", style("Example:").bold());
             println!("scripts:");
             println!("  build: \"npm run build\"");
             println!("  test: \"npm test\"");
@@ -150,7 +157,7 @@ pub async fn run_script_interactive() -> Result<()> {
 
     let selection = Select::new("Select a script:", script_options.clone())
         .with_vim_mode(true)
-        .with_help_message("Use arrow keys or j/k to navigate, Enter to select, Esc to cancel")
+        .with_help_message("Use arrow keys or j/k to navigate, Enter to select, Esc to cancel\nPress 'q' to quit without running any script")
         .prompt();
 
     match selection {
@@ -179,8 +186,11 @@ pub async fn run_script_interactive() -> Result<()> {
 
             execute_script(script_name, script_command, working_dir, context).await?;
         }
-        Err(_) => {
-            println!("❌ Script selection cancelled");
+        Err(inquire::InquireError::OperationCanceled) => {
+            display_info("Script selection cancelled");
+        }
+        Err(e) => {
+            display_error(&format!("Selection error: {}", e));
         }
     }
 
@@ -213,31 +223,35 @@ async fn execute_script(
 ) -> Result<()> {
     // Validate script name and command
     if script_name.is_empty() {
-        anyhow::bail!("Script name cannot be empty");
+        anyhow::bail!("Script name cannot be empty when executing script\n💡 Provide a script name as argument: knot run <script-name>\n💡 Use 'knot run' without arguments for interactive selection");
     }
 
     if script_command.is_empty() {
-        anyhow::bail!("Script command cannot be empty");
+        anyhow::bail!("Script command cannot be empty for script '{}'\n💡 Add a command to your script in knot.yml, app.yml, or package.yml\n💡 Example: scripts:\n    {}: \"npm start\"", script_name, script_name);
     }
 
     // Check working directory exists and is accessible
     if !working_dir.exists() {
         anyhow::bail!(
-            "Working directory does not exist: {}",
-            working_dir.display()
+            "Cannot execute script '{}': Working directory does not exist at '{}'\n💡 The {} directory may have been moved or deleted\n💡 Ensure you're in the correct project directory",
+            script_name, working_dir.display(), context
         );
     }
 
     if !working_dir.is_dir() {
         anyhow::bail!(
-            "Working directory is not a directory: {}",
-            working_dir.display()
+            "Cannot execute script '{}': Working directory at '{}' is not a directory\n💡 Expected a directory but found a file\n💡 Check for naming conflicts with files and directories",
+            script_name, working_dir.display()
         );
     }
+
+    let spinner = create_spinner(&format!("Preparing to run {} script '{}'", context, script_name));
 
     println!("🚀 Running {} script '{}'...", context, script_name);
     println!("📝 Command: {}", script_command);
     println!("📂 Working directory: {}", working_dir.display());
+
+    spinner.finish_and_clear();
 
     // Use shell execution for complex commands (safer than manual parsing)
     let shell = if cfg!(target_os = "windows") {
@@ -268,14 +282,10 @@ async fn execute_script(
     })?;
 
     if status.success() {
-        println!("✅ Script '{}' completed successfully", script_name);
+        display_success(&format!("Script '{}' completed successfully", script_name));
     } else {
         let exit_code = status.code().unwrap_or(-1);
-        anyhow::bail!(
-            "Script '{}' failed with exit code: {}",
-            script_name,
-            exit_code
-        );
+        anyhow::bail!("Script '{}' failed with exit code {}\n💡 The script command '{}' returned an error\n💡 Check the command output above for error details\n💡 Verify the script is correct in your configuration file", script_name, exit_code, script_command);
     }
 
     Ok(())

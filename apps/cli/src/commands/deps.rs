@@ -8,25 +8,32 @@ use crate::dependency::{
 };
 use crate::dependency::registry::{LocalPackageRegistry, RemotePackageRegistry};
 use crate::project::Project;
+use crate::validation::{validate_package_spec, validate_app_name, sanitize_input};
 
 pub async fn deps_add(package_spec: &str, app_name: Option<&str>, dev: bool, optional: bool) -> Result<()> {
     let current_dir = std::env::current_dir()?;
     let project = Project::find_and_load(&current_dir)?;
     
+    // Validate package specification
+    let sanitized_spec = sanitize_input(package_spec);
+    let (package_name, version) = validate_package_spec(&sanitized_spec)?;
+
     // Determine target app
     let target_app = if let Some(app) = app_name {
-        app.to_string()
+        let sanitized_app = sanitize_input(app);
+        validate_app_name(&sanitized_app)?;
+        sanitized_app
     } else {
         // Try to detect current app from directory
         detect_current_app(&current_dir, &project)?
     };
-    
-    println!("📦 Adding dependency '{}' to app '{}'", 
-             style(package_spec).cyan(), 
+
+    println!("📦 Adding dependency '{}' to app '{}'",
+             style(&sanitized_spec).cyan(),
              style(&target_app).green());
-    
+
     // Parse package specification
-    let dep_spec = parse_package_spec(package_spec, dev, optional)?;
+    let dep_spec = parse_package_spec(&sanitized_spec, dev, optional)?;
     
     // Initialize resolver
     let mut resolver = create_resolver(&project).await?;
