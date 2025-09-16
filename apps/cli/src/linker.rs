@@ -26,7 +26,7 @@ impl<'a> Linker<'a> {
     pub async fn link_app(&self, app_name: &str, use_symlinks: bool) -> Result<()> {
         let app_dir = self.project.root.join("apps").join(app_name);
         if !app_dir.exists() {
-            anyhow::bail!("App directory does not exist: {}", app_name);
+            anyhow::bail!("Cannot link packages: App directory '{}' does not exist at '{}'\n💡 Create the app first with: knot init:app {}\n💡 Or check if you're in the correct project directory", app_name, app_dir.display(), app_name);
         }
 
         let knot_packages_dir = app_dir.join("knot_packages");
@@ -87,8 +87,8 @@ impl<'a> Linker<'a> {
         let package_source = self.project.root.join("packages").join(dependency);
         if !package_source.exists() {
             anyhow::bail!(
-                "Local package '{}' does not exist in packages/ directory",
-                dependency
+                "Cannot link package: Local package '{}' does not exist at '{}'\n💡 Create the package first with: knot init:package {}\n💡 Or check if the package name is correct in app.yml",
+                dependency, package_source.display(), dependency
             );
         }
 
@@ -128,7 +128,7 @@ impl<'a> Linker<'a> {
 
     fn copy_dir_recursively(source: &Path, target: &Path) -> Result<()> {
         if !source.exists() {
-            anyhow::bail!("Source directory does not exist: {}", source.display());
+            anyhow::bail!("Cannot copy package: Source directory does not exist at '{}'\n💡 Ensure the package exists and is accessible\n💡 Check file permissions and disk space", source.display());
         }
 
         if source.is_file() {

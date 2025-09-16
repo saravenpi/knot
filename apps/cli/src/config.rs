@@ -2,6 +2,22 @@ use anyhow::Context;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
+fn validate_safe_name_common(name: &str, context: &str) -> anyhow::Result<()> {
+    if name.contains("..") || name.contains('/') || name.contains('\\') {
+        anyhow::bail!("{} contains invalid path characters: '{}'", context, name);
+    }
+
+    if name.contains('\0') || name.starts_with('.') || name.starts_with('-') {
+        anyhow::bail!("{} contains unsafe characters: '{}'", context, name);
+    }
+
+    if name.len() > 100 {
+        anyhow::bail!("{} is too long (max 100 characters): '{}'", context, name);
+    }
+
+    Ok(())
+}
+
 /// A configuration variable with its value and optional description
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -35,49 +51,267 @@ impl ConfigVariable {
 }
 
 pub fn parse_yaml_error_to_user_friendly(error: &serde_yaml::Error) -> String {
+    parse_yaml_error_with_context(error, ConfigType::Unknown)
+}
+
+#[derive(Debug, Clone, Copy)]
+pub enum ConfigType {
+    Knot,
+    Package,
+    App,
+    Unknown,
+}
+
+pub fn parse_yaml_error_with_context(error: &serde_yaml::Error, config_type: ConfigType) -> String {
     let error_msg = error.to_string();
-    
-    // Check for missing fields
+    let location_info = extract_error_location(&error_msg);
+
+    // Extract field name from error message if available
+    let field_name = extract_field_name(&error_msg);
+
+    // Check for missing required fields
     if error_msg.contains("missing field") {
-        if let Some(field_start) = error_msg.find("`") {
-            if let Some(field_end) = error_msg[field_start + 1..].find("`") {
-                let field_name = &error_msg[field_start + 1..field_start + 1 + field_end];
-                return match field_name {
-                    "name" => "Missing name field".to_string(),
-                    "version" => "Missing version field".to_string(),
-                    _ => format!("Missing {} field", field_name),
-                };
-            }
+        if let Some(field) = field_name {
+            let suggestion = get_field_suggestion_with_context(&field, config_type);
+            return format_error_with_location(
+                &format_missing_field_error_with_context(&field, suggestion, config_type),
+                &location_info
+            );
         }
-        return "Missing required field".to_string();
+        return format_error_with_location("Missing required field", &location_info);
     }
-    
-    // Check for invalid type errors
+
+    // Check for invalid type errors with detailed context
     if error_msg.contains("invalid type") {
-        if error_msg.contains("expected a string") {
-            return "Expected string value".to_string();
-        }
-        if error_msg.contains("expected a sequence") {
-            return "Expected array/list value".to_string();
-        }
-        if error_msg.contains("expected a map") {
-            return "Expected object/mapping value".to_string();
-        }
-        return "Invalid field type".to_string();
+        let type_error = parse_type_error(&error_msg, field_name.as_deref());
+        return format_error_with_location(&type_error, &location_info);
     }
-    
+
+    // Check for unknown field errors
+    if error_msg.contains("unknown field") {
+        if let Some(field) = field_name {
+            let suggestion = suggest_similar_field(&field);
+            return format_error_with_location(
+                &format!("Unknown field '{}'{}", field, suggestion),
+                &location_info
+            );
+        }
+        return format_error_with_location("Unknown field found", &location_info);
+    }
+
     // Check for duplicate key errors
     if error_msg.contains("duplicate key") {
-        return "Duplicate field found".to_string();
+        if let Some(field) = field_name {
+            return format_error_with_location(
+                &format!("Duplicate field '{}' found. Each field can only be defined once.", field),
+                &location_info
+            );
+        }
+        return format_error_with_location("Duplicate field found", &location_info);
     }
-    
-    // Check for invalid YAML syntax
+
+    // Check for YAML syntax errors
     if error_msg.contains("while parsing") {
-        return "Invalid YAML syntax".to_string();
+        let syntax_error = parse_yaml_syntax_error(&error_msg);
+        return format_error_with_location(&syntax_error, &location_info);
     }
-    
-    // Fallback to original error for unknown cases
-    error_msg
+
+    // Check for indentation errors
+    if error_msg.contains("bad indentation") || error_msg.contains("found character that cannot start any token") {
+        return format_error_with_location(
+            "Invalid YAML indentation. Make sure you use consistent spaces (not tabs) for indentation.",
+            &location_info
+        );
+    }
+
+    // Check for unclosed quotes/brackets
+    if error_msg.contains("while scanning") {
+        if error_msg.contains("quote") {
+            return format_error_with_location(
+                "Unclosed quotes detected. Make sure all strings are properly quoted.",
+                &location_info
+            );
+        }
+        if error_msg.contains("mapping") {
+            return format_error_with_location(
+                "Invalid mapping structure. Check for missing colons or incorrect nesting.",
+                &location_info
+            );
+        }
+    }
+
+    // Check for value parsing errors
+    if error_msg.contains("invalid value") {
+        return format_error_with_location(
+            "Invalid value format. Check the data type and format requirements.",
+            &location_info
+        );
+    }
+
+    // Fallback with enhanced context
+    if !error_msg.is_empty() {
+        return format_error_with_location(&error_msg, &location_info);
+    }
+
+    "Unknown YAML parsing error occurred".to_string()
+}
+
+fn extract_error_location(error_msg: &str) -> Option<(usize, usize)> {
+    // Try to extract line and column information from error message
+    if let Some(line_start) = error_msg.find("line ") {
+        if let Some(line_end) = error_msg[line_start + 5..].find(char::is_whitespace) {
+            let line_str = &error_msg[line_start + 5..line_start + 5 + line_end];
+            if let Ok(line) = line_str.parse::<usize>() {
+                // Try to find column info
+                if let Some(col_start) = error_msg.find("column ") {
+                    if let Some(col_end) = error_msg[col_start + 7..].find(char::is_whitespace) {
+                        let col_str = &error_msg[col_start + 7..col_start + 7 + col_end];
+                        if let Ok(col) = col_str.parse::<usize>() {
+                            return Some((line, col));
+                        }
+                    }
+                }
+                return Some((line, 0));
+            }
+        }
+    }
+    None
+}
+
+fn extract_field_name(error_msg: &str) -> Option<String> {
+    // Try to extract field name from various error message formats
+    if let Some(start) = error_msg.find("`") {
+        if let Some(end) = error_msg[start + 1..].find("`") {
+            return Some(error_msg[start + 1..start + 1 + end].to_string());
+        }
+    }
+
+    // Alternative patterns for field extraction
+    if let Some(start) = error_msg.find("field \"") {
+        if let Some(end) = error_msg[start + 7..].find("\"") {
+            return Some(error_msg[start + 7..start + 7 + end].to_string());
+        }
+    }
+
+    None
+}
+
+fn format_error_with_location(message: &str, location: &Option<(usize, usize)>) -> String {
+    match location {
+        Some((line, 0)) => format!("{} (line {})", message, line),
+        Some((line, col)) => format!("{} (line {}, column {})", message, line, col),
+        None => message.to_string(),
+    }
+}
+
+fn format_missing_field_error(field_name: &str, suggestion: Option<String>) -> String {
+    format_missing_field_error_with_context(field_name, suggestion, ConfigType::Unknown)
+}
+
+fn format_missing_field_error_with_context(field_name: &str, suggestion: Option<String>, config_type: ConfigType) -> String {
+    let base_message = match (field_name, config_type) {
+        ("name", ConfigType::Knot) => "Missing required field 'name'. Every knot.yml configuration must have a project name.",
+        ("name", ConfigType::Package) => "Missing required field 'name'. Every package.yml configuration must have a package name.",
+        ("name", ConfigType::App) => "Missing required field 'name'. Every app.yml configuration must have an app name.",
+        ("name", _) => "Missing required field 'name'. Every configuration must have a name.",
+
+        ("version", ConfigType::Package) => "Missing required field 'version'. Package configurations must specify a version.",
+        ("version", _) => "Missing required field 'version'. This configuration requires a version.",
+
+        _ => return format!("Missing required field '{}'", field_name),
+    };
+
+    match suggestion {
+        Some(suggestion) => format!("{}\n{}", base_message, suggestion),
+        None => base_message.to_string(),
+    }
+}
+
+fn get_field_suggestion(field_name: &str) -> Option<String> {
+    get_field_suggestion_with_context(field_name, ConfigType::Unknown)
+}
+
+fn get_field_suggestion_with_context(field_name: &str, config_type: ConfigType) -> Option<String> {
+    match (field_name, config_type) {
+        ("name", ConfigType::Knot) => Some("Suggestion: Add 'name: \"your-project-name\"' to your knot.yml file.".to_string()),
+        ("name", ConfigType::Package) => Some("Suggestion: Add 'name: \"your-package-name\"' to your package.yml file.".to_string()),
+        ("name", ConfigType::App) => Some("Suggestion: Add 'name: \"your-app-name\"' to your app.yml file.".to_string()),
+        ("name", _) => Some("Suggestion: Add 'name: \"your-configuration-name\"' to your configuration.".to_string()),
+
+        ("version", ConfigType::Package) => Some("Suggestion: Add 'version: \"1.0.0\"' using semantic versioning format (major.minor.patch).".to_string()),
+        ("version", _) => Some("Suggestion: Add 'version: \"1.0.0\"' using semantic versioning format.".to_string()),
+
+        ("description", _) => Some("Suggestion: Add 'description: \"Brief description of your project\"' (optional but recommended).".to_string()),
+
+        ("scripts", ConfigType::Knot) => Some("Suggestion: Add scripts like 'scripts:\n  start: \"command to start\"' to define project-level scripts.".to_string()),
+        ("scripts", ConfigType::Package) => Some("Suggestion: Add scripts like 'scripts:\n  build: \"build command\"' to define package-level scripts.".to_string()),
+        ("scripts", ConfigType::App) => Some("Suggestion: Add scripts like 'scripts:\n  dev: \"development command\"' to define app-level scripts.".to_string()),
+
+        ("packages", ConfigType::App) => Some("Suggestion: Add packages like 'packages:\n  - package-name' to define app dependencies.".to_string()),
+
+        ("apps", ConfigType::Knot) => Some("Suggestion: Add apps like 'apps:\n  app-name:\n    - package-name' to define project apps.".to_string()),
+
+        _ => None,
+    }
+}
+
+fn parse_type_error(error_msg: &str, field_name: Option<&str>) -> String {
+    let base_error = if error_msg.contains("expected a string") {
+        "Expected string value"
+    } else if error_msg.contains("expected a sequence") || error_msg.contains("expected array") {
+        "Expected array/list value"
+    } else if error_msg.contains("expected a map") || error_msg.contains("expected object") {
+        "Expected object/mapping value"
+    } else if error_msg.contains("expected a boolean") {
+        "Expected boolean value (true/false)"
+    } else if error_msg.contains("expected a number") || error_msg.contains("expected integer") {
+        "Expected numeric value"
+    } else {
+        "Invalid field type"
+    };
+
+    match field_name {
+        Some("scripts") => format!("{} for 'scripts'. Use format: scripts:\n  script-name: \"command\"", base_error),
+        Some("packages") => format!("{} for 'packages'. Use format: packages:\n  - package-name", base_error),
+        Some("apps") => format!("{} for 'apps'. Use either list format or object format with tsAlias and packages.", base_error),
+        Some("variables") => format!("{} for 'variables'. Use format: variables:\n  var-name: \"value\"", base_error),
+        Some("tsAlias") => "Expected boolean or string for 'tsAlias'. Use: true, false, or \"@\"".to_string(),
+        Some(field) => format!("{} for field '{}'", base_error, field),
+        None => base_error.to_string(),
+    }
+}
+
+fn suggest_similar_field(field_name: &str) -> String {
+    let suggestions = match field_name.to_lowercase().as_str() {
+        "script" => Some("scripts"),
+        "package" => Some("packages"),
+        "app" => Some("apps"),
+        "variable" => Some("variables"),
+        "tsalias" => Some("tsAlias"),
+        "desc" | "description" => Some("description"),
+        "ver" | "version" => Some("version"),
+        "dependencies" => Some("packages (for app config) or dependencies (for package config)"),
+        _ => None,
+    };
+
+    match suggestions {
+        Some(suggestion) => format!(". Did you mean '{}'?", suggestion),
+        None => ". Check the field name for typos.".to_string(),
+    }
+}
+
+fn parse_yaml_syntax_error(error_msg: &str) -> String {
+    if error_msg.contains("mapping") {
+        "Invalid YAML mapping. Check for missing colons (:) after field names."
+    } else if error_msg.contains("sequence") {
+        "Invalid YAML sequence. Check for proper list formatting with dashes (-)."
+    } else if error_msg.contains("scalar") {
+        "Invalid YAML scalar value. Check for proper quoting of string values."
+    } else if error_msg.contains("anchor") {
+        "Invalid YAML anchor or alias. Check anchor definitions and references."
+    } else {
+        "Invalid YAML syntax. Check indentation, colons, and list formatting."
+    }.to_string()
 }
 
 /// Project-level configuration structure
@@ -220,12 +454,13 @@ impl KnotConfig {
         let content = std::fs::read_to_string(path)
             .with_context(|| format!("Failed to read knot.{} file: {}", file_extension, path.display()))?;
 
-        if content.trim().is_empty() {
-            anyhow::bail!("knot.{} file is empty: {}", file_extension, path.display());
+        if content.is_empty() {
+            anyhow::bail!("Configuration file knot.{} is empty at '{}'\n💡 A valid knot.{} file should contain at least a 'name' field\n💡 Example:\n   name: my-project\n   description: My awesome project",
+                file_extension, path.display(), file_extension);
         }
 
         let config: KnotConfig = serde_yaml::from_str(&content)
-            .map_err(|e| anyhow::anyhow!("{}", parse_yaml_error_to_user_friendly(&e)))
+            .map_err(|e| anyhow::anyhow!("{}", parse_yaml_error_with_context(&e, ConfigType::Knot)))
             .with_context(|| format!("Failed to parse knot.{} file: {}", file_extension, path.display()))?;
 
         config.validate()?;
@@ -234,7 +469,7 @@ impl KnotConfig {
 
     pub fn validate(&self) -> anyhow::Result<()> {
         if self.name.trim().is_empty() {
-            anyhow::bail!("Project name cannot be empty");
+            anyhow::bail!("Project name cannot be empty in knot.yml configuration\n💡 Add a name field to your knot.yml file\n💡 Example: name: my-awesome-project");
         }
 
         // Validate project name for path safety
@@ -267,22 +502,7 @@ impl KnotConfig {
     }
 
     fn validate_safe_name(&self, name: &str, context: &str) -> anyhow::Result<()> {
-        // Check for path traversal attempts
-        if name.contains("..") || name.contains('/') || name.contains('\\') {
-            anyhow::bail!("{} contains invalid path characters: '{}'", context, name);
-        }
-
-        // Check for dangerous characters
-        if name.contains('\0') || name.starts_with('.') || name.starts_with('-') {
-            anyhow::bail!("{} contains unsafe characters: '{}'", context, name);
-        }
-
-        // Check name length
-        if name.len() > 100 {
-            anyhow::bail!("{} is too long (max 100 characters): '{}'", context, name);
-        }
-
-        Ok(())
+        validate_safe_name_common(name, context)
     }
 }
 
@@ -292,12 +512,13 @@ impl PackageConfig {
         let content = std::fs::read_to_string(path)
             .with_context(|| format!("Failed to read package.{} file: {}", file_extension, path.display()))?;
 
-        if content.trim().is_empty() {
-            anyhow::bail!("package.{} file is empty: {}", file_extension, path.display());
+        if content.is_empty() {
+            anyhow::bail!("Package configuration file package.{} is empty at '{}'\n💡 A valid package.{} file should contain at least 'name' and 'version' fields\n💡 Example:\n   name: my-package\n   version: 1.0.0\n   description: My awesome package",
+                file_extension, path.display(), file_extension);
         }
 
         let config: PackageConfig = serde_yaml::from_str(&content)
-            .map_err(|e| anyhow::anyhow!("{}", parse_yaml_error_to_user_friendly(&e)))
+            .map_err(|e| anyhow::anyhow!("{}", parse_yaml_error_with_context(&e, ConfigType::Package)))
             .with_context(|| format!("Failed to parse package.{} file: {}", file_extension, path.display()))?;
 
         config.validate()?;
@@ -306,7 +527,7 @@ impl PackageConfig {
 
     pub fn validate(&self) -> anyhow::Result<()> {
         if self.name.trim().is_empty() {
-            anyhow::bail!("Package name cannot be empty");
+            anyhow::bail!("Package name cannot be empty in package.yml configuration\n💡 Add a name field to your package.yml file\n💡 Example: name: my-package");
         }
 
         // Validate package name for path safety
@@ -321,21 +542,28 @@ impl PackageConfig {
 
         // Validate version format (basic semver check)
         if self.version.trim().is_empty() {
-            anyhow::bail!("Package version cannot be empty");
+            anyhow::bail!("Package version cannot be empty in package.yml configuration\n💡 Add a version field using semantic versioning\n💡 Example: version: 1.0.0");
         }
 
         // Basic semver validation
         let version_parts: Vec<&str> = self.version.split('.').collect();
         if version_parts.len() != 3 {
             anyhow::bail!(
-                "Package version must follow semver format (x.y.z): '{}'",
-                self.version
+                "Package version '{}' must follow semantic versioning format (major.minor.patch)\n💡 Current format has {} parts, but semver requires exactly 3\n💡 Examples: 1.0.0, 2.1.5, 0.3.12",
+                self.version, version_parts.len()
             );
         }
 
-        for part in &version_parts {
+        for (i, part) in version_parts.iter().enumerate() {
             if part.parse::<u32>().is_err() {
-                anyhow::bail!("Invalid version number in '{}': '{}'", self.version, part);
+                let part_name = match i {
+                    0 => "major",
+                    1 => "minor",
+                    2 => "patch",
+                    _ => "unknown"
+                };
+                anyhow::bail!("Invalid {} version number '{}' in version '{}'\n💡 Each part must be a non-negative integer\n💡 Example: 1.0.0 (not 1.a.0 or 1.0.beta)",
+                    part_name, part, self.version);
             }
         }
 
@@ -377,22 +605,7 @@ impl PackageConfig {
     }
 
     fn validate_safe_name(&self, name: &str, context: &str) -> anyhow::Result<()> {
-        // Check for path traversal attempts
-        if name.contains("..") || name.contains('/') || name.contains('\\') {
-            anyhow::bail!("{} contains invalid path characters: '{}'", context, name);
-        }
-
-        // Check for dangerous characters
-        if name.contains('\0') || name.starts_with('.') || name.starts_with('-') {
-            anyhow::bail!("{} contains unsafe characters: '{}'", context, name);
-        }
-
-        // Check name length
-        if name.len() > 100 {
-            anyhow::bail!("{} is too long (max 100 characters): '{}'", context, name);
-        }
-
-        Ok(())
+        validate_safe_name_common(name, context)
     }
 }
 
@@ -402,12 +615,13 @@ impl AppConfig {
         let content = std::fs::read_to_string(path)
             .with_context(|| format!("Failed to read app.{} file: {}", file_extension, path.display()))?;
 
-        if content.trim().is_empty() {
-            anyhow::bail!("app.{} file is empty: {}", file_extension, path.display());
+        if content.is_empty() {
+            anyhow::bail!("App configuration file app.{} is empty at '{}'\n💡 A valid app.{} file should contain at least a 'name' field\n💡 Example:\n   name: my-app\n   description: My awesome app\n   packages:\n     - utils",
+                file_extension, path.display(), file_extension);
         }
 
         let config: AppConfig = serde_yaml::from_str(&content)
-            .map_err(|e| anyhow::anyhow!("{}", parse_yaml_error_to_user_friendly(&e)))
+            .map_err(|e| anyhow::anyhow!("{}", parse_yaml_error_with_context(&e, ConfigType::App)))
             .with_context(|| format!("Failed to parse app.{} file: {}", file_extension, path.display()))?;
 
         config.validate()?;
@@ -416,7 +630,7 @@ impl AppConfig {
 
     pub fn validate(&self) -> anyhow::Result<()> {
         if self.name.trim().is_empty() {
-            anyhow::bail!("App name cannot be empty");
+            anyhow::bail!("App name cannot be empty in app.yml configuration\n💡 Add a name field to your app.yml file\n💡 Example: name: my-app");
         }
 
         // Validate app name for path safety
@@ -453,22 +667,7 @@ impl AppConfig {
     }
 
     fn validate_safe_name(&self, name: &str, context: &str) -> anyhow::Result<()> {
-        // Check for path traversal attempts
-        if name.contains("..") || name.contains('/') || name.contains('\\') {
-            anyhow::bail!("{} contains invalid path characters: '{}'", context, name);
-        }
-
-        // Check for dangerous characters
-        if name.contains('\0') || name.starts_with('.') || name.starts_with('-') {
-            anyhow::bail!("{} contains unsafe characters: '{}'", context, name);
-        }
-
-        // Check name length
-        if name.len() > 100 {
-            anyhow::bail!("{} is too long (max 100 characters): '{}'", context, name);
-        }
-
-        Ok(())
+        validate_safe_name_common(name, context)
     }
 
     pub fn validate_package_name(&self, package: &str) -> anyhow::Result<()> {

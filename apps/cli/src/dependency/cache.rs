@@ -50,12 +50,12 @@ struct CacheStatistics {
 impl ResolutionCache {
     pub fn new(cache_dir: PathBuf) -> Self {
         Self {
-            memory_cache: RwLock::new(HashMap::new()),
-            package_cache: RwLock::new(HashMap::new()),
+            memory_cache: RwLock::new(HashMap::with_capacity(128)),
+            package_cache: RwLock::new(HashMap::with_capacity(64)),
             disk_cache_path: cache_dir.join("resolutions"),
-            cache_ttl: Duration::from_secs(3600), // 1 hour default TTL
+            cache_ttl: Duration::from_secs(3600),
             max_memory_entries: 1000,
-            max_memory_size: 100 * 1024 * 1024, // 100MB
+            max_memory_size: 100 * 1024 * 1024,
             cache_statistics: RwLock::new(CacheStatistics {
                 hits: 0,
                 misses: 0,
@@ -431,50 +431,59 @@ impl ResolutionCache {
     }
 
     async fn evict_lru_entries(&self, memory_cache: &mut HashMap<String, CacheEntry>, count: usize) {
+        if memory_cache.len() <= count {
+            let evicted = memory_cache.len();
+            memory_cache.clear();
+            let mut stats = self.cache_statistics.write().await;
+            stats.evictions += evicted as u64;
+            stats.memory_usage = 0;
+            return;
+        }
+
         let mut entries: Vec<_> = memory_cache.iter().collect();
-        entries.sort_by_key(|(_, entry)| entry.last_access);
-        
-        // Collect keys to remove first to avoid borrowing conflicts
+        entries.sort_unstable_by_key(|(_, entry)| entry.last_access);
+
         let keys_to_remove: Vec<String> = entries.iter()
             .take(count)
             .map(|(key, _)| (*key).clone())
             .collect();
-        
+
         for key in keys_to_remove {
             memory_cache.remove(&key);
         }
-        
-        // Update eviction statistics
+
         let mut stats = self.cache_statistics.write().await;
         stats.evictions += count as u64;
     }
 
     async fn evict_to_size(&self, memory_cache: &mut HashMap<String, CacheEntry>, target_size: usize) {
+        let current_size = self.calculate_memory_usage(memory_cache);
+        if current_size <= target_size {
+            return;
+        }
+
         let mut entries: Vec<_> = memory_cache.iter().collect();
-        entries.sort_by_key(|(_, entry)| entry.last_access);
-        
-        let mut current_size = self.calculate_memory_usage(memory_cache);
-        let mut evicted = 0;
+        entries.sort_unstable_by_key(|(_, entry)| entry.last_access);
+
+        let mut freed_size = 0;
         let mut keys_to_remove = Vec::new();
-        
+
         for (key, entry) in entries {
-            if current_size <= target_size {
+            if current_size - freed_size <= target_size {
                 break;
             }
-            
-            current_size -= entry.size_bytes;
+            freed_size += entry.size_bytes;
             keys_to_remove.push((*key).clone());
-            evicted += 1;
         }
-        
-        // Remove keys after iteration to avoid borrowing conflicts
+
+        let evicted = keys_to_remove.len();
         for key in keys_to_remove {
             memory_cache.remove(&key);
         }
-        
-        // Update eviction statistics
+
         let mut stats = self.cache_statistics.write().await;
-        stats.evictions += evicted;
+        stats.evictions += evicted as u64;
+        stats.memory_usage = current_size - freed_size;
     }
 
     fn calculate_memory_usage(&self, memory_cache: &HashMap<String, CacheEntry>) -> usize {

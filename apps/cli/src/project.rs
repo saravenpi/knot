@@ -65,7 +65,7 @@ impl Project {
 
             match current.parent() {
                 Some(parent) => current = parent.to_path_buf(),
-                None => anyhow::bail!("No knot.yml or knot.yaml file found in directory tree"),
+                None => anyhow::bail!("No knot.yml or knot.yaml file found in directory tree starting from '{}'\n💡 You are not inside a Knot project\n💡 Run 'knot init <project-name>' to initialize a new project\n💡 Or navigate to an existing Knot project directory", start_dir.display()),
             }
         }
     }
@@ -76,33 +76,36 @@ impl Project {
             return Ok(());
         }
 
-        for entry in std::fs::read_dir(&packages_dir)? {
-            let entry = entry?;
-            let path = entry.path();
-
-            if path.is_dir() {
-                if let Some(package_config_path) = utils::find_yaml_file(&path, "package") {
-                    let mut package_config = PackageConfig::from_file(&package_config_path)
-                        .with_context(|| format!("Failed to load {:?}", package_config_path))?;
-
-                    let package_name = path
-                        .file_name()
-                        .and_then(|n| n.to_str())
-                        .ok_or_else(|| anyhow::anyhow!("Invalid package directory name"))?
-                        .to_string();
-
-                    // Create package-specific variable context
-                    let package_context = self.variable_context
-                        .clone()
-                        .with_package_variables(&package_config);
-
-                    // Apply variable interpolation to package config
-                    package_config.interpolate_variables(&package_context)
-                        .with_context(|| format!("Failed to interpolate variables in package config for '{}'", package_name))?;
-
-                    self.packages.insert(package_name, package_config);
+        let entries: Vec<_> = std::fs::read_dir(&packages_dir)?
+            .filter_map(|entry| {
+                let entry = entry.ok()?;
+                let path = entry.path();
+                if path.is_dir() {
+                    utils::find_yaml_file(&path, "package").map(|config_path| (path, config_path))
+                } else {
+                    None
                 }
-            }
+            })
+            .collect();
+
+        for (path, package_config_path) in entries {
+            let mut package_config = PackageConfig::from_file(&package_config_path)
+                .with_context(|| format!("Failed to load {:?}", package_config_path))?;
+
+            let package_name = path
+                .file_name()
+                .and_then(|n| n.to_str())
+                .ok_or_else(|| anyhow::anyhow!("Invalid package directory name at '{}'\n💡 Package directories must have valid UTF-8 names\n💡 Avoid special characters in directory names", path.display()))?
+                .to_string();
+
+            let package_context = self.variable_context
+                .clone()
+                .with_package_variables(&package_config);
+
+            package_config.interpolate_variables(&package_context)
+                .with_context(|| format!("Failed to interpolate variables in package config for '{}'", package_name))?;
+
+            self.packages.insert(package_name, package_config);
         }
 
         Ok(())
@@ -114,33 +117,45 @@ impl Project {
             return Ok(());
         }
 
-        for entry in std::fs::read_dir(&apps_dir)? {
-            let entry = entry?;
-            let path = entry.path();
-
-            if path.is_dir() {
-                if let Some(app_config_path) = utils::find_yaml_file(&path, "app") {
-                    let mut app_config = AppConfig::from_file(&app_config_path)
-                        .with_context(|| format!("Failed to load {:?}", app_config_path))?;
-
-                    let app_name = path
-                        .file_name()
-                        .and_then(|n| n.to_str())
-                        .ok_or_else(|| anyhow::anyhow!("Invalid app directory name"))?
-                        .to_string();
-
-                    // Create app-specific variable context
-                    let app_context = self.variable_context
-                        .clone()
-                        .with_app_variables(&app_config);
-
-                    // Apply variable interpolation to app config
-                    app_config.interpolate_variables(&app_context)
-                        .with_context(|| format!("Failed to interpolate variables in app config for '{}'", app_name))?;
-
-                    self.apps.insert(app_name, app_config);
+        let entries: Result<Vec<_>, _> = std::fs::read_dir(&apps_dir)?
+            .map(|entry| -> Result<_, std::io::Error> {
+                let entry = entry?;
+                let path = entry.path();
+                if path.is_dir() {
+                    if let Some(config_path) = utils::find_yaml_file(&path, "app") {
+                        Ok(Some((path, config_path)))
+                    } else {
+                        Ok(None)
+                    }
+                } else {
+                    Ok(None)
                 }
-            }
+            })
+            .filter_map(|result| match result {
+                Ok(Some(pair)) => Some(Ok(pair)),
+                Ok(None) => None,
+                Err(e) => Some(Err(e)),
+            })
+            .collect();
+
+        for (path, app_config_path) in entries?{
+            let mut app_config = AppConfig::from_file(&app_config_path)
+                .with_context(|| format!("Failed to load {:?}", app_config_path))?;
+
+            let app_name = path
+                .file_name()
+                .and_then(|n| n.to_str())
+                .ok_or_else(|| anyhow::anyhow!("Invalid app directory name"))?
+                .to_string();
+
+            let app_context = self.variable_context
+                .clone()
+                .with_app_variables(&app_config);
+
+            app_config.interpolate_variables(&app_context)
+                .with_context(|| format!("Failed to interpolate variables in app config for '{}'", app_name))?;
+
+            self.apps.insert(app_name, app_config);
         }
 
         Ok(())

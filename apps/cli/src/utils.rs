@@ -3,19 +3,13 @@ use std::path::{Path, PathBuf};
 /// Find a YAML config file with either .yml or .yaml extension
 /// Returns the path to the first file found, prioritizing .yml
 pub fn find_yaml_file(base_path: &Path, filename: &str) -> Option<PathBuf> {
-    // First try .yml
     let yml_path = base_path.join(format!("{}.yml", filename));
     if yml_path.exists() {
         return Some(yml_path);
     }
 
-    // Then try .yaml
     let yaml_path = base_path.join(format!("{}.yaml", filename));
-    if yaml_path.exists() {
-        return Some(yaml_path);
-    }
-
-    None
+    yaml_path.exists().then_some(yaml_path)
 }
 
 /// Get the expected config file path, preferring .yml if neither exists

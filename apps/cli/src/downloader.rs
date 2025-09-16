@@ -18,7 +18,7 @@ impl PackageDownloader {
         if package_spec.starts_with('@') {
             Self::download_online_package(package_spec, destination).await
         } else {
-            anyhow::bail!("Package '{}' should be a local package", package_spec)
+            anyhow::bail!("Cannot download package '{}': Local packages are not downloadable\n💡 Local packages should be available in the packages/ directory\n💡 Use '@package-name' for packages from Knot Space\n💡 Example: @my-team/my-package", package_spec)
         }
     }
 
@@ -63,14 +63,16 @@ impl PackageDownloader {
                 Ok(())
             }
             Err(e) => {
-                eprintln!("❌ Failed to download package '{}': {}", package_spec, e);
-                anyhow::bail!("Package download failed");
+                anyhow::bail!("Failed to download package '{}' from Knot Space: {}\n💡 Check your internet connection\n💡 Verify the package name and version are correct\n💡 Ensure the package exists on Knot Space", package_spec, e);
             }
         }
     }
 
     async fn download_from_knot_space(package_name: &str, requested_version: Option<&str>, destination: &Path) -> Result<()> {
-        let client = reqwest::Client::new();
+        let client = reqwest::Client::builder()
+            .timeout(std::time::Duration::from_secs(30))
+            .connect_timeout(std::time::Duration::from_secs(10))
+            .build()?;
         let base_url = get_knot_space_url();
         
         // Strip @ prefix for API calls - the API expects package names without @
@@ -81,64 +83,43 @@ impl PackageDownloader {
         };
         
         // Determine which version to download
-        let version_to_download = if let Some(version) = requested_version {
-            if version == "latest" {
-                // Need to fetch latest version
+        let version_to_download = match requested_version {
+            Some(version) if version != "latest" => version.to_string(),
+            _ => {
+                // Fetch latest version
                 let versions_url = format!("{}/api/packages/{}/versions", base_url, api_package_name);
                 let versions_response = client.get(&versions_url).send().await?;
-                
-                if !versions_response.status().is_success() {
-                    anyhow::bail!("Package '{}' not found in knot space", package_name);
+
+                if versions_response.status() == 404 {
+                    anyhow::bail!("Package '{}' not found in Knot Space\n💡 Check the package name spelling\n💡 Verify the package exists at: {}/packages/{}\n💡 Use 'knot search {}' to find similar packages", package_name, base_url, api_package_name, api_package_name);
+                } else if !versions_response.status().is_success() {
+                    anyhow::bail!("Failed to fetch package '{}' information from Knot Space (HTTP {})\n💡 Check your internet connection\n💡 Try again later if Knot Space is temporarily unavailable", package_name, versions_response.status());
                 }
-                
+
                 let versions_data: serde_json::Value = versions_response.json().await?;
                 let versions = versions_data["data"]
                     .as_array()
                     .ok_or_else(|| anyhow::anyhow!("Invalid versions response format"))?;
-                    
+
                 if versions.is_empty() {
-                    anyhow::bail!("No versions found for package '{}'", package_name);
+                    anyhow::bail!("No versions found for package '{}' in Knot Space\n💡 The package exists but has no published versions\n💡 Contact the package maintainer to publish a version\n💡 Check if the package is still in development", package_name);
                 }
-                
-                // Get the latest version (first in the array, sorted by publish date desc)
+
                 versions[0]["version"]
                     .as_str()
                     .ok_or_else(|| anyhow::anyhow!("Invalid version format"))?
                     .to_string()
-            } else {
-                // Use the specific version requested
-                version.to_string()
             }
-        } else {
-            // No version specified, fetch latest
-            let versions_url = format!("{}/api/packages/{}/versions", base_url, api_package_name);
-            let versions_response = client.get(&versions_url).send().await?;
-            
-            if !versions_response.status().is_success() {
-                anyhow::bail!("Package '{}' not found in knot space", package_name);
-            }
-            
-            let versions_data: serde_json::Value = versions_response.json().await?;
-            let versions = versions_data["data"]
-                .as_array()
-                .ok_or_else(|| anyhow::anyhow!("Invalid versions response format"))?;
-                
-            if versions.is_empty() {
-                anyhow::bail!("No versions found for package '{}'", package_name);
-            }
-            
-            versions[0]["version"]
-                .as_str()
-                .ok_or_else(|| anyhow::anyhow!("Invalid version format"))?
-                .to_string()
         };
         
         // Download the package file
         let download_url = format!("{}/api/packages/{}/{}/download", base_url, api_package_name, version_to_download);
         let download_response = client.get(&download_url).send().await?;
         
-        if !download_response.status().is_success() {
-            anyhow::bail!("Failed to download package file (HTTP {})", download_response.status());
+        if download_response.status() == 404 {
+            anyhow::bail!("Package file not found for '{}' version '{}'\n💡 The version may not exist or was removed\n💡 Check available versions with package information\n💡 Try using 'latest' version instead", package_name, version_to_download);
+        } else if !download_response.status().is_success() {
+            anyhow::bail!("Failed to download package file for '{}' (HTTP {})\n💡 Check your internet connection\n💡 Try again later if the server is temporarily unavailable\n💡 Contact support if the problem persists", package_name, download_response.status());
         }
         
         // Download the tar.gz file
