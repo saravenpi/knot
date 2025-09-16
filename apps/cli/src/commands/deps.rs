@@ -280,7 +280,7 @@ fn detect_current_app(current_dir: &std::path::Path, project: &Project) -> Resul
     
     let selection = Select::new("Select target app:", app_names)
         .with_vim_mode(true)
-        .with_help_message("Use arrow keys, ctrl-j/ctrl-k, or j/k to navigate, Enter to select, Esc to cancel")
+        .with_help_message("Use arrow keys or j/k to navigate, Enter to select, Esc to cancel")
         .prompt()
         .context("Failed to select app")?;
     
