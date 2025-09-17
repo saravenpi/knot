@@ -5,13 +5,12 @@ use serde::{Deserialize, Serialize};
 use std::env;
 
 use super::common::{
-    is_interactive, prompt_for_input, prompt_for_input_with_validation,
+    is_interactive, prompt_for_input_with_validation,
     prompt_for_description_with_help, create_spinner, finish_progress,
-    fail_progress, display_error, display_success, display_info, display_warning
+    fail_progress, display_success, display_info
 };
 use crate::validation::{
-    validate_team_name, validate_username, validate_description,
-    validate_role, sanitize_input, confirm_destructive_action
+    validate_team_name, sanitize_input
 };
 
 // API structures

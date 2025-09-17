@@ -2,6 +2,7 @@ use anyhow::Context;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
+#[allow(dead_code)]
 fn validate_safe_name_common(name: &str, context: &str) -> anyhow::Result<()> {
     if name.contains("..") || name.contains('/') || name.contains('\\') {
         anyhow::bail!("{} contains invalid path characters: '{}'", context, name);
@@ -33,6 +34,7 @@ pub enum ConfigVariable {
 
 impl ConfigVariable {
     /// Get the value of the variable
+    #[allow(dead_code)]
     pub fn get_value(&self) -> &str {
         match self {
             ConfigVariable::Simple(value) => value,
@@ -50,6 +52,7 @@ impl ConfigVariable {
     }
 }
 
+#[allow(dead_code)]
 pub fn parse_yaml_error_to_user_friendly(error: &serde_yaml::Error) -> String {
     parse_yaml_error_with_context(error, ConfigType::Unknown)
 }
@@ -59,6 +62,7 @@ pub enum ConfigType {
     Knot,
     Package,
     App,
+    #[allow(dead_code)]
     Unknown,
 }
 
@@ -204,6 +208,7 @@ fn format_error_with_location(message: &str, location: &Option<(usize, usize)>) 
     }
 }
 
+#[allow(dead_code)]
 fn format_missing_field_error(field_name: &str, suggestion: Option<String>) -> String {
     format_missing_field_error_with_context(field_name, suggestion, ConfigType::Unknown)
 }
@@ -227,6 +232,7 @@ fn format_missing_field_error_with_context(field_name: &str, suggestion: Option<
     }
 }
 
+#[allow(dead_code)]
 fn get_field_suggestion(field_name: &str) -> Option<String> {
     get_field_suggestion_with_context(field_name, ConfigType::Unknown)
 }
@@ -345,6 +351,7 @@ pub enum TsAlias {
 }
 
 impl TsAlias {
+    #[allow(dead_code)]
     pub fn get_alias(&self) -> Option<String> {
         match self {
             TsAlias::Boolean(true) => Some("#".to_string()),
@@ -366,6 +373,7 @@ pub enum AppDependencies {
 }
 
 impl AppDependencies {
+    #[allow(dead_code)]
     pub fn get_packages(&self) -> Vec<String> {
         match self {
             AppDependencies::List(packages) => packages.clone(),
@@ -373,6 +381,7 @@ impl AppDependencies {
         }
     }
 
+    #[allow(dead_code)]
     pub fn get_ts_alias(&self) -> Option<&TsAlias> {
         match self {
             AppDependencies::List(_) => None,
@@ -449,6 +458,7 @@ pub struct AppConfig {
 }
 
 impl KnotConfig {
+    #[allow(dead_code)]
     pub fn from_file(path: &std::path::Path) -> anyhow::Result<Self> {
         let file_extension = path.extension().and_then(|ext| ext.to_str()).unwrap_or("yml");
         let content = std::fs::read_to_string(path)
@@ -467,6 +477,7 @@ impl KnotConfig {
         Ok(config)
     }
 
+    #[allow(dead_code)]
     pub fn validate(&self) -> anyhow::Result<()> {
         if self.name.trim().is_empty() {
             anyhow::bail!("Project name cannot be empty in knot.yml configuration\n💡 Add a name field to your knot.yml file\n💡 Example: name: my-awesome-project");
@@ -501,12 +512,14 @@ impl KnotConfig {
         Ok(())
     }
 
+    #[allow(dead_code)]
     fn validate_safe_name(&self, name: &str, context: &str) -> anyhow::Result<()> {
         validate_safe_name_common(name, context)
     }
 }
 
 impl PackageConfig {
+    #[allow(dead_code)]
     pub fn from_file(path: &std::path::Path) -> anyhow::Result<Self> {
         let file_extension = path.extension().and_then(|ext| ext.to_str()).unwrap_or("yml");
         let content = std::fs::read_to_string(path)
@@ -525,6 +538,7 @@ impl PackageConfig {
         Ok(config)
     }
 
+    #[allow(dead_code)]
     pub fn validate(&self) -> anyhow::Result<()> {
         if self.name.trim().is_empty() {
             anyhow::bail!("Package name cannot be empty in package.yml configuration\n💡 Add a name field to your package.yml file\n💡 Example: name: my-package");
@@ -604,12 +618,14 @@ impl PackageConfig {
         Ok(())
     }
 
+    #[allow(dead_code)]
     fn validate_safe_name(&self, name: &str, context: &str) -> anyhow::Result<()> {
         validate_safe_name_common(name, context)
     }
 }
 
 impl AppConfig {
+    #[allow(dead_code)]
     pub fn from_file(path: &std::path::Path) -> anyhow::Result<Self> {
         let file_extension = path.extension().and_then(|ext| ext.to_str()).unwrap_or("yml");
         let content = std::fs::read_to_string(path)
@@ -628,6 +644,7 @@ impl AppConfig {
         Ok(config)
     }
 
+    #[allow(dead_code)]
     pub fn validate(&self) -> anyhow::Result<()> {
         if self.name.trim().is_empty() {
             anyhow::bail!("App name cannot be empty in app.yml configuration\n💡 Add a name field to your app.yml file\n💡 Example: name: my-app");
@@ -666,10 +683,12 @@ impl AppConfig {
         Ok(())
     }
 
+    #[allow(dead_code)]
     fn validate_safe_name(&self, name: &str, context: &str) -> anyhow::Result<()> {
         validate_safe_name_common(name, context)
     }
 
+    #[allow(dead_code)]
     pub fn validate_package_name(&self, package: &str) -> anyhow::Result<()> {
         // Check for dangerous characters (allow @ for online packages)
         if package.contains('\0') || package.contains("..") || package.contains('\\') {

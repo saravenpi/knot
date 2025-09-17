@@ -150,6 +150,7 @@ fn bump_prerelease(current: &str, preid: &str) -> Result<String> {
     Ok(format!("{}-{}1", current, preid))
 }
 
+#[allow(dead_code)]
 fn is_valid_semver(version: &str) -> bool {
     // Simple semantic versioning check
     // Supports x.y.z and x.y.z-prerelease formats

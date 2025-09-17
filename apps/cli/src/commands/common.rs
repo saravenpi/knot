@@ -15,6 +15,7 @@ pub fn is_interactive() -> bool {
 }
 
 // Helper function for interactive input with beautiful UI
+#[allow(dead_code)]
 pub fn prompt_for_input(prompt: &str, default: Option<&str>) -> Result<String> {
     prompt_for_input_with_validation(prompt, default, None, None)
 }
@@ -80,6 +81,7 @@ pub fn prompt_for_input_with_validation(
 }
 
 // Enhanced input for descriptions (allows more characters)
+#[allow(dead_code)]
 pub fn prompt_for_description(prompt: &str, default: Option<&str>) -> Result<String> {
     prompt_for_description_with_help(prompt, default, None)
 }
@@ -116,11 +118,13 @@ pub fn prompt_for_description_with_help(prompt: &str, default: Option<&str>, hel
 }
 
 // Enhanced select prompt
+#[allow(dead_code)]
 pub fn prompt_for_select(prompt: &str, options: Vec<&str>) -> Result<String> {
     prompt_for_select_with_help(prompt, options, None)
 }
 
 // Enhanced select prompt with custom help text
+#[allow(dead_code)]
 pub fn prompt_for_select_with_help(prompt: &str, options: Vec<&str>, help_text: Option<&str>) -> Result<String> {
     // Fallback to first option if not interactive
     if !is_interactive() {
@@ -217,6 +221,7 @@ pub fn determine_target_directory(
 }
 
 // Progress indicator utilities
+#[allow(dead_code)]
 pub fn create_progress_bar(total: u64, message: &str) -> ProgressBar {
     let pb = ProgressBar::new(total);
     pb.set_style(
@@ -255,6 +260,7 @@ pub fn display_error(message: &str) {
     eprintln!("{} {}", style("❌ Error:").red().bold(), message);
 }
 
+#[allow(dead_code)]
 pub fn display_warning(message: &str) {
     println!("{} {}", style("⚠️  Warning:").yellow().bold(), message);
 }
@@ -272,6 +278,7 @@ pub fn display_tip(message: &str) {
 }
 
 // Helper function to format API error responses in a user-friendly way
+#[allow(dead_code)]
 pub fn format_api_error(status: reqwest::StatusCode, response_text: &str) -> String {
     // Try to parse as JSON first to extract the actual error message
     let error_message = if let Ok(json_value) = serde_json::from_str::<serde_json::Value>(response_text) {
@@ -309,6 +316,7 @@ pub fn setup_ctrl_c_handler() -> Result<()> {
 }
 
 // Clear the current line and move cursor to beginning
+#[allow(dead_code)]
 pub fn clear_line() {
     let term = Term::stdout();
     let _ = term.clear_line();

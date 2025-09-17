@@ -2,15 +2,13 @@
 // Tests various malformed YAML files to ensure error messages are user-friendly
 
 use anyhow::Result;
-use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
 
 /// Re-export the config types and error handling from the main module
 #[path = "../config.rs"]
 mod config;
 
 use config::{
-    parse_yaml_error_with_context, ConfigType, ConfigVariable, KnotConfig, PackageConfig, AppConfig
+    parse_yaml_error_with_context, ConfigType, KnotConfig, PackageConfig, AppConfig
 };
 
 fn test_missing_required_fields() -> Result<()> {

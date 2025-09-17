@@ -16,7 +16,7 @@ pub async fn deps_add(package_spec: &str, app_name: Option<&str>, dev: bool, opt
     
     // Validate package specification
     let sanitized_spec = sanitize_input(package_spec);
-    let (package_name, version) = validate_package_spec(&sanitized_spec)?;
+    let (_package_name, _version) = validate_package_spec(&sanitized_spec)?;
 
     // Determine target app
     let target_app = if let Some(app) = app_name {

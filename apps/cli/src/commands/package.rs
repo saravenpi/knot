@@ -1,7 +1,7 @@
 use anyhow::{Context, Result};
 use std::fs;
 
-use crate::commands::common::{create_spinner, create_progress_bar, finish_progress, fail_progress, display_success, display_error, display_info};
+use crate::commands::common::{create_spinner, finish_progress, fail_progress, display_success, display_error, display_info};
 use crate::config::AppConfig;
 use crate::linker::Linker;
 use crate::project::Project;
@@ -180,6 +180,7 @@ pub async fn add_package(package_spec: &str, auto_link: bool) -> Result<()> {
 }
 
 // Parse package specification into name and version
+#[allow(dead_code)]
 fn parse_package_spec(package_spec: &str) -> (String, Option<String>) {
     if let Some(stripped) = package_spec.strip_prefix('@') {
         // Handle scoped packages like @hono-modules-loader@0.2.5

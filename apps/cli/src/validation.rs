@@ -196,6 +196,7 @@ pub fn validate_team_name(name: &str) -> Result<()> {
     Ok(())
 }
 
+#[allow(dead_code)]
 pub fn validate_username(username: &str) -> Result<()> {
     if username.is_empty() {
         return Err(anyhow!(ValidationError {
@@ -338,6 +339,7 @@ pub fn validate_template_name(template: &str) -> Result<()> {
     Ok(())
 }
 
+#[allow(dead_code)]
 pub fn validate_url(url: &str, field_name: &str) -> Result<()> {
     if url.is_empty() {
         return Err(anyhow!(ValidationError {
@@ -447,6 +449,7 @@ pub fn validate_script_name(name: &str) -> Result<()> {
     Ok(())
 }
 
+#[allow(dead_code)]
 pub fn validate_role(role: &str) -> Result<()> {
     let valid_roles = ["admin", "member"];
     if !valid_roles.contains(&role) {
