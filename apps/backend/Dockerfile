@@ -30,7 +30,7 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/* && \
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /app/prisma ./prisma
 
-# Copy app source code (knot_packages already included via pre-commit hook)
+# Copy app source code
 COPY . ./
 
 # Production stage
