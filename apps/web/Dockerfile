@@ -1,5 +1,5 @@
 # Build stage
-FROM oven/bun as builder
+FROM oven/bun AS builder
 
 # Set working directory
 WORKDIR /app
@@ -23,20 +23,14 @@ RUN bun run build
 # Runtime stage
 FROM oven/bun
 
-# Create app user
-RUN addgroup --gid 1001 --system nodejs &&     adduser --system --uid 1001 nextjs
-
 # Set working directory
 WORKDIR /app
 
 # Copy built application
-COPY --from=builder --chown=nextjs:nodejs /app/build ./build
-COPY --from=builder --chown=nextjs:nodejs /app/knot_packages ./knot_packages
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
+COPY --from=builder /app/build ./build
+COPY --from=builder /app/knot_packages ./knot_packages
+COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
-
-# Switch to non-root user
-USER nextjs
 
 # Expose port
 EXPOSE 3000
