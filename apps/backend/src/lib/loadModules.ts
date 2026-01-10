@@ -9,17 +9,26 @@ export interface Module {
   prefix: string;
 }
 
-// Allowed module names (security: whitelist only expected modules)
 const ALLOWED_MODULES = ['auth', 'teams', 'packages', 'users', 'uploads', 'health'];
 
-// Security: Validate module name
 function isValidModuleName(name: string): boolean {
-  // Only allow alphanumeric names, no special characters to prevent path traversal
   return /^[a-z0-9]+$/.test(name) && ALLOWED_MODULES.includes(name);
 }
 
+function getModulesPath(): string {
+  if (process.env.MODULES_PATH) {
+    return resolve(process.env.MODULES_PATH);
+  }
+
+  if (typeof __dirname !== 'undefined') {
+    return resolve(join(__dirname, '../modules'));
+  }
+
+  return resolve(join(process.cwd(), 'src', 'modules'));
+}
+
 export async function loadModules(): Promise<Module[]> {
-  const modulesPath = resolve(join(__dirname, '../modules'));
+  const modulesPath = getModulesPath();
   const modules: Module[] = [];
 
   try {
@@ -44,7 +53,12 @@ export async function loadModules(): Promise<Module[]> {
           continue;
         }
 
-        logger.debug('Attempting to load module', { moduleName, modulePath });
+        logger.info('Attempting to load module', {
+          moduleName,
+          modulePath,
+          cwd: process.cwd(),
+          __dirname: typeof __dirname !== 'undefined' ? __dirname : 'undefined'
+        });
 
         const moduleExports = await import(modulePath);
 
@@ -93,8 +107,9 @@ export async function loadModules(): Promise<Module[]> {
       } catch (error) {
         logger.error('Failed to load module', {
           moduleName,
-          error: error instanceof Error ? error.message : 'Unknown error',
+          error: error instanceof Error ? error.message : String(error),
           stack: error instanceof Error ? error.stack : undefined,
+          errorType: error?.constructor?.name,
         });
       }
     }
