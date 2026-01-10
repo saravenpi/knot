@@ -15,20 +15,8 @@ function isValidModuleName(name: string): boolean {
   return /^[a-z0-9]+$/.test(name) && ALLOWED_MODULES.includes(name);
 }
 
-function getModulesPath(): string {
-  if (process.env.MODULES_PATH) {
-    return resolve(process.env.MODULES_PATH);
-  }
-
-  if (typeof __dirname !== 'undefined') {
-    return resolve(join(__dirname, '../modules'));
-  }
-
-  return resolve(join(process.cwd(), 'src', 'modules'));
-}
-
 export async function loadModules(): Promise<Module[]> {
-  const modulesPath = getModulesPath();
+  const modulesPath = resolve(join(__dirname, '../modules'));
   const modules: Module[] = [];
 
   try {
@@ -53,12 +41,7 @@ export async function loadModules(): Promise<Module[]> {
           continue;
         }
 
-        logger.info('Attempting to load module', {
-          moduleName,
-          modulePath,
-          cwd: process.cwd(),
-          __dirname: typeof __dirname !== 'undefined' ? __dirname : 'undefined'
-        });
+        logger.debug('Attempting to load module', { moduleName, modulePath });
 
         const moduleExports = await import(modulePath);
 

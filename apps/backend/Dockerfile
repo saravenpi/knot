@@ -33,9 +33,6 @@ COPY --from=deps /app/prisma ./prisma
 # Copy app source code (knot_packages already included via pre-commit hook)
 COPY . ./
 
-# Build the application
-RUN bun run build
-
 # Production stage
 FROM oven/bun:1-slim AS production
 WORKDIR /app
@@ -52,17 +49,17 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/* && \
 # Create non-root user
 RUN groupadd -r appuser && useradd -r -g appuser appuser
 
-# Copy built application with correct ownership
-COPY --from=builder /app/server ./server
+# Copy application with correct ownership
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/start.sh ./start.sh
 COPY --from=builder /app/src ./src
 COPY --from=builder /app/tsconfig.json ./tsconfig.json
 COPY --from=builder /app/knot_packages ./knot_packages
+COPY --from=builder /app/package.json ./package.json
 
 # Make scripts executable
-RUN chmod +x ./server ./start.sh
+RUN chmod +x ./start.sh
 
 # Expose the port your server uses
 EXPOSE 3001

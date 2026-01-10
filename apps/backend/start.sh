@@ -28,7 +28,7 @@ if [ "$NODE_ENV" = "production" ]; then
     echo "🏃 Starting production server..."
 
     # Switch to appuser to run the server
-    exec su appuser -c "./server"
+    exec su appuser -c "bun src/index.ts"
 
 else
     echo "🔧 Running in DEVELOPMENT mode"
